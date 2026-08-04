@@ -119,6 +119,7 @@ const TEMPLATE_B64 = "UEsDBBQAAAAAAHC1A121s3pDYQYAAGEGAAATAAAAW0NvbnRlbnRfVHlwZX
 </script>
 <script>
 "use strict";
+const IS_ADMIN=new URLSearchParams(location.search).has("admin");
 
 // ---------------------------------------------------------------
 // Définition des sections et champs (ref = cellule cible du xlsx)
@@ -245,17 +246,17 @@ const SECTIONS = [
    {ref:"F122",label:"Address",type:"text",w:4},
    {ref:"F123",label:"E-mail",type:"email",w:6},
  ]},
- {title:"XII. Signatures", note:"names are computed automatically in Excel — sign on screen, the date fills in automatically", fields:[
+ {title:"XII. Signatures", note:"names are computed automatically in Excel — sign on screen, the date fills in automatically"+(IS_ADMIN?" (officials\u2019 signatures unlocked)":""), fields:[
    {sig:"applicant",label:"Applicant signature",dateRef:"AB126",row:126,w:3},
    {sig:"parent",label:"Parent / guardian signature",dateRef:"AB128",row:128,w:3},
    {ref:"AB126",label:"Applicant — date",type:"date",w:3},
    {ref:"AB128",label:"Parent / guardian — date",type:"date",w:3},
-   {sig:"club",label:"Club representative signature",dateRef:"AB130",row:130,w:2},
-   {sig:"mdyce",label:"MD or D YCE signature",dateRef:"AB132",row:132,w:2},
-   {sig:"authycec",label:"Auth. YCE chairperson signature",dateRef:"AB134",row:134,w:2},
-   {ref:"AB130",label:"Club representative — date",type:"date",w:2},
-   {ref:"AB132",label:"MD or D YCE — date",type:"date",w:2},
-   {ref:"AB134",label:"Auth. YCE chairperson — date",type:"date",w:2},
+   {sig:"club",label:"Club representative signature",dateRef:"AB130",row:130,w:2,adm:true},
+   {sig:"mdyce",label:"MD or D YCE signature",dateRef:"AB132",row:132,w:2,adm:true},
+   {sig:"authycec",label:"Auth. YCE chairperson signature",dateRef:"AB134",row:134,w:2,adm:true},
+   {ref:"AB130",label:"Club representative — date",type:"date",w:2,adm:true},
+   {ref:"AB132",label:"MD or D YCE — date",type:"date",w:2,adm:true},
+   {ref:"AB134",label:"Auth. YCE chairperson — date",type:"date",w:2,adm:true},
  ]},
 ];
 
@@ -271,6 +272,7 @@ function render(){
     if(sec.note)h+='<span class="sec-note">'+esc(sec.note)+'</span>';
     h+='<span class="sec-toggle">▼</span></div><div class="sec-body">';
     sec.fields.forEach(function(f){
+      if(f.adm&&!IS_ADMIN)return;
       const w=f.w||2;
       if(f.sig){
         h+='<div class="fld w'+w+'"><label class="flbl">'+esc(f.label)+'<span class="ref">I'+(f.row+1)+'</span></label>'
@@ -350,6 +352,7 @@ function sigInit(){
   SECTIONS.forEach(function(sec){sec.fields.forEach(function(f){
     if(!f.sig)return;
     const cv=document.getElementById("sig-"+f.sig);
+    if(!cv)return;
     const ctx=cv.getContext("2d");
     ctx.lineWidth=2.4;ctx.lineCap="round";ctx.lineJoin="round";ctx.strokeStyle="#1b2a7a";
     const st={cv:cv,ctx:ctx,ink:false,drawing:false,dateRef:f.dateRef,row:f.row};
@@ -422,7 +425,7 @@ function clearForm(){
 function upd(){
   let n=0,total=0;
   SECTIONS.forEach(function(sec){sec.fields.forEach(function(f){
-    if(f.sig){total++;if(SIGS[f.sig]&&SIGS[f.sig].ink)n++;return;}
+    if(f.sig){if(!SIGS[f.sig])return;total++;if(SIGS[f.sig].ink)n++;return;}
     if(f.xgroup){total++;if(XSTATE[f.xgroup])n++;}
     else{const el=document.getElementById("f-"+f.ref);
       if(!el||el.disabled)return; // "If yes: specify" fields are excluded while No / unanswered
@@ -699,7 +702,7 @@ async function init(){
   render();initLists();sigInit();upd();
   restoreDraft();
   const params=new URLSearchParams(location.search);
-  if(params.has("admin"))document.getElementById("tpl-btn").style.display="";
+  if(IS_ADMIN)document.getElementById("tpl-btn").style.display="";
   const d=(params.get("district")||"").toUpperCase();
   if(/^[A-D]$/.test(d)&&location.protocol.indexOf("http")===0){
     // ouvert depuis le site : on charge le formulaire officiel du district
