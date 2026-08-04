@@ -70,6 +70,11 @@ input:required:invalid{border-color:rgba(239,83,80,0.5);}
 .sig-clear:hover{background:rgba(239,83,80,0.2);color:#c0392b;}
 .sig-line{position:absolute;left:8%;right:8%;bottom:22px;border-bottom:1px dashed #b8c0cc;pointer-events:none;}
 input.tel-bad{border-color:var(--red) !important;}
+.fld.yn{flex-direction:row;align-items:center;justify-content:space-between;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:9px 13px;min-height:52px;}
+.fld.yn label.flbl{margin:0;flex:1;}
+.fld.yn .xgroup{flex-wrap:nowrap;flex-shrink:0;}
+.fld.yn .xopt{background:var(--surface);padding:6px 14px;}
+.fld.yn .xopt.on{background:var(--gold);}
 .ctry-sel{background:var(--card);border:1px solid var(--border);border-radius:5px;color:var(--text);font-size:12px;padding:4px 6px;margin-left:6px;outline:none;}
 .photobox{position:relative;background:var(--card);border:1.5px dashed var(--border);border-radius:8px;height:190px;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;transition:border-color 0.2s;}
 .photobox:hover{border-color:var(--gold);}
@@ -319,7 +324,7 @@ function render(){
         });
         h+='</div></div>';
       }else{
-        h+='<div class="fld w'+w+'"'+(f.dep?' id="fld-'+f.ref+'" style="display:none"':'')+'><label class="flbl" for="f-'+f.ref+'">'+esc(f.label);
+        h+='<div class="fld'+((f.type==="ynbtn")?" yn":"")+' w'+w+'"'+(f.dep?' id="fld-'+f.ref+'" style="display:none"':'')+'><label class="flbl" for="f-'+f.ref+'">'+esc(f.label);
         if(f.req)h+=' <span class="req">*</span>';
         h+='<span class="ref">'+f.ref+'</span></label>';
         if(f.type==="ynbtn"||f.type==="pills"){
@@ -328,7 +333,10 @@ function render(){
           h+='<div class="xgroup" id="yn-'+f.ref+'">'
             +vals.map(function(v,i){return '<label class="xopt" data-val="'+v+'" onclick="ynClick(\''+f.ref+'\',\''+v+'\')">'+lbls[i]+'</label>';}).join("")
             +'</div><input type="hidden" id="f-'+f.ref+'">';
-        }else if(f.type==="select"){
+          h+='</div>';
+          return;
+        }
+        if(f.type==="select"){
           h+='<select id="f-'+f.ref+'" onchange="upd()">';
           f.opts.forEach(function(o){h+='<option value="'+esc(o)+'"'+(o===(f.val||"")?" selected":"")+'>'+(o===""?"—":esc(o))+'</option>';});
           h+='</select>';
