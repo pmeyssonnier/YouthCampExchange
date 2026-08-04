@@ -170,7 +170,7 @@ const SECTIONS = [
    {ref:"X22",label:"Passport / ID / CNI number",type:"text",w:3},
    {ref:"G23",label:"Valid until",type:"date",w:3},
    {ref:"X23",label:"Place of issue",type:"text",w:3},
-   {xgroup:"prev",label:"Previously participated in a Lions Youth Exchange?",w:3,opts:[{lbl:"Yes",ref:"AD24"},{lbl:"No",ref:"AI24"}]},
+   {xgroup:"prev",card:true,label:"Previously participated in a Lions Youth Exchange?",w:3,opts:[{lbl:"Yes",ref:"AD24"},{lbl:"No",ref:"AI24"}]},
    {ref:"J25",label:"If yes, where and when?",type:"text",w:3,dep:"prev"},
    {ref:"J26",label:"Hobbies & other interests",type:"text",w:6},
    {xgroup:"engl",label:"Knowledge of English",w:3,opts:[{lbl:"Good",ref:"L27"},{lbl:"Fair",ref:"P27"},{lbl:"None",ref:"T27"}]},
@@ -180,7 +180,7 @@ const SECTIONS = [
    {ref:"J29",label:"Field of study",type:"text",w:2},
    {ref:"J30",label:"Career objective",type:"text",w:2},
    {ref:"J31",label:"Religion",type:"text",w:2},
-   {xgroup:"leo",label:"Are you a LEO?",w:6,opts:[{lbl:"Yes",ref:"AA31"},{lbl:"No",ref:"AG31"}]},
+   {xgroup:"leo",card:true,label:"Are you a LEO?",w:6,opts:[{lbl:"Yes",ref:"AA31"},{lbl:"No",ref:"AG31"}]},
  ]},
  {title:"Attachments", note:"compulsory with the application", fields:[
    {photo:true,label:"Applicant's pass photo (JPG)",w:3},
@@ -194,13 +194,13 @@ const SECTIONS = [
    {ref:"G44",label:"Do you smoke?",type:"ynbtn",w:2},
    {ref:"O44",label:"Vegetarian?",type:"ynbtn",w:2},
    {ref:"Z44",label:"Vegan?",type:"ynbtn",w:2},
-   {xgroup:"med1",label:"Medical / mental condition(s)",w:3,opts:[{lbl:"No",ref:"M45"},{lbl:"Yes",ref:"Q45"}],specify:"X45"},
+   {xgroup:"med1",card:true,label:"Medical / mental condition(s)",w:3,opts:[{lbl:"No",ref:"M45"},{lbl:"Yes",ref:"Q45"}],specify:"X45"},
    {ref:"X45",label:"If yes: specify",type:"text",w:3,dep:"med1"},
-   {xgroup:"med2",label:"Special medication",w:3,opts:[{lbl:"No",ref:"M46"},{lbl:"Yes",ref:"Q46"}],specify:"X46"},
+   {xgroup:"med2",card:true,label:"Special medication",w:3,opts:[{lbl:"No",ref:"M46"},{lbl:"Yes",ref:"Q46"}],specify:"X46"},
    {ref:"X46",label:"If yes: specify",type:"text",w:3,dep:"med2"},
-   {xgroup:"med3",label:"Medical / religious / other dietary requirements",w:3,opts:[{lbl:"No",ref:"M47"},{lbl:"Yes",ref:"Q47"}],specify:"X47"},
+   {xgroup:"med3",card:true,label:"Medical / religious / other dietary requirements",w:3,opts:[{lbl:"No",ref:"M47"},{lbl:"Yes",ref:"Q47"}],specify:"X47"},
    {ref:"X47",label:"If yes: specify",type:"text",w:3,dep:"med3"},
-   {xgroup:"med4",label:"Allergies (animal, insect, food…)",w:3,opts:[{lbl:"No",ref:"M48"},{lbl:"Yes",ref:"Q48"}],specify:"X48"},
+   {xgroup:"med4",card:true,label:"Allergies (animal, insect, food…)",w:3,opts:[{lbl:"No",ref:"M48"},{lbl:"Yes",ref:"Q48"}],specify:"X48"},
    {ref:"X48",label:"If yes: specify",type:"text",w:3,dep:"med4"},
    {ref:"K49",label:"Health insurance company",type:"text",w:3},
    {ref:"AB49",label:"Policy no",type:"text",w:3},
@@ -312,7 +312,7 @@ function render(){
         return;
       }
       if(f.xgroup){
-        h+='<div class="fld w'+w+'"><label class="flbl">'+esc(f.label)+'<span class="ref">'+f.opts.map(function(o){return o.ref;}).join("/")+'</span></label><div class="xgroup" id="xg-'+f.xgroup+'">';
+        h+='<div class="fld'+(f.card?' yn':'')+' w'+w+'"><label class="flbl">'+esc(f.label)+'<span class="ref">'+f.opts.map(function(o){return o.ref;}).join("/")+'</span></label><div class="xgroup" id="xg-'+f.xgroup+'">';
         f.opts.forEach(function(o){
           h+='<label class="xopt" data-grp="'+f.xgroup+'" data-ref="'+o.ref+'"><input type="radio" name="xg'+f.xgroup+'" onclick="xsel(this,\''+f.xgroup+'\')">'+esc(o.lbl)+'</label>';
         });
