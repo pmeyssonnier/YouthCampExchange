@@ -174,16 +174,16 @@ const SECTIONS = [
    {ref:"J28",label:"Other languages spoken",type:"text",w:6},
    {ref:"J29",label:"Field of study",type:"text",w:2},
    {ref:"J30",label:"Career objective",type:"text",w:2},
-   {ref:"J31",label:"Religion",type:"text",w:1},
-   {xgroup:"leo",label:"Are you a LEO?",w:1,opts:[{lbl:"Yes",ref:"AA31"},{lbl:"No",ref:"AG31"}]},
+   {ref:"J31",label:"Religion",type:"text",w:2},
+   {xgroup:"leo",label:"Are you a LEO?",w:6,opts:[{lbl:"Yes",ref:"AA31"},{lbl:"No",ref:"AG31"}]},
  ]},
  {title:"III. Health, Medical, Dietary & Insurance Data", fields:[
    {ref:"K42",label:"State of health, in general",type:"select",opts:["","Excellent","Very good","Good","Fair","Poor"],w:4},
    {ref:"AH44",label:"Height (cm)",type:"number",w:2,numeric:true},
-   {ref:"S43",label:"Sport activities?",type:"ynbtn",w:1},
-   {ref:"AG43",label:"Can you swim?",type:"ynbtn",w:1},
-   {ref:"G44",label:"Do you smoke?",type:"ynbtn",w:1},
-   {ref:"O44",label:"Vegetarian?",type:"ynbtn",w:1},
+   {ref:"S43",label:"Sport activities?",type:"ynbtn",w:2},
+   {ref:"AG43",label:"Can you swim?",type:"ynbtn",w:2},
+   {ref:"G44",label:"Do you smoke?",type:"ynbtn",w:2},
+   {ref:"O44",label:"Vegetarian?",type:"ynbtn",w:2},
    {ref:"Z44",label:"Vegan?",type:"ynbtn",w:2},
    {xgroup:"med1",label:"Medical / mental condition(s)",w:3,opts:[{lbl:"No",ref:"M45"},{lbl:"Yes",ref:"Q45"}],specify:"X45"},
    {ref:"X45",label:"If yes: specify",type:"text",w:3,dep:"med1"},
@@ -293,7 +293,7 @@ function render(){
         });
         h+='</div></div>';
       }else{
-        h+='<div class="fld w'+w+'"><label class="flbl" for="f-'+f.ref+'">'+esc(f.label);
+        h+='<div class="fld w'+w+'"'+(f.dep?' id="fld-'+f.ref+'" style="display:none"':'')+'><label class="flbl" for="f-'+f.ref+'">'+esc(f.label);
         if(f.req)h+=' <span class="req">*</span>';
         h+='<span class="ref">'+f.ref+'</span></label>';
         if(f.type==="ynbtn"||f.type==="pills"){
@@ -324,6 +324,16 @@ function render(){
   root.innerHTML=h;
 }
 
+// affiche/masque et (des)active les champs "If yes: specify" lies a un groupe
+function depShow(grp,yes){
+  document.querySelectorAll('input[data-dep="'+grp+'"]').forEach(function(i){
+    i.disabled=!yes;
+    if(!yes)i.value="";
+    const fd=i.closest(".fld");
+    if(fd)fd.style.display=yes?"":"none";
+  });
+}
+
 // sélection dans un groupe de cases X (re-cliquer pour désélectionner)
 const XSTATE={};
 function xsel(input,grp){
@@ -332,11 +342,7 @@ function xsel(input,grp){
   document.querySelectorAll('#xg-'+grp+' .xopt').forEach(function(l){l.classList.remove("on");});
   if(was){input.checked=false;XSTATE[grp]=null;}
   else{lab.classList.add("on");XSTATE[grp]=lab.getAttribute("data-ref");}
-  // active/désactive le champ "specify" lié
-  document.querySelectorAll('input[data-dep="'+grp+'"]').forEach(function(inp){
-    const yes=XSTATE[grp] && lab.textContent.trim()==="Yes" && !was;
-    inp.disabled=!yes; if(!yes)inp.value="";
-  });
+  depShow(grp,!!XSTATE[grp]&&lab.textContent.trim()==="Yes"&&!was);
   upd();
 }
 
@@ -502,8 +508,7 @@ function restoreDraft(){
       const lab=document.querySelector('.xopt[data-grp="'+grp+'"][data-ref="'+ref+'"]');
       if(!lab)return;
       lab.classList.add("on");lab.querySelector("input").checked=true;XSTATE[grp]=ref;
-      const yes=lab.textContent.trim()==="Yes";
-      document.querySelectorAll('input[data-dep="'+grp+'"]').forEach(function(i){i.disabled=!yes;});
+      depShow(grp,lab.textContent.trim()==="Yes");
     });
     Object.keys(d.a||{}).forEach(function(r){
       const el=document.getElementById("f-"+r);if(el)el.dataset.auto="1";
