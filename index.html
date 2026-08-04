@@ -6,6 +6,7 @@
 <title>Lions YCE Belgium — Youth Camp & Exchange MD112</title>
 <meta name="description" content="Lions Youth Camp & Exchange Belgium MD112 — international youth exchanges and camps for young people aged 16–30. Explore 90+ camps in 36 countries.">
 <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="assets/favicon.png">
 <script>try{if(localStorage.getItem('yce-theme')==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
@@ -44,7 +45,8 @@ img{max-width:100%;}
 /* ── NAV ── */
 nav{position:sticky;top:0;z-index:500;background:var(--nav-bg);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);}
 .nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:26px;padding:14px 24px;}
-.nav-logo{font-family:'Crimson Pro',serif;font-size:21px;font-weight:700;color:var(--gold);white-space:nowrap;display:flex;align-items:center;gap:9px;}
+.nav-logo{font-family:'Crimson Pro',serif;font-size:21px;font-weight:700;color:var(--gold);white-space:nowrap;display:flex;align-items:center;gap:10px;}
+.nav-emblem{height:40px;width:40px;object-fit:contain;}
 .nav-logo .sub{font-size:11px;color:var(--muted);font-family:'IBM Plex Sans',sans-serif;font-weight:400;display:block;line-height:1.1;margin-top:1px;}
 .nav-links{display:flex;gap:4px;margin-left:auto;align-items:center;flex-wrap:wrap;}
 .nav-links a{color:var(--muted);font-size:13px;font-weight:500;padding:7px 12px;border-radius:6px;transition:all .2s;}
@@ -250,6 +252,7 @@ tr.clickable-row.selected td{background:rgba(79,195,247,0.07);border-left:2px so
 .brx-visual{background:linear-gradient(135deg,var(--brx1),var(--brx2));border:1px solid var(--border);border-radius:16px;padding:38px 34px;position:relative;overflow:hidden;}
 .brx-visual::after{content:'🇧🇪';position:absolute;font-size:150px;right:-20px;bottom:-32px;opacity:0.09;}
 .brx-flag{font-size:40px;margin-bottom:14px;}
+.brx-blason{height:170px;width:auto;margin-bottom:16px;filter:drop-shadow(0 6px 18px rgba(0,0,0,0.35));}
 .brx-visual h3{font-family:'Crimson Pro',serif;font-size:26px;color:var(--head);margin-bottom:8px;}
 .brx-visual .brx-meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;}
 .brx-chip{padding:6px 13px;border-radius:20px;font-size:12px;font-family:'IBM Plex Mono',monospace;background:rgba(232,160,32,0.1);color:var(--gold2);border:1px solid rgba(232,160,32,0.3);}
@@ -412,7 +415,7 @@ html[data-theme="light"] #tab-map,html[data-theme="light"] .tt{
 
 <nav>
   <div class="nav-inner">
-    <div class="nav-logo">🦁 <span>Lions YCE <span class="sub">Youth Camp & Exchange — MD112 Belgium</span></span></div>
+    <div class="nav-logo"><img src="assets/logo_lions.png" alt="Lions Clubs International" class="nav-emblem"> <span>Lions YCE <span class="sub">Youth Camp & Exchange — MD112 Belgium</span></span></div>
     <button class="burger" onclick="document.getElementById('nav-links').classList.toggle('open')">☰</button>
     <div class="nav-links" id="nav-links">
       <a href="#program">The Program</a>
@@ -582,7 +585,7 @@ html[data-theme="light"] #tab-map,html[data-theme="light"] .tt{
       <a href="#explorer" class="btn btn-gold" onclick="setTimeout(()=>focusBelgium(),400)">🇧🇪 See the Belgian camp</a>
     </div>
     <div class="brx-visual reveal">
-      <div class="brx-flag">🇧🇪</div>
+      <img src="assets/logo_yce_belgium.png" alt="Lions Youth Camp and Exchange MD112 Belgium" class="brx-blason">
       <h3 id="brx-name">Belgium National Camp</h3>
       <p style="color:var(--muted);font-size:13.5px" id="brx-desc">City trips, sports and international friendship in the heart of Europe.</p>
       <div class="brx-meta" id="brx-meta"></div>
@@ -686,7 +689,7 @@ html[data-theme="light"] #tab-map,html[data-theme="light"] .tt{
 <footer id="contact">
   <div class="foot-grid">
     <div>
-      <div class="foot-logo">🦁 Lions YCE Belgium</div>
+      <div class="foot-logo"><img src="assets/logo_lions.png" alt="Lions Clubs International" style="height:44px;width:44px;object-fit:contain;vertical-align:middle;margin-right:10px">Lions YCE Belgium</div>
       <p>Youth Camp & Exchange — Multiple District 112 Belgium.<br>Part of Lions Clubs International youth programs.</p>
       <ul>
         <li>📍 Houba de Strooperlaan 90, 1020 Brussels</li>
