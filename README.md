@@ -54,24 +54,40 @@ District/status/search filters, sortable columns, per-candidate status (`Receive
 
 ```
 index.html                            public site + camp explorer
-camps_data.js                         season camp data (SEASON constant + RAW array)
-yce_form_filler.html                  application form filler / signing modes (self-contained build)
-yce_tracker.html                      applications tracker (self-contained)
+camps_data.js                         season camp data (SEASON constant + RAW array, shared with the filler)
+yce_form_filler.html                  form filler HTML shell (loads the js/ modules below)
+yce_tracker.html                      tracker HTML shell
+js/
+  assets.js                           GENERATED — embedded templates (base64) + build version
+  xlsx.js                             zip library + workbook cell read/write
+  docx.js                             Commitment: text, validation, signed Word generation
+  signatures.js                       signature pads + pasting signatures into the workbook
+  attachments.js                      pass photo & payment proof
+  storage.js                          local draft persistence
+  email.js                            prefilled e-mails (club president, district coordinator)
+  club-signing.js                     ?sign=club remote counter-signing mode
+  form.js                             form definition, rendering, counter, generate(), init — loaded last
+  tracker-storage.js / -parser.js / -export.js / -ui.js   tracker modules
+tools/
+  build_assets.py                     regenerates js/assets.js from the templates below
+  commit_template.docx                Commitment template with §CAND§/§DATE§/[BODY]/[SIG*] markers
 Application form 2026 Distr X 1.xlsx  official district forms (A–D), downloadable & fetched by ?district=
-Application_form_2026_Distr_C_vierge.xlsx  sanitized blank template (embedded in the filler)
+Application_form_2026_Distr_C_vierge.xlsx  sanitized blank template (embedded via js/assets.js)
 Commitment to Reciprocity.docx        official reciprocity contract (downloadable)
-Letter_to_Host_Family_2026.docx       "Dear Host Family" letter template (downloadable, embedded in the filler)
+Letter_to_Host_Family_2026.docx       "Dear Host Family" letter template (downloadable)
 Lions Camp Scraper.ipynb              notebook collecting the camps from the LCI directory
 enriched_lions_camps.py               scraper enriching each camp from lions-yce-belgium.be
 assets/                               logos & favicon
 ```
+
+The filler and tracker are plain-JavaScript **classic scripts sharing the global scope**, loaded in dependency order by their HTML shells; every module is directly editable in the repository. Only `js/assets.js` is generated — run `python3 tools/build_assets.py` after changing the blank form or the Commitment template.
 
 ## Technical notes
 
 - **Zero dependencies at runtime** for the filler and tracker: zip read/write is implemented in plain JavaScript (uncompressed embedded templates + the browser's native `CompressionStream`/`DecompressionStream`); the Excel/Word files are edited at the XML level, which preserves their formatting and formulas exactly. The public site uses D3/TopoJSON from CDN for the world map.
 - Values are written as cells (`inlineStr`/numeric), X-choices as `X` marks, signatures and photo as anchored images; `fullCalcOnLoad` makes Excel refresh the computed cells on open.
 - The build version is shown in the filler header (`vYYYY.MM.DD-commit`) to spot stale browser caches.
-- **Season update**: replace `SEASON`/`RAW` in `camps_data.js`, drop in the new district forms, and rebuild the filler with the new blank template and camp list.
+- **Season update**: replace `SEASON`/`RAW` in `camps_data.js` (the filler derives its camp suggestions from it), drop in the new district forms, update the blank template, and run `python3 tools/build_assets.py`.
 
 ## Privacy
 
