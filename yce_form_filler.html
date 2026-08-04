@@ -93,7 +93,7 @@ input:required:invalid{border-color:rgba(239,83,80,0.5);}
 </main>
 <div class="footer-bar">
   <button class="gen-btn" id="btn-gen" onclick="generate()">⬇ Generate the Excel file</button>
-  <label class="tpl-btn" title="By default the official blank 2026 template is embedded in this page. Load another version of the form here if needed.">
+  <label class="tpl-btn" id="tpl-btn" style="display:none" title="By default the official blank 2026 template is embedded in this page. Load another version of the form here if needed.">
     📂 Other template… <input type="file" id="tpl-file" accept=".xlsx" style="display:none" onchange="loadTemplate(this)">
   </label>
   <span id="status">Embedded template: Application_form_2026_Distr_C (blank)</span>
@@ -567,7 +567,9 @@ async function generate(){
 // -------------------- initialisation --------------------
 async function init(){
   render();initLists();upd();
-  const d=(new URLSearchParams(location.search).get("district")||"").toUpperCase();
+  const params=new URLSearchParams(location.search);
+  if(params.has("admin"))document.getElementById("tpl-btn").style.display="";
+  const d=(params.get("district")||"").toUpperCase();
   if(/^[A-D]$/.test(d)&&location.protocol.indexOf("http")===0){
     // ouvert depuis le site : on charge le formulaire officiel du district
     try{
