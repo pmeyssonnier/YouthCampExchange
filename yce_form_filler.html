@@ -94,8 +94,8 @@ input:required:invalid{border-color:rgba(239,83,80,0.5);}
   <div class="auto-note">
     <b>Computed automatically by Excel</b> (not entered here): the applicant's age (<code>AH17</code>),
     the names in the signature block (<code>I126</code>–<code>I134</code>) and the footer (row <code>136</code>).
-    The applicant and parent/guardian can sign directly in section XII below — their signatures are pasted into the
-    Excel file. The remaining signatures (club, district) are added after printing.
+    All five signatures (applicant, parent/guardian, club representative, MD/D YCE and authorized chairperson)
+    can be drawn on screen in section XII below — each one is pasted at its place in the Excel file.
   </div>
   <div id="form-root"></div>
 </main>
@@ -245,11 +245,14 @@ const SECTIONS = [
    {ref:"F122",label:"Address",type:"text",w:4},
    {ref:"F123",label:"E-mail",type:"email",w:6},
  ]},
- {title:"XII. Signatures", note:"names are computed automatically in Excel — sign below, the date fills in automatically", fields:[
+ {title:"XII. Signatures", note:"names are computed automatically in Excel — sign on screen, the date fills in automatically", fields:[
    {sig:"applicant",label:"Applicant signature",dateRef:"AB126",row:126,w:3},
    {sig:"parent",label:"Parent / guardian signature",dateRef:"AB128",row:128,w:3},
    {ref:"AB126",label:"Applicant — date",type:"date",w:3},
    {ref:"AB128",label:"Parent / guardian — date",type:"date",w:3},
+   {sig:"club",label:"Club representative signature",dateRef:"AB130",row:130,w:2},
+   {sig:"mdyce",label:"MD or D YCE signature",dateRef:"AB132",row:132,w:2},
+   {sig:"authycec",label:"Auth. YCE chairperson signature",dateRef:"AB134",row:134,w:2},
    {ref:"AB130",label:"Club representative — date",type:"date",w:2},
    {ref:"AB132",label:"MD or D YCE — date",type:"date",w:2},
    {ref:"AB134",label:"Auth. YCE chairperson — date",type:"date",w:2},
