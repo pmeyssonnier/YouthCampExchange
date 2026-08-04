@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -70,28 +70,30 @@ input:required:invalid{border-color:rgba(239,83,80,0.5);}
     <div class="logo">🦁 Lions <em>YCE Application Form Filler</em></div>
     <div class="header-sub">Youth Camp &amp; Exchange 2026 — MD 112 Belgium (districts A · B · C · D)</div>
   </div>
-  <div class="progress"><div class="prog-num" id="p-count">0</div><div class="prog-lbl">champs remplis</div></div>
+  <div class="progress"><div class="prog-num" id="p-count">0</div><div class="prog-lbl">fields completed</div></div>
 </header>
 <main>
   <div class="intro">
-    Remplissez les champs ci-dessous puis cliquez sur <b>« Générer le fichier Excel »</b> : les valeurs sont insérées
-    dans le formulaire officiel <b>APPLICATION &amp; INDEMNITY FORM</b> (mise en forme, logos et formules intégralement
-    préservés) et le fichier <b>.xlsx</b> rempli est téléchargé. Les champs dorés sont pré-remplis automatiquement depuis le modèle Excel du district — modifiables. Ouvert depuis le site avec <b>?district=A/B/C/D</b>, le formulaire officiel de ce district est chargé directement. Seuls <b>Family Name</b> et <b>First Name</b> sont obligatoires ; tout champ laissé vide
-    restera vide dans le fichier Excel. La référence de cellule cible est indiquée à côté de chaque libellé.
+    Fill in the fields below, then click <b>“Generate the Excel file”</b>: your answers are inserted into the official
+    <b>APPLICATION &amp; INDEMNITY FORM</b> (formatting, logos and formulas fully preserved) and the completed
+    <b>.xlsx</b> file is downloaded. Golden fields are prefilled automatically from the district's Excel template — you can
+    edit them. When opened from the website with <b>?district=A/B/C/D</b>, the official form of that district is loaded
+    directly. Only <b>Family Name</b> and <b>First Name</b> are required; any field left empty stays empty in the Excel
+    file. The target cell reference is shown next to each label.
   </div>
   <div class="auto-note">
-    <b>Calculé automatiquement par Excel</b> (ne se remplit pas ici) : l'âge du candidat (<code>AH17</code>),
-    les noms dans le bloc signatures (<code>I126</code>–<code>I134</code>) et le pied de page (ligne <code>136</code>).
-    Les signatures manuscrites se font après impression.
+    <b>Computed automatically by Excel</b> (not entered here): the applicant's age (<code>AH17</code>),
+    the names in the signature block (<code>I126</code>–<code>I134</code>) and the footer (row <code>136</code>).
+    Handwritten signatures are added after printing.
   </div>
   <div id="form-root"></div>
 </main>
 <div class="footer-bar">
-  <button class="gen-btn" id="btn-gen" onclick="generate()">⬇ Générer le fichier Excel</button>
-  <label class="tpl-btn" title="Par défaut, le modèle vierge officiel 2026 est embarqué dans cette page. Chargez ici une autre version du formulaire si nécessaire.">
-    📂 Autre modèle… <input type="file" id="tpl-file" accept=".xlsx" style="display:none" onchange="loadTemplate(this)">
+  <button class="gen-btn" id="btn-gen" onclick="generate()">⬇ Generate the Excel file</button>
+  <label class="tpl-btn" title="By default the official blank 2026 template is embedded in this page. Load another version of the form here if needed.">
+    📂 Other template… <input type="file" id="tpl-file" accept=".xlsx" style="display:none" onchange="loadTemplate(this)">
   </label>
-  <span id="status">Modèle embarqué : Application_form_2026_Distr_C (vierge)</span>
+  <span id="status">Embedded template: Application_form_2026_Distr_C (blank)</span>
 </div>
 
 <datalist id="dl-countries"></datalist>
@@ -110,26 +112,26 @@ const TEMPLATE_B64 = "UEsDBBQAAAAAAHC1A121s3pDYQYAAGEGAAATAAAAW0NvbnRlbnRfVHlwZX
 // Définition des sections et champs (ref = cellule cible du xlsx)
 // ---------------------------------------------------------------
 const SECTIONS = [
- {title:"En-tête du dossier", note:"ligne 1 — recopié automatiquement en pied de page", fields:[
+ {title:"File header", note:"row 1 — automatically copied to the footer", fields:[
    {ref:"Q1",label:"Year",type:"number",w:1,numeric:true},
    {ref:"V1",label:"Country",type:"text",w:1},
    {ref:"AB1",label:"MD",type:"text",w:1,numeric:true},
    {ref:"AF1",label:"District",type:"text",w:1},
-   {ref:"AI1",label:"Nr. (n° dossier)",type:"text",w:2},
+   {ref:"AI1",label:"Nr. (file number)",type:"text",w:2},
  ]},
  {title:"I. Preferred Youth Camp and Exchange Alternatives", fields:[
    {ref:"Q9",label:"Possible dates — From",type:"date",w:3},
    {ref:"AC9",label:"Possible dates — To",type:"date",w:3},
-   {ref:"N10",label:"1st Country preference",type:"text",list:"dl-countries",w:2,oninput:"syncCamps(1)",id:"ctry1",ph:"Ex : Turkey - Istanbul"},
+   {ref:"N10",label:"1st Country preference",type:"text",list:"dl-countries",w:2,oninput:"syncCamps(1)",id:"ctry1",ph:"e.g. Turkey - Istanbul"},
    {ref:"AC10",label:"1st Camp preference",type:"text",list:"dl-camp1",w:4},
    {ref:"N11",label:"2nd Country preference",type:"text",list:"dl-countries",w:2,oninput:"syncCamps(2)",id:"ctry2"},
    {ref:"AC11",label:"2nd Camp preference",type:"text",list:"dl-camp2",w:4},
    {ref:"N12",label:"3rd Country preference",type:"text",list:"dl-countries",w:2,oninput:"syncCamps(3)",id:"ctry3"},
    {ref:"AC12",label:"3rd Camp preference",type:"text",list:"dl-camp3",w:4},
    {ref:"N13",label:"Final destination (only for YCEC!)",type:"text",w:3},
-   {xgroup:"dest",label:"Formule",w:3,none:true,opts:[{lbl:"Family & camp",ref:"AC13"},{lbl:"Family only",ref:"AJ13"}]},
+   {xgroup:"dest",label:"Stay type",w:3,none:true,opts:[{lbl:"Family & camp",ref:"AC13"},{lbl:"Family only",ref:"AJ13"}]},
  ]},
- {title:"II. Applicant's Basic Data", note:"si indisponible pour l'instant : « in request »", fields:[
+ {title:"II. Applicant's Basic Data", note:"if not available yet, write “in request”", fields:[
    {ref:"F16",label:"Family Name",type:"text",req:true,w:2},
    {ref:"S16",label:"First Name",type:"text",req:true,w:2},
    {ref:"AD16",label:"Nickname",type:"text",w:2},
@@ -139,16 +141,16 @@ const SECTIONS = [
    {ref:"G18",label:"Street address",type:"text",w:6},
    {ref:"G19",label:"Postal code",type:"text",w:1},
    {ref:"S19",label:"Town",type:"text",w:2},
-   {ref:"AF19",label:"State (si hors Belgique)",type:"text",w:1},
+   {ref:"AF19",label:"State (if outside Belgium)",type:"text",w:1},
    {ref:"G20",label:"Country",type:"text",w:2},
-   {ref:"S20",label:"Email",type:"email",w:3,ph:"prenom.nom@exemple.be"},
+   {ref:"S20",label:"Email",type:"email",w:3,ph:"first.last@example.be"},
    {ref:"G21",label:"Phone (home)",type:"tel",w:3,ph:"00 32 …"},
    {ref:"S21",label:"Mobile",type:"tel",w:3,ph:"00 32 4…"},
    {ref:"X22",label:"Passport / ID / CNI number",type:"text",w:3},
    {ref:"G23",label:"Valid until",type:"date",w:3},
    {ref:"X23",label:"Place of issue",type:"text",w:3},
    {xgroup:"prev",label:"Previously participated in a Lions Youth Exchange?",w:3,opts:[{lbl:"Yes",ref:"AD24"},{lbl:"No",ref:"AI24"}]},
-   {ref:"J25",label:"If yes, where and when?",type:"text",w:3},
+   {ref:"J25",label:"If yes, where and when?",type:"text",w:3,dep:"prev"},
    {ref:"J26",label:"Hobbies & other interests",type:"text",w:6},
    {xgroup:"engl",label:"Knowledge of English",w:3,opts:[{lbl:"Good",ref:"L27"},{lbl:"Fair",ref:"P27"},{lbl:"None",ref:"T27"}]},
    {ref:"AF27",label:"T-shirt size",type:"select",opts:["","S","M","L","XL","XXL"],w:1},
@@ -159,7 +161,7 @@ const SECTIONS = [
    {xgroup:"leo",label:"Are you a LEO?",w:1,opts:[{lbl:"Yes",ref:"AA31"},{lbl:"No",ref:"AG31"}]},
  ]},
  {title:"III. Health, Medical, Dietary & Insurance Data", fields:[
-   {ref:"K42",label:"State of health, in general",type:"text",w:4,ph:"Ex : Good"},
+   {ref:"K42",label:"State of health, in general",type:"text",w:4,ph:"e.g. Good"},
    {ref:"AH44",label:"Height (cm)",type:"number",w:2,numeric:true},
    {ref:"S43",label:"Sport activities?",type:"select",opts:["","yes","no"],w:1},
    {ref:"AG43",label:"Can you swim?",type:"select",opts:["","yes","no"],w:1},
@@ -183,7 +185,7 @@ const SECTIONS = [
    {ref:"E54",label:"Doctor — e-mail",type:"email",w:2},
    {ref:"AB54",label:"Doctor — mobile",type:"tel",w:2},
  ]},
- {title:"IV. Applicant's Family Data", note:"contact avec la famille", fields:[
+ {title:"IV. Applicant's Family Data", note:"family contact information", fields:[
    {ref:"M57",label:"Parent / guardian signing this form",type:"text",w:3},
    {ref:"AI57",label:"Lion?",type:"select",opts:["","yes","no"],w:1},
    {ref:"J61",label:"Age on 01/07/2026",type:"text",w:2},
@@ -201,19 +203,19 @@ const SECTIONS = [
    {ref:"E69",label:"Club e-mail",type:"email",w:3},
    {xgroup:"fin",label:"Basis of financing of the exchange",w:6,none:true,opts:[{lbl:"By applicant",ref:"S72"},{lbl:"By family",ref:"Y72"},{lbl:"By sponsor club",ref:"AG72"},{lbl:"Others",ref:"AK72"}]},
  ]},
- {title:"VI. Lions Multi District or District Data", note:"pré-rempli depuis le modèle du district chargé", fields:[
+ {title:"VI. Lions Multi District or District Data", note:"prefilled from the loaded district template", fields:[
    {ref:"I78",label:"District YCE chairperson",type:"text",w:3},
    {ref:"AH78",label:"District: D or MD Nr.",type:"text",w:3},
    {ref:"E79",label:"E-mail",type:"email",w:3},
    {ref:"E80",label:"Mobile",type:"tel",w:3},
  ]},
- {title:"VII. Authorized YCE Chairperson & Controller", note:"pré-rempli depuis le modèle du district chargé", fields:[
+ {title:"VII. Authorized YCE Chairperson & Controller", note:"prefilled from the loaded district template", fields:[
    {ref:"E85",label:"Name",type:"text",w:3},
    {ref:"AH85",label:"District: D or MD Nr.",type:"text",w:3},
    {ref:"E86",label:"E-mail",type:"email",w:3},
    {ref:"E87",label:"Mobile",type:"tel",w:3},
  ]},
- {title:"X. GDPR Information & Consent", note:"pays européens uniquement — pré-rempli si présent dans le modèle", fields:[
+ {title:"X. GDPR Information & Consent", note:"European countries only — prefilled when present in the template", fields:[
    {ref:"L100",label:"Are you from a country of Europe?",type:"select",opts:["","YES","NO"],w:2},
    {ref:"F104",label:"D/MD Name",type:"text",w:4},
    {ref:"A108",label:"Controller — name",type:"text",w:2},
@@ -224,14 +226,14 @@ const SECTIONS = [
    {ref:"F113",label:"DPO — mobile",type:"tel",w:2},
    {ref:"R113",label:"DPO — e-mail",type:"email",w:4},
  ]},
- {title:"XI. DPA Information", note:"autorité de protection des données du D/MD", fields:[
+ {title:"XI. DPA Information", note:"D/MD data protection authority", fields:[
    {ref:"F119",label:"Name",type:"text",w:3},
    {ref:"F120",label:"URL",type:"text",w:3},
    {ref:"F121",label:"Phone",type:"tel",w:2},
    {ref:"F122",label:"Address",type:"text",w:4},
    {ref:"F123",label:"E-mail",type:"email",w:6},
  ]},
- {title:"XII. Signatures — dates", note:"les noms se calculent automatiquement dans Excel", fields:[
+ {title:"XII. Signatures — dates", note:"names are computed automatically in Excel", fields:[
    {ref:"AB126",label:"Applicant — date",type:"date",w:2},
    {ref:"AB128",label:"Parent / guardian — date",type:"date",w:2},
    {ref:"AB130",label:"Club representative — date",type:"date",w:2},
@@ -319,12 +321,14 @@ function syncCamps(i){
 
 // compteur de champs remplis
 function upd(){
-  let n=0;
+  let n=0,total=0;
   SECTIONS.forEach(function(sec){sec.fields.forEach(function(f){
-    if(f.xgroup){if(XSTATE[f.xgroup])n++;}
-    else{const el=document.getElementById("f-"+f.ref);if(el&&el.value)n++;}
+    if(f.xgroup){total++;if(XSTATE[f.xgroup])n++;}
+    else{const el=document.getElementById("f-"+f.ref);
+      if(!el||el.disabled)return; // "If yes: specify" fields are excluded while No / unanswered
+      total++;if(el.value)n++;}
   });});
-  document.getElementById("p-count").textContent=n;
+  document.getElementById("p-count").textContent=n+"/"+total;
 }
 
 // -------------------- mini-bibliothèque ZIP (aucune dépendance) --------------------
@@ -350,12 +354,12 @@ async function unzip(buf){ // -> [{name, data:Uint8Array}]
   let eocd=-1;
   for(let i=u8.length-22;i>=Math.max(0,u8.length-22-65536);i--){
     if(dv.getUint32(i,true)===0x06054b50){eocd=i;break;}}
-  if(eocd<0)throw new Error("fichier .xlsx invalide (EOCD introuvable)");
+  if(eocd<0)throw new Error("invalid .xlsx file (EOCD not found)");
   const count=dv.getUint16(eocd+10,true);
   let off=dv.getUint32(eocd+16,true);
   const entries=[];const td=new TextDecoder();
   for(let n=0;n<count;n++){
-    if(dv.getUint32(off,true)!==0x02014b50)throw new Error("répertoire central corrompu");
+    if(dv.getUint32(off,true)!==0x02014b50)throw new Error("corrupted central directory");
     const method=dv.getUint16(off+10,true);
     const csize=dv.getUint32(off+20,true);
     const nameLen=dv.getUint16(off+28,true);
@@ -367,7 +371,7 @@ async function unzip(buf){ // -> [{name, data:Uint8Array}]
     const start=lho+30+lnl+lel;
     let data=u8.slice(start,start+csize);
     if(method===8)data=await inflateRaw(data);
-    else if(method!==0)throw new Error("méthode de compression non gérée : "+method);
+    else if(method!==0)throw new Error("unsupported compression method: "+method);
     entries.push({name:name,data:data});
     off+=46+nameLen+extraLen+cmtLen;
   }
@@ -461,7 +465,7 @@ async function syncFromTemplate(buf){
       el.dataset.tpl=v;
     });});
     upd();
-  }catch(e){console.warn("sync modèle:",e);}
+  }catch(e){console.warn("template sync:",e);}
 }
 
 // -------------------- écriture dans le xlsx --------------------
@@ -475,7 +479,7 @@ function b64ToBuf(b64){
 function loadTemplate(inp){
   const file=inp.files[0];if(!file)return;
   const r=new FileReader();
-  r.onload=function(){templateBuf=r.result;setStatus("Modèle chargé : "+file.name,false);syncFromTemplate(templateBuf);};
+  r.onload=function(){templateBuf=r.result;setStatus("Template loaded: "+file.name,false);syncFromTemplate(templateBuf);};
   r.readAsArrayBuffer(file);
 }
 function setStatus(msg,err){
@@ -500,7 +504,7 @@ function setCell(xml,ref,value,numeric){
     if(numeric&&/^-?\d+([.,]\d+)?$/.test(value)){return '<c r="'+ref+'"'+s+'><v>'+String(value).replace(",",".")+'</v></c>';}
     return '<c r="'+ref+'"'+s+' t="inlineStr"><is><t xml:space="preserve">'+escXml(value)+'</t></is></c>';
   });
-  if(!found)console.warn("Cellule absente du modèle :",ref);
+  if(!found)console.warn("Cell missing from template:",ref);
   return xml;
 }
 
@@ -522,15 +526,15 @@ function collectValues(){
 async function generate(){
   const fam=document.getElementById("f-F16").value.trim();
   const fir=document.getElementById("f-S16").value.trim();
-  if(!fam||!fir){setStatus("⚠ Family Name et First Name sont obligatoires (section II).",true);
+  if(!fam||!fir){setStatus("⚠ Family Name and First Name are required (section II).",true);
     document.getElementById("f-F16").focus();return;}
   const btn=document.getElementById("btn-gen");btn.disabled=true;
-  setStatus("Génération en cours…",false);
+  setStatus("Generating…",false);
   try{
     const buf=templateBuf||b64ToBuf(TEMPLATE_B64);
     const entries=await unzip(buf);
     const sheet=entries.find(function(e){return e.name==="xl/worksheets/sheet1.xml";});
-    if(!sheet)throw new Error("feuille introuvable dans le modèle");
+    if(!sheet)throw new Error("worksheet not found in template");
     let xml=new TextDecoder().decode(sheet.data);
     collectValues().forEach(function(c){xml=setCell(xml,c.ref,c.value,c.numeric);});
     sheet.data=new TextEncoder().encode(xml);
@@ -551,9 +555,9 @@ async function generate(){
     a.href=URL.createObjectURL(blob);a.download=name;
     document.body.appendChild(a);a.click();a.remove();
     setTimeout(function(){URL.revokeObjectURL(a.href);},5000);
-    setStatus("✔ Fichier généré : "+name,false);
+    setStatus("✔ File generated: "+name,false);
   }catch(e){
-    console.error(e);setStatus("⚠ Erreur : "+e.message,true);
+    console.error(e);setStatus("⚠ Error: "+e.message,true);
   }finally{btn.disabled=false;}
 }
 
@@ -568,9 +572,9 @@ async function init(){
       const resp=await fetch(url);
       if(!resp.ok)throw new Error("HTTP "+resp.status);
       templateBuf=await resp.arrayBuffer();
-      setStatus("Modèle chargé : formulaire officiel District 112 "+d,false);
+      setStatus("Template loaded: official District 112 "+d+" form",false);
     }catch(e){
-      setStatus("⚠ Formulaire du district "+d+" introuvable ("+e.message+") — modèle embarqué (C) utilisé.",true);
+      setStatus("⚠ District "+d+" form not found ("+e.message+") — using the embedded template (District C).",true);
     }
   }
   await syncFromTemplate(templateBuf||b64ToBuf(TEMPLATE_B64));
