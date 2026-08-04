@@ -177,13 +177,13 @@ const SECTIONS = [
    {xgroup:"leo",label:"Are you a LEO?",w:1,opts:[{lbl:"Yes",ref:"AA31"},{lbl:"No",ref:"AG31"}]},
  ]},
  {title:"III. Health, Medical, Dietary & Insurance Data", fields:[
-   {ref:"K42",label:"State of health, in general",type:"text",w:4,ph:"e.g. Good"},
+   {ref:"K42",label:"State of health, in general",type:"select",opts:["","Excellent","Very good","Good","Fair","Poor"],w:4},
    {ref:"AH44",label:"Height (cm)",type:"number",w:2,numeric:true},
-   {ref:"S43",label:"Sport activities?",type:"select",opts:["","yes","no"],w:1},
-   {ref:"AG43",label:"Can you swim?",type:"select",opts:["","yes","no"],w:1},
-   {ref:"G44",label:"Do you smoke?",type:"select",opts:["","yes","no"],w:1},
-   {ref:"O44",label:"Vegetarian?",type:"select",opts:["","yes","no"],w:1},
-   {ref:"Z44",label:"Vegan?",type:"select",opts:["","yes","no"],w:2},
+   {ref:"S43",label:"Sport activities?",type:"ynbtn",w:1},
+   {ref:"AG43",label:"Can you swim?",type:"ynbtn",w:1},
+   {ref:"G44",label:"Do you smoke?",type:"ynbtn",w:1},
+   {ref:"O44",label:"Vegetarian?",type:"ynbtn",w:1},
+   {ref:"Z44",label:"Vegan?",type:"ynbtn",w:2},
    {xgroup:"med1",label:"Medical / mental condition(s)",w:3,opts:[{lbl:"No",ref:"M45"},{lbl:"Yes",ref:"Q45"}],specify:"X45"},
    {ref:"X45",label:"If yes: specify",type:"text",w:3,dep:"med1"},
    {xgroup:"med2",label:"Special medication",w:3,opts:[{lbl:"No",ref:"M46"},{lbl:"Yes",ref:"Q46"}],specify:"X46"},
@@ -203,7 +203,7 @@ const SECTIONS = [
  ]},
  {title:"IV. Applicant's Family Data", note:"family contact information", fields:[
    {ref:"M57",label:"Parent / guardian signing this form",type:"text",w:3},
-   {ref:"AI57",label:"Lion?",type:"select",opts:["","yes","no"],w:1},
+   {ref:"AI57",label:"Lion?",type:"ynbtn",w:1},
    {ref:"J61",label:"Age on 01/07/2026",type:"text",w:2},
    {ref:"H62",label:"Contact address",type:"text",w:6},
    {ref:"K63",label:"Contact phone",type:"tel",w:3},
@@ -232,7 +232,7 @@ const SECTIONS = [
    {ref:"E87",label:"Mobile",type:"tel",w:3},
  ]},
  {title:"X. GDPR Information & Consent", note:"European countries only — prefilled when present in the template", fields:[
-   {ref:"L100",label:"Are you from a country of Europe?",type:"select",opts:["","YES","NO"],w:2},
+   {ref:"L100",label:"Are you from a country of Europe?",type:"ynbtn",yn:["YES","NO"],w:2},
    {ref:"F104",label:"D/MD Name",type:"text",w:4},
    {ref:"A108",label:"Controller — name",type:"text",w:2},
    {ref:"F109",label:"Controller — mobile",type:"tel",w:2},
@@ -295,7 +295,13 @@ function render(){
         h+='<div class="fld w'+w+'"><label class="flbl" for="f-'+f.ref+'">'+esc(f.label);
         if(f.req)h+=' <span class="req">*</span>';
         h+='<span class="ref">'+f.ref+'</span></label>';
-        if(f.type==="select"){
+        if(f.type==="ynbtn"){
+          const vals=f.yn||["yes","no"];
+          h+='<div class="xgroup" id="yn-'+f.ref+'">'
+            +'<label class="xopt" data-val="'+vals[0]+'" onclick="ynClick(\''+f.ref+'\',\''+vals[0]+'\')">Yes</label>'
+            +'<label class="xopt" data-val="'+vals[1]+'" onclick="ynClick(\''+f.ref+'\',\''+vals[1]+'\')">No</label>'
+            +'</div><input type="hidden" id="f-'+f.ref+'">';
+        }else if(f.type==="select"){
           h+='<select id="f-'+f.ref+'" onchange="upd()">';
           f.opts.forEach(function(o){h+='<option value="'+esc(o)+'"'+(o===(f.val||"")?" selected":"")+'>'+(o===""?"—":esc(o))+'</option>';});
           h+='</select>';
@@ -515,6 +521,22 @@ function clearForm(){
   location.reload();
 }
 
+// boutons Yes/No (valeur stockée dans un input caché : draft, sync et export inchangés)
+function ynClick(ref,val){
+  const el=document.getElementById("f-"+ref);if(!el)return;
+  el.value=(el.value===val?"":val);
+  upd();
+}
+function refreshYn(){
+  document.querySelectorAll('.xgroup[id^="yn-"]').forEach(function(g){
+    const el=document.getElementById("f-"+g.id.slice(3));if(!el)return;
+    const v=(el.value||"").toLowerCase();
+    g.querySelectorAll(".xopt").forEach(function(o){
+      o.classList.toggle("on",!!v&&o.getAttribute("data-val").toLowerCase()===v);
+    });
+  });
+}
+
 // compteur de champs remplis
 function upd(){
   let n=0,total=0;
@@ -526,6 +548,7 @@ function upd(){
       total++;if(el.value)n++;}
   });});
   document.getElementById("p-count").textContent=n+"/"+total;
+  refreshYn();
   clearTimeout(saveTimer);saveTimer=setTimeout(saveDraft,300);
 }
 
