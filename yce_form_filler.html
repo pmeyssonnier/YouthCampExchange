@@ -64,6 +64,11 @@ input:required:invalid{border-color:rgba(239,83,80,0.5);}
 .auto-note{background:rgba(6,214,160,0.06);border:1px solid rgba(6,214,160,0.25);border-radius:8px;padding:12px 16px;font-size:12px;color:var(--muted);margin-bottom:18px;line-height:1.6;}
 .auto-note b{color:var(--accent);}
 .auto-note code{font-family:monospace;color:var(--blue);font-size:11px;}
+.sigpad{position:relative;background:#fdfdf8;border:1px solid var(--border);border-radius:6px;overflow:hidden;}
+.sigpad canvas{display:block;width:100%;height:110px;touch-action:none;cursor:crosshair;}
+.sig-clear{position:absolute;top:5px;right:5px;background:rgba(13,24,39,0.08);border:none;border-radius:4px;color:#8a94a6;cursor:pointer;font-size:11px;padding:2px 8px;}
+.sig-clear:hover{background:rgba(239,83,80,0.2);color:#c0392b;}
+.sig-line{position:absolute;left:8%;right:8%;bottom:22px;border-bottom:1px dashed #b8c0cc;pointer-events:none;}
 </style>
 </head>
 <body>
@@ -89,7 +94,8 @@ input:required:invalid{border-color:rgba(239,83,80,0.5);}
   <div class="auto-note">
     <b>Computed automatically by Excel</b> (not entered here): the applicant's age (<code>AH17</code>),
     the names in the signature block (<code>I126</code>–<code>I134</code>) and the footer (row <code>136</code>).
-    Handwritten signatures are added after printing.
+    The applicant and parent/guardian can sign directly in section XII below — their signatures are pasted into the
+    Excel file. The remaining signatures (club, district) are added after printing.
   </div>
   <div id="form-root"></div>
 </main>
@@ -239,9 +245,11 @@ const SECTIONS = [
    {ref:"F122",label:"Address",type:"text",w:4},
    {ref:"F123",label:"E-mail",type:"email",w:6},
  ]},
- {title:"XII. Signatures — dates", note:"names are computed automatically in Excel", fields:[
-   {ref:"AB126",label:"Applicant — date",type:"date",w:2},
-   {ref:"AB128",label:"Parent / guardian — date",type:"date",w:2},
+ {title:"XII. Signatures", note:"names are computed automatically in Excel — sign below, the date fills in automatically", fields:[
+   {sig:"applicant",label:"Applicant signature",dateRef:"AB126",row:126,w:3},
+   {sig:"parent",label:"Parent / guardian signature",dateRef:"AB128",row:128,w:3},
+   {ref:"AB126",label:"Applicant — date",type:"date",w:3},
+   {ref:"AB128",label:"Parent / guardian — date",type:"date",w:3},
    {ref:"AB130",label:"Club representative — date",type:"date",w:2},
    {ref:"AB132",label:"MD or D YCE — date",type:"date",w:2},
    {ref:"AB134",label:"Auth. YCE chairperson — date",type:"date",w:2},
@@ -261,6 +269,14 @@ function render(){
     h+='<span class="sec-toggle">▼</span></div><div class="sec-body">';
     sec.fields.forEach(function(f){
       const w=f.w||2;
+      if(f.sig){
+        h+='<div class="fld w'+w+'"><label class="flbl">'+esc(f.label)+'<span class="ref">I'+(f.row+1)+'</span></label>'
+          +'<div class="sigpad"><canvas id="sig-'+f.sig+'" width="440" height="110"></canvas>'
+          +'<div class="sig-line"></div>'
+          +'<button type="button" class="sig-clear" onclick="sigClear(\''+f.sig+'\')">✕ clear</button></div>'
+          +'<span class="hint">Draw with mouse or finger — pasted into the Excel file at row '+(f.row+1)+'.</span></div>';
+        return;
+      }
       if(f.xgroup){
         h+='<div class="fld w'+w+'"><label class="flbl">'+esc(f.label)+'<span class="ref">'+f.opts.map(function(o){return o.ref;}).join("/")+'</span></label><div class="xgroup" id="xg-'+f.xgroup+'">';
         f.opts.forEach(function(o){
@@ -325,6 +341,32 @@ function syncCamps(i){
   dl.innerHTML=list.map(function(c){return '<option value="'+esc(c.n)+'">'+esc(c.c)+'</option>';}).join("");
 }
 
+// -------------------- pads de signature --------------------
+const SIGS={};
+function sigInit(){
+  SECTIONS.forEach(function(sec){sec.fields.forEach(function(f){
+    if(!f.sig)return;
+    const cv=document.getElementById("sig-"+f.sig);
+    const ctx=cv.getContext("2d");
+    ctx.lineWidth=2.4;ctx.lineCap="round";ctx.lineJoin="round";ctx.strokeStyle="#1b2a7a";
+    const st={cv:cv,ctx:ctx,ink:false,drawing:false,dateRef:f.dateRef,row:f.row};
+    SIGS[f.sig]=st;
+    function pos(e){const r=cv.getBoundingClientRect();
+      return [(e.clientX-r.left)*cv.width/r.width,(e.clientY-r.top)*cv.height/r.height];}
+    cv.addEventListener("pointerdown",function(e){e.preventDefault();cv.setPointerCapture(e.pointerId);
+      st.drawing=true;const p=pos(e);ctx.beginPath();ctx.moveTo(p[0],p[1]);ctx.lineTo(p[0]+0.1,p[1]+0.1);ctx.stroke();});
+    cv.addEventListener("pointermove",function(e){if(!st.drawing)return;const p=pos(e);ctx.lineTo(p[0],p[1]);ctx.stroke();});
+    function end(){if(!st.drawing)return;st.drawing=false;st.ink=true;
+      const d=document.getElementById("f-"+st.dateRef);
+      if(d&&!d.value){const now=new Date();
+        d.value=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0")+"-"+String(now.getDate()).padStart(2,"0");}
+      upd();}
+    cv.addEventListener("pointerup",end);cv.addEventListener("pointercancel",end);
+  });});
+}
+function sigClear(k){const st=SIGS[k];if(!st)return;
+  st.ctx.clearRect(0,0,st.cv.width,st.cv.height);st.ink=false;upd();}
+
 // -------------------- brouillon persistant (localStorage) --------------------
 const DRAFT_KEY="yce_form_draft_2026";
 let saveTimer=null;
@@ -336,7 +378,9 @@ function saveDraft(){
       const el=document.getElementById("f-"+f.ref);if(!el)return;
       v[f.ref]=el.value;t[f.ref]=el.dataset.tpl||"";
     });});
-    localStorage.setItem(DRAFT_KEY,JSON.stringify({v:v,x:XSTATE,t:t}));
+    const sg={};
+    Object.keys(SIGS).forEach(function(k){if(SIGS[k].ink)sg[k]=SIGS[k].cv.toDataURL("image/png");});
+    localStorage.setItem(DRAFT_KEY,JSON.stringify({v:v,x:XSTATE,t:t,s:sg}));
   }catch(e){}
 }
 function restoreDraft(){
@@ -357,6 +401,12 @@ function restoreDraft(){
       const yes=lab.textContent.trim()==="Yes";
       document.querySelectorAll('input[data-dep="'+grp+'"]').forEach(function(i){i.disabled=!yes;});
     });
+    Object.keys(d.s||{}).forEach(function(k){
+      const st=SIGS[k];if(!st||!d.s[k])return;
+      const img=new Image();
+      img.onload=function(){st.ctx.drawImage(img,0,0);st.ink=true;upd();};
+      img.src=d.s[k];
+    });
   }catch(e){}
 }
 function clearForm(){
@@ -369,6 +419,7 @@ function clearForm(){
 function upd(){
   let n=0,total=0;
   SECTIONS.forEach(function(sec){sec.fields.forEach(function(f){
+    if(f.sig){total++;if(SIGS[f.sig]&&SIGS[f.sig].ink)n++;return;}
     if(f.xgroup){total++;if(XSTATE[f.xgroup])n++;}
     else{const el=document.getElementById("f-"+f.ref);
       if(!el||el.disabled)return; // "If yes: specify" fields are excluded while No / unanswered
@@ -570,6 +621,37 @@ function collectValues(){
   return out;
 }
 
+// Incruste les signatures dessinées comme images PNG ancrées sur les lignes
+// signature (I127 / I129) du classeur, via le drawing existant.
+function dataUrlToBytes(u){const b=atob(u.split(",")[1]);const a=new Uint8Array(b.length);
+  for(let i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a;}
+function addSignatures(entries){
+  const sigs=Object.keys(SIGS).filter(function(k){return SIGS[k].ink;});
+  if(!sigs.length)return;
+  const drawing=entries.find(function(e){return e.name==="xl/drawings/drawing1.xml";});
+  const rels=entries.find(function(e){return e.name==="xl/drawings/_rels/drawing1.xml.rels";});
+  if(!drawing||!rels){console.warn("drawing absent — signatures ignorées");return;}
+  const td=new TextDecoder(),te=new TextEncoder();
+  let dx=td.decode(drawing.data),rx=td.decode(rels.data);
+  sigs.forEach(function(k,i){
+    const st=SIGS[k];
+    const media="xl/media/imageSig"+(i+1)+".png";
+    entries.push({name:media,data:dataUrlToBytes(st.cv.toDataURL("image/png"))});
+    const rid="rIdSig"+(i+1);
+    rx=rx.replace("</Relationships>",'<Relationship Id="'+rid+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/imageSig'+(i+1)+'.png"/></Relationships>');
+    const anchor='<xdr:oneCellAnchor><xdr:from><xdr:col>8</xdr:col><xdr:colOff>30000</xdr:colOff>'
+      +'<xdr:row>'+st.row+'</xdr:row><xdr:rowOff>20000</xdr:rowOff></xdr:from>'
+      +'<xdr:ext cx="1600000" cy="400000"/>'
+      +'<xdr:pic><xdr:nvPicPr><xdr:cNvPr id="'+(200+i)+'" name="Signature '+k+'"/><xdr:cNvPicPr/></xdr:nvPicPr>'
+      +'<xdr:blipFill><a:blip xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" r:embed="'+rid+'"/><a:stretch><a:fillRect/></a:stretch></xdr:blipFill>'
+      +'<xdr:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="1600000" cy="400000"/></a:xfrm>'
+      +'<a:prstGeom prst="rect"><a:avLst/></a:prstGeom></xdr:spPr></xdr:pic>'
+      +'<xdr:clientData/></xdr:oneCellAnchor>';
+    dx=dx.replace("</xdr:wsDr>",anchor+"</xdr:wsDr>");
+  });
+  drawing.data=te.encode(dx);rels.data=te.encode(rx);
+}
+
 async function generate(){
   const fam=document.getElementById("f-F16").value.trim();
   const fir=document.getElementById("f-S16").value.trim();
@@ -595,6 +677,7 @@ async function generate(){
         wbe.data=new TextEncoder().encode(wbx);
       }
     }
+    addSignatures(entries);
     const blob=await buildZip(entries);
     const safe=function(s){return s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^A-Za-z0-9_-]+/g,"_");};
     const name="Application_form_2026_112"+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+".xlsx";
@@ -610,7 +693,7 @@ async function generate(){
 
 // -------------------- initialisation --------------------
 async function init(){
-  render();initLists();upd();
+  render();initLists();sigInit();upd();
   restoreDraft();
   const params=new URLSearchParams(location.search);
   if(params.has("admin"))document.getElementById("tpl-btn").style.display="";
