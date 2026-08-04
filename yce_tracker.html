@@ -81,8 +81,8 @@ tr:hover td{background:var(--hover);}
 <main>
   <div class="dropzone" id="dropzone" onclick="document.getElementById('files').click()">
     <b>📥 Drop the files received from candidates here</b> (or click to browse)<br>
-    <span style="font-size:11px">Application forms (.xlsx) create or update a row · Commitment (.docx), pass photos (.jpg/.png) and payment proofs (.pdf/.jpg) are matched to the candidate by file name · load several files or candidates at once</span>
-    <input type="file" id="files" multiple accept=".xlsx,.docx,.pdf,image/*" style="display:none" onchange="handleFiles(this.files);this.value='';">
+    <span style="font-size:11px">Drop a whole <b>.zip</b> (e.g. “download all attachments” from your mailbox) or individual files · application forms (.xlsx) create or update a row · Commitment (.docx), pass photos and payment proofs are matched to the candidate · several candidates at once is fine</span>
+    <input type="file" id="files" multiple accept=".xlsx,.docx,.pdf,.zip,image/*" style="display:none" onchange="handleFiles(this.files);this.value='';">
   </div>
   <div class="toolbar">
     <button class="pill on" data-d="ALL" onclick="setDist('ALL',this)">All districts</button>
@@ -196,18 +196,42 @@ function log(msg,cls){const l=document.getElementById("log");l.innerHTML='<div c
 // ---------------- file handling ----------------
 async function handleFiles(list){
   const files=Array.from(list); // fige la FileList avant le reset de l'input
+  const items=[]; // {name, buf}
   for(const file of files){
     const n=file.name.toLowerCase();
+    if(n.endsWith(".zip")){
+      try{
+        const entries=await unzip(await file.arrayBuffer());
+        let found=0;
+        for(const e of entries){
+          const base=e.name.split("/").pop();
+          if(!base||e.name.indexOf("__MACOSX")>=0||base===".DS_Store")continue;
+          if(/\.(xlsx|docx|pdf|jpe?g|png)$/i.test(base)){items.push({name:base,buf:e.data.buffer.slice(e.data.byteOffset,e.data.byteOffset+e.data.byteLength)});found++;}
+        }
+        log("📦 "+file.name+" — "+found+" file(s) extracted","ok");
+      }catch(err){log("✖ "+file.name+" — "+err.message,"err");}
+    }else{
+      items.push({name:file.name,buf:await file.arrayBuffer()});
+    }
+  }
+  // les formulaires d'abord : les pièces se rattachent à des lignes existantes
+  items.sort(function(a,b){
+    const ax=a.name.toLowerCase().endsWith(".xlsx")?0:1;
+    const bx=b.name.toLowerCase().endsWith(".xlsx")?0:1;
+    return ax-bx;
+  });
+  for(const it of items){
+    const n=it.name.toLowerCase();
     try{
-      if(n.endsWith(".xlsx"))await parseForm(file);
-      else if(n.endsWith(".docx"))await matchCommit(file);
-      else await matchAux(file);
-    }catch(e){log("✖ "+file.name+" — "+e.message,"err");}
+      if(n.endsWith(".xlsx"))await parseForm(it.name,it.buf);
+      else if(n.endsWith(".docx"))await matchCommit(it.name,it.buf);
+      else await matchAux(it.name);
+    }catch(e){log("✖ "+it.name+" — "+e.message,"err");}
   }
   save();render();
 }
-async function parseForm(file){
-  const entries=await unzip(await file.arrayBuffer());
+async function parseForm(fname,buf){
+  const entries=await unzip(buf);
   const sheet=entries.find(function(e){return e.name==="xl/worksheets/sheet1.xml";});
   if(!sheet)throw new Error("no worksheet found (is this an application form?)");
   const xml=new TextDecoder().decode(sheet.data);
@@ -241,7 +265,7 @@ async function parseForm(file){
     status:prev.status||"Received",notes:prev.notes||"",
     updated:new Date().toISOString().slice(0,10)
   };
-  log("✔ "+file.name+" → "+fam+" "+fir+" (District 112"+dist+", "+pct+"% fields, sigs "+(ROWS[key].sigA?"A":"–")+(ROWS[key].sigP?"P":"–")+(ROWS[key].sigC?"C":"–")+")","ok");
+  log("✔ "+fname+" → "+fam+" "+fir+" (District 112"+dist+", "+pct+"% fields, sigs "+(ROWS[key].sigA?"A":"–")+(ROWS[key].sigP?"P":"–")+(ROWS[key].sigC?"C":"–")+")","ok");
 }
 function findRowByName(str){
   const t=norm(str);
@@ -252,13 +276,13 @@ function findRowByName(str){
   });
   return hit;
 }
-async function matchCommit(file){
-  const entries=await unzip(await file.arrayBuffer());
+async function matchCommit(fname,buf){
+  const entries=await unzip(buf);
   const de=entries.find(function(e){return e.name==="word/document.xml";});
   if(!de)throw new Error("not a Word document");
   const doc=new TextDecoder().decode(de.data);
   const txt=decodeEnt(doc.replace(/<[^>]+>/g," ")).replace(/\s+/g," ");
-  let key=findRowByName(file.name);
+  let key=findRowByName(fname);
   if(!key){
     const nm=txt.match(/Name of the candidate:\s*([A-Za-zÀ-ÿ'’ -]{3,60})/);
     if(nm)key=findRowByName(nm[1]);
@@ -268,15 +292,15 @@ async function matchCommit(file){
   const slotOpen=doc.indexOf("SIGSLOT_CLUB")>=0;
   ROWS[key].commit=true;
   ROWS[key].commitClub=clubSigned&&!slotOpen?true:clubSigned;
-  log("✔ "+file.name+" → Commitment for "+ROWS[key].fam+" "+ROWS[key].fir+(ROWS[key].commitClub?" (club signed)":" (club signature pending)"),"ok");
+  log("✔ "+fname+" → Commitment for "+ROWS[key].fam+" "+ROWS[key].fir+(ROWS[key].commitClub?" (club signed)":" (club signature pending)"),"ok");
 }
-async function matchAux(file){
-  const key=findRowByName(file.name);
+async function matchAux(fname){
+  const key=findRowByName(fname);
   if(!key)throw new Error("no matching candidate row (load the .xlsx first)");
-  const n=file.name.toLowerCase();
-  if(n.indexOf("photo")>=0){ROWS[key].photo=true;log("✔ "+file.name+" → pass photo for "+ROWS[key].fam+" "+ROWS[key].fir,"ok");}
-  else if(n.indexOf("payment")>=0||n.indexOf("proof")>=0||n.indexOf("paiement")>=0){ROWS[key].pay=true;log("✔ "+file.name+" → payment proof for "+ROWS[key].fam+" "+ROWS[key].fir,"ok");}
-  else{log("⚠ "+file.name+" matched "+ROWS[key].fam+" "+ROWS[key].fir+" but type unknown (name it Pass_photo_… or Payment_proof_…)","warn");}
+  const n=fname.toLowerCase();
+  if(n.indexOf("photo")>=0){ROWS[key].photo=true;log("✔ "+fname+" → pass photo for "+ROWS[key].fam+" "+ROWS[key].fir,"ok");}
+  else if(n.indexOf("payment")>=0||n.indexOf("proof")>=0||n.indexOf("paiement")>=0){ROWS[key].pay=true;log("✔ "+fname+" → payment proof for "+ROWS[key].fam+" "+ROWS[key].fir,"ok");}
+  else{log("⚠ "+fname+" matched "+ROWS[key].fam+" "+ROWS[key].fir+" but type unknown (name it Pass_photo_… or Payment_proof_…)","warn");}
 }
 
 // ---------------- rendering ----------------

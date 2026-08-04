@@ -42,7 +42,7 @@ Entries are saved automatically in the browser (survive a refresh, "Clear form" 
 
 ## The applications tracker
 
-The coordinator drops the files received from candidates — several candidates and file types at once:
+The coordinator drops the files received from candidates — a whole **.zip** at once (e.g. the "download all attachments" archive from the mailbox; forms are processed first so the other pieces attach correctly) or individual files, several candidates at a time:
 
 - each **application form** creates/updates a row: identity, age on 01/07/2026, club, contacts, camp choices, presence of the three on-form signatures, completeness of 27 key fields (missing ones listed)
 - **Commitment** documents are matched by name, with club counter-signature detection
