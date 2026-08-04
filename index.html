@@ -343,6 +343,7 @@ html[data-theme="light"] #tab-map,html[data-theme="light"] .tt{
 }
 
 /* ── RESPONSIVE ── */
+/* Tablette (≤ 900px) */
 @media(max-width:900px){
   .nav-links{display:none;position:absolute;top:100%;left:0;right:0;background:var(--nav-bg);backdrop-filter:blur(14px);flex-direction:column;align-items:stretch;padding:12px 18px;border-bottom:1px solid var(--border);}
   .nav-links.open{display:flex;}
@@ -354,9 +355,54 @@ html[data-theme="light"] #tab-map,html[data-theme="light"] .tt{
   #tab-table{flex-direction:column;height:auto;}
   .filters-panel{width:100%;min-width:0;max-height:320px;border-right:none;border-bottom:1px solid var(--border);}
   .table-wrap{max-height:60vh;}
+  table{min-width:760px;}     /* les 9 colonnes défilent horizontalement plutôt que s'écraser */
   .modal-body{grid-template-columns:1fr;}
   .hstat{padding:0 20px;}
   .hstat-num{font-size:30px;}
+  section{padding:60px 20px;}
+  #explorer{padding:60px 0;}
+  .exp-shell{border-radius:0;border-left:none;border-right:none;}
+}
+/* Téléphone (≤ 560px) */
+@media(max-width:560px){
+  body{font-size:14px;}
+  section{padding:44px 16px;}
+  #explorer{padding:44px 0;}
+  #explorer .sec-head{padding:0 16px;}
+  .nav-inner{padding:10px 14px;gap:12px;}
+  .nav-logo{font-size:17px;}
+  .nav-logo .sub{font-size:9.5px;}
+  .announce{font-size:11px;padding:7px 12px;}
+  .hero{padding:52px 18px 44px;}
+  .hero p.lead{font-size:15px;}
+  .hero-ctas .btn{width:100%;justify-content:center;}
+  .hero-ctas{flex-direction:column;align-items:stretch;max-width:320px;margin:0 auto;}
+  .hero-stats{margin-top:36px;display:grid;grid-template-columns:1fr 1fr;gap:18px 0;}
+  .hstat{border-right:none;padding:0 8px;}
+  .hstat:nth-child(odd){border-right:1px solid var(--border);}
+  .hstat-num{font-size:26px;}
+  .hero-badge{font-size:10px;letter-spacing:1px;padding:4px 11px;}
+  .tab-btn{padding:11px 12px;font-size:12px;}
+  .exp-counter{font-size:10px;}
+  .filters-panel{max-height:280px;padding:12px;}
+  .table-wrap{max-height:65vh;}
+  td,th{padding:7px 8px;}
+  .map-legend{display:none;}          /* la légende masque la carte sur petit écran */
+  .map-info{max-width:170px;font-size:10px;top:46px;left:8px;}
+  .ctry-panel{width:100%;max-width:100%;border-left:none;}
+  #tab-map{height:min(560px,80vh);}
+  .map-hdr{padding:7px 10px;gap:8px;flex-wrap:wrap;}
+  .steps{grid-template-columns:1fr;}
+  .step{padding:18px 16px;}
+  .pay-amount{font-size:38px;}
+  .doc-card,.pay-card{padding:20px 16px;}
+  .rules{grid-template-columns:1fr;}
+  .dist-grid,.testi-grid,.team-grid{grid-template-columns:1fr;}
+  .brx-visual{padding:26px 20px;}
+  .modal-box{width:96vw;max-height:94vh;}
+  .modal-title{font-size:18px;}
+  .modal-body{padding:12px 12px 18px;gap:9px;}
+  .foot-bottom{flex-direction:column;gap:6px;}
 }
 </style>
 </head>
