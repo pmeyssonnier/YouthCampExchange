@@ -814,6 +814,11 @@ async function init(){
     sel.innerHTML=COUNTRIES.map(function(c){return '<option value="'+c.code+'"'+(c.code===CTRY?' selected':'')+'>'+c.name+' ('+c.dial+')</option>';}).join("");
   }
   wirePhones();
+  // une saisie manuelle dans Nationality/Country annule le marquage "valeur auto"
+  ["G20","G22"].forEach(function(r){
+    const el=document.getElementById("f-"+r);
+    if(el)el.addEventListener("input",function(){el.dataset.auto="";});
+  });
   const d=(params.get("district")||"").toUpperCase();
   if(/^[A-D]$/.test(d)&&location.protocol.indexOf("http")===0){
     // ouvert depuis le site : on charge le formulaire officiel du district
