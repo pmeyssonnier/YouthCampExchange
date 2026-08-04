@@ -235,13 +235,13 @@ const SECTIONS = [
    {ref:"E79",label:"E-mail",type:"email",w:3},
    {ref:"E80",label:"Mobile",type:"tel",w:3},
  ]},
- {title:"VII. Authorized YCE Chairperson & Controller", closed:true, note:"prefilled from the loaded district template", fields:[
+ {title:"VII. Authorized YCE Chairperson & Controller", closed:true, noCount:true, note:"prefilled from the loaded district template", fields:[
    {ref:"E85",label:"Name",type:"text",w:3},
    {ref:"AH85",label:"District: D or MD Nr.",type:"text",w:3},
    {ref:"E86",label:"E-mail",type:"email",w:3},
    {ref:"E87",label:"Mobile",type:"tel",w:3},
  ]},
- {title:"X. GDPR Information & Consent", closed:true, note:"European countries only — prefilled when present in the template", fields:[
+ {title:"X. GDPR Information & Consent", closed:true, noCount:true, note:"European countries only — prefilled when present in the template", fields:[
    {ref:"L100",label:"Are you from a country of Europe?",type:"ynbtn",yn:["YES","NO"],w:2},
    {ref:"F104",label:"D/MD Name",type:"text",w:4},
    {ref:"A108",label:"Controller — name",type:"text",w:2},
@@ -252,7 +252,7 @@ const SECTIONS = [
    {ref:"F113",label:"DPO — mobile",type:"tel",w:2},
    {ref:"R113",label:"DPO — e-mail",type:"email",w:4},
  ]},
- {title:"XI. DPA Information", closed:true, note:"D/MD data protection authority", fields:[
+ {title:"XI. DPA Information", closed:true, noCount:true, note:"D/MD data protection authority", fields:[
    {ref:"F119",label:"Name",type:"text",w:3},
    {ref:"F120",label:"URL",type:"text",w:3},
    {ref:"F121",label:"Phone",type:"tel",w:2},
@@ -617,7 +617,9 @@ function updState(){
 function upd(){
   updState();
   let n=0,total=0;
-  SECTIONS.forEach(function(sec){sec.fields.forEach(function(f){
+  SECTIONS.forEach(function(sec){
+    if(sec.noCount)return;
+    sec.fields.forEach(function(f){
     if(f.photo){total++;if(PHOTO.dataUrl)n++;return;}
     if(f.download)return;
     if(f.sig){if(!SIGS[f.sig])return;total++;if(SIGS[f.sig].ink)n++;return;}
@@ -626,6 +628,7 @@ function upd(){
       if(!el||el.disabled)return; // "If yes: specify" fields are excluded while No / unanswered
       total++;if(el.value)n++;}
   });});
+
   document.getElementById("p-count").textContent=n+"/"+total;
   refreshYn();
   clearTimeout(saveTimer);saveTimer=setTimeout(saveDraft,300);
