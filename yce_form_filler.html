@@ -35,7 +35,7 @@ main{max-width:980px;margin:0 auto;padding:20px 16px 80px;}
 .section.closed .sec-body{display:none;}
 .fld{display:flex;flex-direction:column;gap:4px;}
 .w2{grid-column:span 2;}.w3{grid-column:span 3;}.w4{grid-column:span 4;}.w6{grid-column:span 6;}
-@media(max-width:700px){.w2,.w3,.w4{grid-column:span 6;}}
+@media(max-width:700px){.w2,.w3,.w4{grid-column:span 6;}.fld.half{grid-column:span 3;}}
 label.flbl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);}
 label.flbl .ref{font-family:monospace;font-size:9px;color:var(--border);font-weight:400;text-transform:none;margin-left:5px;}
 label.flbl .req{color:var(--red);}
@@ -158,8 +158,8 @@ const SECTIONS = [
    {ref:"X17",label:"Date of birth",type:"date",w:2},
    {ref:"G22",label:"Nationality",type:"text",w:2},
    {ref:"G18",label:"Street address",type:"text",w:6},
-   {ref:"G19",label:"Postal code",type:"text",w:1},
-   {ref:"S19",label:"Town",type:"text",w:2},
+   {ref:"G19",label:"Postal code",type:"text",w:1,half:true},
+   {ref:"S19",label:"Town",type:"text",w:2,half:true},
    {ref:"AF19",label:"State / Province",type:"text",w:1},
    {ref:"G20",label:"Country",type:"text",w:2},
    {ref:"S20",label:"Email",type:"email",w:3,ph:"first.last@example.be"},
@@ -316,7 +316,7 @@ function render(){
         });
         h+='</div></div>';
       }else{
-        h+='<div class="fld'+((f.type==="ynbtn")?" yn":"")+' w'+w+'"'+(f.dep?' id="fld-'+f.ref+'" style="display:none"':'')+'><label class="flbl" for="f-'+f.ref+'">'+esc(f.label);
+        h+='<div class="fld'+((f.type==="ynbtn")?" yn":"")+(f.half?" half":"")+' w'+w+'"'+(f.dep?' id="fld-'+f.ref+'" style="display:none"':'')+'><label class="flbl" for="f-'+f.ref+'">'+esc(f.label);
         if(f.req)h+=' <span class="req">*</span>';
         h+='<span class="ref">'+f.ref+'</span></label>';
         if(f.type==="ynbtn"||f.type==="pills"){
