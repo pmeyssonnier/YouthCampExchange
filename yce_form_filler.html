@@ -69,6 +69,8 @@ input:required:invalid{border-color:rgba(239,83,80,0.5);}
 .sig-clear{position:absolute;top:5px;right:5px;background:rgba(13,24,39,0.08);border:none;border-radius:4px;color:#8a94a6;cursor:pointer;font-size:11px;padding:2px 8px;}
 .sig-clear:hover{background:rgba(239,83,80,0.2);color:#c0392b;}
 .sig-line{position:absolute;left:8%;right:8%;bottom:22px;border-bottom:1px dashed #b8c0cc;pointer-events:none;}
+input.tel-bad{border-color:var(--red) !important;}
+.ctry-sel{background:var(--card);border:1px solid var(--border);border-radius:5px;color:var(--text);font-size:12px;padding:4px 6px;margin-left:6px;outline:none;}
 </style>
 </head>
 <body>
@@ -105,6 +107,7 @@ input:required:invalid{border-color:rgba(239,83,80,0.5);}
     📂 Other template… <input type="file" id="tpl-file" accept=".xlsx" style="display:none" onchange="loadTemplate(this)">
   </label>
   <button class="tpl-btn" onclick="clearForm()" title="Erase all entered data saved in this browser and restart with a blank form.">🗑 Clear form</button>
+  <label class="tpl-btn" id="ctry-btn" style="display:none" title="Default country used to prefill nationality and format phone numbers. Can also be set per link with ?country=FR.">🌐 Country <select class="ctry-sel" id="ctry-sel" onchange="setCountry(this.value)"></select></label>
   <span id="status">Embedded template: Application_form_2026_Distr_C (blank)</span>
 </div>
 
@@ -157,8 +160,8 @@ const SECTIONS = [
    {ref:"AF19",label:"State (if outside Belgium)",type:"text",w:1},
    {ref:"G20",label:"Country",type:"text",w:2},
    {ref:"S20",label:"Email",type:"email",w:3,ph:"first.last@example.be"},
-   {ref:"G21",label:"Phone (home)",type:"tel",w:3,ph:"00 32 …"},
-   {ref:"S21",label:"Mobile",type:"tel",w:3,ph:"00 32 4…"},
+   {ref:"G21",label:"Phone (home)",type:"tel",w:3},
+   {ref:"S21",label:"Mobile",type:"tel",w:3},
    {ref:"X22",label:"Passport / ID / CNI number",type:"text",w:3},
    {ref:"G23",label:"Valid until",type:"date",w:3},
    {ref:"X23",label:"Place of issue",type:"text",w:3},
@@ -346,6 +349,91 @@ function syncCamps(i){
   dl.innerHTML=list.map(function(c){return '<option value="'+esc(c.n)+'">'+esc(c.c)+'</option>';}).join("");
 }
 
+// -------------------- pays par défaut & téléphones --------------------
+const COUNTRIES=[
+ {code:"BE",name:"Belgium",dial:"+32",nat:"Belgian"},
+ {code:"FR",name:"France",dial:"+33",nat:"French"},
+ {code:"IT",name:"Italy",dial:"+39",nat:"Italian"},
+ {code:"DE",name:"Germany",dial:"+49",nat:"German"},
+ {code:"NL",name:"Netherlands",dial:"+31",nat:"Dutch"},
+ {code:"LU",name:"Luxembourg",dial:"+352",nat:"Luxembourgish"},
+ {code:"ES",name:"Spain",dial:"+34",nat:"Spanish"},
+ {code:"PT",name:"Portugal",dial:"+351",nat:"Portuguese"},
+ {code:"CH",name:"Switzerland",dial:"+41",nat:"Swiss"},
+ {code:"AT",name:"Austria",dial:"+43",nat:"Austrian"},
+ {code:"GB",name:"United Kingdom",dial:"+44",nat:"British"},
+ {code:"IE",name:"Ireland",dial:"+353",nat:"Irish"},
+ {code:"DK",name:"Denmark",dial:"+45",nat:"Danish"},
+ {code:"SE",name:"Sweden",dial:"+46",nat:"Swedish"},
+ {code:"NO",name:"Norway",dial:"+47",nat:"Norwegian"},
+ {code:"FI",name:"Finland",dial:"+358",nat:"Finnish"},
+ {code:"PL",name:"Poland",dial:"+48",nat:"Polish"},
+ {code:"CZ",name:"Czech Republic",dial:"+420",nat:"Czech"},
+ {code:"GR",name:"Greece",dial:"+30",nat:"Greek"},
+ {code:"TR",name:"Türkiye",dial:"+90",nat:"Turkish"},
+];
+let CTRY=(function(){
+  const p=(new URLSearchParams(location.search).get("country")||"").toUpperCase();
+  if(COUNTRIES.some(function(c){return c.code===p;}))return p;
+  try{const l=localStorage.getItem("yce_country");
+    if(l&&COUNTRIES.some(function(c){return c.code===l;}))return l;}catch(e){}
+  return "BE";
+})();
+function countryCfg(){return COUNTRIES.find(function(c){return c.code===CTRY;})||COUNTRIES[0];}
+
+// Normalise un numéro au format international : "0477/20.08.88" -> "+32 477 200 888".
+// Gère aussi les saisies après le préfixe auto : "+32 0477…", "+32 0033…", "+32 +39…".
+function normPhone(v){
+  const c=countryCfg();
+  let s=String(v).replace(/[^\d+]/g,"");
+  if(!s)return "";
+  if(s.lastIndexOf("+")>0)s="+"+s.split("+").pop(); // un "+" tapé plus loin = nouveau numéro complet
+  if(s.slice(0,2)==="00")s="+"+s.slice(2);
+  else if(s[0]==="0")s=c.dial+s.slice(1);
+  else if(s[0]!=="+")s=c.dial+s;
+  let dial=null;
+  COUNTRIES.map(function(x){return x.dial;}).sort(function(a,b){return b.length-a.length;})
+    .some(function(d){if(s.slice(0,d.length)===d){dial=d;return true;}return false;});
+  if(!dial)dial=s.slice(0,3); // "+NN" par défaut
+  let rest=s.slice(dial.length);
+  if(rest.slice(0,2)==="00")return normPhone("+"+rest.slice(2)); // international tapé après le préfixe
+  if(rest[0]==="0")rest=rest.slice(1); // numéro national tapé après le préfixe
+  const groups=rest.match(/\d{1,3}/g)||[];
+  return dial+(groups.length?" "+groups.join(" "):"");
+}
+function validPhone(s){
+  const digits=s.replace(/\D/g,"").length;
+  return /^\+\d{1,3}( \d{1,3})+$/.test(s)&&digits>=8&&digits<=15;
+}
+function wirePhones(){
+  const c=countryCfg();
+  document.querySelectorAll('input[type=tel]').forEach(function(el){
+    el.placeholder=c.dial+" …";
+    el.addEventListener("focus",function(){if(!el.value)el.value=c.dial+" ";});
+    el.addEventListener("blur",function(){
+      const v=el.value.trim();
+      if(!v||v===c.dial){el.value="";el.classList.remove("tel-bad");upd();return;}
+      el.value=normPhone(v);
+      el.classList.toggle("tel-bad",!validPhone(el.value));
+      upd();
+    });
+  });
+}
+function applyCountry(){
+  const c=countryCfg();
+  document.querySelectorAll('input[type=tel]').forEach(function(el){el.placeholder=c.dial+" …";});
+  const nat=document.getElementById("f-G22");
+  if(nat&&(!nat.value||nat.dataset.auto==="1")){nat.value=c.nat;nat.dataset.auto="1";nat.classList.add("prefilled");}
+  const ctry=document.getElementById("f-G20");
+  if(ctry&&(!ctry.value||ctry.dataset.auto==="1")){ctry.value=c.name;ctry.dataset.auto="1";ctry.classList.add("prefilled");}
+  upd();
+}
+function setCountry(code){
+  CTRY=code;
+  try{localStorage.setItem("yce_country",code);}catch(e){}
+  applyCountry();
+}
+
 // -------------------- pads de signature --------------------
 const SIGS={};
 function sigInit(){
@@ -386,7 +474,10 @@ function saveDraft(){
     });});
     const sg={};
     Object.keys(SIGS).forEach(function(k){if(SIGS[k].ink)sg[k]=SIGS[k].cv.toDataURL("image/png");});
-    localStorage.setItem(DRAFT_KEY,JSON.stringify({v:v,x:XSTATE,t:t,s:sg}));
+    const au={};
+    ["G20","G22"].forEach(function(r){const el=document.getElementById("f-"+r);
+      if(el&&el.dataset.auto==="1")au[r]=1;});
+    localStorage.setItem(DRAFT_KEY,JSON.stringify({v:v,x:XSTATE,t:t,s:sg,a:au}));
   }catch(e){}
 }
 function restoreDraft(){
@@ -406,6 +497,9 @@ function restoreDraft(){
       lab.classList.add("on");lab.querySelector("input").checked=true;XSTATE[grp]=ref;
       const yes=lab.textContent.trim()==="Yes";
       document.querySelectorAll('input[data-dep="'+grp+'"]').forEach(function(i){i.disabled=!yes;});
+    });
+    Object.keys(d.a||{}).forEach(function(r){
+      const el=document.getElementById("f-"+r);if(el)el.dataset.auto="1";
     });
     Object.keys(d.s||{}).forEach(function(k){
       const st=SIGS[k];if(!st||!d.s[k])return;
@@ -614,6 +708,7 @@ function setCell(xml,ref,value,numeric){
 
 function collectValues(){
   const out=[]; // {ref, value, numeric}
+  out.badPhones=[];
   SECTIONS.forEach(function(sec){sec.fields.forEach(function(f){
     if(f.xgroup){
       f.opts.forEach(function(o){out.push({ref:o.ref,value:XSTATE[f.xgroup]===o.ref?"X":"",numeric:false});});
@@ -621,6 +716,11 @@ function collectValues(){
       const el=document.getElementById("f-"+f.ref);
       let v=el?el.value.trim():"";
       if(v&&f.type==="date")v=fmtDate(v);
+      if(v&&f.type==="tel"){
+        v=normPhone(v);
+        if(el)el.value=v;
+        if(!validPhone(v))out.badPhones.push(f.label);
+      }
       out.push({ref:f.ref,value:v,numeric:!!f.numeric});
     }
   });});
@@ -671,7 +771,12 @@ async function generate(){
     const sheet=entries.find(function(e){return e.name==="xl/worksheets/sheet1.xml";});
     if(!sheet)throw new Error("worksheet not found in template");
     let xml=new TextDecoder().decode(sheet.data);
-    collectValues().forEach(function(c){xml=setCell(xml,c.ref,c.value,c.numeric);});
+    const cells=collectValues();
+    if(cells.badPhones.length){
+      setStatus("⚠ Invalid phone number (use international format, e.g. "+countryCfg().dial+" 470 12 34 56): "+cells.badPhones.join(", "),true);
+      btn.disabled=false;return;
+    }
+    cells.forEach(function(c){xml=setCell(xml,c.ref,c.value,c.numeric);});
     sheet.data=new TextEncoder().encode(xml);
     // force le recalcul complet à l'ouverture (âge, noms de signatures, pied de page)
     const wbe=entries.find(function(e){return e.name==="xl/workbook.xml";});
@@ -702,7 +807,13 @@ async function init(){
   render();initLists();sigInit();upd();
   restoreDraft();
   const params=new URLSearchParams(location.search);
-  if(IS_ADMIN)document.getElementById("tpl-btn").style.display="";
+  if(IS_ADMIN){
+    document.getElementById("tpl-btn").style.display="";
+    document.getElementById("ctry-btn").style.display="";
+    const sel=document.getElementById("ctry-sel");
+    sel.innerHTML=COUNTRIES.map(function(c){return '<option value="'+c.code+'"'+(c.code===CTRY?' selected':'')+'>'+c.name+' ('+c.dial+')</option>';}).join("");
+  }
+  wirePhones();
   const d=(params.get("district")||"").toUpperCase();
   if(/^[A-D]$/.test(d)&&location.protocol.indexOf("http")===0){
     // ouvert depuis le site : on charge le formulaire officiel du district
@@ -717,6 +828,7 @@ async function init(){
     }
   }
   await syncFromTemplate(templateBuf||b64ToBuf(TEMPLATE_B64));
+  applyCountry();
 }
 init();
 </script>
