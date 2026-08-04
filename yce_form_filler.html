@@ -82,7 +82,9 @@ input:required:invalid{border-color:rgba(239,83,80,0.5);}
     <b>.xlsx</b> file is downloaded. Golden fields are prefilled automatically from the district's Excel template — you can
     edit them. When opened from the website with <b>?district=A/B/C/D</b>, the official form of that district is loaded
     directly. Only <b>Family Name</b> and <b>First Name</b> are required; any field left empty stays empty in the Excel
-    file. The target cell reference is shown next to each label.
+    file. The target cell reference is shown next to each label. Your entries are saved automatically in this
+    browser — nothing is uploaded — so you can close or refresh the page and continue later; use <b>“Clear form”</b>
+    to start over.
   </div>
   <div class="auto-note">
     <b>Computed automatically by Excel</b> (not entered here): the applicant's age (<code>AH17</code>),
@@ -96,6 +98,7 @@ input:required:invalid{border-color:rgba(239,83,80,0.5);}
   <label class="tpl-btn" id="tpl-btn" style="display:none" title="By default the official blank 2026 template is embedded in this page. Load another version of the form here if needed.">
     📂 Other template… <input type="file" id="tpl-file" accept=".xlsx" style="display:none" onchange="loadTemplate(this)">
   </label>
+  <button class="tpl-btn" onclick="clearForm()" title="Erase all entered data saved in this browser and restart with a blank form.">🗑 Clear form</button>
   <span id="status">Embedded template: Application_form_2026_Distr_C (blank)</span>
 </div>
 
@@ -322,6 +325,46 @@ function syncCamps(i){
   dl.innerHTML=list.map(function(c){return '<option value="'+esc(c.n)+'">'+esc(c.c)+'</option>';}).join("");
 }
 
+// -------------------- brouillon persistant (localStorage) --------------------
+const DRAFT_KEY="yce_form_draft_2026";
+let saveTimer=null;
+function saveDraft(){
+  try{
+    const v={},t={};
+    SECTIONS.forEach(function(sec){sec.fields.forEach(function(f){
+      if(f.xgroup)return;
+      const el=document.getElementById("f-"+f.ref);if(!el)return;
+      v[f.ref]=el.value;t[f.ref]=el.dataset.tpl||"";
+    });});
+    localStorage.setItem(DRAFT_KEY,JSON.stringify({v:v,x:XSTATE,t:t}));
+  }catch(e){}
+}
+function restoreDraft(){
+  try{
+    const d=JSON.parse(localStorage.getItem(DRAFT_KEY)||"null");
+    if(!d)return;
+    Object.keys(d.v||{}).forEach(function(ref){
+      const el=document.getElementById("f-"+ref);if(!el)return;
+      el.value=d.v[ref];
+      if(d.t&&d.t[ref]!==undefined)el.dataset.tpl=d.t[ref];
+      el.classList.toggle("prefilled",!!el.value&&el.value===(el.dataset.tpl||null));
+    });
+    Object.keys(d.x||{}).forEach(function(grp){
+      const ref=d.x[grp];if(!ref)return;
+      const lab=document.querySelector('.xopt[data-grp="'+grp+'"][data-ref="'+ref+'"]');
+      if(!lab)return;
+      lab.classList.add("on");lab.querySelector("input").checked=true;XSTATE[grp]=ref;
+      const yes=lab.textContent.trim()==="Yes";
+      document.querySelectorAll('input[data-dep="'+grp+'"]').forEach(function(i){i.disabled=!yes;});
+    });
+  }catch(e){}
+}
+function clearForm(){
+  if(!confirm("Erase all entered data and restart with a blank form?"))return;
+  try{localStorage.removeItem(DRAFT_KEY);}catch(e){}
+  location.reload();
+}
+
 // compteur de champs remplis
 function upd(){
   let n=0,total=0;
@@ -332,6 +375,7 @@ function upd(){
       total++;if(el.value)n++;}
   });});
   document.getElementById("p-count").textContent=n+"/"+total;
+  clearTimeout(saveTimer);saveTimer=setTimeout(saveDraft,300);
 }
 
 // -------------------- mini-bibliothèque ZIP (aucune dépendance) --------------------
@@ -567,6 +611,7 @@ async function generate(){
 // -------------------- initialisation --------------------
 async function init(){
   render();initLists();upd();
+  restoreDraft();
   const params=new URLSearchParams(location.search);
   if(params.has("admin"))document.getElementById("tpl-btn").style.display="";
   const d=(params.get("district")||"").toUpperCase();
