@@ -162,7 +162,7 @@ const SECTIONS = [
    {ref:"G18",label:"Street address",type:"text",w:6},
    {ref:"G19",label:"Postal code",type:"text",w:1},
    {ref:"S19",label:"Town",type:"text",w:2},
-   {ref:"AF19",label:"State (if outside Belgium)",type:"text",w:1},
+   {ref:"AF19",label:"State / Province",type:"text",w:1},
    {ref:"G20",label:"Country",type:"text",w:2},
    {ref:"S20",label:"Email",type:"email",w:3,ph:"first.last@example.be"},
    {ref:"G21",label:"Phone (home)",type:"tel",w:3},
@@ -602,8 +602,20 @@ function refreshYn(){
   });
 }
 
+// le champ State (AF19) n'est utile que pour les pays a etats/provinces
+function updState(){
+  const g20=document.getElementById("f-G20"),st=document.getElementById("f-AF19");
+  if(!g20||!st)return;
+  const need=/(united states|usa|u\.s|canada|australia|brazil|mexico|india)/i.test(g20.value||"");
+  const fd=st.closest(".fld");
+  if(fd)fd.style.display=need?"":"none";
+  st.disabled=!need;
+  if(!need&&st.value)st.value="";
+}
+
 // compteur de champs remplis
 function upd(){
+  updState();
   let n=0,total=0;
   SECTIONS.forEach(function(sec){sec.fields.forEach(function(f){
     if(f.photo){total++;if(PHOTO.dataUrl)n++;return;}
