@@ -169,8 +169,9 @@ const SECTIONS = [
    {ref:"J25",label:"If yes, where and when?",type:"text",w:3,dep:"prev"},
    {ref:"J26",label:"Hobbies & other interests",type:"text",w:6},
    {xgroup:"engl",label:"Knowledge of English",w:3,opts:[{lbl:"Good",ref:"L27"},{lbl:"Fair",ref:"P27"},{lbl:"None",ref:"T27"}]},
-   {ref:"AF27",label:"T-shirt size",type:"select",opts:["","S","M","L","XL","XXL"],w:1},
-   {ref:"J28",label:"Other languages spoken",type:"text",w:2},
+
+   {ref:"AF27",label:"T-shirt size",type:"pills",opts:["S","M","L","XL","XXL"],w:3},
+   {ref:"J28",label:"Other languages spoken",type:"text",w:6},
    {ref:"J29",label:"Field of study",type:"text",w:2},
    {ref:"J30",label:"Career objective",type:"text",w:2},
    {ref:"J31",label:"Religion",type:"text",w:1},
@@ -295,11 +296,11 @@ function render(){
         h+='<div class="fld w'+w+'"><label class="flbl" for="f-'+f.ref+'">'+esc(f.label);
         if(f.req)h+=' <span class="req">*</span>';
         h+='<span class="ref">'+f.ref+'</span></label>';
-        if(f.type==="ynbtn"){
-          const vals=f.yn||["yes","no"];
+        if(f.type==="ynbtn"||f.type==="pills"){
+          const vals=f.type==="pills"?f.opts:(f.yn||["yes","no"]);
+          const lbls=f.type==="pills"?f.opts:["Yes","No"];
           h+='<div class="xgroup" id="yn-'+f.ref+'">'
-            +'<label class="xopt" data-val="'+vals[0]+'" onclick="ynClick(\''+f.ref+'\',\''+vals[0]+'\')">Yes</label>'
-            +'<label class="xopt" data-val="'+vals[1]+'" onclick="ynClick(\''+f.ref+'\',\''+vals[1]+'\')">No</label>'
+            +vals.map(function(v,i){return '<label class="xopt" data-val="'+v+'" onclick="ynClick(\''+f.ref+'\',\''+v+'\')">'+lbls[i]+'</label>';}).join("")
             +'</div><input type="hidden" id="f-'+f.ref+'">';
         }else if(f.type==="select"){
           h+='<select id="f-'+f.ref+'" onchange="upd()">';
