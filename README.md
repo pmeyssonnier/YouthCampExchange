@@ -82,6 +82,8 @@ assets/                               logos & favicon
 
 The filler and tracker are plain-JavaScript **classic scripts sharing the global scope**, loaded in dependency order by their HTML shells; every module is directly editable in the repository. Only `js/assets.js` is generated — run `python3 tools/build_assets.py` after changing the blank form or the Commitment template.
 
+A detailed code map (modules, business functions with line numbers and sizes, dependency graphs) is maintained in [`docs/CODE_MAP.md`](docs/CODE_MAP.md).
+
 ## Technical notes
 
 - **Zero dependencies at runtime** for the filler and tracker: zip read/write is implemented in plain JavaScript (uncompressed embedded templates + the browser's native `CompressionStream`/`DecompressionStream`); the Excel/Word files are edited at the XML level, which preserves their formatting and formulas exactly. The public site uses D3/TopoJSON from CDN for the world map.
