@@ -66,7 +66,10 @@ js/
   storage.js                          local draft persistence
   email.js                            prefilled e-mails (club president, district coordinator)
   club-signing.js                     ?sign=club remote counter-signing mode
-  form.js                             form definition, rendering, counter, generate(), init — loaded last
+  sections.js                         declarative form definition (SECTIONS, camps list, mode flags)
+  country.js                          default country, dial codes, phone normalisation
+  render.js                           section/widget rendering, X-groups, counter
+  form.js                             orchestration: generate() and init() — loaded last
   tracker-storage.js / -parser.js / -export.js / -ui.js   tracker modules
 tools/
   build_assets.py                     regenerates js/assets.js from the templates below

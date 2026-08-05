@@ -1,7 +1,7 @@
 # Code map — Lions YCE Belgium
 
 > Detailed map of the codebase: screens, modules, business functions, sizes and dependencies.
-> Generated against commit `867ae94` (2026-08-05). Regenerate the numbers with a quick
+> Generated against commit `4d5cb3b` + form.js split (2026-08-05). Regenerate the numbers with a quick
 > `wc -l` / `grep '^function'` pass when the structure changes.
 
 ## 1. Screens & entry points
@@ -20,7 +20,7 @@ Script load order (classic scripts, shared global scope — **order matters**, e
 flowchart LR
   subgraph filler [yce_form_filler.html]
     direction LR
-    CD[camps_data.js] --> AS[js/assets.js] --> X[js/xlsx.js] --> D[js/docx.js] --> S[js/signatures.js] --> A[js/attachments.js] --> ST[js/storage.js] --> E[js/email.js] --> CS[js/club-signing.js] --> F[js/form.js — init]
+    CD[camps_data.js] --> AS[js/assets.js] --> X[js/xlsx.js] --> D[js/docx.js] --> S[js/signatures.js] --> A[js/attachments.js] --> ST[js/storage.js] --> E[js/email.js] --> CS[js/club-signing.js] --> SE[js/sections.js] --> CO[js/country.js] --> R[js/render.js] --> F[js/form.js — init]
   end
   subgraph tracker [yce_tracker.html]
     direction LR
@@ -30,7 +30,7 @@ flowchart LR
 
 ## 2. Filler modules (`js/`)
 
-Total filler code: **1 273 lines / 66 KB** (+ `assets.js`, 505 KB generated payload).
+Total filler code: **1 285 lines / 66 KB** across 12 modules (+ `assets.js`, 505 KB generated payload). No module exceeds ~220 lines.
 
 ### js/xlsx.js — 219 lines, 9.9 KB — zip library + workbook cell I/O
 | Function | Line | LOC | Role |
@@ -98,22 +98,38 @@ Total filler code: **1 273 lines / 66 KB** (+ `assets.js`, 505 KB generated payl
 | `signCommitmentFile()` | 15 | 16 | insert the club signature at the `SIGSLOT_CLUB` bookmark |
 | Depends on | | | `xlsx.js` (unzip, buildZip), `docx.js` (docxSigRun), `signatures.js` (SIGS) |
 
-### js/form.js — 581 lines, 31 KB — definition, rendering, orchestration *(largest module — next split candidate)*
+### js/sections.js — 163 lines, 10.6 KB — declarative form definition
 | Block | Line | LOC | Role |
 |---|---:|---:|---|
 | `CAMPS` (derived from `camps_data.js`) | 5 | 7 | country/camp suggestion list |
 | `IS_ADMIN` / `SIGN_CLUB` | 12 | 2 | mode flags from the URL |
-| `SECTIONS` (+ commitment push) | 14 | 148 | **declarative form definition**: 12 sections, ~90 fields with cell refs, widths, types, modes |
-| `esc` / `render()` | 163 | 113 | render all sections/field types (text, date, select, ynbtn, pills, xgroup, sig, photo, payproof, download, commit block) |
-| `depShow` / `XSTATE` / `xsel` | 276 | 22 | X-choice groups + conditional "specify" fields |
-| `initLists` / `syncCamps` | 298 | 16 | country & per-preference camp datalists |
-| `COUNTRIES`/`CTRY`/`countryCfg`/`applyCountry`/`setCountry` | 314 | 41+15 | default-country config (20 countries, dial codes, nationalities) |
-| `normPhone` / `validPhone` / `wirePhones` | 347 | 36 | international phone normalisation & validation |
-| `ynClick` / `refreshYn` | 398 | 16 | Yes/No & pill buttons backed by hidden inputs |
-| `updState` / `upd()` | 414 | 33 | State-field visibility + fields-completed counter (drives `saveDraft`) |
-| `generate()` | 447 | 88 | **orchestrator**: validate → write cells → signatures → downloads (xlsx, Commitment, photo, proof) → e-mail buttons; sign-mode branch |
-| `init()` | 535 | 47 | mode setup, district fetch, template sync, country, pads, drafts |
-| Depends on | | | everything above |
+| `SECTIONS` (+ commitment push) | 14 | 149 | **the form**: 12 sections, ~90 fields with cell refs, widths, types, modes |
+| Depends on | | | `camps_data.js` only — pure configuration, no logic |
+
+### js/country.js — 87 lines, 4.1 KB — default country & phone numbers
+| Function | Line | LOC | Role |
+|---|---:|---:|---|
+| `COUNTRIES` / `CTRY` / `countryCfg` | 4 | 32 | 20 countries with dial code & nationality; `?country=` / localStorage |
+| `normPhone` / `validPhone` | 36 | 22 | international normalisation (`0…`, `00…`, pasted `+…`) & validation |
+| `wirePhones` / `applyCountry` / `setCountry` | 58 | 30 | tel-input wiring, nationality/country prefills, admin selector |
+| Depends on | | | `render.js` (upd) at runtime |
+
+### js/render.js — 204 lines, 10.8 KB — rendering, widgets & counter
+| Function | Line | LOC | Role |
+|---|---:|---:|---|
+| `esc` / `render()` | 4 | 113 | render all sections/field types (text, date, select, ynbtn, pills, xgroup, sig, photo, payproof, download, commit block) |
+| `depShow` / `XSTATE` / `xsel` | 118 | 22 | X-choice groups + conditional "specify" fields |
+| `initLists` / `syncCamps` | 140 | 16 | country & per-preference camp datalists |
+| `ynClick` / `refreshYn` | 157 | 16 | Yes/No & pill buttons backed by hidden inputs |
+| `updState` / `upd()` | 173 | 33 | State-field visibility + fields-completed counter (drives `saveDraft`) |
+| Depends on | | | `sections.js` (SECTIONS), state owners (SIGS, PHOTO, PAY, COMMIT) |
+
+### js/form.js — 138 lines, 6.4 KB — orchestration
+| Function | Line | LOC | Role |
+|---|---:|---:|---|
+| `generate()` | 4 | 88 | validate → write cells → signatures → downloads (xlsx, Commitment, photo, proof) → e-mail buttons; sign-mode branch |
+| `init()` (+ call) | 92 | 47 | mode setup, district fetch, template sync, country, pads, drafts |
+| Depends on | | | every other module — loaded last |
 
 ### js/assets.js — GENERATED, 505 KB
 `BUILD` (version stamp), `TEMPLATE_B64` (blank District C form, stored uncompressed), `COMMIT_B64` (Commitment template). Regenerate with `python3 tools/build_assets.py`.
@@ -145,13 +161,17 @@ flowchart TD
   xlsx --> club
   sig --> docx
   sig --> club
-  form[form.js\nSECTIONS · render · generate · init]
-  form -.->|upd, esc, XSTATE, depShow, normPhone| xlsx
-  form -.->|upd| sig & att & docx
+  sect[sections.js\nSECTIONS] --> rend
+  ctry[country.js\nphones] --> form
+  rend[render.js\nrender · widgets · upd] --> form
+  form[form.js\ngenerate · init]
+  rend -.->|upd, esc, XSTATE, depShow| xlsx
+  rend -.->|upd| sig & att & docx
+  ctry -.->|normPhone, validPhone| xlsx
 ```
 
 Solid arrows = "is used by"; dotted = upward calls at runtime (UI helpers owned by `form.js`).
-`setStatus` (xlsx.js) and `upd`/`esc` (form.js) are the two de-facto shared utility hubs — candidates for a future `js/ui-utils.js`.
+`setStatus` (xlsx.js) and `upd`/`esc` (render.js) are the two de-facto shared utility hubs — candidates for a future `js/ui-utils.js`.
 
 ## 5. index.html — public site (1 304 lines, 95 KB, monolithic)
 
@@ -167,7 +187,7 @@ Solid arrows = "is used by"; dotted = upward calls at runtime (UI helpers owned 
 
 | | Files | Lines of code | Size |
 |---|---:|---:|---:|
-| Filler (shell + 9 modules) | 10 | 1 422 | 78 KB |
+| Filler (shell + 12 modules) | 13 | 1 434 | 78 KB |
 | Tracker (shell + 4 modules) | 5 | 401 | 25 KB |
 | Public site | 1 | 1 304 | 95 KB |
 | Generated payload (`assets.js`) | 1 | — | 505 KB |
