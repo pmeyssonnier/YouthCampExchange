@@ -1,8 +1,9 @@
 # Code map — Lions YCE Belgium
 
 > Detailed map of the codebase: screens, modules, business functions, sizes and dependencies.
-> Generated against commit `4d5cb3b` + form.js split (2026-08-05). Regenerate the numbers with a quick
-> `wc -l` / `grep '^function'` pass when the structure changes.
+> Generated against commit `4d5cb3b` + form.js split (2026-08-05).
+> **Interactive version:** open [`code_map.html`](code_map.html) (served on the site at `/docs/code_map.html`) —
+> regenerate its data with `python3 tools/build_codemap.py` after refactoring.
 
 ## 1. Screens & entry points
 

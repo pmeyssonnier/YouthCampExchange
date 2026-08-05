@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lions YCE — Code Map</title>
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<style>
+:root{
+  --bg:#0d1827;--surface:#132038;--card:#1a2d4a;--border:#243d5c;
+  --gold:#e8a020;--gold2:#ffd166;--accent:#06d6a0;--blue:#4fc3f7;
+  --text:#dce8f5;--muted:#6b8aaa;--hover:#1e3355;--red:#ef5350;--purple:#ce93d8;--orange:#ffb74d;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:13px;min-height:100vh;}
+::-webkit-scrollbar{width:6px;height:6px;}::-webkit-scrollbar-track{background:var(--surface);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+header{background:linear-gradient(135deg,#0a1628 0%,#182d4a 100%);border-bottom:2px solid var(--gold);padding:14px 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;position:sticky;top:0;z-index:50;}
+.emblem{height:44px;width:44px;object-fit:contain;}
+.logo{font-family:Georgia,serif;font-size:22px;font-weight:700;color:var(--gold);}
+.logo em{color:var(--text);font-style:italic;font-weight:400;font-size:15px;}
+.header-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.stats{margin-left:auto;display:flex;gap:18px;}
+.stat{text-align:center;}
+.stat-num{font-family:monospace;font-size:20px;color:var(--gold);}
+.stat-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;}
+main{max-width:1200px;margin:0 auto;padding:18px 16px 60px;}
+.tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
+.tab{padding:8px 18px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:13px;font-family:inherit;}
+.tab:hover{border-color:var(--gold);color:var(--gold);}
+.tab.on{background:var(--gold);border-color:var(--gold);color:#0d1827;font-weight:600;}
+.pane{display:none;}
+.pane.on{display:block;}
+h2{font-family:Georgia,serif;font-size:16px;color:var(--gold);margin:20px 0 10px;}
+.share{display:flex;height:34px;border-radius:8px;overflow:hidden;border:1px solid var(--border);margin-bottom:6px;}
+.share div{display:flex;align-items:center;justify-content:center;font-size:10px;color:#0d1827;font-weight:700;white-space:nowrap;overflow:hidden;cursor:pointer;transition:filter 0.15s;}
+.share div:hover{filter:brightness(1.25);}
+.share-legend{font-size:10px;color:var(--muted);margin-bottom:14px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px;}
+.mod{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.mod-head{padding:11px 14px;display:flex;align-items:baseline;gap:10px;cursor:pointer;border-left:4px solid var(--border);}
+.mod-head:hover{background:var(--hover);}
+.mod-name{font-family:monospace;font-size:13px;font-weight:700;color:var(--text);}
+.mod-meta{margin-left:auto;font-family:monospace;font-size:11px;color:var(--muted);white-space:nowrap;}
+.mod-role{padding:0 14px 10px;font-size:11.5px;color:var(--muted);border-left:4px solid transparent;}
+.mod-body{display:none;border-top:1px solid var(--border);padding:8px 14px 12px;}
+.mod.open .mod-body{display:block;}
+.fn{display:flex;align-items:center;gap:8px;padding:3px 0;font-size:11.5px;}
+.fn-name{font-family:monospace;min-width:150px;color:var(--blue);}
+.fn-name.state{color:var(--purple);}
+.fn-line{font-family:monospace;font-size:10px;color:var(--muted);min-width:50px;text-align:right;}
+.fn-bar{height:8px;border-radius:4px;background:var(--gold);opacity:0.75;min-width:2px;}
+.fn-loc{font-family:monospace;font-size:10px;color:var(--muted);min-width:44px;}
+.fn-role{color:var(--muted);font-size:10.5px;flex:1;}
+.dep-wrap{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;overflow-x:auto;}
+.dep-hint{font-size:10px;color:var(--muted);margin-top:6px;}
+svg text{font-family:monospace;font-size:10px;fill:var(--muted);}
+svg .node rect{fill:var(--card);stroke:var(--border);rx:6;}
+svg .node.hl rect{stroke:var(--gold);}
+svg .node.hl text{fill:var(--gold2);}
+svg path.arc{fill:none;stroke:var(--border);stroke-width:1.4;opacity:0.7;}
+svg path.arc.hl{stroke:var(--gold);opacity:1;stroke-width:2;}
+.tt{position:fixed;background:rgba(19,32,56,0.97);border:1px solid var(--gold);border-radius:7px;padding:8px 12px;pointer-events:none;opacity:0;transition:opacity 0.12s;font-size:11px;z-index:100;max-width:340px;}
+.tt.vis{opacity:1;}
+.tt b{color:var(--gold2);font-family:monospace;}
+table.simple{width:100%;border-collapse:collapse;font-size:12px;background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+table.simple th{background:#0e1e33;text-align:left;padding:8px 12px;font-size:9px;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);}
+table.simple td{padding:8px 12px;border-top:1px solid rgba(36,61,92,0.4);}
+table.simple td.mono{font-family:monospace;font-size:11px;}
+.gen-note{font-size:10px;color:var(--muted);margin-top:24px;}
+</style>
+</head>
+<body>
+<header>
+  <img src="../assets/logo_lions.png" alt="Lions Clubs International" class="emblem">
+  <div>
+    <div class="logo">Lions <em>YCE Code Map</em></div>
+    <div class="header-sub" id="sub"></div>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="stat-num" id="st-mods">0</div><div class="stat-lbl">Modules</div></div>
+    <div class="stat"><div class="stat-num" id="st-lines">0</div><div class="stat-lbl">Lines</div></div>
+    <div class="stat"><div class="stat-num" id="st-kb">0</div><div class="stat-lbl">KB of code</div></div>
+  </div>
+</header>
+<main>
+  <div class="tabs" id="tabs"></div>
+  <div id="panes"></div>
+  <div class="gen-note">Data generated by <code>tools/build_codemap.py</code> — regenerate after refactoring. Click a module to unfold its functions; hover the dependency diagram to trace which symbols flow between modules.</div>
+</main>
+<div class="tt" id="tt"></div>
+<script src="codemap-data.js"></script>
+<script>
+"use strict";
+const PALETTE=["#e8a020","#06d6a0","#4fc3f7","#ce93d8","#ffb74d","#ef5350","#80cbc4","#ffd166","#9fa8da","#a5d6a7","#f48fb1","#b0bec5"];
+const short=f=>f.replace(/^js\//,"").replace(/\.js$/,"");
+const kb=b=>(b/1024).toFixed(1)+" KB";
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const tt=document.getElementById("tt");
+function showTT(e,html){tt.innerHTML=html;tt.classList.add("vis");
+  tt.style.left=Math.min(e.clientX+14,innerWidth-360)+"px";tt.style.top=(e.clientY+14)+"px";}
+function hideTT(){tt.classList.remove("vis");}
+
+function shareBar(mods){
+  const total=mods.reduce((a,m)=>a+m.bytes,0);
+  const div=document.createElement("div");div.className="share";
+  mods.forEach((m,i)=>{
+    const d=document.createElement("div");
+    d.style.width=(100*m.bytes/total)+"%";d.style.background=PALETTE[i%PALETTE.length];
+    d.textContent=short(m.file);
+    d.onmousemove=e=>showTT(e,"<b>"+esc(m.file)+"</b><br>"+m.lines+" lines · "+kb(m.bytes)+"<br>"+esc(m.role));
+    d.onmouseleave=hideTT;
+    d.onclick=()=>{const el=document.getElementById("mod-"+short(m.file));
+      if(el){el.classList.add("open");el.scrollIntoView({behavior:"smooth",block:"center"});}};
+    div.appendChild(d);
+  });
+  return div;
+}
+
+function moduleCard(m,i){
+  const maxLoc=Math.max(...m.defs.map(d=>d.loc),1);
+  const card=document.createElement("div");card.className="mod";card.id="mod-"+short(m.file);
+  card.innerHTML=
+    '<div class="mod-head" style="border-left-color:'+PALETTE[i%PALETTE.length]+'">'
+    +'<span class="mod-name">'+esc(m.file)+'</span>'
+    +'<span class="mod-meta">'+m.lines+' ln · '+kb(m.bytes)+(m.generated?' · GEN':'')+'</span></div>'
+    +'<div class="mod-role">'+esc(m.role)+'</div>'
+    +'<div class="mod-body">'
+    +m.defs.map(d=>'<div class="fn">'
+      +'<span class="fn-line">L'+d.line+'</span>'
+      +'<span class="fn-name '+(d.kind==="state"?"state":"")+'">'+esc(d.name)+'</span>'
+      +'<span class="fn-bar" style="width:'+Math.max(2,90*d.loc/maxLoc)+'px"></span>'
+      +'<span class="fn-loc">'+d.loc+' loc</span>'
+      +'<span class="fn-role">'+esc(d.role||"")+'</span>'
+      +'</div>').join("")
+    +'</div>';
+  card.querySelector(".mod-head").onclick=()=>card.classList.toggle("open");
+  return card;
+}
+
+function depDiagram(pack){
+  const mods=pack.modules, W=Math.max(880,mods.length*95), NH=26, Y=190;
+  const xs={};
+  mods.forEach((m,i)=>{xs[m.file]=40+i*((W-120)/Math.max(1,mods.length-1));});
+  const svgNS="http://www.w3.org/2000/svg";
+  const svg=document.createElementNS(svgNS,"svg");
+  svg.setAttribute("width",W);svg.setAttribute("height",Y+NH+34);
+  const edges=pack.edges.filter(e=>!e.to.endsWith("assets.js"));
+  edges.forEach(e=>{
+    const x1=xs[e.from]+40,x2=xs[e.to]+40;
+    const h=Math.min(160,26+Math.abs(x2-x1)/5);
+    const d="M"+x1+" "+Y+" C "+x1+" "+(Y-h)+", "+x2+" "+(Y-h)+", "+x2+" "+Y;
+    const p=document.createElementNS(svgNS,"path");
+    p.setAttribute("d",d);p.setAttribute("class","arc");
+    p.dataset.from=e.from;p.dataset.to=e.to;
+    svg.appendChild(p);
+    // zone de survol invisible, plus large que le trait
+    const hit=document.createElementNS(svgNS,"path");
+    hit.setAttribute("d",d);
+    hit.setAttribute("fill","none");hit.setAttribute("stroke","transparent");
+    hit.setAttribute("stroke-width","11");hit.style.pointerEvents="stroke";
+    hit.addEventListener("mousemove",ev=>{p.classList.add("hl");
+      showTT(ev,"<b>"+short(e.from)+"</b> → <b>"+short(e.to)+"</b><br>"+e.names.map(esc).join(", "));});
+    hit.addEventListener("mouseleave",()=>{p.classList.remove("hl");hideTT();});
+    svg.appendChild(hit);
+  });
+  mods.forEach((m,i)=>{
+    const g=document.createElementNS(svgNS,"g");g.setAttribute("class","node");
+    const r=document.createElementNS(svgNS,"rect");
+    r.setAttribute("x",xs[m.file]);r.setAttribute("y",Y);r.setAttribute("width",80);r.setAttribute("height",NH);
+    r.setAttribute("rx",6);
+    const t=document.createElementNS(svgNS,"text");
+    t.setAttribute("x",xs[m.file]+40);t.setAttribute("y",Y+17);t.setAttribute("text-anchor","middle");
+    t.textContent=short(m.file);
+    g.appendChild(r);g.appendChild(t);
+    g.addEventListener("mousemove",ev=>{
+      g.classList.add("hl");
+      document.querySelectorAll("path.arc").forEach(p=>{
+        p.classList.toggle("hl",p.dataset.from===m.file||p.dataset.to===m.file);});
+      const uses=pack.edges.filter(e=>e.to===m.file).map(e=>short(e.from));
+      const usedBy=pack.edges.filter(e=>e.from===m.file).map(e=>short(e.to));
+      showTT(ev,"<b>"+esc(m.file)+"</b><br>"+esc(m.role)
+        +(uses.length?"<br>uses: "+uses.join(", "):"")
+        +(usedBy.length?"<br>used by: "+usedBy.join(", "):""));
+    });
+    g.addEventListener("mouseleave",()=>{g.classList.remove("hl");hideTT();
+      document.querySelectorAll("path.arc").forEach(p=>p.classList.remove("hl"));});
+    svg.appendChild(g);
+    const ld=document.createElementNS(svgNS,"text");
+    ld.setAttribute("x",xs[m.file]+40);ld.setAttribute("y",Y+NH+18);ld.setAttribute("text-anchor","middle");
+    ld.textContent=(i+1)+".";
+    svg.appendChild(ld);
+  });
+  const wrap=document.createElement("div");wrap.className="dep-wrap";
+  wrap.appendChild(svg);
+  const hint=document.createElement("div");hint.className="dep-hint";
+  hint.textContent="Load order left → right (numbers). Arcs = symbols defined in one module and used by another; hover an arc or a module.";
+  wrap.appendChild(hint);
+  return wrap;
+}
+
+function pagePane(pack){
+  const pane=document.createElement("div");
+  const h1=document.createElement("h2");h1.textContent="Weight by module (bytes, hand-written code)";pane.appendChild(h1);
+  pane.appendChild(shareBar(pack.modules.filter(m=>!m.generated)));
+  const lg=document.createElement("div");lg.className="share-legend";
+  lg.textContent="Click a slice to jump to the module card. Generated payloads (assets.js) are excluded from the bar.";pane.appendChild(lg);
+  const h2=document.createElement("h2");h2.textContent="Dependencies & load order";pane.appendChild(h2);
+  pane.appendChild(depDiagram(pack));
+  const h3=document.createElement("h2");h3.textContent="Modules & business functions";pane.appendChild(h3);
+  const grid=document.createElement("div");grid.className="grid";
+  pack.modules.forEach((m,i)=>grid.appendChild(moduleCard(m,i)));
+  pane.appendChild(grid);
+  return pane;
+}
+
+function sitePane(){
+  const pane=document.createElement("div");
+  const h=document.createElement("h2");h.textContent=CODEMAP.site.file+" — "+CODEMAP.site.lines+" lines · "+kb(CODEMAP.site.bytes)+" (monolithic page)";
+  pane.appendChild(h);
+  const t=document.createElement("table");t.className="simple";
+  t.innerHTML="<tr><th>Block</th><th>Content</th></tr>"
+    +CODEMAP.site.blocks.map(b=>"<tr><td class='mono'>"+esc(b.name)+"</td><td>"+esc(b.role)+"</td></tr>").join("");
+  pane.appendChild(t);
+  const n=document.createElement("p");n.style.cssText="font-size:11px;color:var(--muted);margin-top:10px";
+  n.textContent="Only page with external runtime dependencies (D3 + TopoJSON via CDN, for the world map).";
+  pane.appendChild(n);
+  return pane;
+}
+
+function dataPane(){
+  const pane=document.createElement("div");
+  const h=document.createElement("h2");h.textContent="Data, shells & tooling";pane.appendChild(h);
+  const t=document.createElement("table");t.className="simple";
+  t.innerHTML="<tr><th>File</th><th>Size</th><th>Role</th></tr>"
+    +CODEMAP.data.map(d=>"<tr><td class='mono'>"+esc(d.file)+"</td><td class='mono'>"+kb(d.bytes)+"</td><td>"+esc(d.role)+"</td></tr>").join("");
+  pane.appendChild(t);
+  return pane;
+}
+
+const TABS=[
+  {id:"filler",label:"📝 Form filler",make:()=>pagePane(CODEMAP.filler)},
+  {id:"tracker",label:"📋 Tracker",make:()=>pagePane(CODEMAP.tracker)},
+  {id:"site",label:"🌍 Public site",make:sitePane},
+  {id:"data",label:"🧰 Data & tools",make:dataPane},
+];
+const tabs=document.getElementById("tabs"),panes=document.getElementById("panes");
+TABS.forEach((t,i)=>{
+  const b=document.createElement("button");b.className="tab"+(i===0?" on":"");b.textContent=t.label;
+  b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("on"));
+    document.querySelectorAll(".pane").forEach(x=>x.classList.remove("on"));
+    b.classList.add("on");document.getElementById("pane-"+t.id).classList.add("on");};
+  tabs.appendChild(b);
+  const p=document.createElement("div");p.className="pane"+(i===0?" on":"");p.id="pane-"+t.id;
+  p.appendChild(t.make());panes.appendChild(p);
+});
+document.getElementById("sub").textContent="Interactive code map · generated "+CODEMAP.generated+" · commit "+CODEMAP.commit;
+const all=[...CODEMAP.filler.modules,...CODEMAP.tracker.modules].filter(m=>!m.generated);
+document.getElementById("st-mods").textContent=all.length;
+document.getElementById("st-lines").textContent=all.reduce((a,m)=>a+m.lines,0);
+document.getElementById("st-kb").textContent=Math.round(all.reduce((a,m)=>a+m.bytes,0)/1024);
+</script>
+</body>
+</html>
