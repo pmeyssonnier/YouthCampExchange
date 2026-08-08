@@ -3,6 +3,38 @@
 "use strict";
 // -------------------- mode signature du président de club --------------------
 const COMMIT_FILE={buf:null,name:null};
+const SIGN_EXTRAS=[]; // pièces du dossier (photo, preuve de paiement) reconduites telles quelles
+function loadDossier(inp){
+  const file=inp.files[0];if(!file)return;
+  const r=new FileReader();
+  r.onload=async function(){
+    if(!/\.zip$/i.test(file.name)){
+      templateBuf=r.result;
+      setStatus("Template loaded: "+file.name,false);
+      syncFromTemplate(templateBuf);
+      return;
+    }
+    try{
+      const entries=await unzip(r.result);
+      SIGN_EXTRAS.length=0;
+      let okXlsx=false;
+      for(const e of entries){
+        const base=e.name.split("/").pop();
+        if(!base||e.name.indexOf("__MACOSX")>=0||base===".DS_Store")continue;
+        const buf=e.data.buffer.slice(e.data.byteOffset,e.data.byteOffset+e.data.byteLength);
+        if(/\.xlsx$/i.test(base)){templateBuf=buf;okXlsx=true;}
+        else if(/\.docx$/i.test(base)){COMMIT_FILE.buf=buf;COMMIT_FILE.name=base;
+          const lbl=document.getElementById("commitfile-lbl");
+          if(lbl)lbl.textContent="✔ "+base;}
+        else if(/\.(jpe?g|png|pdf)$/i.test(base))SIGN_EXTRAS.push({name:base,data:e.data});
+      }
+      if(!okXlsx)throw new Error("no application .xlsx found in this ZIP");
+      setStatus("Dossier loaded: "+file.name+" ("+(COMMIT_FILE.buf?"form + Commitment":"form")+(SIGN_EXTRAS.length?" + "+SIGN_EXTRAS.length+" attachment(s)":"")+")",false);
+      await syncFromTemplate(templateBuf);
+    }catch(e){setStatus("⚠ "+file.name+" — "+e.message,true);}
+  };
+  r.readAsArrayBuffer(file);
+}
 function loadCommitFile(inp){
   const file=inp.files[0];if(!file)return;
   const r=new FileReader();

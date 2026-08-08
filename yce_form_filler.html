@@ -108,8 +108,8 @@ input.tel-bad{border-color:var(--red) !important;}
     ③ Click “Generate the Excel file”: the signed files are downloaded — send them back to the candidate, who
     forwards the complete application to the district coordinator.
     <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
-      <label class="tpl-btn" style="flex:1;min-width:220px;text-align:center;">📂 Load the candidate's Excel file (.xlsx)…
-        <input type="file" accept=".xlsx" style="display:none" onchange="loadTemplate(this)"></label>
+      <label class="tpl-btn" style="flex:1;min-width:220px;text-align:center;">📂 Load the candidate's dossier (.zip) or form (.xlsx)…
+        <input type="file" accept=".zip,.xlsx" style="display:none" onchange="loadDossier(this)"></label>
       <label class="tpl-btn" style="flex:1;min-width:220px;text-align:center;"><span id="commitfile-lbl">📄 Load the candidate's Commitment (.docx)…</span>
         <input type="file" accept=".docx" style="display:none" onchange="loadCommitFile(this)"></label>
     </div>

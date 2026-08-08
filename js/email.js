@@ -11,18 +11,19 @@ function mailPresident(){
   const body=
 "Dear President,\n\n"
 +"Please find attached my application file for the Lions Youth Camp & Exchange 2026 programme, sponsored by our club:\n"
-+MAIL_INFO.files.map(function(f){return "- "+f;}).join("\n")+"\n\n"
++MAIL_INFO.files.map(function(f){return "- "+f;}).join("\n")
++((MAIL_INFO.contents||[]).length?"\n  (contains: "+MAIL_INFO.contents.join(", ")+")":"")+"\n\n"
 +"Your signature is needed on the application form and the Commitment to Reciprocity. You can sign online in a few minutes, nothing to install:\n"
 +"1. Open: "+signUrl+"\n"
-+"2. Load the attached files (buttons at the top of the page).\n"
++"2. Load the attached ZIP file (button at the top of the page) - everything is read automatically.\n"
 +"3. Check the information, then sign in the \"Club representative signature\" box - with your finger, mouse, or by uploading an image of your signature. The date fills in automatically.\n"
-+"4. Click \"Generate the Excel file\" and simply send me back the downloaded documents by replying to this e-mail.\n\n"
++"4. Click \"Generate the Excel file\" and simply send me back the downloaded ZIP by replying to this e-mail.\n\n"
 +"I will then forward the complete file to the district YCE coordinator. Everything runs in your browser - no data is sent to any server.\n\n"
 +"Many thanks for your sponsorship and support,\n\n"
 +MAIL_INFO.fir+" "+MAIL_INFO.fam+(mobile?" - "+mobile:"")+"\n"
 +"YCE 2026 candidate";
   openMail("mailto:"+encodeURIComponent(to)+"?subject="+encodeURIComponent(subject)+"&body="+encodeURIComponent(body));
-  setStatus("✉ E-mail draft opened - remember to attach the downloaded files before sending!",false);
+  setStatus("✉ E-mail draft opened - attach the single ZIP file from your Downloads folder before sending!",false);
 }
 
 function mailCoordinator(){
@@ -34,13 +35,14 @@ function mailCoordinator(){
   const body=
 "Dear "+coord+",\n\n"
 +"Please find attached my complete application file for the Lions Youth Camp & Exchange 2026 programme"
-+(club?", sponsored by LC "+club:"")+":\n"
-+MAIL_INFO.files.map(function(f){return "- "+f;}).join("\n")+"\n"
-+"- the application form and the Commitment to Reciprocity are signed by my parents and myself, and countersigned by our club president.\n\n"
++(club?", sponsored by LC "+club:"")+" - a single ZIP archive returned countersigned by our club president:\n"
++MAIL_INFO.files.map(function(f){return "- "+f;}).join("\n")
++((MAIL_INFO.contents||[]).length?"\n  (contains: "+MAIL_INFO.contents.join(", ")+")":"")+"\n"
++"The application form and the Commitment to Reciprocity are signed by my parents and myself, and countersigned by our club president.\n\n"
 +"I remain available for any further information or document.\n\n"
 +"Kind regards,\n\n"
 +MAIL_INFO.fir+" "+MAIL_INFO.fam+(mobile?" - "+mobile:"")+"\n"
 +"YCE 2026 candidate"+(club?" - LC "+club:"");
   openMail("mailto:"+encodeURIComponent(to)+"?subject="+encodeURIComponent(subject)+"&body="+encodeURIComponent(body));
-  setStatus("✉ E-mail draft opened - attach the complete file (including the club-countersigned documents) before sending!",false);
+  setStatus("✉ E-mail draft opened - attach the ZIP returned by your club president before sending!",false);
 }

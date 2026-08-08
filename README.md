@@ -18,9 +18,9 @@ Everything is served as **static pages** (GitHub Pages ready): no backend, no da
 
 Opened from the site with `?district=A/B/C/D`, it loads the official Excel form of that district and prefills the district data from the file itself. The candidate fills ~85 fields with proper controls (date pickers, Yes/No pill buttons, camp choices suggested from the season's camp list, international phone-number normalisation `+32 …`, conditional fields shown only when relevant), attaches the required documents and signs on screen.
 
-**Generating the file** inserts every answer into the genuine `.xlsx` (formatting, logos and formulas fully preserved — age, signature names and footer are recomputed by Excel) and downloads the complete application file:
+**Generating the file** inserts every answer into the genuine `.xlsx` (formatting, logos and formulas fully preserved — age, signature names and footer are recomputed by Excel) and downloads the complete application file as **one ZIP archive** — a single attachment to e-mail around — `Dossier_YCE_2026_112X_Name_Firstname.zip` containing:
 
-- `Application_form_2026_112X_Name_Firstname.xlsx` — the official form, with the applicant & parent signatures pasted as images on their signature rows
+- `Application_form_2026_112X_….xlsx` — the official form, with the applicant & parent signatures pasted as images on their signature rows
 - `Commitment_to_Reciprocity_2026_112X_….docx` — the reciprocity contract, read and validated in-form, generated with the candidate's name, date and signatures (an invisible slot is kept for the club chairman)
 - `Pass_photo_2026_112X_….jpg` and `Payment_proof_2026_112X_….pdf/jpg` — the uploaded attachments, renamed consistently
 
@@ -29,8 +29,8 @@ Entries are saved automatically in the browser (survive a refresh, "Clear form" 
 ### Signature workflow
 
 1. **Applicant & parent/guardian** sign on screen (finger, mouse, or an uploaded image of the signature); the matching date fills in automatically.
-2. **Club chairman** — either in person on the candidate's device (admin mode), or remotely: he opens *Sign it online* (`?sign=club`), loads the `.xlsx` and Commitment received by e-mail, checks the data (values, choices and existing signatures are read back from the files), signs his box and regenerates both counter-signed documents to send back.
-3. The candidate e-mails the **complete file** (form + Commitment, both club-signed + photo + payment proof) to the district YCE coordinator.
+2. **Club chairman** — either in person on the candidate's device (admin mode), or remotely: he opens *Sign it online* (`?sign=club`), loads the candidate's **ZIP** received by e-mail (form, Commitment and attachments are read automatically), checks the data, signs his box and regenerates the counter-signed ZIP to send back.
+3. The candidate e-mails the **counter-signed ZIP** to the district YCE coordinator, who can drop it straight into the tracker.
 
 ### Admin mode (`?admin`)
 

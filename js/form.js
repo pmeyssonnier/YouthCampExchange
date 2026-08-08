@@ -37,49 +37,32 @@ async function generate(){
     }
     addSignatures(entries);
     const blob=await buildZip(entries);
-    const safe=function(s){return s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^A-Za-z0-9_-]+/g,"_");};
+    const safe=function(x){return x.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^A-Za-z0-9_-]+/g,"_");};
     const name="Application_form_2026_112"+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+".xlsx";
-    const a=document.createElement("a");
-    a.href=URL.createObjectURL(blob);a.download=name;
-    document.body.appendChild(a);a.click();a.remove();
-    setTimeout(function(){URL.revokeObjectURL(a.href);},5000);
-    let msg="✔ File generated: "+name;
-    const outFiles=[name];
+    // assemble le dossier complet dans une seule archive : une seule pièce jointe à envoyer
+    const files=[{name:name,data:new Uint8Array(await blob.arrayBuffer())}];
     if(SIGN_CLUB&&COMMIT_FILE.buf){
       const scb=await signCommitmentFile();
-      const scn=COMMIT_FILE.name.replace(/\.docx$/i,"")+"_club-signed.docx";
-      const sca=document.createElement("a");
-      sca.href=URL.createObjectURL(scb);sca.download=scn;
-      document.body.appendChild(sca);sca.click();sca.remove();
-      setTimeout(function(){URL.revokeObjectURL(sca.href);},5000);
-      outFiles.push(scn);msg+=" + "+scn;
+      files.push({name:COMMIT_FILE.name.replace(/\.docx$/i,"")+"_club-signed.docx",data:new Uint8Array(await scb.arrayBuffer())});
     }
     if(COMMIT.agreed){
       const cb=await buildCommitmentDoc(fam,fir);
-      const cn="Commitment_to_Reciprocity_2026_112"+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+".docx";
-      const ca=document.createElement("a");
-      ca.href=URL.createObjectURL(cb);ca.download=cn;
-      document.body.appendChild(ca);ca.click();ca.remove();
-      setTimeout(function(){URL.revokeObjectURL(ca.href);},5000);
-      outFiles.push(cn);msg+=" + "+cn;
+      files.push({name:"Commitment_to_Reciprocity_2026_112"+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+".docx",data:new Uint8Array(await cb.arrayBuffer())});
     }
-    if(PHOTO.dataUrl){
-      const pn="Pass_photo_2026_112"+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+".jpg";
-      const pa=document.createElement("a");
-      pa.href=PHOTO.dataUrl;pa.download=pn;
-      document.body.appendChild(pa);pa.click();pa.remove();
-      outFiles.push(pn);msg+=" + "+pn;
-    }
-    if(PAY.dataUrl){
-      const yn="Payment_proof_2026_112"+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+"."+PAY.ext;
-      const ya=document.createElement("a");
-      ya.href=PAY.dataUrl;ya.download=yn;
-      document.body.appendChild(ya);ya.click();ya.remove();
-      outFiles.push(yn);msg+=" + "+yn;
-    }
-    setStatus(msg,false);
+    if(PHOTO.dataUrl)files.push({name:"Pass_photo_2026_112"+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+".jpg",data:dataUrlToBytes(PHOTO.dataUrl)});
+    if(PAY.dataUrl)files.push({name:"Payment_proof_2026_112"+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+"."+PAY.ext,data:dataUrlToBytes(PAY.dataUrl)});
+    if(typeof SIGN_EXTRAS!=="undefined")SIGN_EXTRAS.forEach(function(x){files.push({name:x.name,data:x.data});});
+    const zipName="Dossier_YCE_2026_112"+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+".zip";
+    const zblob=await buildZip(files,"application/zip");
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(zblob);a.download=zipName;
+    document.body.appendChild(a);a.click();a.remove();
+    setTimeout(function(){URL.revokeObjectURL(a.href);},5000);
+    setStatus("✔ Dossier generated: "+zipName+" — "+files.length+" file(s): "+files.map(function(f){return f.name;}).join(", "),false);
     if(!SIGN_CLUB){
-      MAIL_INFO.fam=fam;MAIL_INFO.fir=fir;MAIL_INFO.files=outFiles;
+      MAIL_INFO.fam=fam;MAIL_INFO.fir=fir;
+      MAIL_INFO.files=[zipName];
+      MAIL_INFO.contents=files.map(function(f){return f.name;});
       document.getElementById("mail-btn").style.display="";
       document.getElementById("coord-btn").style.display="";
     }
