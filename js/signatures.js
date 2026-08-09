@@ -50,16 +50,61 @@ function sigUpload(k,inp){
   inp.value="";
 }
 
+// Recharge dans les pads les signatures déjà présentes dans un classeur chargé
+// (lignes 127/129/131/… → pads existants) ; elles redeviennent visibles et réutilisables.
+async function sigsFromWorkbook(entries){
+  const de=entries.find(function(e){return e.name==="xl/drawings/drawing1.xml";});
+  const re=entries.find(function(e){return e.name==="xl/drawings/_rels/drawing1.xml.rels";});
+  if(!de||!re)return;
+  const td=new TextDecoder();
+  const dx=td.decode(de.data), rx=td.decode(re.data);
+  const rels={};
+  rx.replace(/<Relationship Id="([^"]+)"[^>]*Target="([^"]+)"/g,function(m0,id,t){rels[id]=t;return m0;});
+  const rowKey={};
+  Object.keys(SIGS).forEach(function(k){rowKey[SIGS[k].row]=k;});
+  const blocks=dx.match(/<xdr:oneCellAnchor>[\s\S]*?<\/xdr:oneCellAnchor>/g)||[];
+  for(const b of blocks){
+    const rm=b.match(/<xdr:row>(\d+)<\/xdr:row>/);
+    const em=b.match(/r:embed="([^"]+)"/);
+    if(!rm||!em)continue;
+    const key=rowKey[+rm[1]];
+    if(!key)continue;
+    const target=rels[em[1]];
+    if(!target)continue;
+    const media=entries.find(function(e){return e.name==="xl/"+target.replace(/^\.\.\//,"");});
+    if(!media)continue;
+    const st=SIGS[key];
+    await new Promise(function(done){
+      const url=URL.createObjectURL(new Blob([media.data],{type:"image/png"}));
+      const img=new Image();
+      img.onload=function(){
+        st.ctx.clearRect(0,0,st.cv.width,st.cv.height);
+        const k2=Math.min(st.cv.width/img.width,st.cv.height/img.height);
+        st.ctx.drawImage(img,(st.cv.width-img.width*k2)/2,(st.cv.height-img.height*k2)/2,img.width*k2,img.height*k2);
+        st.ink=true;URL.revokeObjectURL(url);done();
+      };
+      img.onerror=function(){URL.revokeObjectURL(url);done();};
+      img.src=url;
+    });
+  }
+}
+
 function dataUrlToBytes(u){const b=atob(u.split(",")[1]);const a=new Uint8Array(b.length);
   for(let i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a;}
 function addSignatures(entries){
-  const sigs=Object.keys(SIGS).filter(function(k){return SIGS[k].ink;});
-  if(!sigs.length)return;
   const drawing=entries.find(function(e){return e.name==="xl/drawings/drawing1.xml";});
   const rels=entries.find(function(e){return e.name==="xl/drawings/_rels/drawing1.xml.rels";});
   if(!drawing||!rels){console.warn("drawing absent — signatures ignorées");return;}
   const td=new TextDecoder(),te=new TextEncoder();
   let dx=td.decode(drawing.data),rx=td.decode(rels.data);
+  // idempotence : les lignes gérées par les pads de cette page repartent de l'état des pads
+  const managedRows=Object.keys(SIGS).map(function(k){return SIGS[k].row;});
+  dx=dx.replace(/<xdr:oneCellAnchor>[\s\S]*?<\/xdr:oneCellAnchor>/g,function(block){
+    const m=block.match(/<xdr:row>(\d+)<\/xdr:row>/);
+    return (m&&managedRows.indexOf(+m[1])>=0)?"":block;
+  });
+  const sigs=Object.keys(SIGS).filter(function(k){return SIGS[k].ink;});
+  if(!sigs.length){drawing.data=te.encode(dx);return;}
   sigs.forEach(function(k,i){
     const st=SIGS[k];
     const media="xl/media/imageSig"+(i+1)+".png";

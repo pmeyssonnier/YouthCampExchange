@@ -149,6 +149,7 @@ async function syncFromTemplate(buf){
       }
       el.dataset.tpl=v;
     });});
+    if(typeof sigsFromWorkbook==="function")await sigsFromWorkbook(entries);
     upd();
   }catch(e){console.warn("template sync:",e);}
 }

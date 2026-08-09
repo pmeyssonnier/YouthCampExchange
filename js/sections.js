@@ -32,8 +32,6 @@ const SECTIONS = [
    {ref:"AC11",label:"2nd Camp preference",type:"text",list:"dl-camp2",w:4},
    {ref:"N12",label:"3rd Country preference",type:"text",list:"dl-countries",w:2,oninput:"syncCamps(3)",id:"ctry3"},
    {ref:"AC12",label:"3rd Camp preference",type:"text",list:"dl-camp3",w:4},
-   {ref:"N13",label:"Final destination (only for YCEC!)",type:"text",w:3},
-   {xgroup:"dest",label:"Stay type",w:3,none:true,opts:[{lbl:"Family & camp",ref:"AC13"},{lbl:"Family only",ref:"AJ13"}]},
  ]},
  {title:"II. Applicant's Basic Data", note:"if not available yet, write “in request”", fields:[
    {ref:"F16",label:"Family Name",type:"text",req:true,w:2},
