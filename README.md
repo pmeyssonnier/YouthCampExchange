@@ -13,6 +13,7 @@ Everything is served as **static pages** (GitHub Pages ready): no backend, no da
 | `yce_form_filler.html?sign=club` | Club presidents | **Remote counter-signing** of a candidate's application received by e-mail |
 | `yce_form_filler.html?admin` | District coordinators | Unlocks the admin tools (see below) |
 | `yce_tracker.html` | District coordinators | **Applications tracker**: drop the received files, get a live status table + CSV export |
+| `yce_admin.html` | Site administrator | **Site administration**: edit season/year, district coordinators, camp list; upload the reference form and Word templates — committed straight to GitHub |
 
 ## The application form filler
 
@@ -92,6 +93,20 @@ assets/                               logos & favicon
 The filler and tracker are plain-JavaScript **classic scripts sharing the global scope**, loaded in dependency order by their HTML shells; every module is directly editable in the repository. Only `js/assets.js` is generated — run `python3 tools/build_assets.py` after changing the blank form or the Commitment template.
 
 A detailed code map (modules, business functions with line numbers and sizes, dependency graphs) is maintained in [`docs/CODE_MAP.md`](docs/CODE_MAP.md).
+
+## Site administration (`yce_admin.html`)
+
+The platform stays server-less: **GitHub is the back end**. The admin page edits the
+repository through the GitHub API — the administrator "account" is a GitHub account
+with write access plus a fine-grained personal access token (this repository only,
+permission *Contents: Read and write*; the token never leaves the admin's browser).
+From the page you can change the season label and camp year, the district YCE
+coordinators (form stamping + site cards + e-mails follow), replace the whole camp
+list from a JSON file, and upload new official documents (reference form, Commitment,
+host-family letter, generation template). Every save is a commit on `main`; the
+`Rebuild generated files` GitHub Action then regenerates `js/assets.js`, `camps.json`
+and the code-map data, and GitHub Pages republishes the site — live in 2–3 minutes,
+with the full change history in git.
 
 ## Technical notes
 

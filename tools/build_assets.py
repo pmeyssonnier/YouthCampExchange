@@ -10,7 +10,7 @@ Run from the repository root after changing:
 Both templates are repacked without compression (STORE) so the browser can
 read them without inflating, then embedded as base64.
 """
-import base64, datetime, io, json, re, subprocess, zipfile
+import base64, datetime, glob, io, json, re, subprocess, zipfile
 
 def stored_b64(path):
     src = zipfile.ZipFile(path)
@@ -28,7 +28,7 @@ with open("js/assets.js", "w") as f:
     f.write("// FICHIER GENERE — ne pas éditer à la main.\n")
     f.write("// Regénérer avec :  python3 tools/build_assets.py  (depuis la racine du dépôt)\n")
     f.write('const BUILD="%s";\n' % version)
-    f.write('const TEMPLATE_B64="%s";\n' % stored_b64("Application_form_2026_MD112.xlsx"))
+    f.write('const TEMPLATE_B64="%s";\n' % stored_b64(sorted(glob.glob("Application_form_*_MD112.xlsx"))[-1]))
     f.write('const COMMIT_B64="%s";\n' % stored_b64("tools/commit_template.docx"))
 print("js/assets.js written,", version)
 

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lions YCE — Site Administration — MD 112 Belgium</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<meta name="robots" content="noindex">
+<style>
+:root{
+  --bg:#0d1827;--surface:#132038;--card:#1a2d4a;--border:#243d5c;
+  --gold:#e8a020;--gold2:#ffd166;--accent:#06d6a0;--blue:#4fc3f7;
+  --text:#dce8f5;--muted:#6b8aaa;--hover:#1e3355;--red:#ef5350;--orange:#ffb74d;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;min-height:100vh;}
+header{background:linear-gradient(135deg,#0a1628 0%,#182d4a 100%);border-bottom:2px solid var(--gold);padding:16px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.emblem{height:44px;width:44px;object-fit:contain;}
+.logo{font-family:Georgia,serif;font-size:22px;font-weight:700;color:var(--gold);}
+.header-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+main{max-width:900px;margin:0 auto;padding:20px 16px 60px;}
+.section{background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:18px;overflow:hidden;}
+.sec-head{background:linear-gradient(90deg,rgba(232,160,32,0.12),transparent);padding:12px 18px;border-bottom:1px solid var(--border);display:flex;align-items:baseline;gap:12px;}
+.sec-title{font-family:Georgia,serif;font-size:17px;font-weight:700;color:var(--gold);}
+.sec-note{font-size:11px;color:var(--muted);}
+.sec-body{padding:16px 18px;display:grid;grid-template-columns:repeat(6,1fr);gap:12px 14px;}
+.fld{display:flex;flex-direction:column;gap:4px;}
+.w1{grid-column:span 1}.w2{grid-column:span 2;}.w3{grid-column:span 3;}.w6{grid-column:span 6;}
+@media(max-width:700px){.w2,.w3{grid-column:span 6;}.w1{grid-column:span 3;}}
+label.flbl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);}
+input,select{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:8px 11px;color:var(--text);font-size:13px;font-family:inherit;outline:none;width:100%;}
+input:focus{border-color:var(--gold);}
+.hint{font-size:10.5px;color:var(--muted);line-height:1.5;}
+.btn{background:var(--gold);color:#0d1827;border:none;border-radius:8px;padding:11px 22px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;}
+.btn:hover{background:var(--gold2);}
+.btn:disabled{opacity:0.5;cursor:wait;}
+.btn2{background:transparent;border:1px solid var(--border);border-radius:8px;padding:9px 16px;color:var(--muted);cursor:pointer;font-size:12px;font-family:inherit;}
+.btn2:hover{border-color:var(--blue);color:var(--blue);}
+.intro{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--blue);border-radius:8px;padding:14px 18px;margin-bottom:20px;font-size:12.5px;color:var(--muted);line-height:1.65;}
+.intro b{color:var(--text);}
+#log{font-size:12px;line-height:1.7;max-height:180px;overflow-y:auto;font-family:monospace;}
+#log .ok{color:var(--accent);}#log .err{color:var(--red);}#log .info{color:var(--muted);}
+.dist-row{display:contents;}
+.upl{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--card);border:1px dashed var(--border);border-radius:8px;padding:10px 14px;}
+.upl b{font-size:12.5px;min-width:230px;}
+.upl .path{font-family:monospace;font-size:10.5px;color:var(--blue);flex:1;min-width:180px;}
+.badge{display:inline-block;background:rgba(6,214,160,0.12);color:var(--accent);border-radius:10px;padding:2px 10px;font-size:11px;}
+</style>
+</head>
+<body>
+<header>
+  <img src="assets/logo_lions.png" alt="Lions Clubs International" class="emblem">
+  <div>
+    <div class="logo">YCE <em style="color:var(--text);font-style:italic;font-weight:400;font-size:15px">Site Administration</em></div>
+    <div class="header-sub">Youth Camp &amp; Exchange — MD 112 Belgium · edits are committed to GitHub, the site republishes itself</div>
+  </div>
+  <span class="badge" id="who" style="margin-left:auto;display:none"></span>
+</header>
+<main>
+  <div class="intro">
+    <b>How it works.</b> This page edits the repository directly through the GitHub API — there is no separate server.
+    You need a GitHub account with write access to the repository and a
+    <b>fine-grained personal access token</b> (GitHub → Settings → Developer settings → Fine-grained tokens: this repository only, permission <b>Contents: Read and write</b>).
+    After each save, a GitHub Action rebuilds the embedded templates and <code>camps.json</code>, then GitHub Pages republishes the site (2–3 minutes).
+  </div>
+
+  <div class="section">
+    <div class="sec-head"><span class="sec-title">Administrator access</span><span class="sec-note">token is kept only in this browser</span></div>
+    <div class="sec-body">
+      <div class="fld w3"><label class="flbl">GitHub access token</label><input type="password" id="token" placeholder="github_pat_…"></div>
+      <div class="fld w1" style="justify-content:flex-end"><button class="btn" id="connect" onclick="connect()">Connect</button></div>
+      <div class="fld w2" style="justify-content:flex-end"><button class="btn2" onclick="logout()">Forget the token on this device</button></div>
+    </div>
+  </div>
+
+  <div id="panel" style="display:none">
+  <div class="section">
+    <div class="sec-head"><span class="sec-title">Season</span><span class="sec-note">drives labels, file names, storage keys</span></div>
+    <div class="sec-body">
+      <div class="fld w2"><label class="flbl">Season label</label><input id="in-season"></div>
+      <div class="fld w1"><label class="flbl">Camp year</label><input id="in-year" maxlength="4"></div>
+      <div class="fld w3"><span class="hint">Changing the year renames the generated dossiers and resets every browser's drafts. Remember to upload the matching reference form and host-family letter below (their file names carry the year).</span></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-head"><span class="sec-title">District YCE coordinators</span><span class="sec-note">stamped in the form + shown on the site</span></div>
+    <div class="sec-body" id="dist-body"></div>
+  </div>
+
+  <div class="section">
+    <div class="sec-head"><span class="sec-title">Camp list</span><span class="sec-note" id="camps-note"></span></div>
+    <div class="sec-body">
+      <div class="fld w6"><label class="flbl">Replace the camp list (JSON)</label>
+        <input type="file" id="camps-file" accept=".json" onchange="campsPick(this)">
+        <span class="hint">Accepts the scraper output or <code>camps.json</code>: a JSON array of camps, or an object <code>{"season": …, "camps": [...]}</code>. Nothing is sent until you press “Save the data”.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-head"><span class="sec-title">Save</span><span class="sec-note">one commit to camps_data.js</span></div>
+    <div class="sec-body">
+      <div class="fld w2"><button class="btn" id="save" onclick="saveData()">💾 Save the data</button></div>
+      <div class="fld w4"><span class="hint">Writes season, year, coordinators and camp list into <code>camps_data.js</code> on the <b>main</b> branch. The rebuild Action then refreshes <code>camps.json</code> and the embedded assets.</span></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-head"><span class="sec-title">Official documents</span><span class="sec-note">each upload is committed immediately</span></div>
+    <div class="sec-body">
+      <div class="fld w6"><div class="upl"><b>📄 Reference application form (blank)</b><span class="path" id="p-af"></span><input type="file" accept=".xlsx" onchange="uploadPick(this,'af')"></div></div>
+      <div class="fld w6"><div class="upl"><b>📜 Commitment to Reciprocity (official)</b><span class="path">Commitment to Reciprocity.docx</span><input type="file" accept=".docx" onchange="uploadPick(this,'commit')"></div></div>
+      <div class="fld w6"><div class="upl"><b>💌 Host-family letter template</b><span class="path" id="p-letter"></span><input type="file" accept=".docx" onchange="uploadPick(this,'letter')"></div></div>
+      <div class="fld w6"><div class="upl"><b>🔧 Commitment generation template (markers)</b><span class="path">tools/commit_template.docx</span><input type="file" accept=".docx" onchange="uploadPick(this,'tpl')"></div></div>
+      <div class="fld w6"><span class="hint">The reference form must be the sanitized blank (no personal data, district cells empty). The generation template must keep the §CAND§ / §DATE§ / [BODY] / [SIG1-3] markers.</span></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-head"><span class="sec-title">Journal</span></div>
+    <div class="sec-body"><div class="fld w6" id="log"></div></div>
+  </div>
+  </div>
+</main>
+<script src="camps_data.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

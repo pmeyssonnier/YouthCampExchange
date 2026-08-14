@@ -3,6 +3,11 @@
 How to switch the whole platform (site, form filler, tracker) to a new YCE season.
 Everything derives from a handful of source files; the generated files are rebuilt by scripts.
 
+> **Shortcut:** steps 2, 3.1–3.3 and 4 can all be done from the browser with
+> `yce_admin.html` (season/year fields, coordinator editor, camp-list upload,
+> document uploads) — each save is a git commit and the rebuild Action replaces
+> step 5 automatically. The manual procedure below remains the reference.
+
 ## 1. Collect the new camp list
 
 1. Run `Lions Camp Scraper.ipynb` — it collects the season's camps from the LCI camp
