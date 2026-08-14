@@ -53,11 +53,17 @@ District/status/search filters, sortable columns, per-candidate status (`Receive
 ## Repository layout
 
 ```
-index.html                            public site + camp explorer
+index.html                            public site HTML shell (loads css/site.css + the js/site-* modules)
+css/site.css                          public site styles (nav, hero, explorer, map, modal, light/dark)
 camps_data.js                         season camp data (SEASON constant + RAW array, shared with the filler)
 yce_form_filler.html                  form filler HTML shell (loads the js/ modules below)
 yce_tracker.html                      tracker HTML shell
 js/
+  site-data.js                        site: date helpers, CAMPS enrichment, season stats
+  site-explorer.js                    site: camp directory (filters, sort, table, tabs)
+  site-map.js                         site: D3 world map (bubbles, zooms, country panel)
+  site-modal.js                       site: camp detail modal + timeline
+  site-ui.js                          site: theme, mobile nav, scroll-reveal — loaded last
   assets.js                           GENERATED — embedded templates (base64) + build version
   xlsx.js                             zip library + workbook cell read/write
   docx.js                             Commitment: text, validation, signed Word generation

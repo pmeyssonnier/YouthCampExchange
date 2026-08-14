@@ -109,14 +109,19 @@ def pack(files):
             m["generated"] = True
     return {"modules": mods, "edges": e}
 
+def _fl(path):
+    return "%s (%d ln, %.1f KB)" % (path, len(open(path).read().split("\n")), os.path.getsize(path)/1024)
+
 site = {"file": "index.html", "lines": len(open("index.html").read().split("\n")),
         "bytes": os.path.getsize("index.html"),
         "blocks": [
-            {"name": "styles", "role": "site + explorer + map + modal, light/dark, responsive"},
-            {"name": "sections", "role": "nav · hero · program · explorer · Brussels · apply · testimonials · team · footer"},
-            {"name": "explorer table", "role": "getFiltered/getSorted/renderTable/applyFilters + all filters"},
-            {"name": "world map (D3)", "role": "initMap/renderWorldBubbles/zoomContinent/zoomCountry/showCountryCamps"},
-            {"name": "camp modal", "role": "showCampDetail/buildTimeline"},
+            {"name": _fl("index.html"), "role": "HTML shell: nav · hero · program · explorer · Brussels · apply · testimonials · team · footer"},
+            {"name": _fl("css/site.css"), "role": "site + explorer + map + modal styles, light/dark, responsive"},
+            {"name": _fl("js/site-data.js"), "role": "date helpers, CAMPS enrichment, season stats, camp counts"},
+            {"name": _fl("js/site-explorer.js"), "role": "directory: getFiltered/getSorted/renderTable + all filters, tabs"},
+            {"name": _fl("js/site-map.js"), "role": "world map (D3): initMap/renderWorldBubbles/zoomContinent/zoomCountry/showCountryCamps"},
+            {"name": _fl("js/site-modal.js"), "role": "camp detail modal: showCampDetail/buildTimeline"},
+            {"name": _fl("js/site-ui.js"), "role": "theme toggle, mobile nav, scroll-reveal, Belgium teaser — runs init"},
         ]}
 
 data_files = [{"file": f, "bytes": os.path.getsize(f), "role": r} for f, r in [
