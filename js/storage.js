@@ -2,7 +2,7 @@
 // Chargé par yce_form_filler.html ; scripts classiques partageant la portée globale.
 "use strict";
 // -------------------- brouillon persistant (localStorage) --------------------
-const DRAFT_KEY="yce_form_draft_2026";
+const DRAFT_KEY="yce_form_draft_"+YEAR;
 let saveTimer=null;
 function saveDraft(){
   if(SIGN_MODE)return;

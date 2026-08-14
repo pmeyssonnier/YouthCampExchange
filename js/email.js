@@ -7,10 +7,10 @@ function mailPresident(){
   const to=(document.getElementById("f-E69")||{}).value||"";
   const signUrl=location.href.split(/[?#]/)[0]+"?sign=club";
   const mobile=(document.getElementById("f-S21")||{}).value||"";
-  const subject="YCE 2026 Application - "+MAIL_INFO.fir+" "+MAIL_INFO.fam+" - club signature required";
+  const subject="YCE "+YEAR+" Application - "+MAIL_INFO.fir+" "+MAIL_INFO.fam+" - club signature required";
   const body=
 "Dear President,\n\n"
-+"Please find attached my application file for the Lions Youth Camp & Exchange 2026 programme, sponsored by our club:\n"
++"Please find attached my application file for the Lions Youth Camp & Exchange "+YEAR+" programme, sponsored by our club:\n"
 +MAIL_INFO.files.map(function(f){return "- "+f;}).join("\n")
 +((MAIL_INFO.contents||[]).length?"\n  (contains: "+MAIL_INFO.contents.join(", ")+")":"")+"\n\n"
 +"Your signature is needed on the application form and the Commitment to Reciprocity. You can sign online in a few minutes, nothing to install:\n"
@@ -21,7 +21,7 @@ function mailPresident(){
 +"I will then forward the complete file to the district YCE coordinator. Everything runs in your browser - no data is sent to any server.\n\n"
 +"Many thanks for your sponsorship and support,\n\n"
 +MAIL_INFO.fir+" "+MAIL_INFO.fam+(mobile?" - "+mobile:"")+"\n"
-+"YCE 2026 candidate";
++"YCE "+YEAR+" candidate";
   openMail("mailto:"+encodeURIComponent(to)+"?subject="+encodeURIComponent(subject)+"&body="+encodeURIComponent(body));
   setStatus("✉ E-mail draft opened - attach the single ZIP file from your Downloads folder before sending!",false);
 }
@@ -31,10 +31,10 @@ function mailCoordinator(){
   const coord=(document.getElementById("f-I78")||{}).value||"the district YCE coordinator";
   const club=(document.getElementById("f-F67")||{}).value||"";
   const mobile=(document.getElementById("f-S21")||{}).value||"";
-  const subject="YCE 2026 Application - "+MAIL_INFO.fir+" "+MAIL_INFO.fam+" - District 112"+currentDistrict+" - complete file";
+  const subject="YCE "+YEAR+" Application - "+MAIL_INFO.fir+" "+MAIL_INFO.fam+" - District 112"+currentDistrict+" - complete file";
   const body=
 "Dear "+coord+",\n\n"
-+"Please find attached my complete application file for the Lions Youth Camp & Exchange 2026 programme"
++"Please find attached my complete application file for the Lions Youth Camp & Exchange "+YEAR+" programme"
 +(club?", sponsored by LC "+club:"")+" - a single ZIP archive returned countersigned by our club president:\n"
 +MAIL_INFO.files.map(function(f){return "- "+f;}).join("\n")
 +((MAIL_INFO.contents||[]).length?"\n  (contains: "+MAIL_INFO.contents.join(", ")+")":"")+"\n"
@@ -42,7 +42,7 @@ function mailCoordinator(){
 +"I remain available for any further information or document.\n\n"
 +"Kind regards,\n\n"
 +MAIL_INFO.fir+" "+MAIL_INFO.fam+(mobile?" - "+mobile:"")+"\n"
-+"YCE 2026 candidate"+(club?" - LC "+club:"");
++"YCE "+YEAR+" candidate"+(club?" - LC "+club:"");
   openMail("mailto:"+encodeURIComponent(to)+"?subject="+encodeURIComponent(subject)+"&body="+encodeURIComponent(body));
   setStatus("✉ E-mail draft opened - attach the ZIP returned by your club president before sending!",false);
 }

@@ -117,7 +117,7 @@ async function parseForm(fname,buf){
   const pct=Math.round(100*(REQUIRED.length-missing.length)/REQUIRED.length);
   let age="";
   const dm=g("X17").match(/^(\d{2})-(\d{2})-(\d{4})$/);
-  if(dm){age=((new Date(2026,6,1)-new Date(+dm[3],+dm[2]-1,+dm[1]))/31557600000).toFixed(1);}
+  if(dm){age=((new Date(+YEAR,6,1)-new Date(+dm[3],+dm[2]-1,+dm[1]))/31557600000).toFixed(1);}
   const key=rowKey(dist,fam,fir);
   const prev=ROWS[key]||{};
   ROWS[key]={

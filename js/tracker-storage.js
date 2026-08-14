@@ -1,7 +1,7 @@
 // tracker-storage.js — persistance locale des lignes du tableau
 // Chargé par yce_tracker.html ; scripts classiques partageant la portée globale.
 "use strict";
-const KEY="yce_tracker_2026";
+const KEY="yce_tracker_"+YEAR;
 const STATUSES=["Received","Under review","Incomplete","Complete — sent to MD","Placed","Withdrawn"];
 let ROWS={};
 try{ROWS=JSON.parse(localStorage.getItem(KEY)||"{}")||{};}catch(e){ROWS={};}

@@ -86,7 +86,7 @@ async function generate(){
     addSignatures(entries);
     const blob=await buildZip(entries);
     const safe=function(x){return x.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^A-Za-z0-9_-]+/g,"_");};
-    const name="Application_form_2026_112"+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+".xlsx";
+    const name="Application_form_"+YEAR+"_112"+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+".xlsx";
     // assemble le dossier complet dans une seule archive : une seule pièce jointe à envoyer
     const files=[{name:name,data:new Uint8Array(await blob.arrayBuffer())}];
     if(SIGN_CLUB&&COMMIT_FILE.buf){
@@ -95,13 +95,13 @@ async function generate(){
     }
     if(COMMIT.agreed){
       const cb=await buildCommitmentDoc(fam,fir);
-      files.push({name:"Commitment_to_Reciprocity_2026_112"+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+".docx",data:new Uint8Array(await cb.arrayBuffer())});
+      files.push({name:"Commitment_to_Reciprocity_"+YEAR+"_112"+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+".docx",data:new Uint8Array(await cb.arrayBuffer())});
     }
-    if(PHOTO.dataUrl)files.push({name:"Pass_photo_2026_112"+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+".jpg",data:dataUrlToBytes(PHOTO.dataUrl)});
-    if(PAY.dataUrl)files.push({name:"Payment_proof_2026_112"+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+"."+PAY.ext,data:dataUrlToBytes(PAY.dataUrl)});
-    if(LETTER.dataUrl)files.push({name:"Letter_to_Host_Family_2026_112"+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+"."+LETTER.ext,data:dataUrlToBytes(LETTER.dataUrl)});
+    if(PHOTO.dataUrl)files.push({name:"Pass_photo_"+YEAR+"_112"+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+".jpg",data:dataUrlToBytes(PHOTO.dataUrl)});
+    if(PAY.dataUrl)files.push({name:"Payment_proof_"+YEAR+"_112"+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+"."+PAY.ext,data:dataUrlToBytes(PAY.dataUrl)});
+    if(LETTER.dataUrl)files.push({name:"Letter_to_Host_Family_"+YEAR+"_112"+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+"."+LETTER.ext,data:dataUrlToBytes(LETTER.dataUrl)});
     if(typeof SIGN_EXTRAS!=="undefined")SIGN_EXTRAS.forEach(function(x){files.push({name:x.name,data:x.data});});
-    const zipName="Dossier_YCE_2026_112"+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+".zip";
+    const zipName="Dossier_YCE_"+YEAR+"_112"+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+".zip";
     const zblob=await buildZip(files,"application/zip");
     const a=document.createElement("a");
     a.href=URL.createObjectURL(zblob);a.download=zipName;
@@ -123,6 +123,9 @@ async function generate(){
 // -------------------- initialisation --------------------
 async function init(){
   render();initLists();sigInit();upd();
+  // l'année affichée (titre, en-tête, statut) vient de la constante YEAR (camps_data.js)
+  document.querySelectorAll(".yr").forEach(function(s){s.textContent=YEAR;});
+  document.title=document.title.replace(/20\d\d/,YEAR);
   const bs=document.getElementById("build");
   if(bs&&typeof BUILD!=="undefined")bs.textContent=BUILD;
   if(!SIGN_MODE)restoreDraft(); // les écrans de signature partent toujours du dossier chargé, jamais d'un brouillon local
@@ -182,7 +185,7 @@ async function init(){
   if(/^[A-D]$/.test(d)&&location.protocol.indexOf("http")===0){
     // ouvert depuis le site : on charge le formulaire officiel du district
     try{
-      const url="Application%20form%202026%20Distr%20"+d+"%201.xlsx";
+      const url="Application%20form%20"+YEAR+"%20Distr%20"+d+"%201.xlsx";
       const resp=await fetch(url);
       if(!resp.ok)throw new Error("HTTP "+resp.status);
       templateBuf=await resp.arrayBuffer();
