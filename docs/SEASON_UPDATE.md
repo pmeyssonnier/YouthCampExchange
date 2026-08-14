@@ -37,9 +37,9 @@ mapped before, add its coordinates in `js/site-map.js` (`COUNTRY_COORDS` +
    (`AF1` empty, `AH78` = "112", `I78`/`E79`/`E80` empty). It is embedded in
    the filler and downloadable from the site — there are no per-district files.
 2. Update the `DISTRICTS` constant in `camps_data.js` if a district YCE
-   coordinator changed (name, e-mail, mobile) — the filler stamps those five
-   cells when opened with `?district=X`. Update the matching `.dist-card`
-   contact blocks in `index.html` too.
+   coordinator changed (name, club, e-mail, mobile) — it drives both the
+   five district cells stamped by `?district=X` **and** the contact cards
+   on the public site. One place, nothing else to touch.
 3. Update `Commitment to Reciprocity.docx`, `tools/commit_template.docx`
    (keep the `§CAND§ / §DATE§ / [BODY] / [SIG1-3]` markers) and
    `Letter_to_Host_Family_20XX.docx` if their official text changed.
