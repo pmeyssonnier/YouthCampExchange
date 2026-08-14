@@ -22,6 +22,7 @@ function signSummary(){
     +'Club: <b>'+esc(v("F67"))+'</b> &nbsp;\u00b7&nbsp; e-mail: '+esc(v("S20"))+' &nbsp;\u00b7&nbsp; mobile: '+esc(v("S21"))+'<br>'
     +'1st camp choice: <b>'+esc(v("N10"))+'</b> \u2014 '+esc(v("AC10"))+'<br>'
     +(function(){
+      if(!SIGN_DISTRICT)return""; // le président signe même un dossier encore incomplet
       const missing=[];
       REQUIRED_FIELDS.forEach(function(rq){
         const i=document.getElementById("f-"+rq[0]);
