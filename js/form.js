@@ -108,7 +108,7 @@ async function generate(){
     document.body.appendChild(a);a.click();a.remove();
     setTimeout(function(){URL.revokeObjectURL(a.href);},5000);
     setStatus("✔ Dossier generated: "+zipName+" — "+files.length+" file(s): "+files.map(function(f){return f.name;}).join(", "),false);
-    if(!SIGN_CLUB){
+    if(!SIGN_MODE){ // les e-mails pré-rédigés ne concernent que le candidat, pas les écrans de signature
       MAIL_INFO.fam=fam;MAIL_INFO.fir=fir;
       MAIL_INFO.files=[zipName];
       MAIL_INFO.contents=files.map(function(f){return f.name;});
