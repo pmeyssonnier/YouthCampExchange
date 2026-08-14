@@ -48,6 +48,14 @@ async function unzip(buf){ // -> [{name, data:Uint8Array}]
   return entries;
 }
 async function buildZip(entries,mime){ // -> Blob (xlsx par défaut)
+  // sécurité : jamais deux entrées du même nom (interdit par le format OPC —
+  // Excel proposerait de "réparer" le fichier) ; on garde la plus récente
+  const seen={};const uniq=[];
+  for(let i=entries.length-1;i>=0;i--){
+    if(seen[entries[i].name])continue;
+    seen[entries[i].name]=1;uniq.unshift(entries[i]);
+  }
+  entries=uniq;
   const te=new TextEncoder();
   const parts=[];const central=[];let offset=0;
   for(const e of entries){

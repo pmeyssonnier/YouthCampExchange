@@ -107,18 +107,29 @@ function addSignatures(entries){
     const m=block.match(/<xdr:row>(\d+)<\/xdr:row>/);
     return (m&&managedRows.indexOf(+m[1])>=0)?"":block;
   });
+  // un fichier issu d'une version précédente peut contenir des relations en double :
+  // on ne garde que la première occurrence de chaque Id (les doublons font "réparer" Excel)
+  const seenRel={};
+  rx=rx.replace(/<Relationship Id="([^"]+)"[^>]*\/>/g,function(m0,id){
+    if(seenRel[id])return"";seenRel[id]=1;return m0;
+  });
   const sigs=Object.keys(SIGS).filter(function(k){return SIGS[k].ink;});
-  if(!sigs.length){drawing.data=te.encode(dx);return;}
-  sigs.forEach(function(k,i){
+  if(!sigs.length){drawing.data=te.encode(dx);rels.data=te.encode(rx);return;}
+  // identifiants FIXES par signataire : re-signer remplace, ne duplique jamais,
+  // et deux passes (président puis district) ne peuvent pas entrer en collision
+  const SIG_IDS={applicant:200,parent:201,club:202,mdyce:203,authycec:204};
+  sigs.forEach(function(k){
     const st=SIGS[k];
-    const media="xl/media/imageSig"+(i+1)+".png";
+    const media="xl/media/imageSig_"+k+".png";
+    for(let j=entries.length-1;j>=0;j--)if(entries[j].name===media)entries.splice(j,1);
     entries.push({name:media,data:dataUrlToBytes(st.cv.toDataURL("image/png"))});
-    const rid="rIdSig"+(i+1);
-    rx=rx.replace("</Relationships>",'<Relationship Id="'+rid+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/imageSig'+(i+1)+'.png"/></Relationships>');
+    const rid="rIdSig_"+k;
+    rx=rx.replace(new RegExp('<Relationship Id="'+rid+'"[^>]*/>',"g"),"");
+    rx=rx.replace("</Relationships>",'<Relationship Id="'+rid+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/imageSig_'+k+'.png"/></Relationships>');
     const anchor='<xdr:oneCellAnchor><xdr:from><xdr:col>8</xdr:col><xdr:colOff>30000</xdr:colOff>'
       +'<xdr:row>'+st.row+'</xdr:row><xdr:rowOff>20000</xdr:rowOff></xdr:from>'
       +'<xdr:ext cx="1600000" cy="400000"/>'
-      +'<xdr:pic><xdr:nvPicPr><xdr:cNvPr id="'+(200+i)+'" name="Signature '+k+'"/><xdr:cNvPicPr/></xdr:nvPicPr>'
+      +'<xdr:pic><xdr:nvPicPr><xdr:cNvPr id="'+(SIG_IDS[k]||210)+'" name="Signature '+k+'"/><xdr:cNvPicPr/></xdr:nvPicPr>'
       +'<xdr:blipFill><a:blip xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" r:embed="'+rid+'"/><a:stretch><a:fillRect/></a:stretch></xdr:blipFill>'
       +'<xdr:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="1600000" cy="400000"/></a:xfrm>'
       +'<a:prstGeom prst="rect"><a:avLst/></a:prstGeom></xdr:spPr></xdr:pic>'
