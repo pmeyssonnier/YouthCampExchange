@@ -99,7 +99,7 @@ A detailed code map (modules, business functions with line numbers and sizes, de
 - **Zero dependencies at runtime** for the filler and tracker: zip read/write is implemented in plain JavaScript (uncompressed embedded templates + the browser's native `CompressionStream`/`DecompressionStream`); the Excel/Word files are edited at the XML level, which preserves their formatting and formulas exactly. The public site uses D3/TopoJSON from CDN for the world map.
 - Values are written as cells (`inlineStr`/numeric), X-choices as `X` marks, signatures and photo as anchored images; `fullCalcOnLoad` makes Excel refresh the computed cells on open.
 - The build version is shown in the filler header (`vYYYY.MM.DD-commit`) to spot stale browser caches.
-- **Season update**: replace `SEASON`/`RAW` in `camps_data.js` (the filler derives its camp suggestions from it), drop in the new district forms, update the blank template, and run `python3 tools/build_assets.py` — it also re-exports `camps.json` (the plain-JSON version of the camp data, for Excel or any external tool).
+- **Season update**: replace `SEASON`/`RAW` in `camps_data.js` (the filler derives its camp suggestions from it), drop in the new district forms, update the blank template, and run `python3 tools/build_assets.py` — it also re-exports `camps.json` (the plain-JSON version of the camp data, for Excel or any external tool). The complete annual checklist is in [`docs/SEASON_UPDATE.md`](docs/SEASON_UPDATE.md).
 
 ## Privacy
 
