@@ -129,21 +129,27 @@ async function syncFromTemplate(buf){
     const sst=parseShared(entries);
     const d=getCellValue(xml,sst,"AF1");
     if(/^[A-D]$/i.test(d))currentDistrict=d.toUpperCase();
+    // en mode signature, le fichier chargé fait TOUJOURS foi : on écrase tout
+    // (permet aussi d'enchaîner plusieurs dossiers sans résidus du précédent)
+    const fileWins=(typeof SIGN_MODE!=="undefined")&&SIGN_MODE;
     SECTIONS.forEach(function(sec){sec.fields.forEach(function(f){
       if(f.xgroup){
+        let found=null;
         f.opts.forEach(function(o){
           const xv=getCellValue(xml,sst,o.ref);
-          if(/^x$/i.test(xv)){
-            XSTATE[f.xgroup]=o.ref;
-            const lab=document.querySelector('.xopt[data-grp="'+f.xgroup+'"][data-ref="'+o.ref+'"]');
-            if(lab){
-              document.querySelectorAll('#xg-'+f.xgroup+' .xopt').forEach(function(l){l.classList.remove("on");});
-              lab.classList.add("on");
-              const inp=lab.querySelector("input");if(inp)inp.checked=true;
-              depShow(f.xgroup,lab.textContent.trim()==="Yes");
-            }
-          }
+          if(/^x$/i.test(xv))found=o.ref;
         });
+        if(found||fileWins){
+          XSTATE[f.xgroup]=found;
+          document.querySelectorAll('#xg-'+f.xgroup+' .xopt').forEach(function(l){
+            l.classList.remove("on");const inp=l.querySelector("input");if(inp)inp.checked=false;});
+          const lab=found&&document.querySelector('.xopt[data-grp="'+f.xgroup+'"][data-ref="'+found+'"]');
+          if(lab){
+            lab.classList.add("on");
+            const inp=lab.querySelector("input");if(inp)inp.checked=true;
+            depShow(f.xgroup,lab.textContent.trim()==="Yes");
+          }else if(fileWins)depShow(f.xgroup,false);
+        }
         return;
       }
       const el=document.getElementById("f-"+f.ref);if(!el)return;
@@ -152,7 +158,7 @@ async function syncFromTemplate(buf){
         const dm=v.match(/^(\d{2})-(\d{2})-(\d{4})$/);
         v=dm?dm[3]+"-"+dm[2]+"-"+dm[1]:"";
       }
-      if(el.value===""||el.value===(el.dataset.tpl||"")){
+      if(fileWins||el.value===""||el.value===(el.dataset.tpl||"")){
         el.value=v;el.classList.toggle("prefilled",!!v);
       }
       el.dataset.tpl=v;

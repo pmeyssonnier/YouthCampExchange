@@ -8,6 +8,11 @@ function loadDossier(inp){
   const file=inp.files[0];if(!file)return;
   const r=new FileReader();
   r.onload=async function(){
+    if(SIGN_MODE){ // chaque dossier chargé repart de zéro : pads, Commitment et pièces du précédent effacés
+      COMMIT_FILE.buf=null;COMMIT_FILE.name=null;
+      Object.keys(SIGS).forEach(function(k){const st=SIGS[k];
+        st.ctx.clearRect(0,0,st.cv.width,st.cv.height);st.ink=false;});
+    }
     if(!/\.zip$/i.test(file.name)){
       templateBuf=r.result;
       setStatus("Template loaded: "+file.name,false);

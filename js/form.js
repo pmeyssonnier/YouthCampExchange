@@ -125,7 +125,7 @@ async function init(){
   render();initLists();sigInit();upd();
   const bs=document.getElementById("build");
   if(bs&&typeof BUILD!=="undefined")bs.textContent=BUILD;
-  if(!SIGN_CLUB)restoreDraft();
+  if(!SIGN_MODE)restoreDraft(); // les écrans de signature partent toujours du dossier chargé, jamais d'un brouillon local
   const params=new URLSearchParams(location.search);
   if(SIGN_MODE){
     document.getElementById("sign-banner").style.display="";
