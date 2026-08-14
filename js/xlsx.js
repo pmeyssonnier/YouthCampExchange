@@ -172,7 +172,14 @@ function setStatus(msg,err){
   const s=document.getElementById("status");
   s.textContent=msg;s.className=err?"err":"";
 }
-function escXml(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+// Échappe pour XML et retire les caractères interdits par XML 1.0 (contrôles C0,
+// substituts isolés, U+FFFE/FFFF) qu'un copier-coller depuis Word/WhatsApp peut
+// introduire — Excel refuse alors d'ouvrir le fichier ("problème dans le contenu").
+function escXml(s){return String(s)
+  .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\uFFFE\uFFFF]/g,"")
+  .replace(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])/g,"")
+  .replace(/([^\uD800-\uDBFF])[\uDC00-\uDFFF]|^[\uDC00-\uDFFF]/g,"$1")
+  .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 function fmtDate(iso){ // yyyy-mm-dd -> dd-mm-yyyy (format du formulaire)
   const p=iso.split("-");return p[2]+"-"+p[1]+"-"+p[0];
 }
