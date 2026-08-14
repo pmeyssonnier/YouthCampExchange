@@ -133,10 +133,6 @@ async function init(){
       SIGN_CLUB?"Club chairman signing mode.":"District coordinator signing mode.";
     const cb=document.getElementById("commit-btn");
     if(cb)cb.style.display="none";
-    if(SIGN_DISTRICT){
-      const cf=document.getElementById("commitfile-lbl");
-      if(cf)cf.parentNode.style.display="none"; // le district ne signe pas le Commitment
-    }
     document.getElementById("btn-gen").textContent="\u270d Sign & download the countersigned dossier";
     // ecran minimal : fiche resume + cadres de signature ; le formulaire complet reste consultable
     const root=document.getElementById("form-root");

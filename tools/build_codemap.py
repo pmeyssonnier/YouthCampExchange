@@ -51,7 +51,7 @@ FN_ROLES = {
     "payPick": "proof upload (PDF as-is, images 1600px)", "payShow": "preview", "payClear": "remove",
     "saveDraft": "persist everything (debounced)", "restoreDraft": "restore everything", "clearForm": "wipe + reload",
     "mailPresident": "mailto club president (+?sign=club steps)", "mailCoordinator": "mailto district coordinator",
-    "openMail": "navigation seam (testable)", "loadCommitFile": "load candidate Commitment",
+    "openMail": "navigation seam (testable)",
     "signCommitmentFile": "insert club signature at bookmark",
     "esc": "escape HTML", "render": "render all sections & widgets",
     "depShow": "conditional 'specify' fields", "xsel": "X-group selection",

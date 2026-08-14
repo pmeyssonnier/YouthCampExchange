@@ -25,27 +25,18 @@ function loadDossier(inp){
         if(/\.xlsx$/i.test(base)){templateBuf=buf;okXlsx=true;}
         else if(/\.docx$/i.test(base)){
           // seul le Commitment est à signer ; la lettre à la famille d'accueil (et tout autre docx) transite inchangée
-          if(SIGN_CLUB&&/commit/i.test(base)){COMMIT_FILE.buf=buf;COMMIT_FILE.name=base;
-            const lbl=document.getElementById("commitfile-lbl");
-            if(lbl)lbl.textContent="✔ "+base;}
+          if(SIGN_CLUB&&/commit/i.test(base)){COMMIT_FILE.buf=buf;COMMIT_FILE.name=base;}
           else SIGN_EXTRAS.push({name:base,data:e.data}); // le district ne signe pas le Commitment
         }
         else if(/\.(jpe?g|png|pdf)$/i.test(base))SIGN_EXTRAS.push({name:base,data:e.data});
       }
       if(!okXlsx)throw new Error("no application .xlsx found in this ZIP");
+      const lbl=document.getElementById("dossier-lbl");
+      if(lbl)lbl.textContent="✔ "+file.name;
       setStatus("Dossier loaded: "+file.name+" ("+(COMMIT_FILE.buf?"form + Commitment":"form")+(SIGN_EXTRAS.length?" + "+SIGN_EXTRAS.length+" attachment(s)":"")+")",false);
       await syncFromTemplate(templateBuf);
     }catch(e){setStatus("⚠ "+file.name+" — "+e.message,true);}
   };
-  r.readAsArrayBuffer(file);
-}
-function loadCommitFile(inp){
-  const file=inp.files[0];if(!file)return;
-  const r=new FileReader();
-  r.onload=function(){COMMIT_FILE.buf=r.result;COMMIT_FILE.name=file.name;
-    const lbl=document.getElementById("commitfile-lbl");
-    if(lbl)lbl.textContent="✔ "+file.name;
-    setStatus("Commitment loaded: "+file.name,false);};
   r.readAsArrayBuffer(file);
 }
 async function signCommitmentFile(){

@@ -107,10 +107,8 @@ input.tel-bad{border-color:var(--red) !important;}
     ② Check the summary below, then sign in your box — draw it or upload an image of your signature.
     ③ Click “Sign &amp; download”: the countersigned dossier is downloaded — send it back by replying to the e-mail.
     <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
-      <label class="tpl-btn" style="flex:1;min-width:220px;text-align:center;">📂 Load the candidate's dossier (.zip) or form (.xlsx)…
+      <label class="tpl-btn" style="flex:1;min-width:220px;text-align:center;"><span id="dossier-lbl">📂 Load the candidate's dossier — the ZIP received by e-mail…</span>
         <input type="file" accept=".zip,.xlsx" style="display:none" onchange="loadDossier(this)"></label>
-      <label class="tpl-btn" style="flex:1;min-width:220px;text-align:center;"><span id="commitfile-lbl">📄 Load the candidate's Commitment (.docx)…</span>
-        <input type="file" accept=".docx" style="display:none" onchange="loadCommitFile(this)"></label>
     </div>
   </div>
   <div id="form-root"></div>
