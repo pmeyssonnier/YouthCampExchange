@@ -32,6 +32,12 @@ function signSummary(){
       const col=pct===100?"var(--accent)":(pct>=80?"var(--orange)":"var(--red)");
       let out='File completeness: <b style="color:'+col+'">'+pct+"%</b> ("+(REQUIRED_FIELDS.length-missing.length)+"/"+REQUIRED_FIELDS.length+" key fields)";
       if(missing.length)out+='<br><span style="color:var(--orange)">\u26a0 Missing: '+missing.map(esc).join(", ")+"</span>";
+      // pi\u00e8ces pr\u00e9sentes dans le ZIP charg\u00e9 (transmises telles quelles)
+      const has=function(re){return typeof SIGN_EXTRAS!=="undefined"&&SIGN_EXTRAS.some(function(x){return re.test(x.name);});};
+      const it=function(ok,lbl){return (ok?'<b style="color:var(--accent)">\u2714</b>':'<b style="color:var(--red)">\u2716</b>')+' '+lbl;};
+      out+='<br>Attachments in the dossier: '
+        +[it(has(/commit/i),"Commitment"),it(has(/photo/i),"pass photo"),
+          it(has(/payment|proof|paiement/i),"payment proof"),it(has(/letter|host|famil/i),"host-family letter")].join(" \u00b7 ");
       return out+"<br>";
     })()
     +'Signatures already in the file: applicant '+sig("applicant")+' &nbsp;parent '+sig("parent")+' &nbsp;club '+sig("club")

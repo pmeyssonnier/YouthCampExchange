@@ -11,6 +11,8 @@ function render(){
     h+='<span class="sec-title">'+esc(sec.title)+'</span>';
     if(sec.note)h+='<span class="sec-note">'+esc(sec.note)+'</span>';
     h+='<span class="sec-toggle">▼</span></div><div class="sec-body">';
+    // liste de contrôle des pièces à joindre (✔ verte / ✖ rouge, mise à jour en direct)
+    if(sec.check)h+='<div class="fld w6" style="grid-column:span 6"><div id="att-check" style="display:flex;gap:6px 18px;flex-wrap:wrap;font-size:13px;padding:9px 12px;border:1px solid var(--border);border-radius:8px;"></div></div>';
     if(sec.commitBlock){
       h+='<div class="fld w6"><div class="commit-text" id="commit-text">'
         +COMMIT_TEXT.map(function(x){return '<p>'+esc(x)+'</p>';}).join("")
@@ -183,6 +185,17 @@ function updState(){
   if(!need&&st.value)st.value="";
 }
 
+// liste de contrôle des pièces à joindre (section Attachments)
+function attChecklist(){
+  const el=document.getElementById("att-check");if(!el)return;
+  const it=function(ok,lbl){return '<span>'+(ok?'<b style="color:var(--accent)">✔</b>':'<b style="color:var(--red)">✖</b>')+' '+lbl+'</span>';};
+  el.innerHTML='<span style="color:var(--muted)">Checklist:</span>'
+    +it(!!PHOTO.dataUrl,"Pass photo")
+    +it(!!PAY.dataUrl,"Payment proof")
+    +it(!!LETTER.dataUrl,"Host-family letter")
+    +it(COMMIT.agreed,"Commitment signed");
+}
+
 // compteur de champs remplis
 function upd(){
   updState();
@@ -202,7 +215,7 @@ function upd(){
   });});
 
   document.getElementById("p-count").textContent=n+"/"+total;
-  refreshYn();
+  refreshYn();attChecklist();
   if(typeof signSummary==="function")signSummary();
   clearTimeout(saveTimer);saveTimer=setTimeout(saveDraft,300);
 }

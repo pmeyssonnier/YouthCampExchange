@@ -65,7 +65,7 @@ const SECTIONS = [
    {ref:"J31",label:"Religion",type:"text",w:2},
    {xgroup:"leo",card:true,label:"Are you a LEO?",w:6,opts:[{lbl:"Yes",ref:"AA31"},{lbl:"No",ref:"AG31"}]},
  ]},
- {title:"Attachments", note:"compulsory with the application", fields:[
+ {title:"Attachments", note:"compulsory with the application", check:true, fields:[
    {photo:true,label:"Applicant's pass photo (JPG)",w:3},
    {payproof:true,label:"Proof of payment of the administrative fees",w:3},
    {download:true,label:"Letter to your (still unknown) host family",w:3},
