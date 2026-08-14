@@ -5,6 +5,7 @@ name: Rebuild generated files
 on:
   push:
     branches: [main]
+  workflow_dispatch: {}   # déclenchement manuel depuis l'onglet Actions (secours)
 
 permissions:
   contents: write
