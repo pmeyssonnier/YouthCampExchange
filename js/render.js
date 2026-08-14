@@ -68,8 +68,12 @@ function render(){
       }
       if(f.download){
         h+='<div class="fld w'+w+'"><label class="flbl">'+esc(f.label)+'</label>'
-          +'<a class="dl-card" download href="Letter_to_Host_Family_2026.docx">📄 Download the Word template<br>“Dear Host Family…”</a>'
-          +'<span class="hint">Write it in English (about one page) and attach it to your application.</span></div>';
+          +'<a class="dl-card" download href="Letter_to_Host_Family_2026.docx" style="margin-bottom:6px">📄 Download the Word template<br>“Dear Host Family…”</a>'
+          +'<div class="photobox" onclick="document.getElementById(\'letter-file\').click()">'
+          +'<span class="ph-hint" id="letter-hint">💌 Click to add your completed letter<br>(Word or PDF — included in the application file)</span>'
+          +'<button type="button" class="sig-clear" id="letter-clear" style="display:none" onclick="letterClear(event)">✕ remove</button>'
+          +'<input type="file" id="letter-file" accept=".docx,.pdf,application/pdf" style="display:none" onchange="letterPick(this)">'
+          +'</div><span class="hint">Write it in English (about one page), then load it here — added to the application ZIP.</span></div>';
         return;
       }
       if(f.xgroup){
@@ -189,7 +193,7 @@ function upd(){
     sec.fields.forEach(function(f){
     if(f.photo){total++;if(PHOTO.dataUrl)n++;return;}
     if(f.payproof){total++;if(PAY.dataUrl)n++;return;}
-    if(f.download)return;
+    if(f.download){total++;if(LETTER.dataUrl)n++;return;}
     if(f.sig){if(!SIGS[f.sig])return;total++;if(SIGS[f.sig].ink)n++;return;}
     if(f.xgroup){total++;if(XSTATE[f.xgroup])n++;}
     else{const el=document.getElementById("f-"+f.ref);

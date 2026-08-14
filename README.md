@@ -22,7 +22,7 @@ Opened from the site with `?district=A/B/C/D`, it loads the official Excel form 
 
 - `Application_form_2026_112X_….xlsx` — the official form, with the applicant & parent signatures pasted as images on their signature rows
 - `Commitment_to_Reciprocity_2026_112X_….docx` — the reciprocity contract, read and validated in-form, generated with the candidate's name, date and signatures (an invisible slot is kept for the club chairman)
-- `Pass_photo_2026_112X_….jpg` and `Payment_proof_2026_112X_….pdf/jpg` — the uploaded attachments, renamed consistently
+- `Pass_photo_2026_112X_….jpg`, `Payment_proof_2026_112X_….pdf/jpg` and `Letter_to_Host_Family_2026_112X_….docx/pdf` — the uploaded attachments (photo, payment proof, completed "Dear Host Family" letter), renamed consistently
 
 Entries are saved automatically in the browser (survive a refresh, "Clear form" restarts blank). Two buttons then open prefilled e-mails: **to the club president** (with the signing instructions below) and **to the district coordinator** (final submission).
 
@@ -46,7 +46,7 @@ The coordinator drops the files received from candidates — a whole **.zip** at
 
 - each **application form** creates/updates a row: identity, age on 01/07/2026, club, contacts, camp choices, presence of the three on-form signatures, completeness of 27 key fields (missing ones listed)
 - **Commitment** documents are matched by name, with club counter-signature detection
-- **photos** and **payment proofs** tick their boxes
+- **photos**, **payment proofs** and **host-family letters** tick their boxes
 
 District/status/search filters, sortable columns, per-candidate status (`Received → … → Complete — sent to MD → Placed`) and notes, summary stats and a **CSV export** ready for Excel. Data persists in the coordinator's browser only.
 

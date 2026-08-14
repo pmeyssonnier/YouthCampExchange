@@ -18,7 +18,7 @@ function saveDraft(){
     const au={};
     ["G20","G22"].forEach(function(r){const el=document.getElementById("f-"+r);
       if(el&&el.dataset.auto==="1")au[r]=1;});
-    localStorage.setItem(DRAFT_KEY,JSON.stringify({v:v,x:XSTATE,t:t,s:sg,a:au,p:PHOTO.dataUrl?{d:PHOTO.dataUrl,w:PHOTO.w,h:PHOTO.h}:null,cm:COMMIT.agreed?{d:COMMIT.date}:null,pay:(PAY.dataUrl&&PAY.dataUrl.length<2500000)?{d:PAY.dataUrl,n:PAY.name,e:PAY.ext}:null}));
+    localStorage.setItem(DRAFT_KEY,JSON.stringify({v:v,x:XSTATE,t:t,s:sg,a:au,p:PHOTO.dataUrl?{d:PHOTO.dataUrl,w:PHOTO.w,h:PHOTO.h}:null,cm:COMMIT.agreed?{d:COMMIT.date}:null,pay:(PAY.dataUrl&&PAY.dataUrl.length<2500000)?{d:PAY.dataUrl,n:PAY.name,e:PAY.ext}:null,lt:(LETTER.dataUrl&&LETTER.dataUrl.length<2500000)?{d:LETTER.dataUrl,n:LETTER.name,e:LETTER.ext}:null}));
   }catch(e){}
 }
 function restoreDraft(){
@@ -44,6 +44,7 @@ function restoreDraft(){
     if(d.p&&d.p.d){PHOTO.dataUrl=d.p.d;PHOTO.w=d.p.w;PHOTO.h=d.p.h;photoShow();}
     if(d.cm&&d.cm.d){COMMIT.agreed=true;COMMIT.date=d.cm.d;commitShow();}
     if(d.pay&&d.pay.d){PAY.dataUrl=d.pay.d;PAY.name=d.pay.n;PAY.ext=d.pay.e;payShow();}
+    if(d.lt&&d.lt.d){LETTER.dataUrl=d.lt.d;LETTER.name=d.lt.n;LETTER.ext=d.lt.e;letterShow();}
     Object.keys(d.s||{}).forEach(function(k){
       const st=SIGS[k];if(!st||!d.s[k])return;
       const img=new Image();

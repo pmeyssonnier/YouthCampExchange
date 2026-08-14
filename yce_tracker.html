@@ -81,7 +81,7 @@ tr:hover td{background:var(--hover);}
 <main>
   <div class="dropzone" id="dropzone" onclick="document.getElementById('files').click()">
     <b>📥 Drop the files received from candidates here</b> (or click to browse)<br>
-    <span style="font-size:11px">Drop a whole <b>.zip</b> (e.g. “download all attachments” from your mailbox) or individual files · application forms (.xlsx) create or update a row · Commitment (.docx), pass photos and payment proofs are matched to the candidate · several candidates at once is fine</span>
+    <span style="font-size:11px">Drop a whole <b>.zip</b> (e.g. “download all attachments” from your mailbox) or individual files · application forms (.xlsx) create or update a row · Commitment (.docx), pass photos, payment proofs and host-family letters are matched to the candidate · several candidates at once is fine</span>
     <input type="file" id="files" multiple accept=".xlsx,.docx,.pdf,.zip,image/*" style="display:none" onchange="handleFiles(this.files);this.value='';">
   </div>
   <div class="toolbar">
@@ -109,7 +109,7 @@ tr:hover td{background:var(--hover);}
         <th>Contact</th>
         <th onclick="setSort('pref')" id="h-pref">1st choice</th>
         <th title="Signatures in the Excel file: Applicant / Parent / Club">Sig A·P·C</th>
-        <th title="Attachments received: Commitment (✎=club signed) / Photo / Payment">Cmt·Ph·Pay</th>
+        <th title="Attachments received: Commitment (✎=club signed) / Photo / Payment / Host-family letter">Cmt·Ph·Pay·Ltr</th>
         <th onclick="setSort('pct')" id="h-pct">Fields</th>
         <th onclick="setSort('status')" id="h-status">Status</th>
         <th>Notes</th>

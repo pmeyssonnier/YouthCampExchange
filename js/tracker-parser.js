@@ -92,8 +92,8 @@ async function handleFiles(list){
     const n=it.name.toLowerCase();
     try{
       if(n.endsWith(".xlsx"))await parseForm(it.name,it.buf);
-      else if(n.endsWith(".docx"))await matchCommit(it.name,it.buf);
-      else await matchAux(it.name);
+      else if(n.endsWith(".docx")&&/commit/i.test(n))await matchCommit(it.name,it.buf);
+      else await matchAux(it.name); // photo, preuve de paiement, lettre famille d'accueil (docx ou pdf)
     }catch(e){log("✖ "+it.name+" — "+e.message,"err");}
   }
   save();render();
@@ -129,7 +129,7 @@ async function parseForm(fname,buf){
     sigA:sigRows.indexOf(126)>=0,sigP:sigRows.indexOf(128)>=0,sigC:sigRows.indexOf(130)>=0,
     pct:pct,missing:missing,
     commit:prev.commit||false,commitClub:prev.commitClub||false,
-    photo:prev.photo||false,pay:prev.pay||false,
+    photo:prev.photo||false,pay:prev.pay||false,letter:prev.letter||false,
     status:prev.status||"Received",notes:prev.notes||"",
     updated:new Date().toISOString().slice(0,10)
   };
@@ -168,6 +168,7 @@ async function matchAux(fname){
   const n=fname.toLowerCase();
   if(n.indexOf("photo")>=0){ROWS[key].photo=true;log("✔ "+fname+" → pass photo for "+ROWS[key].fam+" "+ROWS[key].fir,"ok");}
   else if(n.indexOf("payment")>=0||n.indexOf("proof")>=0||n.indexOf("paiement")>=0){ROWS[key].pay=true;log("✔ "+fname+" → payment proof for "+ROWS[key].fam+" "+ROWS[key].fir,"ok");}
-  else{log("⚠ "+fname+" matched "+ROWS[key].fam+" "+ROWS[key].fir+" but type unknown (name it Pass_photo_… or Payment_proof_…)","warn");}
+  else if(n.indexOf("letter")>=0||n.indexOf("host")>=0||n.indexOf("family")>=0||n.indexOf("famille")>=0){ROWS[key].letter=true;log("✔ "+fname+" → host-family letter for "+ROWS[key].fam+" "+ROWS[key].fir,"ok");}
+  else{log("⚠ "+fname+" matched "+ROWS[key].fam+" "+ROWS[key].fir+" but type unknown (name it Pass_photo_…, Payment_proof_… or Letter_to_Host_Family_…)","warn");}
 }
 

@@ -24,10 +24,11 @@ function loadDossier(inp){
         const buf=e.data.buffer.slice(e.data.byteOffset,e.data.byteOffset+e.data.byteLength);
         if(/\.xlsx$/i.test(base)){templateBuf=buf;okXlsx=true;}
         else if(/\.docx$/i.test(base)){
-          if(SIGN_CLUB){COMMIT_FILE.buf=buf;COMMIT_FILE.name=base;
+          // seul le Commitment est à signer ; la lettre à la famille d'accueil (et tout autre docx) transite inchangée
+          if(SIGN_CLUB&&/commit/i.test(base)){COMMIT_FILE.buf=buf;COMMIT_FILE.name=base;
             const lbl=document.getElementById("commitfile-lbl");
             if(lbl)lbl.textContent="✔ "+base;}
-          else SIGN_EXTRAS.push({name:base,data:e.data}); // transite inchangé (le district ne signe pas le Commitment)
+          else SIGN_EXTRAS.push({name:base,data:e.data}); // le district ne signe pas le Commitment
         }
         else if(/\.(jpe?g|png|pdf)$/i.test(base))SIGN_EXTRAS.push({name:base,data:e.data});
       }

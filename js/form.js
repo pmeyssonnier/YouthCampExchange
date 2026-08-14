@@ -93,6 +93,7 @@ async function generate(){
     }
     if(PHOTO.dataUrl)files.push({name:"Pass_photo_2026_112"+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+".jpg",data:dataUrlToBytes(PHOTO.dataUrl)});
     if(PAY.dataUrl)files.push({name:"Payment_proof_2026_112"+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+"."+PAY.ext,data:dataUrlToBytes(PAY.dataUrl)});
+    if(LETTER.dataUrl)files.push({name:"Letter_to_Host_Family_2026_112"+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+"."+LETTER.ext,data:dataUrlToBytes(LETTER.dataUrl)});
     if(typeof SIGN_EXTRAS!=="undefined")SIGN_EXTRAS.forEach(function(x){files.push({name:x.name,data:x.data});});
     const zipName="Dossier_YCE_2026_112"+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+".zip";
     const zblob=await buildZip(files,"application/zip");
