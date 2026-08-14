@@ -182,16 +182,20 @@ async function init(){
     if(el)el.addEventListener("input",function(){el.dataset.auto="";});
   });
   const d=(params.get("district")||"").toUpperCase();
-  if(/^[A-D]$/.test(d)&&location.protocol.indexOf("http")===0){
-    // ouvert depuis le site : on charge le formulaire officiel du district
+  if(/^[A-D]$/.test(d)&&typeof DISTRICTS!=="undefined"&&DISTRICTS[d]){
+    // un seul fichier de référence : on y écrit l'en-tête et le responsable du district
     try{
-      const url="Application%20form%20"+YEAR+"%20Distr%20"+d+"%201.xlsx";
-      const resp=await fetch(url);
-      if(!resp.ok)throw new Error("HTTP "+resp.status);
-      templateBuf=await resp.arrayBuffer();
-      setStatus("Template loaded: official District 112 "+d+" form",false);
+      const cfg=DISTRICTS[d];
+      const entries=await unzip(templateBuf||b64ToBuf(TEMPLATE_B64));
+      const sheet=entries.find(function(e){return e.name==="xl/worksheets/sheet1.xml";});
+      let xml=new TextDecoder().decode(sheet.data);
+      [["AF1",d],["AH78","112 "+d],["I78",cfg.name],["E79",cfg.email],["E80",cfg.mobile]]
+        .forEach(function(p){xml=setCell(xml,p[0],p[1]);});
+      sheet.data=new TextEncoder().encode(xml);
+      templateBuf=await (await buildZip(entries)).arrayBuffer();
+      setStatus("District 112 "+d+" form ready — YCE coordinator: "+cfg.name,false);
     }catch(e){
-      setStatus("⚠ District "+d+" form not found ("+e.message+") — using the embedded template (District C).",true);
+      setStatus("⚠ Could not apply district "+d+" ("+e.message+") — using the neutral template.",true);
     }
   }
   await syncFromTemplate(templateBuf||b64ToBuf(TEMPLATE_B64));

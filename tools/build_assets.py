@@ -3,7 +3,7 @@
 and camps.json (plain-JSON export of the season's camp data).
 
 Run from the repository root after changing:
-  - Application_form_2026_Distr_C_vierge.xlsx  (blank form embedded in the filler)
+  - Application_form_2026_MD112.xlsx           (single neutral reference form embedded in the filler)
   - tools/commit_template.docx                 (Commitment template with §CAND§/§DATE§/[BODY]/[SIG*] markers)
   - camps_data.js                              (SEASON + RAW camp data → re-exports camps.json)
 
@@ -28,7 +28,7 @@ with open("js/assets.js", "w") as f:
     f.write("// FICHIER GENERE — ne pas éditer à la main.\n")
     f.write("// Regénérer avec :  python3 tools/build_assets.py  (depuis la racine du dépôt)\n")
     f.write('const BUILD="%s";\n' % version)
-    f.write('const TEMPLATE_B64="%s";\n' % stored_b64("Application_form_2026_Distr_C_vierge.xlsx"))
+    f.write('const TEMPLATE_B64="%s";\n' % stored_b64("Application_form_2026_MD112.xlsx"))
     f.write('const COMMIT_B64="%s";\n' % stored_b64("tools/commit_template.docx"))
 print("js/assets.js written,", version)
 

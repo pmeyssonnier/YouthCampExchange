@@ -16,7 +16,7 @@ Everything is served as **static pages** (GitHub Pages ready): no backend, no da
 
 ## The application form filler
 
-Opened from the site with `?district=A/B/C/D`, it loads the official Excel form of that district and prefills the district data from the file itself. The candidate fills ~85 fields with proper controls (date pickers, Yes/No pill buttons, camp choices suggested from the season's camp list, international phone-number normalisation `+32 …`, conditional fields shown only when relevant), attaches the required documents and signs on screen.
+Opened from the site with `?district=A/B/C/D`, it loads the **single reference form** and stamps the district into it (header letter and YCE coordinator name/e-mail/mobile, from the `DISTRICTS` constant in `camps_data.js` — the only cells that ever differed between the four district files). The candidate fills ~85 fields with proper controls (date pickers, Yes/No pill buttons, camp choices suggested from the season's camp list, international phone-number normalisation `+32 …`, conditional fields shown only when relevant), attaches the required documents and signs on screen.
 
 **Generating the file** inserts every answer into the genuine `.xlsx` (formatting, logos and formulas fully preserved — age, signature names and footer are recomputed by Excel) and downloads the complete application file as **one ZIP archive** — a single attachment to e-mail around — `Dossier_YCE_2026_112X_Name_Firstname.zip` containing:
 
@@ -81,8 +81,7 @@ js/
 tools/
   build_assets.py                     regenerates js/assets.js from the templates below
   commit_template.docx                Commitment template with §CAND§/§DATE§/[BODY]/[SIG*] markers
-Application form 2026 Distr X 1.xlsx  official district forms (A–D), downloadable & fetched by ?district=
-Application_form_2026_Distr_C_vierge.xlsx  sanitized blank template (embedded via js/assets.js)
+Application_form_2026_MD112.xlsx      single neutral reference form (embedded via js/assets.js, downloadable)
 Commitment to Reciprocity.docx        official reciprocity contract (downloadable)
 Letter_to_Host_Family_2026.docx       "Dear Host Family" letter template (downloadable)
 Lions Camp Scraper.ipynb              notebook collecting the camps from the LCI directory
@@ -99,7 +98,7 @@ A detailed code map (modules, business functions with line numbers and sizes, de
 - **Zero dependencies at runtime** for the filler and tracker: zip read/write is implemented in plain JavaScript (uncompressed embedded templates + the browser's native `CompressionStream`/`DecompressionStream`); the Excel/Word files are edited at the XML level, which preserves their formatting and formulas exactly. The public site uses D3/TopoJSON from CDN for the world map.
 - Values are written as cells (`inlineStr`/numeric), X-choices as `X` marks, signatures and photo as anchored images; `fullCalcOnLoad` makes Excel refresh the computed cells on open.
 - The build version is shown in the filler header (`vYYYY.MM.DD-commit`) to spot stale browser caches.
-- **Season update**: replace `SEASON`/`RAW` in `camps_data.js` (the filler derives its camp suggestions from it), drop in the new district forms, update the blank template, and run `python3 tools/build_assets.py` — it also re-exports `camps.json` (the plain-JSON version of the camp data, for Excel or any external tool). The complete annual checklist is in [`docs/SEASON_UPDATE.md`](docs/SEASON_UPDATE.md).
+- **Season update**: replace `SEASON`/`RAW`/`YEAR`/`DISTRICTS` in `camps_data.js`, update the single reference form, and run `python3 tools/build_assets.py` — it also re-exports `camps.json` (the plain-JSON version of the camp data, for Excel or any external tool). The complete annual checklist is in [`docs/SEASON_UPDATE.md`](docs/SEASON_UPDATE.md).
 
 ## Privacy
 

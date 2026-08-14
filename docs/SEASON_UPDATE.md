@@ -31,16 +31,18 @@ mapped before, add its coordinates in `js/site-map.js` (`COUNTRY_COORDS` +
 
 ## 3. Update the official documents
 
-1. Drop the four new district forms at the repository root, named like
-   `Application form 20XX Distr A 1.xlsx` (A–D), and update the download links
-   in `index.html` (the four `.dist-card` blocks) if the file names change.
-2. Produce the new **sanitized blank template** (district C form with every
-   personal-data cell empty) as `Application_form_20XX_Distr_C_vierge.xlsx`
-   and verify it contains no personal data. It becomes the template embedded
-   in the filler.
+1. Produce the new **single reference form** `Application_form_20XX_MD112.xlsx`
+   from the season's official form: every candidate cell empty (verify it
+   contains no personal data) and the five district cells neutral
+   (`AF1` empty, `AH78` = "112", `I78`/`E79`/`E80` empty). It is embedded in
+   the filler and downloadable from the site — there are no per-district files.
+2. Update the `DISTRICTS` constant in `camps_data.js` if a district YCE
+   coordinator changed (name, e-mail, mobile) — the filler stamps those five
+   cells when opened with `?district=X`. Update the matching `.dist-card`
+   contact blocks in `index.html` too.
 3. Update `Commitment to Reciprocity.docx`, `tools/commit_template.docx`
    (keep the `§CAND§ / §DATE§ / [BODY] / [SIG1-3]` markers) and
-   `Letter_to_Host_Family_2026.docx` if their official text changed.
+   `Letter_to_Host_Family_20XX.docx` if their official text changed.
 
 ## 4. Update the season year
 
