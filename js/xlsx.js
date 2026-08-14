@@ -202,7 +202,8 @@ function collectValues(){
       f.opts.forEach(function(o){out.push({ref:o.ref,value:XSTATE[f.xgroup]===o.ref?"X":"",numeric:false});});
     }else{
       const el=document.getElementById("f-"+f.ref);
-      let v=el?el.value.trim():"";
+      if(!el)return; // champ absent de ce mode : la cellule du fichier chargé reste intacte
+      let v=el.value.trim();
       if(v&&f.type==="date")v=fmtDate(v);
       if(v&&f.type==="tel"){
         v=normPhone(v);

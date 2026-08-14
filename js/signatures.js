@@ -52,7 +52,10 @@ function sigUpload(k,inp){
 
 // Recharge dans les pads les signatures déjà présentes dans un classeur chargé
 // (lignes 127/129/131/… → pads existants) ; elles redeviennent visibles et réutilisables.
+const FILE_SIGS={}; // signatures détectées dans le dernier fichier chargé (pads présents ou non)
+const SIG_ROWS={126:"applicant",128:"parent",130:"club",132:"mdyce",134:"authycec"};
 async function sigsFromWorkbook(entries){
+  Object.keys(FILE_SIGS).forEach(function(k){delete FILE_SIGS[k];});
   const de=entries.find(function(e){return e.name==="xl/drawings/drawing1.xml";});
   const re=entries.find(function(e){return e.name==="xl/drawings/_rels/drawing1.xml.rels";});
   if(!de||!re)return;
@@ -67,6 +70,7 @@ async function sigsFromWorkbook(entries){
     const rm=b.match(/<xdr:row>(\d+)<\/xdr:row>/);
     const em=b.match(/r:embed="([^"]+)"/);
     if(!rm||!em)continue;
+    if(SIG_ROWS[+rm[1]])FILE_SIGS[SIG_ROWS[+rm[1]]]=true;
     const key=rowKey[+rm[1]];
     if(!key)continue;
     const target=rels[em[1]];

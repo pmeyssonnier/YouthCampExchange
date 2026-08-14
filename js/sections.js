@@ -11,6 +11,8 @@ const CAMPS=(typeof RAW!=="undefined")?(function(){
 
 const IS_ADMIN=new URLSearchParams(location.search).has("admin");
 const SIGN_CLUB=(new URLSearchParams(location.search).get("sign")||"").toLowerCase()==="club";
+const SIGN_DISTRICT=(new URLSearchParams(location.search).get("sign")||"").toLowerCase()==="district";
+const SIGN_MODE=SIGN_CLUB?"club":(SIGN_DISTRICT?"district":null);
 
 // ---------------------------------------------------------------
 // Définition des sections et champs (ref = cellule cible du xlsx)
@@ -148,11 +150,11 @@ const SECTIONS = [
    {ref:"AB126",label:"Applicant — date",type:"date",w:3},
    {ref:"AB128",label:"Parent / guardian — date",type:"date",w:3},
    {sig:"club",label:"Club representative signature",dateRef:"AB130",row:130,w:2,adm:true,clubSign:true},
-   {sig:"mdyce",label:"MD or D YCE signature",dateRef:"AB132",row:132,w:2,adm:true},
-   {sig:"authycec",label:"Auth. YCE chairperson signature",dateRef:"AB134",row:134,w:2,adm:true},
+   {sig:"mdyce",label:"MD or D YCE signature",dateRef:"AB132",row:132,w:2,adm:true,distSign:true},
+   {sig:"authycec",label:"Auth. YCE chairperson signature",dateRef:"AB134",row:134,w:2,adm:true,distSign:true},
    {ref:"AB130",label:"Club representative — date",type:"date",w:2,adm:true,clubSign:true},
-   {ref:"AB132",label:"MD or D YCE — date",type:"date",w:2,adm:true},
-   {ref:"AB134",label:"Auth. YCE chairperson — date",type:"date",w:2,adm:true},
+   {ref:"AB132",label:"MD or D YCE — date",type:"date",w:2,adm:true,distSign:true},
+   {ref:"AB134",label:"Auth. YCE chairperson — date",type:"date",w:2,adm:true,distSign:true},
  ]},
 ];
 SECTIONS.push({title:"Commitment to Reciprocity", note:"read and validate — replaces the printed & signed copy", commitBlock:true, fields:[]});

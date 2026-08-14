@@ -29,8 +29,8 @@ Entries are saved automatically in the browser (survive a refresh, "Clear form" 
 ### Signature workflow
 
 1. **Applicant & parent/guardian** sign on screen (finger, mouse, or an uploaded image of the signature); the matching date fills in automatically.
-2. **Club chairman** — either in person on the candidate's device (admin mode), or remotely: he opens *Sign it online* (`?sign=club`), loads the candidate's **ZIP** received by e-mail (form, Commitment and attachments are read automatically), checks the data, signs his box and regenerates the counter-signed ZIP to send back.
-3. The candidate e-mails the **counter-signed ZIP** to the district YCE coordinator, who can drop it straight into the tracker.
+2. **Club chairman** — either in person on the candidate's device (admin mode), or remotely: he opens *Sign it online* (`?sign=club`) — a **minimal signing screen** (candidate summary + his signature box, the full form one click away) — loads the candidate's **ZIP** received by e-mail, signs and downloads the counter-signed ZIP to send back. His signature lands on the form's club row and in the Commitment's club column.
+3. The candidate e-mails the **counter-signed ZIP** to the district YCE coordinator, who can drop it into the tracker and counter-sign his own two boxes the same way with `?sign=district` (linked from the tracker; the Commitment passes through untouched — the district does not sign it).
 
 ### Admin mode (`?admin`)
 

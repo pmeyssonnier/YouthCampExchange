@@ -1,13 +1,33 @@
 // form.js — orchestration : generate() et init() — à charger en dernier
 // Chargé par yce_form_filler.html ; scripts classiques partageant la portée globale.
 "use strict";
+// fiche resume du mode signature (president / coordinateur)
+function signSummary(){
+  const el=document.getElementById("sign-summary");
+  if(!el)return;
+  const v=function(r){const i=document.getElementById("f-"+r);return i&&i.value?i.value:"\u2014";};
+  const sig=function(k){return ((SIGS[k]&&SIGS[k].ink)||(typeof FILE_SIGS!=="undefined"&&FILE_SIGS[k]))?'<span style="color:var(--accent)">\u2714</span>':'<span style="color:var(--red)">\u2716</span>';};
+  el.innerHTML='<div class="w6" style="grid-column:span 6">'
+    +'<b style="font-size:16px;color:var(--gold2)">'+esc(v("F16"))+' '+esc(v("S16"))+'</b>'
+    +' &nbsp;\u00b7&nbsp; born '+esc(v("X17"))+' &nbsp;\u00b7&nbsp; District 112'+currentDistrict+'<br>'
+    +'Club: <b>'+esc(v("F67"))+'</b> &nbsp;\u00b7&nbsp; e-mail: '+esc(v("S20"))+' &nbsp;\u00b7&nbsp; mobile: '+esc(v("S21"))+'<br>'
+    +'1st camp choice: <b>'+esc(v("N10"))+'</b> \u2014 '+esc(v("AC10"))+'<br>'
+    +'Signatures already in the file: applicant '+sig("applicant")+' &nbsp;parent '+sig("parent")+' &nbsp;club '+sig("club")
+    +(SIGN_CLUB?(' &nbsp;\u00b7&nbsp; Commitment: '+(COMMIT_FILE.buf?'<span style="color:var(--accent)">loaded \u2014 your signature will be inserted</span>':'<span style="color:var(--orange)">not loaded</span>')):'')
+    +'</div>';
+}
+
 async function generate(){
   const fam=document.getElementById("f-F16").value.trim();
   const fir=document.getElementById("f-S16").value.trim();
   if(!fam||!fir){setStatus("⚠ Family Name and First Name are required (section II).",true);
     document.getElementById("f-F16").focus();return;}
   if(SIGN_CLUB&&(!SIGS.club||!SIGS.club.ink)){
-    setStatus("⚠ Please sign the club representative box (section XII) before generating.",true);
+    setStatus("⚠ Please sign the club representative box before generating.",true);
+    return;
+  }
+  if(SIGN_DISTRICT&&!((SIGS.mdyce&&SIGS.mdyce.ink)||(SIGS.authycec&&SIGS.authycec.ink))){
+    setStatus("⚠ Please sign at least one district box (MD/D YCE or authorized chairperson) before generating.",true);
     return;
   }
   const btn=document.getElementById("btn-gen");btn.disabled=true;
@@ -78,14 +98,39 @@ async function init(){
   if(bs&&typeof BUILD!=="undefined")bs.textContent=BUILD;
   if(!SIGN_CLUB)restoreDraft();
   const params=new URLSearchParams(location.search);
-  if(SIGN_CLUB){
+  if(SIGN_MODE){
     document.getElementById("sign-banner").style.display="";
-    document.querySelectorAll(".section").forEach(function(d){
-      const t=d.querySelector(".sec-title").textContent;
-      if(!t.startsWith("XII."))d.classList.add("closed");
-    });
+    document.getElementById("sign-mode-title").textContent=
+      SIGN_CLUB?"Club chairman signing mode.":"District coordinator signing mode.";
     const cb=document.getElementById("commit-btn");
     if(cb)cb.style.display="none";
+    if(SIGN_DISTRICT){
+      const cf=document.getElementById("commitfile-lbl");
+      if(cf)cf.parentNode.style.display="none"; // le district ne signe pas le Commitment
+    }
+    document.getElementById("btn-gen").textContent="\u270d Sign & download the countersigned dossier";
+    // ecran minimal : fiche resume + cadres de signature ; le formulaire complet reste consultable
+    const root=document.getElementById("form-root");
+    const card=document.createElement("div");
+    card.innerHTML='<div class="section"><div class="sec-head"><span class="sec-title">Candidate summary</span>'
+      +'<span class="sec-note">read from the loaded dossier</span></div>'
+      +'<div class="sec-body" id="sign-summary" style="display:block;font-size:13px;line-height:2;">Load the candidate&rsquo;s dossier above.</div></div>'
+      +'<div class="section"><div class="sec-head"><span class="sec-title">'
+      +(SIGN_CLUB?"Your signature \u2014 Lions Club chairman":"Your signatures \u2014 district")
+      +'</span></div><div class="sec-body" id="sign-pads"></div></div>'
+      +'<div style="text-align:center;margin-bottom:14px;"><button class="tpl-btn" id="reveal-form">\ud83d\udd0d Review the full form</button></div>';
+    root.parentNode.insertBefore(card,root);
+    document.getElementById("reveal-form").onclick=function(){
+      root.style.display=root.style.display==="none"?"":"none";
+    };
+    const pads=document.getElementById("sign-pads");
+    (SIGN_CLUB?["club"]:["mdyce","authycec"]).forEach(function(k){
+      const cv=document.getElementById("sig-"+k);
+      if(cv)pads.appendChild(cv.closest(".fld"));
+      const st=SIGS[k];
+      if(st){const d=document.getElementById("f-"+st.dateRef);if(d)pads.appendChild(d.closest(".fld"));}
+    });
+    root.style.display="none";
   }
   if(IS_ADMIN){
     document.getElementById("tpl-btn").style.display="";

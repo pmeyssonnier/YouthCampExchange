@@ -28,7 +28,7 @@ function render(){
       return;
     }
     sec.fields.forEach(function(f){
-      if(f.adm&&!IS_ADMIN&&!(SIGN_CLUB&&f.clubSign))return;
+      if(f.adm&&!IS_ADMIN&&!(SIGN_CLUB&&f.clubSign)&&!(SIGN_DISTRICT&&f.distSign))return;
       const w=f.w||2;
       if(f.sig){
         h+='<div class="fld w'+w+'"><label class="flbl">'+esc(f.label)+'<span class="ref">I'+(f.row+1)+'</span></label>'
@@ -199,5 +199,6 @@ function upd(){
 
   document.getElementById("p-count").textContent=n+"/"+total;
   refreshYn();
+  if(typeof signSummary==="function")signSummary();
   clearTimeout(saveTimer);saveTimer=setTimeout(saveDraft,300);
 }

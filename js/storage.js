@@ -5,7 +5,7 @@
 const DRAFT_KEY="yce_form_draft_2026";
 let saveTimer=null;
 function saveDraft(){
-  if(SIGN_CLUB)return;
+  if(SIGN_MODE)return;
   try{
     const v={},t={};
     SECTIONS.forEach(function(sec){sec.fields.forEach(function(f){
