@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
-"""Regenerate js/assets.js (embedded templates + build version).
+"""Regenerate js/assets.js (embedded templates + build version)
+and camps.json (plain-JSON export of the season's camp data).
 
 Run from the repository root after changing:
   - Application_form_2026_Distr_C_vierge.xlsx  (blank form embedded in the filler)
   - tools/commit_template.docx                 (Commitment template with §CAND§/§DATE§/[BODY]/[SIG*] markers)
+  - camps_data.js                              (SEASON + RAW camp data → re-exports camps.json)
 
-Both files are repacked without compression (STORE) so the browser can read
-them without inflating, then embedded as base64.
+Both templates are repacked without compression (STORE) so the browser can
+read them without inflating, then embedded as base64.
 """
-import base64, datetime, io, subprocess, zipfile
+import base64, datetime, io, json, re, subprocess, zipfile
 
 def stored_b64(path):
     src = zipfile.ZipFile(path)
@@ -29,3 +31,13 @@ with open("js/assets.js", "w") as f:
     f.write('const TEMPLATE_B64="%s";\n' % stored_b64("Application_form_2026_Distr_C_vierge.xlsx"))
     f.write('const COMMIT_B64="%s";\n' % stored_b64("tools/commit_template.docx"))
 print("js/assets.js written,", version)
+
+# camps.json — export JSON pur des données de camps_data.js (source unique)
+src = open("camps_data.js", encoding="utf-8").read()
+season = re.search(r'const SEASON\s*=\s*"([^"]*)"', src).group(1)
+raw = re.search(r'const RAW\s*=\s*(\[.*\]);', src, re.S).group(1)
+camps = json.loads(raw)  # RAW est du JSON standard : toute erreur de syntaxe casse le build ici
+with open("camps.json", "w", encoding="utf-8") as f:
+    json.dump({"season": season, "camps": camps}, f, ensure_ascii=False, indent=1)
+    f.write("\n")
+print("camps.json written, %d camps, season %s" % (len(camps), season))
