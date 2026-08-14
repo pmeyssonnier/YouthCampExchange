@@ -1,6 +1,15 @@
 // form.js — orchestration : generate() et init() — à charger en dernier
 // Chargé par yce_form_filler.html ; scripts classiques partageant la portée globale.
 "use strict";
+// champs cles controles pour la completude (aligne sur le tracker du coordinateur)
+const REQUIRED_FIELDS=[["F16","Family name"],["S16","First name"],["J17","Sex"],["X17","Date of birth"],
+["G18","Street"],["G19","Postal code"],["S19","Town"],["G20","Country"],["S20","E-mail"],["S21","Mobile"],
+["G22","Nationality"],["X22","Passport/ID no"],["G23","Passport valid until"],["X23","Place of issue"],
+["N10","1st country choice"],["AC10","1st camp choice"],["K42","State of health"],
+["K49","Health insurance"],["AB49","Policy no"],["M57","Parent name"],["K63","Parent phone"],
+["P64","Emergency e-mail"],["F67","Lions club"],["H68","Club chairperson"],["E69","Club e-mail"],
+["AB126","Applicant sig date"],["AB128","Parent sig date"]];
+
 // fiche resume du mode signature (president / coordinateur)
 function signSummary(){
   const el=document.getElementById("sign-summary");
@@ -12,6 +21,18 @@ function signSummary(){
     +' &nbsp;\u00b7&nbsp; born '+esc(v("X17"))+' &nbsp;\u00b7&nbsp; District 112'+currentDistrict+'<br>'
     +'Club: <b>'+esc(v("F67"))+'</b> &nbsp;\u00b7&nbsp; e-mail: '+esc(v("S20"))+' &nbsp;\u00b7&nbsp; mobile: '+esc(v("S21"))+'<br>'
     +'1st camp choice: <b>'+esc(v("N10"))+'</b> \u2014 '+esc(v("AC10"))+'<br>'
+    +(function(){
+      const missing=[];
+      REQUIRED_FIELDS.forEach(function(rq){
+        const i=document.getElementById("f-"+rq[0]);
+        if(!i||!i.value)missing.push(rq[1]);
+      });
+      const pct=Math.round(100*(REQUIRED_FIELDS.length-missing.length)/REQUIRED_FIELDS.length);
+      const col=pct===100?"var(--accent)":(pct>=80?"var(--orange)":"var(--red)");
+      let out='File completeness: <b style="color:'+col+'">'+pct+"%</b> ("+(REQUIRED_FIELDS.length-missing.length)+"/"+REQUIRED_FIELDS.length+" key fields)";
+      if(missing.length)out+='<br><span style="color:var(--orange)">\u26a0 Missing: '+missing.map(esc).join(", ")+"</span>";
+      return out+"<br>";
+    })()
     +'Signatures already in the file: applicant '+sig("applicant")+' &nbsp;parent '+sig("parent")+' &nbsp;club '+sig("club")
     +(SIGN_CLUB?(' &nbsp;\u00b7&nbsp; Commitment: '+(COMMIT_FILE.buf?'<span style="color:var(--accent)">loaded \u2014 your signature will be inserted</span>':'<span style="color:var(--orange)">not loaded</span>')):'')
     +'</div>';
