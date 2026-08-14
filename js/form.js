@@ -140,6 +140,13 @@ async function init(){
     card.innerHTML='<div class="section"><div class="sec-head"><span class="sec-title">Candidate summary</span>'
       +'<span class="sec-note">read from the loaded dossier</span></div>'
       +'<div class="sec-body" id="sign-summary" style="display:block;font-size:13px;line-height:2;">Load the candidate&rsquo;s dossier above.</div></div>'
+      // le president lit le texte du Commitment qu'il contresigne (comme le candidat dans le formulaire)
+      +(SIGN_CLUB?'<div class="section"><div class="sec-head" onclick="this.parentNode.classList.toggle(\'closed\')">'
+        +'<span class="sec-title">Commitment to Reciprocity</span>'
+        +'<span class="sec-note">please read — your signature is also inserted in this document</span>'
+        +'<span class="sec-toggle">▼</span></div>'
+        +'<div class="sec-body"><div class="fld w6" style="grid-column:span 6"><div class="commit-text" id="commit-view-text">'
+        +'<p>Load the candidate’s dossier above to display the Commitment text.</p></div></div></div></div>':'')
       +'<div class="section"><div class="sec-head"><span class="sec-title">'
       +(SIGN_CLUB?"Your signature \u2014 Lions Club chairman":"Your signatures \u2014 district")
       +'</span></div><div class="sec-body" id="sign-pads"></div></div>'

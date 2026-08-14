@@ -35,9 +35,30 @@ function loadDossier(inp){
       if(lbl)lbl.textContent="✔ "+file.name;
       setStatus("Dossier loaded: "+file.name+" ("+(COMMIT_FILE.buf?"form + Commitment":"form")+(SIGN_EXTRAS.length?" + "+SIGN_EXTRAS.length+" attachment(s)":"")+")",false);
       await syncFromTemplate(templateBuf);
+      if(SIGN_CLUB)commitPreview();
     }catch(e){setStatus("⚠ "+file.name+" — "+e.message,true);}
   };
   r.readAsArrayBuffer(file);
+}
+// affiche au président le texte du Commitment reçu, tel qu'il va le contresigner
+async function commitPreview(){
+  const el=document.getElementById("commit-view-text");
+  if(!el)return;
+  if(!COMMIT_FILE.buf){el.innerHTML='<p style="color:var(--red)">✖ No Commitment to Reciprocity found in the loaded dossier.</p>';return;}
+  try{
+    const entries=await unzip(COMMIT_FILE.buf);
+    const de=entries.find(function(e){return e.name==="word/document.xml";});
+    if(!de)throw new Error("invalid document");
+    const xml=new TextDecoder().decode(de.data);
+    const paras=[];
+    const re=/<w:p[ >][\s\S]*?<\/w:p>/g;let m;
+    while((m=re.exec(xml))){
+      const runs=m[0].match(/<w:t[^>]*>[\s\S]*?<\/w:t>/g)||[];
+      const t=decodeEnt(runs.map(function(x){return x.replace(/<[^>]+>/g,"");}).join("")).trim();
+      if(t)paras.push(t);
+    }
+    el.innerHTML=paras.map(function(p){return '<p>'+esc(p)+'</p>';}).join("");
+  }catch(e){el.innerHTML='<p style="color:var(--red)">⚠ Could not read the Commitment text ('+esc(e.message)+') — please open the Word file from the ZIP.</p>';}
 }
 async function signCommitmentFile(){
   const entries=await unzip(COMMIT_FILE.buf);
