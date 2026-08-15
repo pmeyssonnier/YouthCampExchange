@@ -102,14 +102,6 @@ input:focus{border-color:var(--gold);}
   </div>
 
   <div class="section">
-    <div class="sec-head"><span class="sec-title">Save</span><span class="sec-note">one commit to camps_data.js</span></div>
-    <div class="sec-body">
-      <div class="fld w2"><button class="btn" id="save" onclick="saveData()">💾 Save the data</button></div>
-      <div class="fld w4"><span class="hint">Writes season, year, coordinators and camp list into <code>camps_data.js</code> on the <b>main</b> branch. The rebuild Action then refreshes <code>camps.json</code> and the embedded assets.</span></div>
-    </div>
-  </div>
-
-  <div class="section">
     <div class="sec-head"><span class="sec-title">Official documents</span><span class="sec-note">each upload is committed immediately</span></div>
     <div class="sec-body">
       <div class="fld w6"><div class="upl"><b>📄 Reference application form (blank)</b><span class="path" id="p-af"></span><span class="fname" id="u-af"></span><label class="filebtn">📂 Choose…<input type="file" accept=".xlsx" onchange="uploadPick(this,'af')"></label></div></div>
@@ -117,6 +109,14 @@ input:focus{border-color:var(--gold);}
       <div class="fld w6"><div class="upl"><b>💌 Host-family letter template</b><span class="path" id="p-letter"></span><span class="fname" id="u-letter"></span><label class="filebtn">📂 Choose…<input type="file" accept=".docx" onchange="uploadPick(this,'letter')"></label></div></div>
       <div class="fld w6"><div class="upl"><b>🔧 Commitment generation template (markers)</b><span class="path">tools/commit_template.docx</span><span class="fname" id="u-tpl"></span><label class="filebtn">📂 Choose…<input type="file" accept=".docx" onchange="uploadPick(this,'tpl')"></label></div></div>
       <div class="fld w6"><span class="hint">The reference form must be the sanitized blank (no personal data, district cells empty). The generation template must keep the §CAND§ / §DATE§ / [BODY] / [SIG1-3] markers.</span></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-head"><span class="sec-title">Save</span><span class="sec-note">one commit to camps_data.js</span></div>
+    <div class="sec-body">
+      <div class="fld w2"><button class="btn" id="save" onclick="saveData()">💾 Save the data</button></div>
+      <div class="fld w4"><span class="hint">Writes season, year, coordinators and camp list into <code>camps_data.js</code> on the <b>main</b> branch. The rebuild Action then refreshes <code>camps.json</code> and the embedded assets.</span></div>
     </div>
   </div>
 
