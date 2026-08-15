@@ -82,9 +82,11 @@ input:focus{border-color:var(--gold);}
   <div class="section">
     <div class="sec-head"><span class="sec-title">Administrator access</span><span class="sec-note">token is kept only in this browser</span></div>
     <div class="sec-body">
-      <div class="fld w3"><label class="flbl">GitHub access token</label><input type="password" id="token" placeholder="github_pat_…"></div>
+      <div class="fld w3" id="f-token"><label class="flbl">GitHub access token</label><input type="password" id="token" placeholder="github_pat_…"></div>
+      <div class="fld w1" id="f-pin"><label class="flbl" id="pin-lbl">PIN (4+ digits)</label><input type="password" id="pin" inputmode="numeric" placeholder="••••" onkeydown="if(event.key==='Enter')connect()"></div>
       <div class="fld w1" style="justify-content:flex-end"><button class="btn" id="connect" onclick="connect()">Connect</button></div>
-      <div class="fld w2" style="justify-content:flex-end"><button class="btn2" onclick="logout()">Forget the token on this device</button></div>
+      <div class="fld w1" style="justify-content:flex-end"><button class="btn2" onclick="logout()">Forget on this device</button></div>
+      <div class="fld w6"><span class="hint" id="access-hint">First time: paste the token and choose a PIN — the token is then stored <b>encrypted with your PIN</b> on this device, and next visits only ask for the PIN. Without a PIN the token is not remembered.</span></div>
     </div>
   </div>
 

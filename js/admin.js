@@ -3,7 +3,37 @@
 "use strict";
 const REPO="pmeyssonnier/YouthCampExchange";
 const API="https://api.github.com/repos/"+REPO+"/contents/";
-const TOKEN_KEY="yce_admin_token";
+const TOKEN_KEY="yce_admin_token";          // héritage : jeton en clair (migré vers le stockage chiffré à la 1re connexion avec PIN)
+const ENC_KEY="yce_admin_token_enc";        // jeton chiffré par PIN (PBKDF2 310k + AES-GCM)
+
+// -------------------- chiffrement local du jeton par PIN --------------------
+function b64e(a){let s="";for(let i=0;i<a.length;i++)s+=String.fromCharCode(a[i]);return btoa(s);}
+function b64d(s){const b=atob(s);const a=new Uint8Array(b.length);for(let i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a;}
+async function pinKey(pin,salt){
+  const km=await crypto.subtle.importKey("raw",new TextEncoder().encode(pin),"PBKDF2",false,["deriveKey"]);
+  return crypto.subtle.deriveKey({name:"PBKDF2",salt:salt,iterations:310000,hash:"SHA-256"},km,
+    {name:"AES-GCM",length:256},false,["encrypt","decrypt"]);
+}
+async function encryptToken(tok,pin){
+  const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));
+  const ct=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv:iv},await pinKey(pin,salt),new TextEncoder().encode(tok)));
+  return b64e(salt)+"."+b64e(iv)+"."+b64e(ct);
+}
+async function decryptToken(blob,pin){
+  try{
+    const p=blob.split(".");
+    const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:b64d(p[1])},await pinKey(pin,b64d(p[0])),b64d(p[2]));
+    return new TextDecoder().decode(pt);
+  }catch(e){return null;} // mauvais PIN (ou blob corrompu)
+}
+function hasEnc(){try{return !!localStorage.getItem(ENC_KEY);}catch(e){return false;}}
+function accessMode(mode){ // "token" = première connexion ; "pin" = déverrouillage
+  document.getElementById("f-token").style.display=mode==="pin"?"none":"";
+  document.getElementById("pin-lbl").textContent=mode==="pin"?"PIN":"PIN (4+ digits)";
+  document.getElementById("access-hint").innerHTML=mode==="pin"
+    ?"Enter the PIN chosen on this device to unlock the encrypted token. <a href=\"#\" onclick=\"logout();return false\" style=\"color:var(--blue)\">Use another token instead\u2026</a>"
+    :"First time: paste the token and choose a PIN \u2014 the token is then stored <b>encrypted with your PIN</b> on this device, and next visits only ask for the PIN. Without a PIN the token is not remembered.";
+}
 let NEW_CAMPS=null; // liste de camps en attente d'enregistrement (upload JSON)
 
 function log(msg,cls){
@@ -53,12 +83,26 @@ function bufToB64(buf){const a=new Uint8Array(buf);let bin="";
 async function connect(){
   const btn=document.getElementById("connect");btn.disabled=true;
   try{
+    const pin=document.getElementById("pin").value.trim();
+    if(hasEnc()&&!token()){ // mode déverrouillage : le PIN décrypte le jeton mémorisé
+      if(!pin)throw new Error("enter your PIN");
+      const tok=await decryptToken(localStorage.getItem(ENC_KEY),pin);
+      if(!tok)throw new Error("wrong PIN");
+      document.getElementById("token").value=tok;
+    }
+    if(pin&&pin.length<4)throw new Error("the PIN needs at least 4 digits");
     const r=await gh("user");
     if(r.status===404)throw new Error("invalid token");
     const u=await r.json();
     const probe=await getFile("camps_data.js");
     if(!probe)throw new Error("token cannot read this repository (grant Contents on "+REPO+")");
-    try{localStorage.setItem(TOKEN_KEY,token());}catch(e){}
+    try{
+      const pin=document.getElementById("pin").value.trim();
+      if(pin){ // mémorisation chiffrée uniquement — l'ancien stockage en clair est purgé
+        localStorage.setItem(ENC_KEY,await encryptToken(token(),pin));
+        localStorage.removeItem(TOKEN_KEY);
+      }
+    }catch(e){}
     const who=document.getElementById("who");
     who.textContent="✔ "+u.login;who.style.display="";
     document.getElementById("panel").style.display="";
@@ -67,8 +111,10 @@ async function connect(){
   finally{btn.disabled=false;}
 }
 function logout(){
-  try{localStorage.removeItem(TOKEN_KEY);}catch(e){}
+  try{localStorage.removeItem(TOKEN_KEY);localStorage.removeItem(ENC_KEY);}catch(e){}
   document.getElementById("token").value="";
+  document.getElementById("pin").value="";
+  accessMode("token");
   document.getElementById("panel").style.display="none";
   document.getElementById("who").style.display="none";
   log("Token forgotten on this device.");
@@ -188,8 +234,9 @@ function uploadPick(inp,kind){
 
 // -------------------- démarrage --------------------
 (function(){
-  try{const t=localStorage.getItem(TOKEN_KEY);if(t)document.getElementById("token").value=t;}catch(e){}
-  document.getElementById("in-year")&&fillForm();
+  fillForm();
   document.getElementById("in-year").addEventListener("input",updPaths);
-  if(token())connect();
+  if(hasEnc()){accessMode("pin");document.getElementById("pin").focus();return;}
+  accessMode("token");
+  try{const t=localStorage.getItem(TOKEN_KEY);if(t){document.getElementById("token").value=t;connect();}}catch(e){}
 })();
