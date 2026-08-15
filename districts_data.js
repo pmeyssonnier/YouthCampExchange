@@ -33,7 +33,7 @@ const SITE = {
 
 // Galerie photos animée de la page d'accueil — gérée depuis la page d'administration.
 // Chaque entrée : {"src": "assets/gallery/….jpg", "caption": "…"}. Vide = section masquée.
-const GALLERY = [{"src":"assets/gallery/37269.jpg","caption":""},{"src":"assets/gallery/37358.jpg","caption":""},{"src":"assets/gallery/36272.jpg","caption":""}];
+const GALLERY = [{"src":"assets/gallery/37361.jpg","caption":""},{"src":"assets/gallery/37358.jpg","caption":""},{"src":"assets/gallery/37360.jpg","caption":""},{"src":"assets/gallery/37269.jpg","caption":""},{"src":"assets/gallery/37360.jpg","caption":""}];
 
 const DISTRICTS = {
   A: {name: "Harboort Jan", club: "LC Zottegem", email: "jan@harboort.com", mobile: "+32 473 40 01 10"},
