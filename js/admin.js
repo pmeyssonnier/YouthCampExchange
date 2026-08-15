@@ -1,8 +1,15 @@
 // admin.js — administration du site : édite le dépôt GitHub via son API (aucun serveur dédié)
 // Chargé par yce_admin.html ; le jeton reste dans le navigateur de l'administrateur.
 "use strict";
-const REPO="pmeyssonnier/YouthCampExchange";
-const API="https://api.github.com/repos/"+REPO+"/contents/";
+// Dépôt administré : détecté depuis l'URL sur *.github.io, sinon SITE_REPO (districts_data.js).
+// Un fork national fonctionne ainsi sans toucher au code.
+const REPO=(function(){
+  if(/\.github\.io$/.test(location.hostname)){
+    const seg=location.pathname.split("/").filter(Boolean);
+    if(seg.length)return location.hostname.split(".")[0]+"/"+seg[0];
+  }
+  return (typeof SITE_REPO!=="undefined"&&SITE_REPO)||"pmeyssonnier/YouthCampExchange";
+})();
 const TOKEN_KEY="yce_admin_token";          // héritage : jeton en clair (migré vers le stockage chiffré à la 1re connexion avec PIN)
 const ENC_KEY="yce_admin_token_enc";        // jeton chiffré par PIN (PBKDF2 310k + AES-GCM)
 
@@ -181,20 +188,34 @@ async function saveData(){
     const year=document.getElementById("in-year").value.trim();
     if(!/^20\d\d$/.test(year))throw new Error("the camp year must look like 2027");
     if(!season)throw new Error("season label is required");
+    // camps_data.js : données communes (saison, année, camps)
     const cur=await getFile("camps_data.js");
     if(!cur)throw new Error("camps_data.js not found on main");
     let src=b64ToUtf8(cur.content);
     src=src.replace(/const SEASON = "[^"]*";/,'const SEASON = "'+season.replace(/"/g,"'")+'";');
     src=src.replace(/const YEAR = "[^"]*";/,'const YEAR = "'+year+'";');
-    if(!/const DISTRICTS = \{[\s\S]*?\n\};/.test(src))throw new Error("DISTRICTS block not found");
-    src=src.replace(/const DISTRICTS = \{[\s\S]*?\n\};/,buildDistrictsLiteral());
     if(NEW_CAMPS){
       if(!/const RAW = \[[\s\S]*?\];/.test(src))throw new Error("RAW block not found");
       src=src.replace(/const RAW = \[[\s\S]*?\];/,"const RAW = "+JSON.stringify(NEW_CAMPS)+";");
     }
-    const res=await putFile("camps_data.js",utf8ToB64(src),cur.sha,
-      "Admin: update season data ("+season+(NEW_CAMPS?", "+NEW_CAMPS.length+" camps":"")+")");
-    log("Data saved — commit <b>"+res.commit.sha.slice(0,7)+"</b>. The site republishes in ~2 minutes.","ok");
+    // districts_data.js : données propres à ce déploiement (coordinateurs) — SITE_REPO préservé
+    const curD=await getFile("districts_data.js");
+    if(!curD)throw new Error("districts_data.js not found on main");
+    let srcD=b64ToUtf8(curD.content);
+    if(!/const DISTRICTS = \{[\s\S]*?\n\};/.test(srcD))throw new Error("DISTRICTS block not found");
+    srcD=srcD.replace(/const DISTRICTS = \{[\s\S]*?\n\};/,buildDistrictsLiteral());
+    let commits=[];
+    if(src!==b64ToUtf8(cur.content)){
+      const r1=await putFile("camps_data.js",utf8ToB64(src),cur.sha,
+        "Admin: update season data ("+season+(NEW_CAMPS?", "+NEW_CAMPS.length+" camps":"")+")");
+      commits.push(r1.commit.sha.slice(0,7));
+    }
+    if(srcD!==b64ToUtf8(curD.content)){
+      const r2=await putFile("districts_data.js",utf8ToB64(srcD),curD.sha,"Admin: update district coordinators");
+      commits.push(r2.commit.sha.slice(0,7));
+    }
+    if(!commits.length){log("Nothing changed — no commit made.","info");btn.disabled=false;return;}
+    log("Data saved — commit"+(commits.length>1?"s":"")+" <b>"+commits.join(", ")+"</b>. The site republishes in ~2 minutes.","ok");
     if(NEW_CAMPS){
       const cf=document.getElementById("camps-fname");
       cf.textContent="\u2714 "+NEW_CAMPS.length+" camps saved into camps_data.js";cf.style.color="var(--accent)";

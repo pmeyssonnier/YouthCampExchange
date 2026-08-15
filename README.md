@@ -17,7 +17,7 @@ Everything is served as **static pages** (GitHub Pages ready): no backend, no da
 
 ## The application form filler
 
-Opened from the site with `?district=A/B/C/D`, it loads the **single reference form** and stamps the district into it (header letter and YCE coordinator name/e-mail/mobile, from the `DISTRICTS` constant in `camps_data.js` — the only cells that ever differed between the four district files). The candidate fills ~85 fields with proper controls (date pickers, Yes/No pill buttons, camp choices suggested from the season's camp list, international phone-number normalisation `+32 …`, conditional fields shown only when relevant), attaches the required documents and signs on screen.
+Opened from the site with `?district=A/B/C/D`, it loads the **single reference form** and stamps the district into it (header letter and YCE coordinator name/e-mail/mobile, from the `DISTRICTS` constant in `districts_data.js` — the only cells that ever differed between the four district files). The candidate fills ~85 fields with proper controls (date pickers, Yes/No pill buttons, camp choices suggested from the season's camp list, international phone-number normalisation `+32 …`, conditional fields shown only when relevant), attaches the required documents and signs on screen.
 
 **Generating the file** inserts every answer into the genuine `.xlsx` (formatting, logos and formulas fully preserved — age, signature names and footer are recomputed by Excel) and downloads the complete application file as **one ZIP archive** — a single attachment to e-mail around — `Dossier_YCE_2026_112X_Name_Firstname.zip` containing:
 
@@ -56,7 +56,8 @@ District/status/search filters, sortable columns, per-candidate status (`Receive
 ```
 index.html                            public site HTML shell (loads css/site.css + the js/site-* modules)
 css/site.css                          public site styles (nav, hero, explorer, map, modal, light/dark)
-camps_data.js                         season camp data (SEASON constant + RAW array, shared with the filler)
+camps_data.js                         season camp data (SEASON + YEAR + RAW array) — common to every deployment
+districts_data.js                     per-deployment data: district coordinators + SITE_REPO (only file a national fork edits)
 camps.json                            GENERATED — plain-JSON export of the camp data ({season, camps})
 yce_form_filler.html                  form filler HTML shell (loads the js/ modules below)
 yce_tracker.html                      tracker HTML shell
@@ -93,6 +94,16 @@ assets/                               logos & favicon
 The filler and tracker are plain-JavaScript **classic scripts sharing the global scope**, loaded in dependency order by their HTML shells; every module is directly editable in the repository. Only `js/assets.js` is generated — run `python3 tools/build_assets.py` after changing the blank form or the Commitment template.
 
 A detailed code map (modules, business functions with line numbers and sizes, dependency graphs) is maintained in [`docs/CODE_MAP.md`](docs/CODE_MAP.md).
+
+## International deployments
+
+The programme can be deployed for another country as a **fork of this repository**:
+everything is common except `districts_data.js` (the district coordinators and the
+`SITE_REPO` constant pointing at the fork). Set up GitHub Pages and a custom domain
+on the fork, edit that single file (the admin page does it too — it detects the
+repository automatically on `*.github.io`), and sync with the original repository
+whenever you want to pick up improvements. Multiple domains for the *same* site
+need no fork at all: a registrar-level redirect to the canonical domain is enough.
 
 ## Site administration (`yce_admin.html`)
 

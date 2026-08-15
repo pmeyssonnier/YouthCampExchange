@@ -41,7 +41,7 @@ mapped before, add its coordinates in `js/site-map.js` (`COUNTRY_COORDS` +
    contains no personal data) and the five district cells neutral
    (`AF1` empty, `AH78` = "112", `I78`/`E79`/`E80` empty). It is embedded in
    the filler and downloadable from the site — there are no per-district files.
-2. Update the `DISTRICTS` constant in `camps_data.js` if a district YCE
+2. Update the `DISTRICTS` constant in `districts_data.js` if a district YCE
    coordinator changed (name, club, e-mail, mobile) — it drives both the
    five district cells stamped by `?district=X` **and** the contact cards
    on the public site. One place, nothing else to touch.

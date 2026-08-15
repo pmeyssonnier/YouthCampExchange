@@ -125,7 +125,8 @@ site = {"file": "index.html", "lines": len(open("index.html").read().split("\n")
         ]}
 
 data_files = [{"file": f, "bytes": os.path.getsize(f), "role": r} for f, r in [
-    ("camps_data.js", "season data: SEASON + RAW (91 camps), shared site/filler"),
+    ("camps_data.js", "season data: SEASON + YEAR + RAW camps — common to every deployment"),
+    ("districts_data.js", "per-deployment data: SITE_REPO + DISTRICTS coordinators"),
     ("yce_form_filler.html", "filler HTML shell + styles"),
     ("yce_tracker.html", "tracker HTML shell + styles"),
     ("tools/build_assets.py", "regenerates js/assets.js"),
