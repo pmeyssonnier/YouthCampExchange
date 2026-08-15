@@ -149,6 +149,11 @@ async function saveData(){
     const res=await putFile("camps_data.js",utf8ToB64(src),cur.sha,
       "Admin: update season data ("+season+(NEW_CAMPS?", "+NEW_CAMPS.length+" camps":"")+")");
     log("Data saved — commit <b>"+res.commit.sha.slice(0,7)+"</b>. The site republishes in ~2 minutes.","ok");
+    if(NEW_CAMPS){
+      const cf=document.getElementById("camps-fname");
+      cf.textContent="\u2714 "+NEW_CAMPS.length+" camps saved into camps_data.js";cf.style.color="var(--accent)";
+      document.getElementById("camps-note").textContent=NEW_CAMPS.length+" camps on the site (season "+season+")";
+    }
     NEW_CAMPS=null;
   }catch(e){log("Save failed: "+esc(e.message),"err");}
   finally{btn.disabled=false;}
