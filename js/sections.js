@@ -18,7 +18,8 @@ const SIGN_MODE=SIGN_CLUB?"club":(SIGN_DISTRICT?"district":null);
 // Définition des sections et champs (ref = cellule cible du xlsx)
 // ---------------------------------------------------------------
 const SECTIONS = [
- {title:"File header", note:"row 1 — automatically copied to the footer", fields:[
+ // adm : l'en-tête du fichier vient du modèle (année, pays, MD, district) — rien à saisir pour le candidat
+ {title:"File header", note:"row 1 — automatically copied to the footer", adm:true, fields:[
    {ref:"Q1",label:"Year",type:"number",w:1,numeric:true},
    {ref:"V1",label:"Country",type:"text",w:1},
    {ref:"AB1",label:"MD",type:"text",w:1,numeric:true},

@@ -7,6 +7,7 @@ function render(){
   const root=document.getElementById("form-root");
   let h="";
   SECTIONS.forEach(function(sec,si){
+    if(sec.adm&&!IS_ADMIN)return; // section réservée à l'admin : les cellules du modèle passent telles quelles
     h+='<div class="section'+(sec.closed?' closed':'')+'" id="sec'+si+'"><div class="sec-head" onclick="this.parentNode.classList.toggle(\'closed\')">';
     h+='<span class="sec-title">'+esc(sec.title)+'</span>';
     if(sec.note)h+='<span class="sec-note">'+esc(sec.note)+'</span>';
