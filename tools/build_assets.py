@@ -28,7 +28,7 @@ with open("js/assets.js", "w") as f:
     f.write("// FICHIER GENERE — ne pas éditer à la main.\n")
     f.write("// Regénérer avec :  python3 tools/build_assets.py  (depuis la racine du dépôt)\n")
     f.write('const BUILD="%s";\n' % version)
-    f.write('const TEMPLATE_B64="%s";\n' % stored_b64(sorted(glob.glob("Application_form_*_MD112.xlsx"))[-1]))
+    f.write('const TEMPLATE_B64="%s";\n' % stored_b64(sorted(glob.glob("Application_form_*_MD*.xlsx"))[-1]))
     f.write('const COMMIT_B64="%s";\n' % stored_b64("tools/commit_template.docx"))
 print("js/assets.js written,", version)
 

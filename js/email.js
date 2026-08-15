@@ -31,7 +31,7 @@ function mailCoordinator(){
   const coord=(document.getElementById("f-I78")||{}).value||"the district YCE coordinator";
   const club=(document.getElementById("f-F67")||{}).value||"";
   const mobile=(document.getElementById("f-S21")||{}).value||"";
-  const subject="YCE "+YEAR+" Application - "+MAIL_INFO.fir+" "+MAIL_INFO.fam+" - District 112"+currentDistrict+" - complete file";
+  const subject="YCE "+YEAR+" Application - "+MAIL_INFO.fir+" "+MAIL_INFO.fam+" - District "+MD+" "+currentDistrict+" - complete file";
   const body=
 "Dear "+coord+",\n\n"
 +"Please find attached my complete application file for the Lions Youth Camp & Exchange "+YEAR+" programme"

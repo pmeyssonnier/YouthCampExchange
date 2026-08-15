@@ -20,7 +20,7 @@
   if(!g||typeof DISTRICTS==='undefined')return;
   g.innerHTML=Object.keys(DISTRICTS).map(d=>{
     const c=DISTRICTS[d];
-    return `<div class="dist-card reveal"><span class="dist-tag">District 112 ${d}</span>`
+    return `<div class="dist-card reveal"><span class="dist-tag">District ${MD} ${d}</span>`
       +`<h4>${c.name}</h4><div class="dist-club">${c.club||''}</div>`
       +`<a href="tel:${c.mobile.replace(/[^+\d]/g,'')}">📞 ${c.mobile}</a>`
       +`<a href="mailto:${c.email}">✉️ ${c.email}</a>`

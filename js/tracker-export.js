@@ -8,7 +8,7 @@ function exportCsv(){
   const lines=[cols.join(";")];
   Object.keys(ROWS).forEach(function(k){const r=ROWS[k];
     const c=function(v){return '"'+String(v==null?"":v).replace(/"/g,'""')+'"';};
-    lines.push(["112 "+r.dist,r.fam,r.fir,r.sex,r.dob,r.age,r.club,r.email,r.mobile,r.pref1,r.pref2,r.pref3,
+    lines.push([MD+" "+r.dist,r.fam,r.fir,r.sex,r.dob,r.age,r.club,r.email,r.mobile,r.pref1,r.pref2,r.pref3,
       r.sigA?"yes":"no",r.sigP?"yes":"no",r.sigC?"yes":"no",r.commit?"yes":"no",r.commitClub?"yes":"no",
       r.photo?"yes":"no",r.pay?"yes":"no",r.letter?"yes":"no",r.pct,(r.missing||[]).join(", "),r.status,r.notes,r.updated].map(c).join(";"));
   });

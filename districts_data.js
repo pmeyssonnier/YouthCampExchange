@@ -6,6 +6,11 @@
 // Sur *.github.io il est détecté automatiquement ; cette valeur sert pour un domaine personnalisé.
 const SITE_REPO = "pmeyssonnier/YouthCampExchange";
 
+// Multiple District et pays de CE déploiement — écrits dans le formulaire à l'ouverture
+// (le fichier de référence est neutre : aucune référence au MD ni au pays).
+const MD = "112";
+const MD_COUNTRY = "Belgium";
+
 // Responsables YCE par district — écrits dans le formulaire (AF1, AH78, I78, E79, E80),
 // affichés sur les cartes du site et utilisés par les e-mails pré-rédigés.
 const DISTRICTS = {
