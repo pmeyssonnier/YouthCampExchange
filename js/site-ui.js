@@ -14,6 +14,33 @@
   document.getElementById('brx-meta').innerHTML=chips.map(c=>`<span class="brx-chip">${c}</span>`).join('');
 })();
 
+// home page personalisation from the SITE constant + animated gallery (districts_data.js)
+(function(){
+  if(typeof SITE==='undefined')return;
+  const set=(id,v)=>{if(!v)return;const e=document.getElementById(id);if(e)e.innerHTML=v;};
+  set('announce',SITE.announce);
+  if(SITE.label)set('nav-sub','Youth Camp & Exchange — '+SITE.label);
+  set('nav-welcome',SITE.welcomeNav);
+  set('hero-title',SITE.heroTitle);set('hero-lead',SITE.heroLead);
+  set('brx-kicker',SITE.welcomeKicker);set('brx-title',SITE.welcomeTitle);set('brx-text',SITE.welcomeText);
+  set('brx-btn',SITE.welcomeButton);set('gal-title',SITE.galleryTitle);
+  if(typeof MD!=='undefined')set('foot-desc','Youth Camp & Exchange — Multiple District '+MD+' '+MD_COUNTRY+'.<br>Part of Lions Clubs International youth programs.');
+  set('foot-addr',SITE.address);
+  if(SITE.phone)set('foot-phone','📞 <a href="tel:'+SITE.phone.replace(/[^+\d]/g,'')+'">'+SITE.phone+'</a>');
+  if(SITE.welcomeList&&SITE.welcomeList.length){
+    const u=document.getElementById('brx-list');
+    if(u)u.innerHTML=SITE.welcomeList.map(x=>'<li>'+x+'</li>').join('');
+  }
+  if(typeof GALLERY!=='undefined'&&GALLERY.length){
+    document.getElementById('gallery').style.display='';
+    const card=g=>`<figure class="gal-card"><img src="${g.src}" alt="${(g.caption||'').replace(/"/g,'&quot;')}" loading="lazy"><figcaption class="gal-cap">${g.caption||''}</figcaption></figure>`;
+    const html=GALLERY.map(card).join('');
+    const few=GALLERY.length<4; // trop peu d'images pour un défilement : grille fixe
+    document.getElementById('gal-strip').classList.toggle('static',few);
+    document.getElementById('gal-track').innerHTML=few?html:html+html; // doublée = boucle sans couture
+  }
+})();
+
 // district responsable cards generated from the DISTRICTS constant (camps_data.js)
 (function(){
   const g=document.getElementById('dist-grid');

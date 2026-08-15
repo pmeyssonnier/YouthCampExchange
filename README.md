@@ -57,7 +57,7 @@ District/status/search filters, sortable columns, per-candidate status (`Receive
 index.html                            public site HTML shell (loads css/site.css + the js/site-* modules)
 css/site.css                          public site styles (nav, hero, explorer, map, modal, light/dark)
 camps_data.js                         season camp data (SEASON + YEAR + RAW array) — common to every deployment
-districts_data.js                     per-deployment data: MD number, country, district coordinators + SITE_REPO (only file a national fork edits)
+districts_data.js                     per-deployment data: MD number, country, coordinators, home-page texts (SITE), photo gallery (GALLERY) + SITE_REPO
 camps.json                            GENERATED — plain-JSON export of the camp data ({season, camps})
 yce_form_filler.html                  form filler HTML shell (loads the js/ modules below)
 yce_tracker.html                      tracker HTML shell
@@ -114,7 +114,9 @@ with write access plus a fine-grained personal access token (this repository onl
 permission *Contents: Read and write*; the token never leaves the admin's browser).
 From the page you can change the season label and camp year, the district YCE
 coordinators (form stamping + site cards + e-mails follow), replace the whole camp
-list from a JSON file, and upload new official documents (reference form, Commitment,
+list from a JSON file, edit the home-page announcement banner, manage the animated
+photo gallery (images are resized and committed to `assets/gallery/`), and upload
+new official documents (reference form, Commitment,
 host-family letter, generation template). Every save is a commit on `main`; the
 `Rebuild generated files` GitHub Action then regenerates `js/assets.js`, `camps.json`
 and the code-map data, and GitHub Pages republishes the site — live in 2–3 minutes,

@@ -42,6 +42,7 @@ function accessMode(mode){ // "token" = première connexion ; "pin" = déverroui
     :"First time: paste the token and choose a PIN \u2014 the token is then stored <b>encrypted with your PIN</b> on this device, and next visits only ask for the PIN. Without a PIN the token is not remembered.";
 }
 let NEW_CAMPS=null; // liste de camps en attente d'enregistrement (upload JSON)
+let GAL=[];         // galerie en cours d'édition (copie de GALLERY, enregistrée avec Save)
 
 function log(msg,cls){
   const l=document.getElementById("log");
@@ -142,6 +143,9 @@ function fillForm(){
       +'<div class="fld w3"><label class="flbl">Mobile</label><input id="d-'+d+'-mobile" value="'+esc(c.mobile)+'"></div>';
   }).join("");
   document.getElementById("camps-note").textContent=RAW.length+" camps currently on the site (season "+SEASON+")";
+  document.getElementById("in-announce").value=(typeof SITE!=="undefined"&&SITE.announce)||"";
+  GAL=(typeof GALLERY!=="undefined")?GALLERY.slice():[];
+  galShow();
   updPaths();
 }
 function updPaths(){
@@ -170,6 +174,45 @@ function campsPick(inp){
     }
   };
   r.readAsText(f);
+  inp.value="";
+}
+
+// -------------------- galerie de la page d'accueil --------------------
+function galShow(){
+  const l=document.getElementById("gal-list");
+  if(!l)return;
+  l.innerHTML=GAL.length?GAL.map(function(g,i){
+    return '<div class="upl" style="padding:7px 12px;"><img src="'+esc(g.src)+'" alt="" style="height:36px;width:54px;object-fit:cover;border-radius:5px;">'
+      +'<input value="'+esc(g.caption||"")+'" placeholder="Caption…" style="flex:1;min-width:120px;" onchange="GAL['+i+'].caption=this.value">'
+      +'<button type="button" class="btn2" onclick="GAL.splice('+i+',1);galShow()">✕</button></div>';
+  }).join(""):'<span class="hint">No photos yet — the gallery section stays hidden on the site.</span>';
+}
+function galPick(inp){
+  const f=inp.files[0];if(!f)return;
+  const fn=document.getElementById("gal-fname");
+  const r=new FileReader();
+  r.onload=function(){
+    const img=new Image();
+    img.onload=async function(){
+      const MAX=1200,k=Math.min(1,MAX/Math.max(img.width,img.height));
+      const cv=document.createElement("canvas");
+      cv.width=Math.round(img.width*k);cv.height=Math.round(img.height*k);
+      cv.getContext("2d").drawImage(img,0,0,cv.width,cv.height);
+      const b64=cv.toDataURL("image/jpeg",0.85).split(",")[1];
+      const name=f.name.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\.[^.]+$/,"").replace(/[^A-Za-z0-9_-]+/g,"_").toLowerCase()||"photo";
+      const path="assets/gallery/"+name+".jpg";
+      try{
+        fn.textContent="\u23f3 "+f.name+"\u2026";
+        const cur=await getFile(path);
+        await putFile(path,b64,cur?cur.sha:null,"Admin: gallery photo "+path);
+        GAL.push({src:path,caption:""});galShow();
+        fn.textContent="\u2714 "+f.name+" uploaded — add a caption, then Save the data";
+        log("Gallery photo committed: "+esc(path),"ok");
+      }catch(e){fn.textContent="\u2716 "+f.name+" failed";log("Gallery upload failed: "+esc(e.message),"err");}
+    };
+    img.src=r.result;
+  };
+  r.readAsDataURL(f);
   inp.value="";
 }
 
@@ -204,6 +247,9 @@ async function saveData(){
     let srcD=b64ToUtf8(curD.content);
     if(!/const DISTRICTS = \{[\s\S]*?\n\};/.test(srcD))throw new Error("DISTRICTS block not found");
     srcD=srcD.replace(/const DISTRICTS = \{[\s\S]*?\n\};/,buildDistrictsLiteral());
+    const ann=document.getElementById("in-announce").value.trim();
+    if(/\n  announce: /.test(srcD))srcD=srcD.replace(/\n  announce: "(?:[^"\\]|\\.)*",/,"\n  announce: "+JSON.stringify(ann)+",");
+    if(/const GALLERY = \[[\s\S]*?\];/.test(srcD))srcD=srcD.replace(/const GALLERY = \[[\s\S]*?\];/,"const GALLERY = "+JSON.stringify(GAL)+";");
     let commits=[];
     if(src!==b64ToUtf8(cur.content)){
       const r1=await putFile("camps_data.js",utf8ToB64(src),cur.sha,

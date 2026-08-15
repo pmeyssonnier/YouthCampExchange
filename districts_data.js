@@ -13,6 +13,28 @@ const MD_COUNTRY = "Belgium";
 
 // Responsables YCE par district — écrits dans le formulaire (AF1, AH78, I78, E79, E80),
 // affichés sur les cartes du site et utilisés par les e-mails pré-rédigés.
+// Personnalisation de la page d'accueil de CE déploiement (textes selon le pays).
+// Une clé absente/vide laisse le texte par défaut écrit dans index.html.
+const SITE = {
+  label: "MD112 Belgium",
+  announce: "📢 <strong>Registrations for 2026 are closed.</strong> Next info session in November — date to be announced. Follow us on Facebook for updates.",
+  heroTitle: "Bringing youth together, <em>worldwide</em>",
+  heroLead: "Live with a host family, join an international camp, and share ideas with young people from every continent. Lions Youth Camp & Exchange sends Belgian youth aged 16–22 abroad for 2 to 4 unforgettable weeks — and welcomes the world to Belgium.",
+  welcomeNav: "Come to Belgium",
+  welcomeKicker: "Do you want to come?",
+  welcomeTitle: "Discover Belgium with us",
+  welcomeText: "Every summer, MD112 Belgium welcomes young people from all over the world for its own camp — the perfect mirror of what our Belgian participants experience abroad.",
+  welcomeList: ["Stay with a warm Belgian host family","Visit Brussels, Bruges, Antwerp, Ghent and more","Sports, games and team activities with youth from 20+ countries","Discover Belgian culture — chocolate, fries and all"],
+  welcomeButton: "🇧🇪 See the Belgian camp",
+  galleryTitle: "The programme in pictures",
+  address: "📍 Houba de Strooperlaan 90, 1020 Brussels",
+  phone: "+32 2 478 17 31"
+};
+
+// Galerie photos animée de la page d'accueil — gérée depuis la page d'administration.
+// Chaque entrée : {"src": "assets/gallery/….jpg", "caption": "…"}. Vide = section masquée.
+const GALLERY = [];
+
 const DISTRICTS = {
   A: {name: "Harboort Jan", club: "LC Zottegem", email: "jan@harboort.com", mobile: "+32 473 40 01 10"},
   B: {name: "De Beule Dirk", club: "LC Antwerpen Voorkempen", email: "d.debeule@a-law.eu", mobile: "+32 478 44 69 98"},
