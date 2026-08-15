@@ -5,12 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lions YCE — Application Form Filler 2026 — MD 112 Belgium</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
+<script>try{if(localStorage.getItem('yce-theme')==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}</script>
 <style>
 :root{
   --bg:#0d1827;--surface:#132038;--card:#1a2d4a;--border:#243d5c;
   --gold:#e8a020;--gold2:#ffd166;--accent:#06d6a0;--blue:#4fc3f7;
   --text:#dce8f5;--muted:#6b8aaa;--hover:#1e3355;--red:#ef5350;
 }
+html[data-theme="light"]{
+  --bg:#f4f6fa;--surface:#ffffff;--card:#edf1f7;--border:#c9d5e4;
+  --gold:#c07a00;--gold2:#e8a020;--accent:#08916f;--blue:#0277bd;
+  --text:#22344a;--muted:#5a7186;--hover:#e6edf6;--red:#d63230;--orange:#c1650a;
+}
+html[data-theme="light"] header{background:linear-gradient(135deg,#ffffff 0%,#e7edf6 100%);}
+html[data-theme="light"] .footer-bar{background:rgba(255,255,255,0.97);}
+html[data-theme="light"] .xopt.on,html[data-theme="light"] .gen-btn{color:#fff;}
+html[data-theme="light"] input::placeholder{color:#9fb2c6;}
+.theme-btn{background:transparent;border:1px solid var(--border);border-radius:50%;width:34px;height:34px;cursor:pointer;font-size:15px;line-height:1;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.theme-btn:hover{border-color:var(--gold);}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;min-height:100vh;}
 ::-webkit-scrollbar{width:6px;}::-webkit-scrollbar-track{background:var(--surface);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
@@ -100,6 +112,7 @@ input.tel-bad{border-color:var(--red) !important;}
     <div class="header-sub">Youth Camp &amp; Exchange <span class="yr">2026</span> — MD 112 Belgium (districts A · B · C · D) · <span title="build version" id="build"></span></div>
   </div>
   <div class="progress"><div class="prog-num" id="p-count">0</div><div class="prog-lbl">fields completed</div></div>
+  <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Switch light / dark theme" aria-label="Switch light / dark theme">☀️</button>
 </header>
 <main>
   <div class="intro" id="sign-banner" style="display:none">
@@ -133,6 +146,7 @@ input.tel-bad{border-color:var(--red) !important;}
 <datalist id="dl-camp2"></datalist>
 <datalist id="dl-camp3"></datalist>
 
+<script src="js/theme.js"></script>
 <script src="camps_data.js"></script>
 <script src="js/assets.js"></script>
 <script src="js/xlsx.js"></script>
