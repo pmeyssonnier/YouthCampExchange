@@ -106,9 +106,13 @@ function campsPick(inp){
       if(d&&d.camps)d=d.camps;
       if(!Array.isArray(d)||!d.length||!d[0].camp_name||!d[0].country)throw new Error("expected an array of camps with country/camp_name");
       NEW_CAMPS=d;
+      document.getElementById("camps-fname").textContent="\u2714 "+f.name+" \u2014 "+d.length+" camps staged";
       document.getElementById("camps-note").innerHTML='<span style="color:var(--orange)">'+d.length+" camps staged from "+esc(f.name)+" — press “Save the data”</span>";
       log(d.length+" camps loaded from "+esc(f.name)+" (staged)","ok");
-    }catch(e){log("Camp file rejected: "+esc(e.message),"err");}
+    }catch(e){
+      document.getElementById("camps-fname").textContent="\u2716 "+f.name+" rejected";
+      log("Camp file rejected: "+esc(e.message),"err");
+    }
   };
   r.readAsText(f);
   inp.value="";
@@ -157,13 +161,19 @@ function uploadPick(inp,kind){
               letter:"Letter_to_Host_Family_"+y+".docx",
               tpl:"tools/commit_template.docx"}[kind];
   if(!confirm("Replace "+path+" on the site with "+f.name+" ?")){inp.value="";return;}
+  const fn=document.getElementById("u-"+kind);
+  if(fn)fn.textContent="\u23f3 "+f.name+"\u2026";
   const r=new FileReader();
   r.onload=async function(){
     try{
       const cur=await getFile(path);
       const res=await putFile(path,bufToB64(r.result),cur?cur.sha:null,"Admin: upload "+path);
+      if(fn)fn.textContent="\u2714 "+f.name+" \u2014 committed";
       log((cur?"Replaced ":"Created ")+"<b>"+esc(path)+"</b> — commit "+res.commit.sha.slice(0,7)+(kind==="af"||kind==="tpl"?" (embedded template rebuilt by the Action)":""),"ok");
-    }catch(e){log("Upload of "+esc(path)+" failed: "+esc(e.message),"err");}
+    }catch(e){
+      if(fn)fn.textContent="\u2716 "+f.name+" \u2014 failed";
+      log("Upload of "+esc(path)+" failed: "+esc(e.message),"err");
+    }
   };
   r.readAsArrayBuffer(f);
   inp.value="";

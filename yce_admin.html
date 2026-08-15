@@ -26,7 +26,7 @@ main{max-width:900px;margin:0 auto;padding:20px 16px 60px;}
 .sec-body{padding:16px 18px;display:grid;grid-template-columns:repeat(6,1fr);gap:12px 14px;}
 .fld{display:flex;flex-direction:column;gap:4px;}
 .w1{grid-column:span 1}.w2{grid-column:span 2;}.w3{grid-column:span 3;}.w6{grid-column:span 6;}
-@media(max-width:700px){.w2,.w3{grid-column:span 6;}.w1{grid-column:span 3;}}
+@media(max-width:700px){.w2,.w3,.w4{grid-column:span 6;}.w1{grid-column:span 3;}}
 label.flbl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);}
 input,select{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:8px 11px;color:var(--text);font-size:13px;font-family:inherit;outline:none;width:100%;}
 input:focus{border-color:var(--gold);}
@@ -43,6 +43,10 @@ input:focus{border-color:var(--gold);}
 .dist-row{display:contents;}
 .upl{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--card);border:1px dashed var(--border);border-radius:8px;padding:10px 14px;}
 .upl b{font-size:12.5px;min-width:230px;}
+.filebtn{display:inline-block;background:transparent;border:1px solid var(--border);border-radius:8px;padding:9px 16px;color:var(--muted);cursor:pointer;font-size:12px;}
+.filebtn:hover{border-color:var(--gold);color:var(--gold);}
+.filebtn input{display:none;}
+.fname{font-size:12px;color:var(--accent);word-break:break-all;}
 .upl .path{font-family:monospace;font-size:10.5px;color:var(--blue);flex:1;min-width:180px;}
 .badge{display:inline-block;background:rgba(6,214,160,0.12);color:var(--accent);border-radius:10px;padding:2px 10px;font-size:11px;}
 </style>
@@ -92,7 +96,7 @@ input:focus{border-color:var(--gold);}
     <div class="sec-head"><span class="sec-title">Camp list</span><span class="sec-note" id="camps-note"></span></div>
     <div class="sec-body">
       <div class="fld w6"><label class="flbl">Replace the camp list (JSON)</label>
-        <input type="file" id="camps-file" accept=".json" onchange="campsPick(this)">
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;"><label class="filebtn">📂 Choose a JSON file…<input type="file" id="camps-file" accept=".json" onchange="campsPick(this)"></label><span class="fname" id="camps-fname">no file selected</span></div>
         <span class="hint">Accepts the scraper output or <code>camps.json</code>: a JSON array of camps, or an object <code>{"season": …, "camps": [...]}</code>. Nothing is sent until you press “Save the data”.</span>
       </div>
     </div>
@@ -109,10 +113,10 @@ input:focus{border-color:var(--gold);}
   <div class="section">
     <div class="sec-head"><span class="sec-title">Official documents</span><span class="sec-note">each upload is committed immediately</span></div>
     <div class="sec-body">
-      <div class="fld w6"><div class="upl"><b>📄 Reference application form (blank)</b><span class="path" id="p-af"></span><input type="file" accept=".xlsx" onchange="uploadPick(this,'af')"></div></div>
-      <div class="fld w6"><div class="upl"><b>📜 Commitment to Reciprocity (official)</b><span class="path">Commitment to Reciprocity.docx</span><input type="file" accept=".docx" onchange="uploadPick(this,'commit')"></div></div>
-      <div class="fld w6"><div class="upl"><b>💌 Host-family letter template</b><span class="path" id="p-letter"></span><input type="file" accept=".docx" onchange="uploadPick(this,'letter')"></div></div>
-      <div class="fld w6"><div class="upl"><b>🔧 Commitment generation template (markers)</b><span class="path">tools/commit_template.docx</span><input type="file" accept=".docx" onchange="uploadPick(this,'tpl')"></div></div>
+      <div class="fld w6"><div class="upl"><b>📄 Reference application form (blank)</b><span class="path" id="p-af"></span><span class="fname" id="u-af"></span><label class="filebtn">📂 Choose…<input type="file" accept=".xlsx" onchange="uploadPick(this,'af')"></label></div></div>
+      <div class="fld w6"><div class="upl"><b>📜 Commitment to Reciprocity (official)</b><span class="path">Commitment to Reciprocity.docx</span><span class="fname" id="u-commit"></span><label class="filebtn">📂 Choose…<input type="file" accept=".docx" onchange="uploadPick(this,'commit')"></label></div></div>
+      <div class="fld w6"><div class="upl"><b>💌 Host-family letter template</b><span class="path" id="p-letter"></span><span class="fname" id="u-letter"></span><label class="filebtn">📂 Choose…<input type="file" accept=".docx" onchange="uploadPick(this,'letter')"></label></div></div>
+      <div class="fld w6"><div class="upl"><b>🔧 Commitment generation template (markers)</b><span class="path">tools/commit_template.docx</span><span class="fname" id="u-tpl"></span><label class="filebtn">📂 Choose…<input type="file" accept=".docx" onchange="uploadPick(this,'tpl')"></label></div></div>
       <div class="fld w6"><span class="hint">The reference form must be the sanitized blank (no personal data, district cells empty). The generation template must keep the §CAND§ / §DATE§ / [BODY] / [SIG1-3] markers.</span></div>
     </div>
   </div>
