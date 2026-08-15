@@ -95,8 +95,7 @@ input:focus{border-color:var(--gold);}
   <div class="section">
     <div class="sec-head"><span class="sec-title">Camp list</span><span class="sec-note" id="camps-note"></span></div>
     <div class="sec-body">
-      <div class="fld w6"><label class="flbl">Replace the camp list (JSON)</label>
-        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;"><label class="filebtn">📂 Choose a JSON file…<input type="file" id="camps-file" accept=".json" onchange="campsPick(this)"></label><span class="fname" id="camps-fname">no file selected</span></div>
+      <div class="fld w6"><div class="upl"><b>📋 Replace the camp list (JSON)</b><span class="path" id="camps-fname"></span><label class="filebtn">📂 Choose…<input type="file" id="camps-file" accept=".json" onchange="campsPick(this)"></label></div>
         <span class="hint">Accepts the scraper output or <code>camps.json</code>: a JSON array of camps, or an object <code>{"season": …, "camps": [...]}</code>. Nothing is sent until you press “Save the data”.</span>
       </div>
     </div>

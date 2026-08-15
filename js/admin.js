@@ -106,11 +106,13 @@ function campsPick(inp){
       if(d&&d.camps)d=d.camps;
       if(!Array.isArray(d)||!d.length||!d[0].camp_name||!d[0].country)throw new Error("expected an array of camps with country/camp_name");
       NEW_CAMPS=d;
-      document.getElementById("camps-fname").textContent="\u2714 "+f.name+" \u2014 "+d.length+" camps staged";
+      const cf=document.getElementById("camps-fname");
+      cf.textContent="\u2714 "+f.name+" \u2014 "+d.length+" camps staged";cf.style.color="var(--accent)";
       document.getElementById("camps-note").innerHTML='<span style="color:var(--orange)">'+d.length+" camps staged from "+esc(f.name)+" — press “Save the data”</span>";
       log(d.length+" camps loaded from "+esc(f.name)+" (staged)","ok");
     }catch(e){
-      document.getElementById("camps-fname").textContent="\u2716 "+f.name+" rejected";
+      const cf=document.getElementById("camps-fname");
+      cf.textContent="\u2716 "+f.name+" rejected";cf.style.color="var(--red)";
       log("Camp file rejected: "+esc(e.message),"err");
     }
   };
