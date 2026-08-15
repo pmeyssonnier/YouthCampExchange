@@ -31,7 +31,7 @@ function render(){
     const miss=r.missing&&r.missing.length?' <span class="hint-miss" title="Missing: '+esc(r.missing.join(", "))+'">('+r.missing.length+' missing)</span>':"";
     const prefTitle=esc(["1. "+r.pref1,"2. "+r.pref2,"3. "+r.pref3].join("\n"));
     return "<tr>"
-      +'<td><span class="b-dist b-'+r.dist+'">112 '+r.dist+"</span></td>"
+      +'<td><span class="b-dist b-'+r.dist+'">'+MD+' '+r.dist+"</span></td>"
       +'<td><div class="cand">'+esc(r.fam)+" "+esc(r.fir)+(isComplete(r)?' <span class="ok" title="File complete">●</span>':"")+'</div><div class="sub">'+esc(r.sex)+" · "+esc(r.dob)+"</div></td>"
       +"<td>"+(r.age||"—")+"</td>"
       +"<td>"+esc(r.club||"—")+"</td>"

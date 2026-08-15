@@ -134,7 +134,7 @@ function fillForm(){
   const b=document.getElementById("dist-body");
   b.innerHTML=Object.keys(DISTRICTS).map(function(d){
     const c=DISTRICTS[d];
-    return '<div class="fld w1" style="justify-content:center"><span class="badge">112 '+d+'</span></div>'
+    return '<div class="fld w1" style="justify-content:center"><span class="badge">'+MD+' '+d+'</span></div>'
       +'<div class="fld w2"><label class="flbl">Name (as on the form)</label><input id="d-'+d+'-name" value="'+esc(c.name)+'"></div>'
       +'<div class="fld w3"><label class="flbl">Lions club</label><input id="d-'+d+'-club" value="'+esc(c.club||"")+'"></div>'
       +'<div class="fld w1"></div>'
@@ -146,7 +146,7 @@ function fillForm(){
 }
 function updPaths(){
   const y=document.getElementById("in-year").value||YEAR;
-  document.getElementById("p-af").textContent="Application_form_"+y+"_MD112.xlsx";
+  document.getElementById("p-af").textContent="Application_form_"+y+"_MD"+MD+".xlsx";
   document.getElementById("p-letter").textContent="Letter_to_Host_Family_"+y+".docx";
 }
 
@@ -230,7 +230,7 @@ async function saveData(){
 function uploadPick(inp,kind){
   const f=inp.files[0];if(!f)return;
   const y=document.getElementById("in-year").value||YEAR;
-  const path={af:"Application_form_"+y+"_MD112.xlsx",
+  const path={af:"Application_form_"+y+"_MD"+MD+".xlsx",
               commit:"Commitment to Reciprocity.docx",
               letter:"Letter_to_Host_Family_"+y+".docx",
               tpl:"tools/commit_template.docx"}[kind];

@@ -57,7 +57,7 @@ District/status/search filters, sortable columns, per-candidate status (`Receive
 index.html                            public site HTML shell (loads css/site.css + the js/site-* modules)
 css/site.css                          public site styles (nav, hero, explorer, map, modal, light/dark)
 camps_data.js                         season camp data (SEASON + YEAR + RAW array) — common to every deployment
-districts_data.js                     per-deployment data: district coordinators + SITE_REPO (only file a national fork edits)
+districts_data.js                     per-deployment data: MD number, country, district coordinators + SITE_REPO (only file a national fork edits)
 camps.json                            GENERATED — plain-JSON export of the camp data ({season, camps})
 yce_form_filler.html                  form filler HTML shell (loads the js/ modules below)
 yce_tracker.html                      tracker HTML shell
@@ -98,8 +98,9 @@ A detailed code map (modules, business functions with line numbers and sizes, de
 ## International deployments
 
 The programme can be deployed for another country as a **fork of this repository**:
-everything is common except `districts_data.js` (the district coordinators and the
-`SITE_REPO` constant pointing at the fork). Set up GitHub Pages and a custom domain
+everything is common except `districts_data.js` (MD number, country, district
+coordinators and the `SITE_REPO` constant pointing at the fork). The reference
+form itself is MD-neutral: the multiple-district identity is stamped into it at load. Set up GitHub Pages and a custom domain
 on the fork, edit that single file (the admin page does it too — it detects the
 repository automatically on `*.github.io`), and sync with the original repository
 whenever you want to pick up improvements. Multiple domains for the *same* site

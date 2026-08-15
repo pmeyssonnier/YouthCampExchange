@@ -18,7 +18,7 @@ function signSummary(){
   const sig=function(k){return ((SIGS[k]&&SIGS[k].ink)||(typeof FILE_SIGS!=="undefined"&&FILE_SIGS[k]))?'<span style="color:var(--accent)">\u2714</span>':'<span style="color:var(--red)">\u2716</span>';};
   el.innerHTML='<div class="w6" style="grid-column:span 6">'
     +'<b style="font-size:16px;color:var(--gold2)">'+esc(v("F16"))+' '+esc(v("S16"))+'</b>'
-    +' &nbsp;\u00b7&nbsp; born '+esc(v("X17"))+' &nbsp;\u00b7&nbsp; District 112'+currentDistrict+'<br>'
+    +' &nbsp;\u00b7&nbsp; born '+esc(v("X17"))+' &nbsp;\u00b7&nbsp; District '+MD+' '+currentDistrict+'<br>'
     +'Club: <b>'+esc(v("F67"))+'</b> &nbsp;\u00b7&nbsp; e-mail: '+esc(v("S20"))+' &nbsp;\u00b7&nbsp; mobile: '+esc(v("S21"))+'<br>'
     +'1st camp choice: <b>'+esc(v("N10"))+'</b> \u2014 '+esc(v("AC10"))+'<br>'
     +(function(){
@@ -86,7 +86,7 @@ async function generate(){
     addSignatures(entries);
     const blob=await buildZip(entries);
     const safe=function(x){return x.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^A-Za-z0-9_-]+/g,"_");};
-    const name="Application_form_"+YEAR+"_112"+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+".xlsx";
+    const name="Application_form_"+YEAR+"_"+MD+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+".xlsx";
     // assemble le dossier complet dans une seule archive : une seule pièce jointe à envoyer
     const files=[{name:name,data:new Uint8Array(await blob.arrayBuffer())}];
     if(SIGN_CLUB&&COMMIT_FILE.buf){
@@ -95,13 +95,13 @@ async function generate(){
     }
     if(COMMIT.agreed){
       const cb=await buildCommitmentDoc(fam,fir);
-      files.push({name:"Commitment_to_Reciprocity_"+YEAR+"_112"+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+".docx",data:new Uint8Array(await cb.arrayBuffer())});
+      files.push({name:"Commitment_to_Reciprocity_"+YEAR+"_"+MD+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+".docx",data:new Uint8Array(await cb.arrayBuffer())});
     }
-    if(PHOTO.dataUrl)files.push({name:"Pass_photo_"+YEAR+"_112"+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+".jpg",data:dataUrlToBytes(PHOTO.dataUrl)});
-    if(PAY.dataUrl)files.push({name:"Payment_proof_"+YEAR+"_112"+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+"."+PAY.ext,data:dataUrlToBytes(PAY.dataUrl)});
-    if(LETTER.dataUrl)files.push({name:"Letter_to_Host_Family_"+YEAR+"_112"+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+"."+LETTER.ext,data:dataUrlToBytes(LETTER.dataUrl)});
+    if(PHOTO.dataUrl)files.push({name:"Pass_photo_"+YEAR+"_"+MD+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+".jpg",data:dataUrlToBytes(PHOTO.dataUrl)});
+    if(PAY.dataUrl)files.push({name:"Payment_proof_"+YEAR+"_"+MD+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+"."+PAY.ext,data:dataUrlToBytes(PAY.dataUrl)});
+    if(LETTER.dataUrl)files.push({name:"Letter_to_Host_Family_"+YEAR+"_"+MD+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+"."+LETTER.ext,data:dataUrlToBytes(LETTER.dataUrl)});
     if(typeof SIGN_EXTRAS!=="undefined")SIGN_EXTRAS.forEach(function(x){files.push({name:x.name,data:x.data});});
-    const zipName="Dossier_YCE_"+YEAR+"_112"+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+".zip";
+    const zipName="Dossier_YCE_"+YEAR+"_"+MD+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+".zip";
     const zblob=await buildZip(files,"application/zip");
     const a=document.createElement("a");
     a.href=URL.createObjectURL(zblob);a.download=zipName;
@@ -183,30 +183,31 @@ async function init(){
     if(el)el.addEventListener("input",function(){el.dataset.auto="";});
   });
   const d=(params.get("district")||"").toUpperCase();
-  if(/^[A-D]$/.test(d)&&typeof DISTRICTS!=="undefined"&&DISTRICTS[d]){
-    // un seul fichier de référence : on y écrit l'en-tête et le responsable du district
+  { // le fichier de référence est neutre : on y écrit le MD/pays du déploiement, et le district s'il est connu
     try{
-      const cfg=DISTRICTS[d];
+      const cfg=(/^[A-D]$/.test(d)&&typeof DISTRICTS!=="undefined")?DISTRICTS[d]:null;
       const entries=await unzip(templateBuf||b64ToBuf(TEMPLATE_B64));
       const sheet=entries.find(function(e){return e.name==="xl/worksheets/sheet1.xml";});
       let xml=new TextDecoder().decode(sheet.data);
-      [["AF1",d],["AH78","112 "+d],["I78",cfg.name],["E79",cfg.email],["E80",cfg.mobile]]
-        .forEach(function(p){xml=setCell(xml,p[0],p[1]);});
+      let cells=[["V1",MD_COUNTRY],["AB1",MD]];
+      if(cfg)cells=cells.concat([["AF1",d],["AH78",MD+" "+d],["AE67",MD+d],["AH85",MD+d],
+        ["F104",MD_COUNTRY+"/"+MD+d],["I78",cfg.name],["E79",cfg.email],["E80",cfg.mobile]]);
+      cells.forEach(function(p){xml=setCell(xml,p[0],p[1],p[0]==="AB1");});
       sheet.data=new TextEncoder().encode(xml);
       templateBuf=await (await buildZip(entries)).arrayBuffer();
-      setStatus("District 112 "+d+" form ready — YCE coordinator: "+cfg.name,false);
+      if(cfg)setStatus("District "+MD+" "+d+" form ready — YCE coordinator: "+cfg.name,false);
       // lien "Download form" du site : télécharge le formulaire vierge estampillé du district
       if(params.has("download")){
         const blob=new Blob([templateBuf],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
         const a=document.createElement("a");
         a.href=URL.createObjectURL(blob);
-        a.download="Application_form_"+YEAR+"_112"+d+".xlsx";
+        a.download="Application_form_"+YEAR+"_"+MD+d+".xlsx";
         document.body.appendChild(a);a.click();a.remove();
         setTimeout(function(){URL.revokeObjectURL(a.href);},5000);
-        setStatus("⬇ Application_form_"+YEAR+"_112"+d+".xlsx downloaded (blank, District 112 "+d+") — you can also fill it in online right here.",false);
+        setStatus("⬇ Application_form_"+YEAR+"_"+MD+d+".xlsx downloaded (blank, District "+MD+" "+d+") — you can also fill it in online right here.",false);
       }
     }catch(e){
-      setStatus("⚠ Could not apply district "+d+" ("+e.message+") — using the neutral template.",true);
+      setStatus("⚠ Could not stamp the template ("+e.message+") — using it as is.",true);
     }
   }
   await syncFromTemplate(templateBuf||b64ToBuf(TEMPLATE_B64));
