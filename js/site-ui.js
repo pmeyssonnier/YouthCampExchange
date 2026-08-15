@@ -24,7 +24,7 @@
       +`<h4>${c.name}</h4><div class="dist-club">${c.club||''}</div>`
       +`<a href="tel:${c.mobile.replace(/[^+\d]/g,'')}">📞 ${c.mobile}</a>`
       +`<a href="mailto:${c.email}">✉️ ${c.email}</a>`
-      +`<a href="Application_form_${YEAR}_MD112.xlsx" download>📥 Download the blank form (XLSX)</a>`
+      +`<a href="yce_form_filler.html?district=${d}&download">📥 Download form District ${d} (XLSX)</a>`
       +`<a href="yce_form_filler.html?district=${d}">✍️ Fill in the form online</a></div>`;
   }).join('');
 })();

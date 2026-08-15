@@ -195,6 +195,16 @@ async function init(){
       sheet.data=new TextEncoder().encode(xml);
       templateBuf=await (await buildZip(entries)).arrayBuffer();
       setStatus("District 112 "+d+" form ready — YCE coordinator: "+cfg.name,false);
+      // lien "Download form" du site : télécharge le formulaire vierge estampillé du district
+      if(params.has("download")){
+        const blob=new Blob([templateBuf],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+        const a=document.createElement("a");
+        a.href=URL.createObjectURL(blob);
+        a.download="Application_form_"+YEAR+"_112"+d+".xlsx";
+        document.body.appendChild(a);a.click();a.remove();
+        setTimeout(function(){URL.revokeObjectURL(a.href);},5000);
+        setStatus("⬇ Application_form_"+YEAR+"_112"+d+".xlsx downloaded (blank, District 112 "+d+") — you can also fill it in online right here.",false);
+      }
     }catch(e){
       setStatus("⚠ Could not apply district "+d+" ("+e.message+") — using the neutral template.",true);
     }
