@@ -7,6 +7,20 @@ const CONT_ORDER=['Africa','Asia','Europe','Middle America','North America','Oce
 const CONT_COLORS={'Africa':'b-Africa','Asia':'b-Asia','Europe':'b-Europe','North America':'b-NorthAmerica','Middle America':'b-MiddleAmerica','Oceania':'b-Oceania','South America':'b-SouthAmerica'};
 
 let selStates=new Set();
+let selSeasons=new Set();
+
+function initSeasonPills(){
+  const el=document.getElementById('seas-pills');if(!el)return;
+  const counts={};CAMPS.forEach(c=>{if(c.season)counts[c.season]=(counts[c.season]||0)+1;});
+  el.innerHTML=Object.keys(counts).sort().map(s=>
+    `<div class="pill" data-ss="${s}" onclick="toggleSeason('${s}')">${s} <span style="opacity:0.6">${counts[s]}</span></div>`
+  ).join('');
+}
+function toggleSeason(s){
+  if(selSeasons.has(s))selSeasons.delete(s);else selSeasons.add(s);
+  document.querySelectorAll('.pill[data-ss]').forEach(p=>p.classList.toggle('on',selSeasons.has(p.dataset.ss)));
+  renderCountryList();renderStateList();applyFilters();
+}
 
 function renderStateList(){
   const stateCtries=['United States','Canada'];
@@ -39,6 +53,7 @@ function toggleState(s){
 
 function getFiltered(){
   return CAMPS.filter(c=>{
+    if(selSeasons.size>0&&!selSeasons.has(c.season))return false;
     if(selContinents.size>0&&!selContinents.has(c.continent))return false;
     if(selCountries.size>0&&!selCountries.has(c.country))return false;
     if(selStates.size>0&&c.state&&!selStates.has(c.state))return false;
@@ -77,6 +92,8 @@ function renderTable(){
   const tbody=document.getElementById('tbody');
   document.getElementById('s-shown').textContent=filtered.length;
   document.getElementById('r-info').textContent=`${filtered.length} / ${CAMPS.length} camps`;
+  renderMobileCards(filtered);renderFilterChips();
+  const ap=document.getElementById('fp-apply');if(ap)ap.textContent=`Show ${filtered.length} camp${filtered.length===1?'':'s'}`;
   if(!filtered.length){tbody.innerHTML=`<tr><td colspan="9" class="no-data">No camps match current filters</td></tr>`;return;}
   const isFreeStr=f=>f&&(f.startsWith('0 ')||f==='0');
   tbody.innerHTML=filtered.map(c=>{
@@ -94,6 +111,56 @@ function renderTable(){
   }).join('');
 }
 
+// liste mobile en cartes (≤900px) — le tableau est masqué par le CSS à cette largeur
+function renderMobileCards(filtered){
+  const mc=document.getElementById('m-cards');if(!mc)return;
+  if(!filtered.length){mc.innerHTML=`<div class="no-data">No camps match current filters</div>`;return;}
+  const isFreeStr=f=>f&&(f.startsWith('0 ')||f==='0');
+  mc.innerHTML=filtered.map(c=>{
+    const bc=CONT_COLORS[c.continent]||'b-Asia';
+    const feeHtml=isFreeStr(c.fee)?'<span class="cc-chip cc-free">FREE</span>':(c.fee?`<span class="cc-chip cc-fee">${c.fee}</span>`:'');
+    const seasHtml=c.season?`<span class="cc-chip cc-season">📅 ${c.season}</span>`:'';
+    const famHtml=c.fs?`<div class="cc-date-row"><span class="cc-date-lbl">🏠 Family Stay</span><span class="cc-date-val">${fmtDate2(c.fs)} → ${fmtDate2(c.fe)}</span></div>`:'';
+    return`<div class="camp-card" onclick="showCampDetail(${c._idx})">
+      <div class="mc-top"><div class="cc-name">${c.camp_name}</div><span class="badge ${bc}">${c.continent}</span></div>
+      <div class="mc-ctry">${c.country}${c.state?' — '+c.state:''}</div>
+      <div class="cc-row"><span class="cc-chip cc-age">👤 ${c.age_requirements}</span>${feeHtml}${seasHtml}</div>
+      <div class="cc-dates"><div class="cc-date-row"><span class="cc-date-lbl">🏕️ Camp</span><span class="cc-date-val">${fmtDate2(c.cs)} → ${fmtDate2(c.ce)}</span></div>${famHtml}</div>
+    </div>`;
+  }).join('');
+}
+
+// puces des filtres actifs + pastille du bouton ⚙ Filters (barre mobile)
+function renderFilterChips(){
+  const bar=document.getElementById('f-chips');if(!bar)return;
+  const parts=[];
+  selSeasons.forEach(s=>parts.push([`🗓️ <b>${s}</b>`,()=>toggleSeason(s)]));
+  selContinents.forEach(c=>parts.push([`🌍 <b>${c}</b>`,()=>toggleContinent(c)]));
+  selCountries.forEach(c=>parts.push([`🗺️ <b>${c}</b>`,()=>toggleCountry(c)]));
+  selStates.forEach(s=>parts.push([`📍 <b>${s}</b>`,()=>toggleState(s)]));
+  if(filterAge!==null)parts.push([`👤 <b>${filterAge} y</b>`,()=>{document.getElementById('age-in').value='';applyFilters();}]);
+  if(periodType!=='none'&&periodRange){
+    const sel=document.getElementById('p-sel');
+    const o=sel._opts&&sel._opts[+sel.value];
+    parts.push([`📅 <b>${o?o.label:'Period'}</b>`,()=>setPeriodType('none')]);
+  }
+  window._fchip=parts.map(p=>p[1]);
+  bar.innerHTML=parts.map((p,i)=>`<button class="m-chip" onclick="_fchip[${i}]()">${p[0]}<span class="x">✕</span></button>`).join('');
+  const b=document.getElementById('f-badge');if(b){b.textContent=parts.length;b.hidden=!parts.length;}
+}
+
+function openFilters(){
+  document.querySelector('.filters-panel').classList.add('open');
+  document.getElementById('f-backdrop').classList.add('open');
+  document.body.classList.add('flock');
+}
+function closeFilters(){
+  document.querySelector('.filters-panel').classList.remove('open');
+  document.getElementById('f-backdrop').classList.remove('open');
+  document.body.classList.remove('flock');
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeFilters();});
+
 function initContinentPills(){
   const counts={};CAMPS.forEach(c=>counts[c.continent]=(counts[c.continent]||0)+1);
   document.getElementById('cont-pills').innerHTML=CONT_ORDER.filter(ct=>counts[ct]).map(ct=>
@@ -109,7 +176,8 @@ function toggleContinent(ct){
 
 function renderCountryList(){
   const srch=document.getElementById('c-srch').value.toLowerCase();
-  const base=selContinents.size>0?CAMPS.filter(c=>selContinents.has(c.continent)):CAMPS;
+  let base=selContinents.size>0?CAMPS.filter(c=>selContinents.has(c.continent)):CAMPS;
+  if(selSeasons.size>0)base=base.filter(c=>selSeasons.has(c.season));
   const counts={};base.forEach(c=>counts[c.country]=(counts[c.country]||0)+1);
   const countries=Object.keys(counts).sort().filter(c=>c.toLowerCase().includes(srch));
   const el=document.getElementById('c-list');
@@ -164,7 +232,7 @@ function applyFilters(){
 }
 
 function resetFilters(){
-  selContinents.clear();selCountries.clear();selStates.clear();filterAge=null;periodType='none';periodRange=null;
+  selContinents.clear();selCountries.clear();selStates.clear();selSeasons.clear();filterAge=null;periodType='none';periodRange=null;
   document.getElementById('age-in').value='';document.getElementById('c-srch').value='';
   document.querySelectorAll('.pill').forEach(p=>p.classList.remove('on'));
   setPeriodType('none');renderCountryList();renderStateList();renderTable();

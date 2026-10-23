@@ -93,7 +93,18 @@
     </div>
 
     <div id="tab-table" class="tab-content active">
+      <div class="m-fbar">
+        <button class="m-fbtn" onclick="openFilters()">⚙ &nbsp;Filters <span class="m-badge" id="f-badge" hidden>0</span></button>
+        <div class="m-chips" id="f-chips"></div>
+      </div>
+      <div class="f-backdrop" id="f-backdrop" onclick="closeFilters()"></div>
       <div class="filters-panel">
+        <div class="fp-head"><span>Filters</span><button class="fp-close" onclick="closeFilters()">✕ Close</button></div>
+        <div class="filter-section">
+          <div class="filter-label">🗓️ Season</div>
+          <div class="pills" id="seas-pills"></div>
+        </div>
+        <hr class="div">
         <div class="filter-section">
           <div class="filter-label">🌍 Continent</div>
           <div class="pills" id="cont-pills"></div>
@@ -130,6 +141,7 @@
         <hr class="div">
         <button class="reset-btn" onclick="resetFilters()">↺ &nbsp;Reset all filters</button>
         <div class="result-info" id="r-info"></div>
+        <button class="fp-apply" id="fp-apply" onclick="closeFilters()">Show all camps</button>
       </div>
       <div class="table-wrap">
         <table>
@@ -147,6 +159,7 @@
           <tbody id="tbody"></tbody>
         </table>
       </div>
+      <div class="m-cards" id="m-cards"></div>
     </div>
 
     <div id="tab-map" class="tab-content">

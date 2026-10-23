@@ -69,13 +69,17 @@ document.getElementById('theme-btn').textContent=document.documentElement.getAtt
 // close mobile nav after click
 document.querySelectorAll('.nav-links a').forEach(a=>a.addEventListener('click',()=>document.getElementById('nav-links').classList.remove('open')));
 
-// scroll-reveal
-const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:0.12});
-document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
-
 // ── INIT ─────────────────────────────────────────────
 initContinentPills();
+initSeasonPills();
 renderCountryList();
 renderStateList();
 renderTable();
 document.querySelector('th[data-c="continent"]').classList.add('asc');
+
+// scroll-reveal — après le rendu, pour mesurer la vraie hauteur des blocs.
+// Un bloc plus haut que l'écran (la liste mobile en cartes) n'atteint jamais
+// un ratio de 0.12 : il se révèle dès son entrée dans la fenêtre.
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:0.12});
+const ioTall=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');ioTall.unobserve(e.target);}}),{threshold:0});
+document.querySelectorAll('.reveal').forEach(el=>(el.offsetHeight>innerHeight*0.8?ioTall:io).observe(el));
