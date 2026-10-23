@@ -93,6 +93,7 @@ function renderTable(){
   document.getElementById('s-shown').textContent=filtered.length;
   document.getElementById('r-info').textContent=`${filtered.length} / ${CAMPS.length} camps`;
   renderMobileCards(filtered);renderFilterChips();
+  if(typeof mapFiltersChanged==='function')mapFiltersChanged();
   const ap=document.getElementById('fp-apply');if(ap)ap.textContent=`Show ${filtered.length} camp${filtered.length===1?'':'s'}`;
   if(!filtered.length){tbody.innerHTML=`<tr><td colspan="9" class="no-data">No camps match current filters</td></tr>`;return;}
   const isFreeStr=f=>f&&(f.startsWith('0 ')||f==='0');

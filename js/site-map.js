@@ -4,6 +4,16 @@
 let mapInited=false,mapView='world',mapProjection,mapSvg,mapG;
 let currentContinent=null,currentContProj=null,currentCountry=null;
 
+// camps visibles sur la carte : mêmes filtres que l'annuaire (saison, continent, pays, âge, période)
+function mapCamps(){return typeof getFiltered==='function'?getFiltered():CAMPS;}
+// appelé par renderTable() à chaque changement de filtre : rafraîchit la vue courante
+function mapFiltersChanged(){
+  if(!mapInited)return;
+  if(mapView==='world')renderWorldBubbles();
+  else if(mapView==='continent'&&currentContinent)refreshContinent(currentContinent);
+  else if(mapView==='country'&&currentCountry)showCountryCamps(currentCountry);
+}
+
 const CONT_COORDS={'Africa':[20,0],'Asia':[90,30],'Europe':[15,52],'North America':[-100,46],'South America':[-55,-15],'Middle America':[-90,17],'Oceania':[140,-27]};
 const CONT_ZOOM={'Africa':{scale:380,center:[20,0]},'Asia':{scale:350,center:[90,30]},'Europe':{scale:700,center:[15,52]},'North America':{scale:250,center:[-100,46]},'South America':{scale:280,center:[-55,-15]},'Middle America':{scale:600,center:[-90,17]},'Oceania':{scale:400,center:[145,-28]}};
 const COUNTRY_COORDS={'Namibia':[18.5,-22.0],'Bangladesh':[90.3,23.7],'India':[78.9,20.6],'Indonesia':[113.9,-0.8],'Japan':[138.3,36.2],'Sri Lanka':[80.7,7.9],'Taiwan':[121.0,23.7],'Austria':[14.5,47.5],'Belgium':[4.5,50.5],'Bulgaria':[25.5,42.7],'Croatia':[15.5,45.2],'Czech rep. and Slovakia':[17.0,49.5],'Denmark':[10.0,56.0],'Estonia':[25.0,58.6],'Finland':[26.0,64.0],'France':[2.3,46.2],'Germany':[10.5,51.2],'Hungary':[19.5,47.2],'Ireland':[-8.0,53.4],'Italy':[12.6,42.5],'Lithuania':[23.9,55.2],'Netherlands':[5.3,52.1],'Poland':[19.1,51.9],'Romania':[25.0,45.9],'Serbia':[21.0,44.0],'Slovakia':[19.7,48.7],'Slovenia':[14.8,46.1],'Spain':[-3.7,40.4],'Sweden':[18.6,60.1],'Switzerland':[8.2,46.8],'Turkey':[35.2,38.9],'United Kingdom':[-2.0,54.0],'Mexico':[-102.6,23.6],'Canada':[-96.8,56.1],'United States':[-98.6,39.5],'Brazil':[-51.9,-14.2],
@@ -32,10 +42,11 @@ function initMap(){
 
 function renderWorldBubbles(){
   mapG.selectAll('.cont-bubble').remove();
-  const maxC=Math.max(...Object.values(CONT_CAMP_COUNTS));
+  const counts={};mapCamps().forEach(c=>counts[c.continent]=(counts[c.continent]||0)+1);
+  const maxC=Math.max(...Object.values(CONT_CAMP_COUNTS)); // échelle fixe, cohérente avec la légende
   const rScale=d3.scaleSqrt().domain([0,maxC]).range([0,60]);
   const tt=document.getElementById('tt'),ttT=document.getElementById('tt-t'),ttC=document.getElementById('tt-c'),ttH=document.getElementById('tt-h');
-  Object.entries(CONT_CAMP_COUNTS).forEach(([cont,cnt])=>{
+  Object.entries(counts).forEach(([cont,cnt])=>{
     const coords=CONT_COORDS[cont];if(!coords)return;
     const[x,y]=mapProjection(coords),r=rScale(cnt);
     const g=mapG.append('g').attr('class','cont-bubble').attr('cursor','pointer');
@@ -54,12 +65,7 @@ function zoomContinent(cont){
   document.getElementById('back-btn').style.display='block';document.getElementById('back-btn').textContent='← World';
   document.getElementById('crumb-c').style.display='';document.getElementById('crumb-cn').textContent=cont;
   document.getElementById('crumb-k').style.display='none';
-  const countries=[...new Set(CAMPS.filter(c=>c.continent===cont).map(c=>c.country))].sort();
-  const mi=document.getElementById('map-info');mi.classList.add('vis');
-  document.getElementById('mi-title').textContent=cont;
-  document.getElementById('mi-rows').innerHTML=countries.map(c=>
-    `<div class="mi-row" onclick="zoomCountry('${escQ(c)}')"><span>${c}</span><span class="mi-val">${COUNTRY_CAMP_COUNTS[c]} camp${COUNTRY_CAMP_COUNTS[c]>1?'s':''} ›</span></div>`
-  ).join('');
+  renderContInfo(cont);
   document.getElementById('map-hint').textContent='Click a country bubble or name to see camps';
   const zoom=CONT_ZOOM[cont];const vb=mapSvg.attr('viewBox').split(' ');const w=+vb[2],h=+vb[3];
   const newProj=d3.geoNaturalEarth1().scale(zoom?zoom.scale:w/6.5).center(zoom?zoom.center:[0,0]).translate([w/2,h/2]);
@@ -69,15 +75,29 @@ function zoomContinent(cont){
   setTimeout(()=>renderCountryBubbles(cont,newProj),700);
 }
 
+// encart de la vue continent : pays et compteurs selon les filtres actifs
+function renderContInfo(cont){
+  const counts={};mapCamps().filter(c=>c.continent===cont).forEach(c=>counts[c.country]=(counts[c.country]||0)+1);
+  const countries=Object.keys(counts).sort();
+  const mi=document.getElementById('map-info');mi.classList.add('vis');
+  document.getElementById('mi-title').textContent=cont;
+  document.getElementById('mi-rows').innerHTML=countries.length?countries.map(c=>
+    `<div class="mi-row" onclick="zoomCountry('${escQ(c)}')"><span>${c}</span><span class="mi-val">${counts[c]} camp${counts[c]>1?'s':''} ›</span></div>`
+  ).join(''):'<div class="mi-row"><span style="color:var(--muted)">No camps with current filters</span></div>';
+}
+function refreshContinent(cont){renderContInfo(cont);renderCountryBubbles(cont,currentContProj);}
+
 function renderCountryBubbles(cont,proj){
   mapG.selectAll('.ctry-bubble').remove();
-  const countries=[...new Set(CAMPS.filter(c=>c.continent===cont).map(c=>c.country))];
-  const maxC=Math.max(...countries.map(c=>COUNTRY_CAMP_COUNTS[c]||0));
+  const fcounts={};mapCamps().filter(c=>c.continent===cont).forEach(c=>fcounts[c.country]=(fcounts[c.country]||0)+1);
+  const countries=Object.keys(fcounts).sort();
+  // échelle fixe sur l'ensemble de la saison, pour des tailles comparables entre filtres
+  const maxC=Math.max(...[...new Set(CAMPS.filter(c=>c.continent===cont).map(c=>c.country))].map(c=>COUNTRY_CAMP_COUNTS[c]||0));
   const rScale=d3.scaleSqrt().domain([0,maxC]).range([0,40]);
   const tt=document.getElementById('tt'),ttT=document.getElementById('tt-t'),ttC=document.getElementById('tt-c'),ttH=document.getElementById('tt-h');
   countries.forEach((country,idx)=>{
     const coords=COUNTRY_COORDS[country];if(!coords)return;
-    const[x,y]=proj(coords);const cnt=COUNTRY_CAMP_COUNTS[country]||0;const r=Math.max(12,rScale(cnt));
+    const[x,y]=proj(coords);const cnt=fcounts[country]||0;const r=Math.max(12,rScale(cnt));
     const g=mapG.append('g').attr('class','ctry-bubble').attr('cursor','pointer').attr('opacity',0);
     g.append('circle').attr('cx',x).attr('cy',y).attr('r',r+7).attr('fill','none').attr('stroke','#4fc3f7').attr('stroke-width',1).attr('opacity',0.15);
     g.append('circle').attr('cx',x).attr('cy',y).attr('r',r).attr('fill','#4fc3f7').attr('opacity',0.72).attr('stroke','#80d8ff').attr('stroke-width',1.8)
@@ -119,7 +139,7 @@ function zoomCountry(country){
 }
 
 function showCountryCamps(country){
-  const camps=CAMPS.filter(c=>c.country===country).sort((a,b)=>a.camp_name.localeCompare(b.camp_name));
+  const camps=mapCamps().filter(c=>c.country===country).sort((a,b)=>a.camp_name.localeCompare(b.camp_name));
   document.getElementById('cp-country').textContent=country;document.getElementById('cp-count').textContent=camps.length;
   const isFree=f=>f&&(f.startsWith('0 ')||f==='0');
   document.getElementById('cp-body').innerHTML=!camps.length?'<div class="cp-empty">No camps found</div>':camps.map(c=>{
