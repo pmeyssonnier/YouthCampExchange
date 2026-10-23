@@ -1,0 +1,136 @@
+// admin-core.js — tronc commun des pages d'administration (yce_admin.html, yce_camps.html) :
+// chiffrement du jeton par PIN, API GitHub du dépôt, connexion/déconnexion.
+"use strict";
+// Dépôt administré : détecté depuis l'URL sur *.github.io, sinon SITE_REPO (districts_data.js).
+// Un fork national fonctionne ainsi sans toucher au code.
+const REPO=(function(){
+  if(/\.github\.io$/.test(location.hostname)){
+    const seg=location.pathname.split("/").filter(Boolean);
+    if(seg.length)return location.hostname.split(".")[0]+"/"+seg[0];
+  }
+  return (typeof SITE_REPO!=="undefined"&&SITE_REPO)||"pmeyssonnier/YouthCampExchange";
+})();
+const TOKEN_KEY="yce_admin_token";          // héritage : jeton en clair (migré vers le stockage chiffré à la 1re connexion avec PIN)
+const ENC_KEY="yce_admin_token_enc";        // jeton chiffré par PIN (PBKDF2 310k + AES-GCM)
+
+// -------------------- chiffrement local du jeton par PIN --------------------
+function b64e(a){let s="";for(let i=0;i<a.length;i++)s+=String.fromCharCode(a[i]);return btoa(s);}
+function b64d(s){const b=atob(s);const a=new Uint8Array(b.length);for(let i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a;}
+async function pinKey(pin,salt){
+  const km=await crypto.subtle.importKey("raw",new TextEncoder().encode(pin),"PBKDF2",false,["deriveKey"]);
+  return crypto.subtle.deriveKey({name:"PBKDF2",salt:salt,iterations:310000,hash:"SHA-256"},km,
+    {name:"AES-GCM",length:256},false,["encrypt","decrypt"]);
+}
+async function encryptToken(tok,pin){
+  const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));
+  const ct=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv:iv},await pinKey(pin,salt),new TextEncoder().encode(tok)));
+  return b64e(salt)+"."+b64e(iv)+"."+b64e(ct);
+}
+async function decryptToken(blob,pin){
+  try{
+    const p=blob.split(".");
+    const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:b64d(p[1])},await pinKey(pin,b64d(p[0])),b64d(p[2]));
+    return new TextDecoder().decode(pt);
+  }catch(e){return null;} // mauvais PIN (ou blob corrompu)
+}
+function hasEnc(){try{return !!localStorage.getItem(ENC_KEY);}catch(e){return false;}}
+function accessMode(mode){ // "token" = première connexion ; "pin" = déverrouillage
+  document.getElementById("f-token").style.display=mode==="pin"?"none":"";
+  document.getElementById("pin-lbl").textContent=mode==="pin"?"PIN":"PIN (4+ digits)";
+  document.getElementById("access-hint").innerHTML=mode==="pin"
+    ?"Enter the PIN chosen on this device to unlock the encrypted token. <a href=\"#\" onclick=\"logout();return false\" style=\"color:var(--blue)\">Use another token instead\u2026</a>"
+    :"First time: paste the token and choose a PIN \u2014 the token is then stored <b>encrypted with your PIN</b> on this device, and next visits only ask for the PIN. Without a PIN the token is not remembered.";
+}
+function log(msg,cls){
+  const l=document.getElementById("log");
+  l.innerHTML='<div class="'+(cls||"info")+'">'+new Date().toLocaleTimeString()+" — "+msg+"</div>"+l.innerHTML;
+}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+
+// -------------------- API GitHub --------------------
+function token(){return document.getElementById("token").value.trim();}
+async function gh(path,opts){
+  opts=opts||{};
+  opts.headers=Object.assign({
+    "Authorization":"Bearer "+token(),
+    "Accept":"application/vnd.github+json",
+    "X-GitHub-Api-Version":"2022-11-28"
+  },opts.headers||{});
+  const r=await fetch("https://api.github.com/"+path,opts);
+  if(!r.ok&&r.status!==404){
+    let m="HTTP "+r.status;
+    try{m+=" — "+(await r.json()).message;}catch(e){}
+    throw new Error(m);
+  }
+  return r;
+}
+async function getFile(path){
+  const r=await gh("repos/"+REPO+"/contents/"+encodeURIComponent(path).replace(/%2F/g,"/")+"?ref=main");
+  if(r.status===404)return null;
+  return await r.json(); // {sha, content(base64), …}
+}
+async function putFile(path,b64,sha,msg){
+  const body={message:msg,content:b64,branch:"main"};
+  if(sha)body.sha=sha;
+  const r=await gh("repos/"+REPO+"/contents/"+encodeURIComponent(path).replace(/%2F/g,"/"),{
+    method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+  if(r.status===404)throw new Error("HTTP 404 — check the token's repository access");
+  return await r.json();
+}
+function b64ToUtf8(b){const bin=atob(b.replace(/\n/g,""));const a=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);return new TextDecoder().decode(a);}
+function utf8ToB64(s){const a=new TextEncoder().encode(s);let bin="";
+  for(let i=0;i<a.length;i+=8192)bin+=String.fromCharCode.apply(null,a.subarray(i,i+8192));return btoa(bin);}
+function bufToB64(buf){const a=new Uint8Array(buf);let bin="";
+  for(let i=0;i<a.length;i+=8192)bin+=String.fromCharCode.apply(null,a.subarray(i,i+8192));return btoa(bin);}
+
+// -------------------- connexion --------------------
+async function connect(){
+  const btn=document.getElementById("connect");btn.disabled=true;
+  try{
+    const pin=document.getElementById("pin").value.trim();
+    if(hasEnc()&&!token()){ // mode déverrouillage : le PIN décrypte le jeton mémorisé
+      if(!pin)throw new Error("enter your PIN");
+      const tok=await decryptToken(localStorage.getItem(ENC_KEY),pin);
+      if(!tok)throw new Error("wrong PIN");
+      document.getElementById("token").value=tok;
+    }
+    if(pin&&pin.length<4)throw new Error("the PIN needs at least 4 digits");
+    const r=await gh("user");
+    if(r.status===404)throw new Error("invalid token");
+    const u=await r.json();
+    const probe=await getFile("camps_data.js");
+    if(!probe)throw new Error("token cannot read this repository (grant Contents on "+REPO+")");
+    try{
+      const pin=document.getElementById("pin").value.trim();
+      if(pin){ // mémorisation chiffrée uniquement — l'ancien stockage en clair est purgé
+        localStorage.setItem(ENC_KEY,await encryptToken(token(),pin));
+        localStorage.removeItem(TOKEN_KEY);
+      }
+    }catch(e){}
+    const who=document.getElementById("who");
+    who.textContent="✔ "+u.login;who.style.display="";
+    document.getElementById("panel").style.display="";
+    log("Connected as <b>"+esc(u.login)+"</b>","ok");
+    if(typeof onConnected==="function")onConnected();
+  }catch(e){log("Connection failed: "+esc(e.message),"err");}
+  finally{btn.disabled=false;}
+}
+function logout(){
+  try{localStorage.removeItem(TOKEN_KEY);localStorage.removeItem(ENC_KEY);}catch(e){}
+  document.getElementById("token").value="";
+  document.getElementById("pin").value="";
+  accessMode("token");
+  document.getElementById("panel").style.display="none";
+  document.getElementById("who").style.display="none";
+  log("Token forgotten on this device.");
+  if(typeof onLoggedOut==="function")onLoggedOut();
+}
+
+// démarrage commun : PIN si un jeton chiffré existe, sinon champ jeton (+ reprise héritée)
+function initAccess(){
+  if(hasEnc()){accessMode("pin");document.getElementById("pin").focus();return;}
+  accessMode("token");
+  try{const t=localStorage.getItem(TOKEN_KEY);if(t){document.getElementById("token").value=t;connect();}}catch(e){}
+}
+

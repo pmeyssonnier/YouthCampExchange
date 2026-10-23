@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lions YCE — Camp Manager — MD 112 Belgium</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<meta name="robots" content="noindex">
+<script>try{if(localStorage.getItem('yce-theme')==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}</script>
+<style>
+:root{
+  --bg:#0d1827;--surface:#132038;--card:#1a2d4a;--border:#243d5c;
+  --gold:#e8a020;--gold2:#ffd166;--accent:#06d6a0;--blue:#4fc3f7;
+  --text:#dce8f5;--muted:#6b8aaa;--hover:#1e3355;--red:#ef5350;--orange:#ffb74d;
+}
+html[data-theme="light"]{
+  --bg:#f4f6fa;--surface:#ffffff;--card:#edf1f7;--border:#c9d5e4;
+  --gold:#c07a00;--gold2:#e8a020;--accent:#08916f;--blue:#0277bd;
+  --text:#22344a;--muted:#5a7186;--hover:#e6edf6;--red:#d63230;--orange:#c1650a;
+}
+html[data-theme="light"] header{background:linear-gradient(135deg,#ffffff 0%,#e7edf6 100%);}
+html[data-theme="light"] .btn{color:#fff;}
+.theme-btn{background:transparent;border:1px solid var(--border);border-radius:50%;width:34px;height:34px;cursor:pointer;font-size:15px;line-height:1;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.theme-btn:hover{border-color:var(--gold);}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;min-height:100vh;}
+::-webkit-scrollbar{width:6px;height:6px;}::-webkit-scrollbar-track{background:var(--surface);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+header{background:linear-gradient(135deg,#0a1628 0%,#182d4a 100%);border-bottom:2px solid var(--gold);padding:14px 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;position:sticky;top:0;z-index:50;}
+.emblem{height:44px;width:44px;object-fit:contain;}
+.logo{font-family:Georgia,serif;font-size:22px;font-weight:700;color:var(--gold);}
+.logo em{color:var(--text);font-style:italic;font-weight:400;font-size:15px;}
+.header-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+main{max-width:1200px;margin:0 auto;padding:18px 16px 70px;}
+.section{background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:16px;overflow:hidden;}
+.sec-head{background:linear-gradient(90deg,rgba(232,160,32,0.12),transparent);padding:11px 16px;border-bottom:1px solid var(--border);display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;}
+.sec-title{font-family:Georgia,serif;font-size:16px;font-weight:700;color:var(--gold);}
+.sec-note{font-size:11px;color:var(--muted);}
+.sec-body{padding:14px 16px;}
+.fld{display:flex;flex-direction:column;gap:4px;}
+label.flbl{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);}
+input,select,textarea{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text);font-size:13px;font-family:inherit;outline:none;width:100%;}
+textarea{resize:vertical;min-height:54px;}
+input:focus,select:focus,textarea:focus{border-color:var(--gold);}
+.hint{font-size:10.5px;color:var(--muted);line-height:1.5;}
+.btn{background:var(--gold);color:#0d1827;border:none;border-radius:8px;padding:10px 20px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit;}
+.btn:hover{background:var(--gold2);}
+.btn:disabled{opacity:0.45;cursor:not-allowed;}
+.btn2{background:transparent;border:1px solid var(--border);border-radius:8px;padding:8px 14px;color:var(--muted);cursor:pointer;font-size:12px;font-family:inherit;}
+.btn2:hover{border-color:var(--blue);color:var(--blue);}
+.btn2.danger:hover{border-color:var(--red);color:var(--red);}
+.filebtn{display:inline-block;background:transparent;border:1px solid var(--border);border-radius:8px;padding:8px 14px;color:var(--muted);cursor:pointer;font-size:12px;}
+.filebtn:hover{border-color:var(--gold);color:var(--gold);}
+.filebtn input{display:none;}
+#log{font-size:12px;line-height:1.7;max-height:150px;overflow-y:auto;font-family:monospace;}
+#log .ok{color:var(--accent);}#log .err{color:var(--red);}#log .info{color:var(--muted);}#log .warn{color:var(--orange);}
+.badge{display:inline-block;background:rgba(6,214,160,0.12);color:var(--accent);border-radius:10px;padding:2px 10px;font-size:11px;}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px;}
+.toolbar .sp{flex:1;}
+.pill{padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:12px;font-family:inherit;}
+.pill.on{background:var(--gold);border-color:var(--gold);color:#0d1827;font-weight:600;}
+html[data-theme="light"] .pill.on{color:#fff;}
+.srch{min-width:200px;max-width:280px;}
+table{width:100%;border-collapse:collapse;font-size:12.5px;}
+th{background:var(--card);padding:8px 10px;text-align:left;font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap;}
+td{padding:7px 10px;border-bottom:1px solid var(--border);vertical-align:middle;}
+tr:hover td{background:var(--hover);}
+.camp-nm{font-weight:600;}
+.sub{font-size:10.5px;color:var(--muted);}
+.dt{font-family:monospace;font-size:11px;white-space:nowrap;}
+.season-b{display:inline-block;border-radius:4px;padding:1px 7px;font-size:10px;font-weight:700;}
+.s-new{background:rgba(6,214,160,0.14);color:var(--accent);}
+.s-old{background:rgba(255,183,77,0.14);color:var(--orange);}
+.dirty{color:var(--orange);font-size:12px;}
+.table-wrap{overflow-x:auto;}
+/* panneau d'édition */
+#edit-box{border:1.5px solid var(--blue);border-radius:10px;background:var(--surface);padding:14px 16px;margin-bottom:16px;display:none;}
+.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px 12px;}
+.g1{grid-column:span 1}.g2{grid-column:span 2;}.g3{grid-column:span 3;}.g6{grid-column:span 6;}
+@media(max-width:760px){.g1,.g2,.g3{grid-column:span 6;}}
+/* revue d'import du répertoire */
+.rev-row{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--border);border-radius:8px;margin-bottom:6px;background:var(--card);}
+.rev-row input[type=checkbox]{width:auto;margin-top:3px;}
+.rev-what{flex:1;font-size:12.5px;}
+.rev-what .chg{font-size:11px;color:var(--muted);font-family:monospace;}
+.rev-tag{font-size:10px;font-weight:700;border-radius:4px;padding:1px 7px;white-space:nowrap;}
+.t-new{background:rgba(6,214,160,0.15);color:var(--accent);}
+.t-upd{background:rgba(79,195,247,0.15);color:var(--blue);}
+.t-fuz{background:rgba(255,183,77,0.15);color:var(--orange);}
+</style>
+</head>
+<body>
+<header>
+  <img src="assets/logo_lions.png" alt="Lions Clubs International" class="emblem">
+  <div>
+    <div class="logo">Lions <em>YCE Camp Manager</em></div>
+    <div class="header-sub">import the official directory · edit camps · JSON backup · archive — saved as commits to GitHub</div>
+  </div>
+  <span class="badge" id="who" style="margin-left:auto;display:none"></span>
+  <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Switch light / dark theme" aria-label="Switch light / dark theme">☀️</button>
+</header>
+<main>
+  <div class="section">
+    <div class="sec-head"><span class="sec-title">Administrator access</span><span class="sec-note">needed only to save to the site — browsing, editing and backups work without it</span></div>
+    <div class="sec-body"><div class="grid">
+      <div class="fld g3" id="f-token"><label class="flbl">GitHub access token</label><input type="password" id="token" placeholder="github_pat_…"></div>
+      <div class="fld g1" id="f-pin"><label class="flbl" id="pin-lbl">PIN (4+ digits)</label><input type="password" id="pin" inputmode="numeric" placeholder="••••" onkeydown="if(event.key==='Enter')connect()"></div>
+      <div class="fld g1" style="justify-content:flex-end"><button class="btn" id="connect" onclick="connect()">Connect</button></div>
+      <div class="fld g1" style="justify-content:flex-end"><button class="btn2" onclick="logout()">Forget</button></div>
+      <div class="fld g6"><span class="hint" id="access-hint"></span></div>
+    </div></div>
+  </div>
+  <div id="panel" style="display:none"></div>
+
+  <div class="toolbar">
+    <label class="filebtn">📥 Import YCE directory (.xlsx)<input type="file" accept=".xlsx" onchange="dirPick(this)"></label>
+    <label class="filebtn">⬆ Import JSON backup<input type="file" accept=".json" onchange="jsonPick(this)"></label>
+    <button class="btn2" onclick="exportJson()">⬇ Export JSON backup</button>
+    <button class="btn2" onclick="newCamp()">➕ New camp</button>
+    <span class="sp"></span>
+    <span class="dirty" id="dirty" style="display:none">● unsaved changes</span>
+    <button class="btn" id="save-site" onclick="saveSite()" disabled title="Connect first">💾 Save to the site</button>
+  </div>
+
+  <div id="review" class="section" style="display:none">
+    <div class="sec-head"><span class="sec-title">Directory import — review</span><span class="sec-note" id="rev-note"></span>
+      <span style="margin-left:auto"><button class="btn" onclick="applyReview()">✔ Apply selected</button>
+      <button class="btn2" onclick="cancelReview()">Cancel</button></span></div>
+    <div class="sec-body" id="rev-body"></div>
+  </div>
+
+  <div id="edit-box">
+    <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:10px;">
+      <b style="font-family:Georgia,serif;color:var(--gold);font-size:16px" id="edit-title">Edit camp</b>
+      <span style="margin-left:auto"><button class="btn" onclick="saveEdit()">✔ Apply</button>
+      <button class="btn2" onclick="closeEdit()">Cancel</button></span>
+    </div>
+    <div class="grid" id="edit-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="sec-head">
+      <button class="pill on" id="tab-active" onclick="setView('active')">Active camps</button>
+      <button class="pill" id="tab-archived" onclick="setView('archived')">Archived</button>
+      <input class="srch" id="q" placeholder="Search camp, country…" oninput="render()">
+      <span class="sec-note" id="count" style="margin-left:auto"></span>
+    </div>
+    <div class="sec-body table-wrap">
+      <table><thead><tr>
+        <th>Country</th><th>Camp</th><th>Camp dates</th><th>Family stay</th><th>Ages</th><th>Fee</th><th>Season</th><th></th>
+      </tr></thead><tbody id="tbody"></tbody></table>
+      <div class="hint" id="empty" style="padding:20px;text-align:center;display:none">Nothing here.</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-head"><span class="sec-title">Journal</span></div>
+    <div class="sec-body"><div id="log"></div></div>
+  </div>
+</main>
+<script src="js/theme.js"></script>
+<script src="camps_data.js"></script>
+<script src="districts_data.js"></script>
+<script src="js/xlsx.js"></script>
+<script src="js/admin-core.js"></script>
+<script src="js/camps-manager.js"></script>
+</body>
+</html>

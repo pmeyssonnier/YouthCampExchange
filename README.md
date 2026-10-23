@@ -13,6 +13,7 @@ Everything is served as **static pages** (GitHub Pages ready): no backend, no da
 | `yce_form_filler.html?sign=club` | Club presidents | **Remote counter-signing** of a candidate's application received by e-mail |
 | `yce_form_filler.html?admin` | District coordinators | Unlocks the admin tools (see below) |
 | `yce_tracker.html` | District coordinators | **Applications tracker**: drop the received files, get a live status table + CSV export |
+| `yce_camps.html` | Site administrator | **Camp manager**: import the official LCI directory (xlsx) with a reviewed merge, edit every camp, JSON backup/restore, archive old camps |
 | `yce_admin.html` | Site administrator | **Site administration**: edit season/year, district coordinators, camp list; upload the reference form and Word templates — committed straight to GitHub |
 
 ## The application form filler
@@ -61,6 +62,8 @@ districts_data.js                     per-deployment data: MD number, country, c
 camps.json                            GENERATED — plain-JSON export of the camp data ({season, camps})
 yce_form_filler.html                  form filler HTML shell (loads the js/ modules below)
 yce_tracker.html                      tracker HTML shell
+yce_camps.html                        camp manager HTML shell
+camps_archive.json                    archived camps (written by the camp manager)
 js/
   site-data.js                        site: date helpers, CAMPS enrichment, season stats
   site-explorer.js                    site: camp directory (filters, sort, table, tabs)
@@ -79,6 +82,9 @@ js/
   country.js                          default country, dial codes, phone normalisation
   render.js                           section/widget rendering, X-groups, counter
   form.js                             orchestration: generate() and init() — loaded last
+  admin-core.js                       shared admin plumbing: PIN-encrypted token, GitHub API, connect
+  admin.js                            site administration page logic
+  camps-manager.js                    camp manager: directory import, editing, backups, archive
   tracker-storage.js / -parser.js / -export.js / -ui.js   tracker modules
 tools/
   build_assets.py                     regenerates js/assets.js from the templates below

@@ -172,6 +172,7 @@ async function init(){
     document.getElementById("ctry-btn").style.display="";
     document.getElementById("tracker-btn").style.display="";
     document.getElementById("siteadmin-btn").style.display="";
+    document.getElementById("camps-btn").style.display="";
     document.getElementById("codemap-btn").style.display="";
     const sel=document.getElementById("ctry-sel");
     sel.innerHTML=COUNTRIES.map(function(c){return '<option value="'+c.code+'"'+(c.code===CTRY?' selected':'')+'>'+c.name+' ('+c.dial+')</option>';}).join("");
