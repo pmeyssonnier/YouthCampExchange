@@ -105,20 +105,22 @@
    "continent": "Asia",
    "country": "India",
    "camp_name": "Lions Escapade Northeast Youth Camp & Exchange",
-   "age_requirements": "18-25",
+   "age_requirements": "18-27",
    "fee": "450 USD",
    "camp_starts": "01-12-2026",
    "camp_ends": "08-12-2026",
    "family_stay_starts": "24-11-2026",
    "family_stay_ends": "30-11-2026",
    "detail": {
-    "location": "Assam, Arunachal Pradesh / India",
-    "description": "Sports, Adventure and Team Building Activities , Visit to the World Heritage sites, Wild Life Safari, World's Second Largest Buddhist Monastery Visit, Lakes & Waterfalls, Tea Garden Tour, Camp Fire, Cultural Night.",
+    "location": "Nagaland, Assam / India",
+    "description": "The lions Escapade Northeast Youth Camp & Exchange 2026-27 offers an unforgettable journey through the cultural and natural wonders of Northeast India. Participants will experience the vibrant Hornbill Festival in Kohima, showcasing the rich tribal heritage, traditions, music, dance, and cuisine of Nagaland. The camp also includes an adventurous trek to the breathtaking Dzukou Valley and an exploration of the rich cultural heritage of Kohima. In Assam, participants will discover the scenic beauty of Assam's lush tea estates and visit the world famous Kaziranga National Park, a UNESCO World Heritage Site renowned for the majestic one-horned rhinoceros, offering a perfect blend of cultural exchange, adventure, nature and friendship.",
     "host_family_activities": "Sports, Adventure and Team Building Activities with the young Leo members, Experiencing rich and heritage culture of Assam.",
     "languages": [
      "English"
     ],
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/lions-escapade-northeast-youth-camp-%26-exchange"
+    "yce_url": "https://www.lions-yce-belgium.be/destinations/lions-escapade-northeast-youth-camp-%26-exchange",
+    "application_deadline": "30-09-2026",
+    "participants": "20"
    }
   },
   {
@@ -146,19 +148,22 @@
    "continent": "Asia",
    "country": "India",
    "camp_name": "Namaste India (Central) Youth Camp",
-   "age_requirements": "16-25",
-   "fee": "500 USD",
+   "age_requirements": "16-22",
+   "fee": "550 USD",
    "camp_starts": "27-12-2026",
    "camp_ends": "10-01-2027",
    "family_stay_starts": "20-12-2026",
    "family_stay_ends": null,
    "detail": {
-    "location": "Vidisha, Madhya Pradesh, India",
-    "description": "Meditation, Geeta Gyan, Mental Wellness, Factory Visit, Light n Sound Show, Visit to pilgrimage near Vidisha - Malva - Ujjain, Visit to Famous Cities of India places like Jaipur (Pink City), Udaipur (Venice of the East) and Chittoor. Also Team building, problem solving, communication skills, personality development etc.",
+    "location": "Bhopal (MP)",
+    "description": "Tour to various heritage places such as Agra (the Taj Mahal-one of the seven wonders of the world), Fatehpur Sikri, Jaipur- The Pink City, Udaipur- the Venice of the East, Jawai- the Leopard Safari, Bhimbetica, Sanchi Stupa with Light and Sound Show, Factory visit, Meditation, Geeta Gyan. Activities including Team building,Problem Solving,Communication Skills, Personality Development and Hands- on service projects etc.",
     "languages": [
      "English"
     ],
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/namaste-india-(-central-)-youth-camp"
+    "yce_url": "https://www.lions-yce-belgium.be/destinations/namaste-india-(-central-)-youth-camp",
+    "application_deadline": "31-10-2026",
+    "participants": "30",
+    "host_family_activities": "Cultural Exchange"
    }
   },
   {
@@ -355,23 +360,25 @@
    "district": "MD112",
    "camp_name": "Brussels Lions Youth Camp",
    "age_requirements": "17-21",
-   "fee": "180 EURO",
+   "fee": "300 EURO",
    "camp_starts": "17-07-2027",
    "camp_ends": "31-07-2027",
    "family_stay_starts": "10-07-2027",
    "family_stay_ends": "17-07-2027",
    "detail": {
     "location": "Limburg, Belgium",
-    "description": "Discover every corner of Belgium, the heart of Europe! Including visits to Antwerp, Brussels (including the EU Parliament), the Seaside, Flanders Fields, Festivals…",
+    "description": "A perfect mix of culture (Cities of Antwerp, Ghent...) , history (EU parliament, Flanders Fields...) and sports (Kayak, team building...)",
     "languages": [
      "English"
     ],
-    "website": "https://yce.lions.be/",
+    "website": "https://yce.lions.be",
     "yce_url": "https://yce.lions.be/",
     "contact_email": "stijn.renier@renier.be",
     "contact_name": "Stijn Renier",
     "contact_phone": "+32475782593",
-    "application_deadline": "31-03-2026"
+    "application_deadline": "31-03-2027",
+    "participants": "35",
+    "host_family_activities": "Stay with a Belgian family and discover how they live, think and interact. Visit the local area."
    }
   },
   {
@@ -1011,33 +1018,37 @@
    "family_stay_starts": "10-07-2027",
    "family_stay_ends": "18-07-2027",
    "detail": {
-    "location": "Lugo (RA) - Tortoreto (TE), Italy",
-    "description": "Visits to cities of art and villages (Venice, Ravenna, Faenza and Rome). Visit to the Republic of San Marino. Excursions to local parks, days at the beach on the Adriatic coast. Sports activities. Meetings and activities with Lions and Leo clubs.",
+    "location": "Lugo (RA) - Teramo (TE)",
+    "description": "Visits to cities of art and villages (the main ones are Venice, Ravenna, Faenza and Rome). Visit to the Republic of San Marino. Excursions to local parks, days at beach on the Adriatic coast. Sports activities. Meeting and activities with Lions and Leo Clubs.",
     "host_family_activities": "At the discretion of the family. Local culture and customs, family life.",
     "languages": [
      "English"
     ],
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/lions-youth-camp-azzurro-%22g.-dallari%22"
+    "yce_url": "https://www.lions-yce-belgium.be/destinations/lions-youth-camp-azzurro-%22g.-dallari%22",
+    "application_deadline": "15-03-2027",
+    "participants": "11"
    }
   },
   {
    "continent": "Europe",
    "country": "Italy",
    "camp_name": "Campo Emilia Knights of light",
-   "age_requirements": "16",
+   "age_requirements": "17-22",
    "fee": "150 EURO",
    "camp_starts": "08-07-2027",
    "camp_ends": "18-07-2027",
    "family_stay_starts": "26-06-2027",
    "family_stay_ends": "08-07-2027",
    "detail": {
-    "location": "Bologna, Italy",
-    "description": "Visite alle città, attività sportive, attività di inclusione e sensibilizzazione nei confronti degli ipovedenti (City visits, sports activities, inclusion and awareness activities for the visually impaired).",
-    "host_family_activities": "City visits and sports activities.",
+    "location": "Bologna",
+    "description": "Lions activity and trip around Bologna and Emilia Romagna.",
+    "host_family_activities": "Visite sul territorio e conoscenza della cultura italiana",
     "languages": [
      "English"
     ],
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/campo-emilia--knights-of-light"
+    "yce_url": "https://www.lions-yce-belgium.be/destinations/campo-emilia--knights-of-light",
+    "application_deadline": "03-07-2027",
+    "participants": "25"
    }
   },
   {
@@ -1148,12 +1159,14 @@
    "family_stay_starts": "25-07-2027",
    "family_stay_ends": "01-08-2027",
    "detail": {
-    "location": "Lithuania",
-    "description": "Discovering Lithuania and friendship, discussions on various topics, sharing knowledge and ideas, discovering different cultures.",
+    "location": "Vilnius",
+    "description": "Get ready to discover what “Life is…” really means!\n\nTravel across Lithuania with young people from all over the world – explore vibrant Vilnius, discover the Baltic seaside, swim, kayak, take on outdoor adventures and experience places most tourists never see.\n\nBut “Life is…” is much more than travelling. It’s about making friends from different cultures, sharing food and traditions at international evenings, trying something new, laughing a lot and creating memories together.\n\nYou’ll experience real Lithuanian life, meet local people, discover our culture and nature, take part in fun team challenges and LIONS service activities – and probably return home with friends in countries you had never visited before.\n\nLife is friendship. Life is adventure. Life is sharing. Life is… something you have to experience yourself.",
     "languages": [
      "English"
     ],
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/lions-youth-camp-%22life-is...%22"
+    "yce_url": "https://www.lions-yce-belgium.be/destinations/lions-youth-camp-%22life-is...%22",
+    "application_deadline": "15-03-2027",
+    "participants": "20"
    }
   },
   {
@@ -1754,12 +1767,14 @@
    "family_stay_starts": "01-07-2027",
    "family_stay_ends": "23-07-2027",
    "detail": {
-    "location": "Minnesota",
-    "description": "Camp Spicer will begin with an International Banquet for the COG's and YE Chairs & host families, which each youth prepares a dish from their country, Met with different Lions Clubs & Leos, teambuilding & watersports, go karting and miniature golf, Chanhassen Dinner Theater, Lions Eye Bank, Can do Canines, Feed my starving children (service project), Mall of America and Valley Fair.",
+    "location": "Minnesota USA",
+    "description": "Camp Spicer will begin with an International Banquet for the COG’s and YE Chairs & host families, which each youth prepares a dish from their country, Met with different Lions Clubs & Leos, teambuilding & watersports, go karting and miniature golf, Chanhassen Dinner Theater, Lions Eye Bank, Can do Canines, Feed my starving children (service project), Mall of America and Valley Fair.",
     "languages": [
      "English"
     ],
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/camp-spicer"
+    "yce_url": "https://www.lions-yce-belgium.be/destinations/camp-spicer",
+    "application_deadline": "01-03-2027",
+    "participants": "30"
    },
    "state": "Minnesota"
   },
@@ -1774,14 +1789,16 @@
    "family_stay_starts": "03-07-2027",
    "family_stay_ends": "17-07-2027",
    "detail": {
-    "location": "Itu and Ilhabela, Sao Paulo, Brazil",
-    "description": "The participants will visit various cities and cultural sites across Sao Paulo state, including museums, tourist landmarks, and beaches. They will also attend a traditional samba school, immersing themselves in local folklore and music. The program will include opportunities for sports and social gatherings to facilitate cultural exchange and friendship.",
-    "host_family_activities": "The host family will welcome the youth as one of their own, including them in everyday family life and social events, in addition to exploring local attractions together.",
+    "location": "Capitólio - Bertioga - São Paulo",
+    "description": "Visiting some cities around in State of Sao Paulo and Minas Gerais, Visits to Cultural , Tourist, and Folklore sites..Get a taste of our world-famous Carnival with a visit to a samba school where you'll learn how to samba! We'll also enjoy our beautiful beaches, sports, and cultural exchange meetings.",
+    "host_family_activities": "Participants will have a true cultural immersion, living as a member of the family and joining in on daily routines, while also enjoying local sights.",
     "languages": [
      "English",
      "Portuguese"
     ],
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/frienship-beyond-borders-camp"
+    "yce_url": "https://www.lions-yce-belgium.be/destinations/frienship-beyond-borders-camp",
+    "application_deadline": "31-03-2027",
+    "participants": "25"
    }
   },
   {

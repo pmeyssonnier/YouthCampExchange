@@ -82,6 +82,7 @@ function showCampDetail(idx){
     <div class="modal-section">
       <div class="ms-title">👤 Age Requirements</div>
       <div class="ms-row"><span class="ms-lbl">Eligible ages</span><span class="ms-val big">${c.age_requirements}</span></div>
+      ${det&&det.participants?`<div class="ms-row"><span class="ms-lbl">Capacity</span><span class="ms-val">${det.participants} participants</span></div>`:''}
     </div>
     <div class="modal-section">
       <div class="ms-title">💰 Participation Fee</div>
