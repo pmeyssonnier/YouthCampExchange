@@ -28,7 +28,9 @@ const CAMPS=RAW.map((c,i)=>{
   const departure=fe&&ce?(fe>ce?fe:ce):(ce||fe);
   const age=parseAge(c.age_requirements);
   const feeNum=c.fee?(parseFloat(c.fee.replace(/[^0-9.]/g,''))||0):0;
-  return{...c,_idx:i,cs,ce,fs,fe,arrival,departure,age_min:age.min,age_max:age.max,fee_num:feeNum};
+  // saison YCE : septembre à août — un camp de juillet 2026 appartient à 2025-2026
+  const season=cs?((cs.getMonth()+1>=9)?cs.getFullYear()+'-'+(cs.getFullYear()+1):(cs.getFullYear()-1)+'-'+cs.getFullYear()):'';
+  return{...c,_idx:i,cs,ce,fs,fe,arrival,departure,age_min:age.min,age_max:age.max,fee_num:feeNum,season};
 });
 const escQ=s=>s.replace(/'/g,"\\'");
 

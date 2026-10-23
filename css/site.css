@@ -191,6 +191,7 @@ tr.clickable-row.selected td{background:rgba(79,195,247,0.07);border-left:2px so
 .cc-age{background:rgba(6,214,160,0.1);color:var(--accent);border:1px solid rgba(6,214,160,0.2);}
 .cc-fee{background:rgba(232,160,32,0.1);color:var(--gold);border:1px solid rgba(232,160,32,0.2);}
 .cc-free{background:rgba(6,214,160,0.15);color:var(--accent);border:1px solid var(--accent);}
+.cc-season{background:rgba(79,195,247,0.1);color:var(--blue);border:1px solid rgba(79,195,247,0.25);}
 .cc-dates{margin-top:6px;border-top:1px solid rgba(36,61,92,0.5);padding-top:6px;}
 .cc-date-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;}
 .cc-date-lbl{font-size:9px;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted2);}
