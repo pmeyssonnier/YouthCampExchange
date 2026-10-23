@@ -109,6 +109,7 @@ input:focus{border-color:var(--gold);}
     <div class="sec-head"><span class="sec-title">Camp list</span><span class="sec-note" id="camps-note"></span></div>
     <div class="sec-body">
       <div class="fld w6"><div class="upl"><b>📋 Replace the camp list (JSON)</b><span class="path" id="camps-fname"></span><label class="filebtn">📂 Choose…<input type="file" id="camps-file" accept=".json" onchange="campsPick(this)"></label></div>
+        <a class="btn2" href="yce_camps.html" style="text-decoration:none;display:inline-block;margin-bottom:6px;">🏕 Open the camp manager — import the official directory, edit, archive…</a><br>
         <span class="hint">Accepts the scraper output or <code>camps.json</code>: a JSON array of camps, or an object <code>{"season": …, "camps": [...]}</code>. Nothing is sent until you press “Save the data”.</span>
       </div>
     </div>
@@ -156,6 +157,7 @@ input:focus{border-color:var(--gold);}
 <script src="js/theme.js"></script>
 <script src="camps_data.js"></script>
 <script src="districts_data.js"></script>
+<script src="js/admin-core.js"></script>
 <script src="js/admin.js"></script>
 </body>
 </html>
