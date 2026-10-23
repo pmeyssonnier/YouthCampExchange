@@ -61,7 +61,10 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold);}
 html[data-theme="light"] .pill.on{color:#fff;}
 .srch{min-width:200px;max-width:280px;}
 table{width:100%;border-collapse:collapse;font-size:12.5px;}
-th{background:var(--card);padding:8px 10px;text-align:left;font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap;}
+th{background:var(--card);padding:8px 10px;text-align:left;font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none;}
+th:hover{color:var(--gold);}
+th.asc::after{content:" \25b2";color:var(--gold);}
+th.desc::after{content:" \25bc";color:var(--gold);}
 td{padding:7px 10px;border-bottom:1px solid var(--border);vertical-align:middle;}
 tr:hover td{background:var(--hover);}
 .camp-nm{font-weight:600;}
@@ -146,7 +149,13 @@ tr:hover td{background:var(--hover);}
     </div>
     <div class="sec-body table-wrap">
       <table><thead><tr>
-        <th>Country</th><th>Camp</th><th>Camp dates</th><th>Family stay</th><th>Ages</th><th>Fee</th><th>Season</th><th></th>
+        <th id="h-country" onclick="setSort('country')">Country</th>
+        <th id="h-name" onclick="setSort('name')">Camp</th>
+        <th id="h-cs" onclick="setSort('cs')">Camp dates</th>
+        <th id="h-fs" onclick="setSort('fs')">Family stay</th>
+        <th id="h-ages" onclick="setSort('ages')">Ages</th>
+        <th id="h-fee" onclick="setSort('fee')">Fee</th>
+        <th id="h-season" onclick="setSort('season')">Season</th><th></th>
       </tr></thead><tbody id="tbody"></tbody></table>
       <div class="hint" id="empty" style="padding:20px;text-align:center;display:none">Nothing here.</div>
     </div>

@@ -5,6 +5,7 @@
 let CAMPS_W=RAW.map(function(c){return JSON.parse(JSON.stringify(c));}); // copie de travail
 let ARCH=[];              // camps archivés (camps_archive.json)
 let DIRTY=false, CONNECTED=false, VIEW="active", EDIT_I=-1, EDIT_NEW=false, REVIEW=null;
+let SORT_K="country", SORT_D=1; // tri du tableau (clic sur les en-têtes)
 
 const TOP_KEYS=["continent","country","state","district","camp_name","age_requirements","fee",
   "camp_starts","camp_ends","family_stay_starts","family_stay_ends","detail"];
@@ -20,6 +21,12 @@ function seasonOf(c){const m=/(\d{4})$/.exec(c.camp_starts||"");if(!m)return "";
   const y=+m[1],mm=+(c.camp_starts||"").slice(3,5);return (mm>=9)?(y+"-"+(y+1)):((y-1)+"-"+y);}
 
 // -------------------- liste --------------------
+function dmyKey(s){ // dd-mm-yyyy -> clé triable yyyymmdd (vide en dernier)
+  const m=/^(\d{2})-(\d{2})-(\d{4})$/.exec(s||"");
+  return m?m[3]+m[2]+m[1]:"99999999";}
+function setSort(k){
+  if(SORT_K===k)SORT_D=-SORT_D;else{SORT_K=k;SORT_D=1;}
+  render();}
 function setView(v){VIEW=v;
   document.getElementById("tab-active").classList.toggle("on",v==="active");
   document.getElementById("tab-archived").classList.toggle("on",v==="archived");
@@ -29,7 +36,19 @@ function render(){
   const list=(VIEW==="active"?CAMPS_W:ARCH);
   const rows=list.map(function(c,i){c._i=i;return c;})
     .filter(function(c){return !q||simple(c.camp_name+c.country).indexOf(q)>=0;})
-    .sort(function(a,b){return (a.continent+a.country+a.camp_name).localeCompare(b.continent+b.country+b.camp_name);});
+    .sort(function(a,b){
+      const kf={
+        country:function(c){return c.continent+"|"+c.country+"|"+simple(c.camp_name);},
+        name:function(c){return simple(c.camp_name);},
+        cs:function(c){return dmyKey(c.camp_starts);},
+        fs:function(c){return dmyKey(c.family_stay_starts);},
+        ages:function(c){const m=/\d+/.exec(c.age_requirements||"");return m?String(+m[0]).padStart(3,"0"):"999";},
+        fee:function(c){const m=/[\d.]+/.exec(c.fee||"");return String(m?Math.round(+m[0]):999999).padStart(7,"0");},
+        season:function(c){return seasonOf(c)||"zzz";}
+      }[SORT_K]||function(c){return simple(c.camp_name);};
+      const x=kf(a),y=kf(b);
+      return (x<y?-1:x>y?1:0)*SORT_D;
+    });
   const tb=document.getElementById("tbody");
   tb.innerHTML=rows.map(function(c){
     const sn=seasonOf(c), cur=sn==="2026-2027";
@@ -49,6 +68,9 @@ function render(){
   document.getElementById("tab-active").textContent="Active camps ("+CAMPS_W.length+")";
   document.getElementById("tab-archived").textContent="Archived ("+ARCH.length+")";
   document.getElementById("count").textContent=rows.length+" shown";
+  document.querySelectorAll("th").forEach(function(t){t.classList.remove("asc","desc");});
+  const th=document.getElementById("h-"+SORT_K);
+  if(th)th.classList.add(SORT_D>0?"asc":"desc");
   updSave();
 }
 
