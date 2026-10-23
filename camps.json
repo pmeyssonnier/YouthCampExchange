@@ -160,13 +160,13 @@
    "detail": {
     "location": "Bhopal (MP)",
     "description": "Tour to various heritage places such as Agra (the Taj Mahal-one of the seven wonders of the world), Fatehpur Sikri, Jaipur- The Pink City, Udaipur- the Venice of the East, Jawai- the Leopard Safari, Bhimbetica, Sanchi Stupa with Light and Sound Show, Factory visit, Meditation, Geeta Gyan. Activities including Team building,Problem Solving,Communication Skills, Personality Development and Hands- on service projects etc.",
+    "host_family_activities": "Cultural Exchange",
     "languages": [
      "English"
     ],
     "yce_url": "https://www.lions-yce-belgium.be/destinations/namaste-india-(-central-)-youth-camp",
     "application_deadline": "31-10-2026",
     "participants": "30",
-    "host_family_activities": "Cultural Exchange",
     "contact_name": "Shalini Bhargava",
     "contact_email": "ycenamasteindia@gmail.com",
     "contact_phone": "9425149710"
@@ -374,17 +374,17 @@
    "detail": {
     "location": "Limburg, Belgium",
     "description": "A perfect mix of culture (Cities of Antwerp, Ghent...) , history (EU parliament, Flanders Fields...) and sports (Kayak, team building...)",
+    "host_family_activities": "Stay with a Belgian family and discover how they live, think and interact. Visit the local area.",
     "languages": [
      "English"
     ],
     "website": "https://yce.lions.be",
     "yce_url": "https://yce.lions.be/",
-    "contact_email": "stijn.renier@renier.be",
-    "contact_name": "Stijn Renier",
-    "contact_phone": "+32475782593",
     "application_deadline": "31-03-2027",
     "participants": "35",
-    "host_family_activities": "Stay with a Belgian family and discover how they live, think and interact. Visit the local area."
+    "contact_name": "Stijn Renier",
+    "contact_email": "stijn.renier@renier.be",
+    "contact_phone": "+32475782593"
    }
   },
   {
@@ -1563,6 +1563,7 @@
   {
    "continent": "North America",
    "country": "Canada",
+   "state": "Alberta",
    "camp_name": "Woodcreek Lions Mountain Adventure",
    "age_requirements": "16-18",
    "fee": "600 USD",
@@ -1579,12 +1580,12 @@
     ],
     "website": "https://www.woodcreeklc.com/2025-camp.html",
     "yce_url": "https://www.lions-yce-belgium.be/destinations/woodcreek-lions-mountain-adventure"
-   },
-   "state": "Alberta"
+   }
   },
   {
    "continent": "North America",
    "country": "Canada",
+   "state": "Alberta",
    "camp_name": "Lions Leadership Camp",
    "age_requirements": "15-18",
    "fee": "600 USD",
@@ -1601,12 +1602,12 @@
     ],
     "website": "https://lionsleadershipcamp.ca/",
     "yce_url": "https://www.lions-yce-belgium.be/destinations/lions-leadership-camp"
-   },
-   "state": "Alberta"
+   }
   },
   {
    "continent": "North America",
    "country": "Canada",
+   "state": "Ontario",
    "camp_name": "Lion Bill Evers Friendship Youth Exchange Camp",
    "age_requirements": "16-20",
    "fee": "200 CAD",
@@ -1621,12 +1622,12 @@
      "English"
     ],
     "yce_url": "https://www.lions-yce-belgium.be/destinations/lion-bill-evers-friendship-youth-exchange-camp"
-   },
-   "state": "Ontario"
+   }
   },
   {
    "continent": "North America",
    "country": "Canada",
+   "state": "Saskatchewan",
    "camp_name": "Saskatchewan, Canada Lions Camp 2026",
    "age_requirements": "14-18",
    "fee": "400 USD",
@@ -1641,12 +1642,12 @@
      "English"
     ],
     "yce_url": "https://www.lions-yce-belgium.be/destinations/saskatchewan%2C-canada-lions-camp-2026"
-   },
-   "state": "Saskatchewan"
+   }
   },
   {
    "continent": "North America",
    "country": "Canada",
+   "state": "Ontario",
    "camp_name": "Charlie Shaw Lions Camp",
    "age_requirements": "18-21",
    "fee": "400 CAD",
@@ -1661,12 +1662,12 @@
      "English"
     ],
     "yce_url": "https://www.lions-yce-belgium.be/destinations/charlie-shaw-lions-camp"
-   },
-   "state": "Ontario"
+   }
   },
   {
    "continent": "North America",
    "country": "United States",
+   "state": "Wisconsin",
    "camp_name": "WISCONSIN LIONS YOUTH EXCHANGE - CAMP VISTA - One Week - One Camp - One World",
    "age_requirements": "17-20",
    "fee": "0 USD",
@@ -1682,12 +1683,12 @@
      "English"
     ],
     "yce_url": "https://www.lions-yce-belgium.be/destinations/wisconsin-lions-youth-exchange---camp-vista---one-week---one-camp---one-world"
-   },
-   "state": "Wisconsin"
+   }
   },
   {
    "continent": "North America",
    "country": "United States",
+   "state": "Massachusetts",
    "camp_name": "MD33 Massachusetts Lions",
    "age_requirements": "15-18",
    "fee": "800 USD",
@@ -1703,12 +1704,12 @@
      "English"
     ],
     "yce_url": "https://www.lions-yce-belgium.be/destinations/md33-massachusetts-lions"
-   },
-   "state": "Massachusetts"
+   }
   },
   {
    "continent": "North America",
    "country": "United States",
+   "state": "Washington",
    "camp_name": "Lions Camp Camano",
    "age_requirements": "16-20",
    "fee": "550 USD",
@@ -1724,12 +1725,12 @@
     ],
     "website": "http://www.md19lionsyouthexchange.org",
     "yce_url": "https://www.lions-yce-belgium.be/destinations/lions-camp-camano"
-   },
-   "state": "Washington"
+   }
   },
   {
    "continent": "North America",
    "country": "United States",
+   "state": "Texas",
    "camp_name": "Midland, Texas Family Stay Mini-camp",
    "age_requirements": "17-18",
    "fee": "0 USD",
@@ -1745,12 +1746,12 @@
      "English"
     ],
     "yce_url": "https://www.lions-yce-belgium.be/destinations/midland%2C-texas-family-stay-mini-camp"
-   },
-   "state": "Texas"
+   }
   },
   {
    "continent": "North America",
    "country": "United States",
+   "state": "Iowa",
    "camp_name": "Iowa Lions International Youth Exchange Camp",
    "age_requirements": "16-18",
    "fee": "100 USD",
@@ -1767,12 +1768,12 @@
     ],
     "website": "http://www.ilyec.com",
     "yce_url": "https://www.lions-yce-belgium.be/destinations/iowa-lions-international-youth-exchange-camp"
-   },
-   "state": "Iowa"
+   }
   },
   {
    "continent": "North America",
    "country": "United States",
+   "state": "Minnesota",
    "camp_name": "Camp Spicer",
    "age_requirements": "16-20",
    "fee": "400 USD",
@@ -1791,8 +1792,7 @@
     "participants": "30",
     "contact_name": "Susan Mullen",
     "contact_email": "md5mlionsyouthexchange@gmail.com"
-   },
-   "state": "Minnesota"
+   }
   },
   {
    "continent": "South America",
@@ -1839,6 +1839,359 @@
      "Portuguese"
     ],
     "yce_url": "https://www.lions-yce-belgium.be/destinations/lions-camp-south-brazil"
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "Denmark",
+   "camp_name": "Power by nature",
+   "age_requirements": "17-21",
+   "fee": "100 EURO",
+   "camp_starts": "17-07-2027",
+   "camp_ends": "31-07-2027",
+   "family_stay_starts": "10-07-2027",
+   "family_stay_ends": "17-07-2027",
+   "detail": {
+    "location": "Thy",
+    "description": "There will be time for biking in the National Park, sailing in canoes in small rivers and making\ndinner at campfire, feeling the wind by the North Sea, and trying surfing.\nThere will be a lot of different activities, and time for “hygge”.",
+    "languages": [
+     "English"
+    ],
+    "website": "yce.lions.dk",
+    "application_deadline": "01-03-2027",
+    "participants": "35",
+    "contact_name": "Lasse Borgbjerg",
+    "contact_email": "lasse@vittengrafisk.dk",
+    "contact_phone": "+4541386001"
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "Denmark",
+   "camp_name": "Nature, Culture and Industry",
+   "age_requirements": "17-21",
+   "fee": "100 EURO",
+   "camp_starts": "17-07-2027",
+   "camp_ends": "27-07-2027",
+   "family_stay_starts": "10-07-2027",
+   "family_stay_ends": "17-07-2027",
+   "detail": {
+    "location": "Faroe Islands - Vagar",
+    "description": "Vágar and Mykines are two gems in the Faroe Islands, offering a wide variety of sights and experiences. Vágar enchants with its picturesque coastal villages, majestic lakes, captivating waterfall and other iconic landmarks. Meanwhile, Mykines fascinates with its puffin colonies, dramatic cliffs, and rugged landscapes. Both islands offer unforgettable experiences and breathtaking views, making them wonderful destinations for nature lovers and explorers.",
+    "languages": [
+     "English"
+    ],
+    "website": "yce.lions.dk",
+    "application_deadline": "01-03-2027",
+    "participants": "20",
+    "contact_name": "Lasse Borgbjerg",
+    "contact_email": "lasse@vittengrafisk.dk",
+    "contact_phone": "+4541386001"
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "Finland",
+   "camp_name": "Lions Camp Solvalla Summit",
+   "age_requirements": "17-21",
+   "fee": "200 EURO",
+   "camp_starts": "30-07-2027",
+   "camp_ends": "08-08-2027",
+   "family_stay_starts": "22-07-2027",
+   "family_stay_ends": "30-07-2027",
+   "detail": {
+    "location": "Espoo, Finland",
+    "description": "nature trails, sports activities, sauna and wild swimming, canoeing, a boat trip to the archipelago, Amazing Race Helsinki",
+    "languages": [
+     "English"
+    ],
+    "website": "https://lionsnpiiriyouthcampsolvalla.lions.fi/",
+    "application_deadline": "31-03-2027",
+    "participants": "30",
+    "contact_name": "Leena Lehtihalmes",
+    "contact_email": "leena.lehtihalmes@lions.fi",
+    "contact_phone": "+358503575965"
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "Finland",
+   "camp_name": "Lions Youth Camp in Kalajoki - Life in the Finnish Countryside",
+   "age_requirements": "17-21",
+   "fee": "200 EURO",
+   "camp_starts": "19-07-2027",
+   "camp_ends": "30-07-2027",
+   "family_stay_starts": null,
+   "family_stay_ends": null,
+   "detail": {
+    "location": "Kalajoki, Finland",
+    "description": "Visit to Beach Resort, experience the Midnight Sun, taste Finnish flavours, try cooking.  Forest hiking and collecting herbs and wildberries. Folk music, Folk Dances, Karaoke, Finland Quiz, Finnish Sauna, Finnish farm life, Finnish sports, variety of Baseball, Finnish Christmas with Santa, Country presentations, making friends, meeting local Lions and Leos.",
+    "languages": [
+     "English"
+    ],
+    "application_deadline": "30-03-2027",
+    "participants": "30",
+    "contact_name": "Heikki Hemmilä",
+    "contact_email": "heikkimhemmila@gmail.com",
+    "contact_phone": "+358405035598"
+   }
+  },
+  {
+   "continent": "Asia",
+   "country": "India",
+   "camp_name": "Heritage Horizons - Northern India",
+   "age_requirements": "17-23",
+   "fee": "400 EURO",
+   "camp_starts": "02-01-2027",
+   "camp_ends": "13-01-2027",
+   "family_stay_starts": "28-12-2026",
+   "family_stay_ends": "01-01-2027",
+   "detail": {
+    "location": "Chandigarh",
+    "description": "An opportunity to experience Bharat (India), its rich heritage, culture, traditions and hospitality and lifelong international friendship.",
+    "languages": [
+     "English"
+    ],
+    "application_deadline": "20-10-2027",
+    "participants": "20",
+    "contact_name": "Sanjeev Gupta",
+    "contact_email": "ycepmd321@gmail.com",
+    "contact_phone": "+91 9814087932"
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "Hungary",
+   "camp_name": "The natural, historical, and cultural treasures of Miskolc and Northeastern Hungary",
+   "age_requirements": "18-22",
+   "fee": "300 EURO",
+   "camp_starts": "18-07-2027",
+   "camp_ends": "26-07-2027",
+   "family_stay_starts": "04-06-2027",
+   "family_stay_ends": "11-06-2027",
+   "detail": {
+    "location": "Miskolc, Budapest",
+    "description": "Our featured programs: Focusing on Miskolc, with Lions service and awareness-raising programs; exploring Lillafüred and Diósgyőr; a trip to Košice; Lions Day in Gyöngyös; community activities; and a two-day program in Budapest that includes a cruise on the Danube.",
+    "host_family_activities": "The first week is for participants from overseas; the second week is for both overseas and European participants.",
+    "languages": [
+     "English"
+    ],
+    "application_deadline": "28-02-2027",
+    "participants": "25",
+    "contact_name": "Fésűs András",
+    "contact_email": "fa@europr.hu",
+    "contact_phone": "06303303063"
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "Italy",
+   "camp_name": "LIONS CAMP VALTELLINA-MILANO",
+   "age_requirements": "16-21",
+   "fee": "150 EURO",
+   "camp_starts": "27-06-2027",
+   "camp_ends": "11-07-2027",
+   "family_stay_starts": "20-06-2027",
+   "family_stay_ends": "27-06-2027",
+   "detail": {
+    "location": "TIRANO (SO) E MILANO - ITALY",
+    "description": "Camp Valtellina-Milano will be located in northern Italy, in Tirano and in Milan. The program includes hiking on wonderful landscape, walks in the woods and excursions in unspoiled nature of the Alps\nmountains; cultural visits and typical places in Milan; meetings and service with Lions Clubs.",
+    "languages": [
+     "English"
+    ],
+    "application_deadline": "15-03-2027",
+    "participants": "14",
+    "contact_name": "Cinzia Franchetti",
+    "contact_email": "yce.italy@gmail.com"
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "Italy",
+   "camp_name": "LIONS YOUTH CAMP ITALIA WINTER",
+   "age_requirements": "16-21",
+   "fee": "250 EURO",
+   "camp_starts": "27-12-2026",
+   "camp_ends": "06-01-2027",
+   "family_stay_starts": "19-12-2026",
+   "family_stay_ends": "27-12-2026",
+   "detail": {
+    "location": "FIRENZE",
+    "description": "VISIT TO THE MAIN ACTIVITIES OF THE AREA; MEETINGS WITH LEO AND LIONS CLUBS; BETTER UNDERSTANDING AMONG PEOPLE.\n\nLORIANA FIORDI CAMP DIRECTOR",
+    "languages": [
+     "English"
+    ],
+    "application_deadline": "31-10-2026",
+    "participants": "25",
+    "contact_name": "Margherita Muzzi",
+    "contact_email": "yce.italy@gmail.com"
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "Italy",
+   "camp_name": "LIONS CAMP \"APULIA - ITALO LADISA\"",
+   "age_requirements": "17-20",
+   "fee": "250 EURO",
+   "camp_starts": "18-07-2027",
+   "camp_ends": "25-07-2027",
+   "family_stay_starts": "04-07-2027",
+   "family_stay_ends": "18-07-2027",
+   "detail": {
+    "location": "BA - BARI",
+    "description": "Cultural tours of the area\n\nBeach leisure and recreational activities\n\nKnowledge of culinary production",
+    "languages": [
+     "English"
+    ],
+    "application_deadline": "15-03-2027",
+    "participants": "14",
+    "contact_name": "Lorenzo De Marco",
+    "contact_email": "yce.italy@gmail.com"
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "Italy",
+   "camp_name": "Campo Lions Alpi e Mare",
+   "age_requirements": "16-21",
+   "fee": "200 EURO",
+   "camp_starts": "11-07-2027",
+   "camp_ends": "24-07-2027",
+   "family_stay_starts": "03-07-2027",
+   "family_stay_ends": "11-07-2027",
+   "detail": {
+    "location": "Torino, Italy",
+    "description": "Cultural visits\nLions services activities\nSport activities",
+    "languages": [
+     "English"
+    ],
+    "application_deadline": "31-03-2027",
+    "participants": "18",
+    "contact_name": "Paola Forneris",
+    "contact_email": "pforneris74@gmail.com",
+    "contact_phone": "00393351280205"
+   }
+  },
+  {
+   "continent": "Asia",
+   "country": "Malaysia",
+   "camp_name": "Malaysia Lions International Youth Camp 2026 - Dive Into Malaysia: From Ocean to Leadership",
+   "age_requirements": "15-22",
+   "fee": "500 USD",
+   "camp_starts": "23-09-2026",
+   "camp_ends": "27-09-2026",
+   "family_stay_starts": null,
+   "family_stay_ends": null,
+   "detail": {
+    "location": "Tioman Island, Pahang, Malaysia",
+    "description": "Youth leadership development, marine conservation and environmental education, Discovery Dive experience, Marine Park snorkeling, beach cleaning and marine debris awareness, team-building activities, cultural exchange, international friendship activities, leadership workshops, community service, youth discussions, closing ceremony and action planning for participants to continue serving their communities.",
+    "languages": [
+     "English",
+     "Chinese"
+    ],
+    "application_deadline": "25-08-2026",
+    "participants": "10",
+    "contact_name": "Agnes Lee Sze Yah",
+    "contact_email": "yce308b3@gmail.com",
+    "contact_phone": "+60197190178"
+   }
+  },
+  {
+   "continent": "Middle America",
+   "country": "Mexico",
+   "camp_name": "VERANO DEL 27",
+   "age_requirements": "16-19",
+   "fee": "380 EURO",
+   "camp_starts": "25-07-2027",
+   "camp_ends": "31-07-2027",
+   "family_stay_starts": "18-07-2027",
+   "family_stay_ends": "24-07-2027",
+   "detail": {
+    "location": "CUERNAVACA MOR. MEXICO",
+    "description": "Museuns, archaeological sites, caves, historic cities and principal cities of Mexico",
+    "languages": [
+     "English",
+     "Spanish"
+    ],
+    "application_deadline": "30-03-2027",
+    "participants": "20",
+    "contact_name": "Francisco Jose Gomez y Martinez",
+    "contact_email": "fcogomezm@prodigy.net.mx",
+    "contact_phone": "+52 55 19355596"
+   }
+  },
+  {
+   "continent": "Asia",
+   "country": "Sri Lanka",
+   "camp_name": "Leadership building, Cultural Education and Visit Beautiful Sri Lanka",
+   "age_requirements": "15-26",
+   "fee": "370 EURO or 420 USD",
+   "camp_starts": "15-04-2027",
+   "camp_ends": "20-04-2027",
+   "family_stay_starts": "09-04-2027",
+   "family_stay_ends": "14-04-2027",
+   "detail": {
+    "location": "Moratuwa",
+    "description": "1 White water rafting and water activates in Kithulgala\n2 Adventure activities Rangiri aqua\n3Tooth Temple and Visit, Ceylon tea factory and Plantation Visit\n4 Nuwara Eliya, water activities, Garden Visit, Red Post office Visit and Night New Year festival activities  \n5 Ella and 9 Arch bridge visit\n6 Elephants and Wild Life \n7 Weligama Surfing and beach activities\n8 Galle fort and return to Colombo",
+    "host_family_activities": "1st Family Stay plan by individual family according their hosting area. Mainly Sri Lankan New Year and Cultural events. Understanding Culture of Sri Lankan Culture, food, Food preparation.  \n2nd Family Stay incoming youth and youth exchange team can plan as a small group or individual( Parents approval and YEC approval need) can plan visit preference in beautiful Ceylon .",
+    "languages": [
+     "English"
+    ],
+    "website": "https://yec-srilanka-lion-leo-mcc.mystrikingly.com",
+    "application_deadline": "31-01-2027",
+    "participants": "25",
+    "contact_name": "Kavindra Prabash Rajapakse",
+    "contact_email": "kavindrapr@yahoo.com",
+    "contact_phone": "+94718290559"
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "Switzerland",
+   "camp_name": "Swiss Nature Experience",
+   "age_requirements": "18-21",
+   "fee": "0 CHF",
+   "camp_starts": "24-07-2027",
+   "camp_ends": "07-08-2027",
+   "family_stay_starts": null,
+   "family_stay_ends": null,
+   "detail": {
+    "location": "Basel Area",
+    "description": "Nature in the Central part of Switzerland\nVisiting the Swiss parliament\nSeeing the transport museum\nVisiting the chocolate museum\nVisiting typical Swiss cities\nHiking in the Swiss mountains\nSwiss aviation\nSports activities, in particular Swiss sports\nSwimming in the Swiss lakes\nCelebration of the Swiss National Day\nand much more",
+    "languages": [
+     "English"
+    ],
+    "website": "https://www.lions.ch/de/wir-helfen/jugend/jugendaustausch.html",
+    "application_deadline": "15-03-2027",
+    "participants": "20",
+    "contact_name": "Petra Wildemannn",
+    "contact_email": "YouthExchangeSwitzerland@lionsmd102.ch",
+    "contact_phone": "+41 76 322 57 16"
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "Switzerland",
+   "camp_name": "Swiss Cultural Experience",
+   "age_requirements": "16-19",
+   "fee": "0 CHF",
+   "camp_starts": "24-07-2027",
+   "camp_ends": "07-08-2027",
+   "family_stay_starts": "10-07-2027",
+   "family_stay_ends": "24-07-2027",
+   "detail": {
+    "location": "Le Chaux de Fond",
+    "description": "Nature in the Western part of Switzerland\n- Visiting the Swiss parliament\n- Visiting CERN\nVisiting typical Swiss cities \nVisiting the chocolate museum\nHiking in the Swiss mountains\nSports activities, in particular Swiss sports\nSwimming in the Swiss lakes\nCelebration of the Swiss National Day\nand much more ...",
+    "host_family_activities": "Active or relaxed\nUrban or rural\nCulture or sport\nBy water or on a mountain\nEndless options for exciting activities\nMeeting people and making new friends\nLiving with a Swiss family",
+    "languages": [
+     "English"
+    ],
+    "website": "https://www.lions.ch/de/wir-helfen/jugend/jugendaustausch.html",
+    "application_deadline": "15-03-2027",
+    "participants": "20",
+    "contact_name": "Petra Wildemannn",
+    "contact_email": "YouthExchangeSwitzerland@lionsmd102.ch",
+    "contact_phone": "+41 76 322 57 16"
    }
   }
  ]
