@@ -28,7 +28,7 @@ function showCampDetail(idx){
   const totalDays=c.arrival&&c.departure?Math.round((c.departure-c.arrival)/86400000)+1:null;
   const det=c.detail||null;
   document.getElementById('md-continent').textContent=c.continent;
-  document.getElementById('md-title').textContent=c.camp_name;
+  document.getElementById('md-title').textContent=titleCase(c.camp_name);
   document.getElementById('md-country').innerHTML=`🗺️ &nbsp;${c.country}${c.state?' <span style="color:var(--muted);font-size:11px">— '+c.state+'</span>':''}`;
   const encLoc=det&&det.location?encodeURIComponent(det.location):'';
 

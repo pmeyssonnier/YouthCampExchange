@@ -21,6 +21,20 @@ function parseAge(s){
   return{min:vals[0],max:vals[vals.length-1]};
 }
 
+// affichage uniforme des noms de camps : chaque mot avec capitale initiale.
+// Les mots contenant un chiffre (29th, 118K, 2026) sont gardés tels quels,
+// les sigles connus restent en capitales. Les données ne sont pas modifiées.
+const NAME_ACRONYMS={yce:'YCE',md:'MD',lci:'LCI',usa:'USA',uk:'UK'};
+function titleCase(s){
+  if(!s)return s;
+  return s.split(' ').map(w=>{
+    if(/\d/.test(w))return w;
+    const key=w.toLowerCase().replace(/[^a-z]/g,'');
+    if(NAME_ACRONYMS[key])return w.replace(/[A-Za-z]+/,NAME_ACRONYMS[key]);
+    return w.toLowerCase().replace(/(^|[-'’(/])(\p{L})/gu,(m,p,ch)=>p+ch.toUpperCase());
+  }).join(' ');
+}
+
 const CAMPS=RAW.map((c,i)=>{
   const cs=parseDate(c.camp_starts),ce=parseDate(c.camp_ends);
   const fs=parseDate(c.family_stay_starts),fe=parseDate(c.family_stay_ends);

@@ -5,7 +5,7 @@
 (function(){
   const b=CAMPS.find(c=>c.country==='Belgium');
   if(!b)return;
-  document.getElementById('brx-name').textContent=b.camp_name;
+  document.getElementById('brx-name').textContent=titleCase(b.camp_name);
   if(b.detail&&b.detail.description)document.getElementById('brx-desc').textContent=b.detail.description.length>170?b.detail.description.slice(0,167)+'…':b.detail.description;
   const chips=[];
   chips.push(`👤 ${b.age_requirements} y/o`);

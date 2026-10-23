@@ -105,7 +105,7 @@ function renderTable(){
     const presPer=c.arrival&&c.departure?`<span style="color:var(--orange)">${fmtDate2(c.arrival)}</span><br><span class="dt">${fmtDate2(c.departure)}</span>`:'—';
     return`<tr class="clickable-row" data-idx="${c._idx}" onclick="showCampDetail(${c._idx})">
       <td><span class="badge ${bc}">${c.continent}</span></td>
-      <td>${c.country}</td><td class="dt" style="font-size:10px;color:var(--blue)">${c.state||''}</td><td class="camp-nm">${c.camp_name}</td>
+      <td>${c.country}</td><td class="dt" style="font-size:10px;color:var(--blue)">${c.state||''}</td><td class="camp-nm">${titleCase(c.camp_name)}</td>
       <td>${c.age_requirements}</td><td>${feeHtml}</td>
       <td class="dt">${campPer}</td><td class="dt">${famPer}</td><td class="dt">${presPer}</td>
     </tr>`;
@@ -123,7 +123,7 @@ function renderMobileCards(filtered){
     const seasHtml=c.season?`<span class="cc-chip cc-season">📅 ${c.season}</span>`:'';
     const famHtml=c.fs?`<div class="cc-date-row"><span class="cc-date-lbl">🏠 Family Stay</span><span class="cc-date-val">${fmtDate2(c.fs)} → ${fmtDate2(c.fe)}</span></div>`:'';
     return`<div class="camp-card" onclick="showCampDetail(${c._idx})">
-      <div class="mc-top"><div class="cc-name">${c.camp_name}</div><span class="badge ${bc}">${c.continent}</span></div>
+      <div class="mc-top"><div class="cc-name">${titleCase(c.camp_name)}</div><span class="badge ${bc}">${c.continent}</span></div>
       <div class="mc-ctry">${c.country}${c.state?' — '+c.state:''}</div>
       <div class="cc-row"><span class="cc-chip cc-age">👤 ${c.age_requirements}</span>${feeHtml}${seasHtml}</div>
       <div class="cc-dates"><div class="cc-date-row"><span class="cc-date-lbl">🏕️ Camp</span><span class="cc-date-val">${fmtDate2(c.cs)} → ${fmtDate2(c.ce)}</span></div>${famHtml}</div>
