@@ -3,11 +3,11 @@
 How to switch the whole platform (site, form filler, tracker) to a new YCE season.
 Everything derives from a handful of source files; the generated files are rebuilt by scripts.
 
-> **Shortcut:** the camp list itself is best maintained with `yce_camps.html`
-> (import the official LCI directory, review the proposed updates and new camps,
-> archive last season's camps, save — one commit). Steps 2, 3.1–3.3 and 4 can all be done from the browser with
-> `yce_admin.html` (season/year fields, coordinator editor, camp-list upload,
-> document uploads) — each save is a git commit and the rebuild Action replaces
+> **Shortcut:** everything below can be done from the browser in `yce_admin.html`.
+> The **Camps** tab maintains the camp list (import the official LCI directory, review
+> the proposed updates and new camps, archive last season's camps, save — one commit).
+> Steps 2, 3.1–3.3 and 4 are in the **Site & season** tab (season/year fields, coordinator
+> editor) and the **Documents** tab (document uploads) — each save is a git commit and the rebuild Action replaces
 > step 5 automatically. The manual procedure below remains the reference.
 
 ## 1. Collect the new camp list

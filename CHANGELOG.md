@@ -5,6 +5,13 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.2.0 — 2026-10-24
+
+- One administration page with three tabs — Site & season, Camps, Documents — sharing a single GitHub token: the passphrase is typed once per visit instead of once per page.
+- The camp manager is now the Camps tab (`yce_admin.html#camps`); the old `yce_camps.html` address redirects there. The duplicate "replace the camp list (JSON)" upload of the old admin page is gone: use "Import JSON backup" in the Camps tab.
+- Tool menu under the header of the form filler (admin mode), tracker, vault and administration pages; candidates and club presidents only see the link back to the site.
+- "Staff tools" link in the site footer.
+
 ## 1.1.0 — 2026-10-24
 
 - Official documents (reference application form, Commitment to Reciprocity, host-family letter, Commitment generation template) moved to the `documents/` folder; the site's download links, the form filler and the admin uploads follow.

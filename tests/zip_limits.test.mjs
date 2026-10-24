@@ -17,7 +17,7 @@ const br = await chromium.launch(launchOpts);
 let pass = 0, fail = 0;
 const ok = (c, m) => { if (c) pass++; else { fail++; console.log('FAIL:', m); } };
 
-for (const page of ['yce_form_filler.html', 'yce_tracker.html', 'yce_camps.html']) {
+for (const page of ['yce_form_filler.html', 'yce_tracker.html', 'yce_admin.html']) {
   const pg = await br.newPage(); const errs = [];
   pg.on('pageerror', e => errs.push(e.message));
   await pg.goto('http://localhost:8873/' + page, { waitUntil: 'load' }); await pg.waitForTimeout(600);

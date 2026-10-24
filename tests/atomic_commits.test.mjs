@@ -132,7 +132,7 @@ const lastLog = pg => pg.evaluate(() => document.querySelector('#log div').textC
 // ---- gestionnaire de camps : camps + archive dans UN commit ----
 {
   const st = makeRepo();
-  const { pg, ctx, errs } = await openPage('yce_camps.html', st);
+  const { pg, ctx, errs } = await openPage('yce_admin.html#camps', st);
   const n0 = await pg.evaluate(() => CAMPS_W.length);
   await pg.evaluate(() => { archiveCamp(0); });
   await pg.evaluate(() => saveSite()); await pg.waitForTimeout(1500);
