@@ -12,8 +12,9 @@ le site, les formulaires et les messages de commit sont en anglais.
   pour les utilisateurs et comment c'est testé.
 - Chaque PR augmente le numéro de version dans `js/version.js` (`MAJEUR.MINEUR.CORRECTIF` :
   correctif = correction, mineur = nouveauté, majeur = changement qui oblige à refaire quelque chose)
-  et ajoute en tête de `CHANGELOG.md` une entrée en anglais pour cette version. Le test `version`
-  vérifie que les deux concordent.
+  et ajoute en tête de `CHANGELOG.md` une entrée en anglais pour cette version, puis lancer
+  `python3 tools/stamp_version.py` (ajoute `?v=VERSION` aux scripts et styles de chaque page, pour
+  que les navigateurs ne gardent pas d'anciens fichiers en cache). Le test `version` vérifie le tout.
 - Une PR déjà fusionnée est terminée : la modification suivante repart de `main` dans une nouvelle PR.
 - Les commits automatiques sur `main` restent normaux : régénération par le robot
   (`Rebuild generated files [skip ci]`) et sauvegardes faites depuis les pages d'administration.

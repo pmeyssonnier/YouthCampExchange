@@ -12,7 +12,7 @@ const data = fs.readFileSync(ROOT + '/districts_data.js', 'utf8')
   .replace(/^const TEAM = .*;$/m, 'const TEAM = ' + JSON.stringify({ national: [{ name: 'Nina <img src=x onerror=alert(1)> National', role: 'President', club: 'LC N', email: 'nina@example.org', mobile: '+32 470 11 11 11' }], outgoing: [{ name: 'Oscar Out', role: 'Outgoing · Asia', club: 'LC O', email: 'javascript:alert(1)', mobile: '' }] }) + ';')
   .replace(/^const PAYMENT = .*;$/m, 'const PAYMENT = ' + JSON.stringify({ amount: '€150', iban: 'BE71 0961 2345 6769', bic: 'GKCCBEBB', beneficiary: 'Test <b>Beneficiary</b>', communication: 'Name · District' }) + ';');
 const ctx = await br.newContext();
-await ctx.route('**/districts_data.js', r => r.fulfill({ body: data, contentType: 'text/javascript' }));
+await ctx.route('**/districts_data.js?v=*', r => r.fulfill({ body: data, contentType: 'text/javascript' }));
 await ctx.route('**cdnjs.cloudflare.com/**', r => r.fulfill({ path: /topojson/.test(r.request().url()) ? CDN.topojson : CDN.d3, contentType: 'text/javascript' }));
 await ctx.route('**unpkg.com/world-atlas**', r => r.fulfill({ path: CDN.atlas, contentType: 'application/json' }));
 await ctx.route('**fonts.googleapis.com/**', r => r.fulfill({ body: '', contentType: 'text/css' }));

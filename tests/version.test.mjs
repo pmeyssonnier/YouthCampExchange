@@ -10,6 +10,14 @@ t.ok(/^\d+\.\d+\.\d+$/.test(v || ''), 'VERSION is MAJOR.MINOR.PATCH: ' + v);
 const top = (fs.readFileSync('../CHANGELOG.md', 'utf8').match(/^## (\d+\.\d+\.\d+)/m) || [])[1];
 t.ok(top === v, 'CHANGELOG.md top entry (' + top + ') matches js/version.js (' + v + ')');
 
+// Scripts et feuilles de style locaux portent ?v=VERSION (tools/stamp_version.py) : une nouvelle page
+// ne se mélange jamais avec d'anciens scripts restés dans le cache du navigateur.
+for (const f of fs.readdirSync('..').filter(f => f.endsWith('.html'))) {
+  const refs = [...fs.readFileSync('../' + f, 'utf8').matchAll(/(?:src|href)="((?![a-z]+:|\/)[^"#]+?\.(?:js|css)(?:\?[^"]*)?)"/g)].map(m => m[1]);
+  const bad = refs.filter(r => !r.endsWith('?v=' + v));
+  t.ok(!bad.length, f + ': ' + refs.length + ' local scripts/styles stamped ?v=' + v + (bad.length ? ' — not stamped: ' + bad.join(', ') + ' (run python3 tools/stamp_version.py)' : ''));
+}
+
 const srv = await serve(8879);
 const br = await chromium.launch(launchOpts);
 for (const p of ['index.html', 'yce_form_filler.html', 'yce_tracker.html', 'yce_admin.html', 'yce_vault.html']) {
