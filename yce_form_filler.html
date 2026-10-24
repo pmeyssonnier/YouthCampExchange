@@ -50,8 +50,15 @@ input:required:invalid{border-color:rgba(239,83,80,0.5);}
 .gen-btn:disabled{opacity:0.5;cursor:wait;}
 .tpl-btn{background:transparent;border:1px solid var(--border);border-radius:8px;padding:10px 16px;color:var(--muted);cursor:pointer;font-size:12px;font-family:inherit;}
 .tpl-btn:hover{border-color:var(--blue);color:var(--blue);}
+.tpl-btn.on{border-color:var(--gold);color:var(--gold);}
 #status{font-size:12px;color:var(--accent);flex:1;min-width:200px;}
 #status.err{color:var(--red);}
+@media(max-width:700px){
+  .footer-bar{padding:8px 12px;gap:8px;}
+  .gen-btn{flex:1 1 100%;padding:10px 16px;font-size:14px;}
+  .tpl-btn{padding:8px 10px;}
+  #status{font-size:11px;flex-basis:100%;min-width:0;}
+}
 .auto-note{background:rgba(6,214,160,0.06);border:1px solid rgba(6,214,160,0.25);border-radius:8px;padding:12px 16px;font-size:12px;color:var(--muted);margin-bottom:18px;line-height:1.6;}
 .auto-note b{color:var(--accent);}
 .auto-note code{font-family:monospace;color:var(--blue);font-size:11px;}
@@ -110,16 +117,13 @@ input.tel-bad{border-color:var(--red) !important;}
 </main>
 <div class="footer-bar">
   <button class="gen-btn" id="btn-gen" onclick="generate()">⬇ Generate the Excel file</button>
+  <button class="tpl-btn" id="opt-btn" style="display:none" aria-expanded="false" aria-controls="tpl-btn ctry-btn" onclick="adminOptions()" title="Load another template, default country">⚙ Admin options</button>
   <label class="tpl-btn" id="tpl-btn" style="display:none" title="By default the official blank 2026 template is embedded in this page. Load another version of the form here if needed.">
     📂 Other template… <input type="file" id="tpl-file" accept=".xlsx" style="display:none" onchange="loadTemplate(this)">
   </label>
   <button class="tpl-btn" onclick="clearForm()" title="Erase all entered data saved in this browser and restart with a blank form.">🗑 Clear form</button>
   <button class="tpl-btn" id="mail-btn" style="display:none;border-color:rgba(79,195,247,0.5);color:var(--blue);" onclick="mailPresident()">📧 E-mail my club president</button>
   <button class="tpl-btn" id="coord-btn" style="display:none;border-color:rgba(6,214,160,0.5);color:var(--accent);" onclick="mailCoordinator()">📧 E-mail the district coordinator</button>
-  <a class="tpl-btn" id="tracker-btn" href="yce_tracker.html" style="display:none;text-decoration:none;">📋 Applications tracker</a>
-  <a class="tpl-btn" id="camps-btn" href="yce_admin.html#camps" style="display:none;text-decoration:none;" title="Camp list manager: import the official YCE directory, edit camps, archive.">🏕 Camps</a>
-  <a class="tpl-btn" id="siteadmin-btn" href="yce_admin.html" style="display:none;text-decoration:none;" title="Edit season data, district coordinators, camp list and official documents — committed to GitHub.">⚙ Site admin</a>
-  <a class="tpl-btn" id="codemap-btn" href="docs/code_map.html" style="display:none;text-decoration:none;">🗺 Code map</a>
   <label class="tpl-btn" id="ctry-btn" style="display:none" title="Default country used to prefill nationality and format phone numbers. Can also be set per link with ?country=FR.">🌐 Country <select class="ctry-sel" id="ctry-sel" onchange="setCountry(this.value)"></select></label>
   <span id="status">Embedded template: Application_form_<span class="yr">2026</span>_MD112 (blank)</span>
 </div>

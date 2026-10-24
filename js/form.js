@@ -125,6 +125,13 @@ async function generate(){
   }finally{btn.disabled=false;}
 }
 
+// mode admin : affiche / replie "Other template" et "Country" dans la barre du bas
+function adminOptions(){
+  const b=document.getElementById("opt-btn"),open=b.getAttribute("aria-expanded")!=="true";
+  b.setAttribute("aria-expanded",String(open));b.classList.toggle("on",open);
+  ["tpl-btn","ctry-btn"].forEach(function(id){document.getElementById(id).style.display=open?"":"none";});
+}
+
 // -------------------- initialisation --------------------
 async function init(){
   render();initLists();sigInit();upd();
@@ -175,12 +182,9 @@ async function init(){
     root.style.display="none";
   }
   if(IS_ADMIN){
-    document.getElementById("tpl-btn").style.display="";
-    document.getElementById("ctry-btn").style.display="";
-    document.getElementById("tracker-btn").style.display="";
-    document.getElementById("siteadmin-btn").style.display="";
-    document.getElementById("camps-btn").style.display="";
-    document.getElementById("codemap-btn").style.display="";
+    // les liens vers le suivi, les camps et l'administration sont dans le menu des outils (js/toolnav.js) ;
+    // ici seulement les réglages propres au formulaire, repliés derrière un bouton
+    document.getElementById("opt-btn").style.display="";
     const sel=document.getElementById("ctry-sel");
     sel.innerHTML=COUNTRIES.map(function(c){return '<option value="'+c.code+'"'+(c.code===CTRY?' selected':'')+'>'+c.name+' ('+c.dial+')</option>';}).join("");
   }

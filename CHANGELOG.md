@@ -5,6 +5,11 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.4.2 — 2026-10-24
+
+- Form filler (admin mode): the bottom bar no longer repeats the tool menu — the "Applications tracker", "Camps", "Site admin" buttons are gone (use the menu under the header). "Other template" and "Country" are grouped behind an **⚙ Admin options** button. The code map link moved to the administration page's **?** help.
+- Smaller bottom bar on phones.
+
 ## 1.4.1 — 2026-10-24
 
 - Compact header on phones for the tool pages (form filler, tracker, vault, administration): smaller logo and title on a single line, subtitle hidden, buttons kept on the same line. The version number now sits next to the page title.
