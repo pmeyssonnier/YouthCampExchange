@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<!-- CSP : scripts et connexions limités aux seules sources utilisées par cette page (protège aussi les sessions et jetons stockés sur la même origine) -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-src 'none'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; script-src 'self' 'unsafe-inline'; connect-src 'self' https://api.github.com">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lions YCE — Site Administration — MD 112 Belgium</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
@@ -83,10 +85,10 @@ input:focus{border-color:var(--gold);}
     <div class="sec-head"><span class="sec-title">Administrator access</span><span class="sec-note">token is kept only in this browser</span></div>
     <div class="sec-body">
       <div class="fld w3" id="f-token"><label class="flbl">GitHub access token</label><input type="password" id="token" placeholder="github_pat_…"></div>
-      <div class="fld w1" id="f-pin"><label class="flbl" id="pin-lbl">PIN (4+ digits)</label><input type="password" id="pin" inputmode="numeric" placeholder="••••" onkeydown="if(event.key==='Enter')connect()"></div>
+      <div class="fld w1" id="f-pin"><label class="flbl" id="pin-lbl">Passphrase (8+ characters)</label><input type="password" id="pin" placeholder="8+ characters" autocomplete="current-password" onkeydown="if(event.key==='Enter')connect()"></div>
       <div class="fld w1" style="justify-content:flex-end"><button class="btn" id="connect" onclick="connect()">Connect</button></div>
       <div class="fld w1" style="justify-content:flex-end"><button class="btn2" onclick="logout()">Forget on this device</button></div>
-      <div class="fld w6"><span class="hint" id="access-hint">First time: paste the token and choose a PIN — the token is then stored <b>encrypted with your PIN</b> on this device, and next visits only ask for the PIN. Without a PIN the token is not remembered.</span></div>
+      <div class="fld w6"><span class="hint" id="access-hint">First time: paste the token and choose a passphrase of at least 8 characters — the token is then stored <b>encrypted with your passphrase</b> on this device, and next visits only ask for the passphrase.</span></div>
     </div>
   </div>
 

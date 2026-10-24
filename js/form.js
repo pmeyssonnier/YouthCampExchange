@@ -214,5 +214,6 @@ async function init(){
   await syncFromTemplate(templateBuf||b64ToBuf(TEMPLATE_B64));
   applyCountry();
   commitShow();
+  if(DRAFT_INFO)setStatus(document.getElementById("status").textContent+"  ·  "+DRAFT_INFO,false);
 }
 init();

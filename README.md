@@ -63,15 +63,17 @@ camps.json                            GENERATED — plain-JSON export of the cam
 yce_form_filler.html                  form filler HTML shell (loads the js/ modules below)
 yce_tracker.html                      tracker HTML shell
 yce_camps.html                        camp manager HTML shell
-camps_archive.json                    archived camps (written by the camp manager)
+yce_vault.html                        application vault HTML shell (Supabase — disabled until configured, see docs/VAULT_SETUP.md)
+camps_archive.json                    archived camps — created by the camp manager at the first archive, absent until then
 js/
-  site-data.js                        site: date helpers, CAMPS enrichment, season stats
+  site-data.js                        site: date helpers, CAMPS enrichment, season stats, HTML escaping (esc/safeUrl/cleanHtml)
   site-explorer.js                    site: camp directory (filters, sort, table, tabs)
   site-map.js                         site: D3 world map (bubbles, zooms, country panel)
   site-modal.js                       site: camp detail modal + timeline
   site-ui.js                          site: theme, mobile nav, scroll-reveal — loaded last
   assets.js                           GENERATED — embedded templates (base64) + build version
-  xlsx.js                             zip library + workbook cell read/write
+  zip.js                              bounded ZIP reading shared by every page (limits against booby-trapped archives)
+  xlsx.js                             ZIP writing + workbook cell read/write
   docx.js                             Commitment: text, validation, signed Word generation
   signatures.js                       signature pads + pasting signatures into the workbook
   attachments.js                      pass photo & payment proof
@@ -82,12 +84,16 @@ js/
   country.js                          default country, dial codes, phone normalisation
   render.js                           section/widget rendering, X-groups, counter
   form.js                             orchestration: generate() and init() — loaded last
-  admin-core.js                       shared admin plumbing: PIN-encrypted token, GitHub API, connect
+  admin-core.js                       shared admin plumbing: passphrase-encrypted token, GitHub API, atomic commits
   admin.js                            site administration page logic
   camps-manager.js                    camp manager: directory import, editing, backups, archive
   tracker-storage.js / -parser.js / -export.js / -ui.js   tracker modules
+  vault-api.js / vault.js             application vault: Supabase access layer + interface
+supabase/vault_schema.sql             vault database: tables, row-level security, workflow, retention
+tests/                                security & regression tests (npm test), run by GitHub Actions on every push
 tools/
   build_assets.py                     regenerates js/assets.js from the templates below
+  build_codemap.py                    regenerates docs/codemap-data.js and docs/CODE_MAP.md
   commit_template.docx                Commitment template with §CAND§/§DATE§/[BODY]/[SIG*] markers
 Application_form_2026_MD112.xlsx      single neutral reference form (embedded via js/assets.js, downloadable)
 Commitment to Reciprocity.docx        official reciprocity contract (downloadable)
@@ -99,7 +105,9 @@ assets/                               logos & favicon
 
 The filler and tracker are plain-JavaScript **classic scripts sharing the global scope**, loaded in dependency order by their HTML shells; every module is directly editable in the repository. Only `js/assets.js` is generated — run `python3 tools/build_assets.py` after changing the blank form or the Commitment template.
 
-A detailed code map (modules, business functions with line numbers and sizes, dependency graphs) is maintained in [`docs/CODE_MAP.md`](docs/CODE_MAP.md).
+A code map (modules, business functions, sizes, dependencies) is **generated** at every push in [`docs/CODE_MAP.md`](docs/CODE_MAP.md), with an interactive version in `docs/code_map.html`.
+
+**Tests**: `cd tests && npm ci && npx playwright install chromium && npm test` — XSS escaping with booby-trapped data, ZIP bombs, admin token handling, atomic commits, vault access rules on a real PostgreSQL, and every page loading without script error or CSP violation. The `Tests` GitHub Action runs them on every push.
 
 ## International deployments
 
@@ -117,13 +125,14 @@ need no fork at all: a registrar-level redirect to the canonical domain is enoug
 The platform stays server-less: **GitHub is the back end**. The admin page edits the
 repository through the GitHub API — the administrator "account" is a GitHub account
 with write access plus a fine-grained personal access token (this repository only,
-permission *Contents: Read and write*; the token never leaves the admin's browser).
+permission *Contents: Read and write*; the token never leaves the admin's browser, where it is
+stored only encrypted with a passphrase of 8+ characters).
 From the page you can change the season label and camp year, the district YCE
 coordinators (form stamping + site cards + e-mails follow), replace the whole camp
 list from a JSON file, edit the home-page announcement banner, manage the animated
 photo gallery (images are resized and committed to `assets/gallery/`), and upload
 new official documents (reference form, Commitment,
-host-family letter, generation template). Every save is a commit on `main`; the
+host-family letter, generation template). Every save is **one atomic commit** on `main` (all files or nothing; a file changed on GitHub in the meantime is never overwritten); the
 `Rebuild generated files` GitHub Action then regenerates `js/assets.js`, `camps.json`
 and the code-map data, and GitHub Pages republishes the site — live in 2–3 minutes,
 with the full change history in git.
@@ -132,9 +141,10 @@ with the full change history in git.
 
 - **Zero dependencies at runtime** for the filler and tracker: zip read/write is implemented in plain JavaScript (uncompressed embedded templates + the browser's native `CompressionStream`/`DecompressionStream`); the Excel/Word files are edited at the XML level, which preserves their formatting and formulas exactly. The public site uses D3/TopoJSON from CDN for the world map.
 - Values are written as cells (`inlineStr`/numeric), X-choices as `X` marks, signatures and photo as anchored images; `fullCalcOnLoad` makes Excel refresh the computed cells on open.
+- **Security**: every page carries a Content-Security-Policy limiting scripts and network destinations to what it uses; camp and configuration data are always escaped before display; archives are read within size/count/ratio limits.
 - The build version is shown in the filler header (`vYYYY.MM.DD-commit`) to spot stale browser caches.
 - **Season update**: replace `SEASON`/`RAW`/`YEAR`/`DISTRICTS` in `camps_data.js`, update the single reference form, and run `python3 tools/build_assets.py` — it also re-exports `camps.json` (the plain-JSON version of the camp data, for Excel or any external tool). The complete annual checklist is in [`docs/SEASON_UPDATE.md`](docs/SEASON_UPDATE.md).
 
 ## Privacy
 
-Candidate data is only ever inside: the browser's local storage (on the device used), the generated files, and the e-mails the candidate chooses to send. Nothing is uploaded to any server. The blank template embedded in the filler was sanitized (all personal data of the original example removed).
+Candidate data is only ever inside: the browser's local storage (on the device used — erased after 30 days without change, or at once with *Clear form*), the generated files, and the e-mails the candidate chooses to send. Nothing is uploaded to any server (the vault, once configured, is the only exception — see `docs/VAULT_SETUP.md`). The blank template embedded in the filler was sanitized (all personal data of the original example removed).

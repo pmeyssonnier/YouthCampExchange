@@ -8,8 +8,8 @@
   document.getElementById('brx-name').textContent=titleCase(b.camp_name);
   if(b.detail&&b.detail.description)document.getElementById('brx-desc').textContent=b.detail.description.length>170?b.detail.description.slice(0,167)+'…':b.detail.description;
   const chips=[];
-  chips.push(`👤 ${b.age_requirements} y/o`);
-  if(b.fee)chips.push(b.fee.startsWith('0')?'💰 FREE':`💰 ${b.fee}`);
+  chips.push(`👤 ${esc(b.age_requirements)} y/o`);
+  if(b.fee)chips.push(b.fee.startsWith('0')?'💰 FREE':`💰 ${esc(b.fee)}`);
   if(b.cs&&b.ce)chips.push(`🏕 ${fmtDate2(b.cs)} → ${fmtDate2(b.ce)}`);
   document.getElementById('brx-meta').innerHTML=chips.map(c=>`<span class="brx-chip">${c}</span>`).join('');
 })();
@@ -17,23 +17,25 @@
 // home page personalisation from the SITE constant + animated gallery (districts_data.js)
 (function(){
   if(typeof SITE==='undefined')return;
-  const set=(id,v)=>{if(!v)return;const e=document.getElementById(id);if(e)e.innerHTML=v;};
+  const set=(id,v)=>{if(!v)return;const e=document.getElementById(id);if(e)e.innerHTML=cleanHtml(v);};
   set('announce',SITE.announce);
   if(SITE.label)set('nav-sub','Youth Camp & Exchange — '+SITE.label);
   set('nav-welcome',SITE.welcomeNav);
   set('hero-title',SITE.heroTitle);set('hero-lead',SITE.heroLead);
   set('brx-kicker',SITE.welcomeKicker);set('brx-title',SITE.welcomeTitle);set('brx-text',SITE.welcomeText);
   set('brx-btn',SITE.welcomeButton);set('gal-title',SITE.galleryTitle);
-  if(typeof MD!=='undefined')set('foot-desc','Youth Camp & Exchange — Multiple District '+MD+' '+MD_COUNTRY+'.<br>Part of Lions Clubs International youth programs.');
+  if(typeof MD!=='undefined')set('foot-desc','Youth Camp & Exchange — Multiple District '+esc(MD)+' '+esc(MD_COUNTRY)+'.<br>Part of Lions Clubs International youth programs.');
   set('foot-addr',SITE.address);
-  if(SITE.phone)set('foot-phone','📞 <a href="tel:'+SITE.phone.replace(/[^+\d]/g,'')+'">'+SITE.phone+'</a>');
+  if(SITE.phone)set('foot-phone','📞 <a href="tel:'+SITE.phone.replace(/[^+\d]/g,'')+'">'+esc(SITE.phone)+'</a>');
   if(SITE.welcomeList&&SITE.welcomeList.length){
     const u=document.getElementById('brx-list');
-    if(u)u.innerHTML=SITE.welcomeList.map(x=>'<li>'+x+'</li>').join('');
+    if(u)u.innerHTML=SITE.welcomeList.map(x=>'<li>'+cleanHtml(x)+'</li>').join('');
   }
   if(typeof GALLERY!=='undefined'&&GALLERY.length){
     document.getElementById('gallery').style.display='';
-    const card=g=>`<figure class="gal-card"><img src="${g.src}" alt="${(g.caption||'').replace(/"/g,'&quot;')}" loading="lazy"><figcaption class="gal-cap">${g.caption||''}</figcaption></figure>`;
+    // image du dépôt (chemin relatif) ou https uniquement
+    const imgSrc=s=>{s=String(s||'');return /^[\w./-]+$/.test(s)&&s.indexOf('..')<0?s:safeUrl(s);};
+    const card=g=>{const src=imgSrc(g.src);return src?`<figure class="gal-card"><img src="${esc(src)}" alt="${esc(g.caption||'')}" loading="lazy"><figcaption class="gal-cap">${esc(g.caption||'')}</figcaption></figure>`:'';};
     const html=GALLERY.map(card).join('');
     const few=GALLERY.length<4; // trop peu d'images pour un défilement : grille fixe
     document.getElementById('gal-strip').classList.toggle('static',few);
@@ -47,12 +49,12 @@
   if(!g||typeof DISTRICTS==='undefined')return;
   g.innerHTML=Object.keys(DISTRICTS).map(d=>{
     const c=DISTRICTS[d];
-    return `<div class="dist-card reveal"><span class="dist-tag">District ${MD} ${d}</span>`
-      +`<h4>${c.name}</h4><div class="dist-club">${c.club||''}</div>`
-      +`<a href="tel:${c.mobile.replace(/[^+\d]/g,'')}">📞 ${c.mobile}</a>`
-      +`<a href="mailto:${c.email}">✉️ ${c.email}</a>`
-      +`<a href="yce_form_filler.html?district=${d}&download">📥 Download form District ${d} (XLSX)</a>`
-      +`<a href="yce_form_filler.html?district=${d}">✍️ Fill in the form online</a></div>`;
+    return `<div class="dist-card reveal"><span class="dist-tag">District ${esc(MD)} ${esc(d)}</span>`
+      +`<h4>${esc(c.name)}</h4><div class="dist-club">${esc(c.club||'')}</div>`
+      +`<a href="tel:${esc((c.mobile||'').replace(/[^+\d]/g,''))}">📞 ${esc(c.mobile)}</a>`
+      +(safeMail(c.email)?`<a href="mailto:${esc(safeMail(c.email))}">✉️ ${esc(c.email)}</a>`:'')
+      +`<a href="yce_form_filler.html?district=${encodeURIComponent(d)}&download">📥 Download form District ${esc(d)} (XLSX)</a>`
+      +`<a href="yce_form_filler.html?district=${encodeURIComponent(d)}">✍️ Fill in the form online</a></div>`;
   }).join('');
 })();
 

@@ -1,38 +1,7 @@
 // tracker-parser.js — lecture des fichiers reçus (zip, formulaire xlsx, commitment docx, pièces)
 // Chargé par yce_tracker.html ; scripts classiques partageant la portée globale.
 "use strict";
-// ---------------- mini zip reader (STORE + DEFLATE via DecompressionStream) ----------------
-async function inflateRaw(u8){
-  const ds=new DecompressionStream("deflate-raw");
-  return new Uint8Array(await new Response(new Blob([u8]).stream().pipeThrough(ds)).arrayBuffer());}
-async function unzip(buf){
-  const u8=new Uint8Array(buf), dv=new DataView(buf);
-  let eocd=-1;
-  for(let i=u8.length-22;i>=Math.max(0,u8.length-22-65536);i--){
-    if(dv.getUint32(i,true)===0x06054b50){eocd=i;break;}}
-  if(eocd<0)throw new Error("invalid file (not a zip)");
-  const count=dv.getUint16(eocd+10,true);
-  let off=dv.getUint32(eocd+16,true);
-  const entries=[];const td=new TextDecoder();
-  for(let n=0;n<count;n++){
-    if(dv.getUint32(off,true)!==0x02014b50)throw new Error("corrupted central directory");
-    const method=dv.getUint16(off+10,true);
-    const csize=dv.getUint32(off+20,true);
-    const nameLen=dv.getUint16(off+28,true);
-    const extraLen=dv.getUint16(off+30,true);
-    const cmtLen=dv.getUint16(off+32,true);
-    const lho=dv.getUint32(off+42,true);
-    const name=td.decode(u8.subarray(off+46,off+46+nameLen));
-    const lnl=dv.getUint16(lho+26,true), lel=dv.getUint16(lho+28,true);
-    const start=lho+30+lnl+lel;
-    let data=u8.slice(start,start+csize);
-    if(method===8)data=await inflateRaw(data);
-    else if(method!==0)throw new Error("unsupported compression: "+method);
-    entries.push({name:name,data:data});
-    off+=46+nameLen+extraLen+cmtLen;
-  }
-  return entries;
-}
+// lecture des archives : unzip() de js/zip.js (bornée contre les archives piégées)
 function decodeEnt(s){return s.replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&#(\d+);/g,function(m,d){return String.fromCharCode(+d);}).replace(/&amp;/g,"&");}
 function textOf(inner){let out="";const re=/<t[^>]*>([\s\S]*?)<\/t>/g;let m;while((m=re.exec(inner)))out+=m[1];return decodeEnt(out);}
 function parseShared(entries){

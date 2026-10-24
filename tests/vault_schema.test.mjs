@@ -1,12 +1,11 @@
-// Test des règles d'accès et du circuit du coffre sur un vrai PostgreSQL 16 embarqué (PGlite),
-// avec les rôles et fonctions de Supabase reproduits (anon/authenticated, auth.jwt(), storage).
-// Lancer depuis un dossier de travail :  npm i @electric-sql/pglite@0.2.17
-//                                         node <chemin>/supabase/test_vault_schema.mjs
+import { ROOT } from './helpers.mjs';
+// Teste supabase/vault_schema.sql sur PostgreSQL 16 (PGlite) avec les rôles et
+// helpers de Supabase reproduits : anon/authenticated, auth.jwt(), storage.*.
 import { PGlite } from '@electric-sql/pglite';
 import fs from 'fs';
 
 const db = new PGlite();
-const SQL = fs.readFileSync(new URL('./vault_schema.sql', import.meta.url), 'utf8');
+const SQL = fs.readFileSync(ROOT + '/supabase/vault_schema.sql', 'utf8');
 
 await db.exec(`
   create role anon nologin; create role authenticated nologin;

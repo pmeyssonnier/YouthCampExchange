@@ -1,13 +1,20 @@
 // tracker-export.js — export CSV pour Excel
 // Chargé par yce_tracker.html ; scripts classiques partageant la portée globale.
 "use strict";
+// Une cellule commençant par = + - @ (ou tabulation / retour) serait exécutée comme formule
+// par Excel : préfixée d'une apostrophe. Les valeurs purement numériques (« +32 470 12 34 56 »)
+// ne peuvent appeler aucune fonction et restent intactes.
+function csvSafe(v){
+  const s=String(v==null?"":v);
+  return /^[=+\-@\t\r]/.test(s)&&!/^[+-]?[\d\s().\/-]+$/.test(s)?"'"+s:s;
+}
 function exportCsv(){
   const cols=["District","Family name","First name","Sex","Date of birth","Age 01/07/"+YEAR,"Club","E-mail","Mobile",
     "1st choice","2nd choice","3rd choice","Sig applicant","Sig parent","Sig club","Commitment","Commitment club-signed",
     "Photo","Payment proof","Host-family letter","Fields %","Missing fields","Status","Notes","Updated"];
   const lines=[cols.join(";")];
   Object.keys(ROWS).forEach(function(k){const r=ROWS[k];
-    const c=function(v){return '"'+String(v==null?"":v).replace(/"/g,'""')+'"';};
+    const c=function(v){return '"'+csvSafe(v).replace(/"/g,'""')+'"';};
     lines.push([MD+" "+r.dist,r.fam,r.fir,r.sex,r.dob,r.age,r.club,r.email,r.mobile,r.pref1,r.pref2,r.pref3,
       r.sigA?"yes":"no",r.sigP?"yes":"no",r.sigC?"yes":"no",r.commit?"yes":"no",r.commitClub?"yes":"no",
       r.photo?"yes":"no",r.pay?"yes":"no",r.letter?"yes":"no",r.pct,(r.missing||[]).join(", "),r.status,r.notes,r.updated].map(c).join(";"));

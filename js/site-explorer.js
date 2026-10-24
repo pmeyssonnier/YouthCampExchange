@@ -13,7 +13,7 @@ function initSeasonPills(){
   const el=document.getElementById('seas-pills');if(!el)return;
   const counts={};CAMPS.forEach(c=>{if(c.season)counts[c.season]=(counts[c.season]||0)+1;});
   el.innerHTML=Object.keys(counts).sort().map(s=>
-    `<div class="pill" data-ss="${s}" onclick="toggleSeason('${s}')">${s} <span style="opacity:0.6">${counts[s]}</span></div>`
+    `<div class="pill" data-ss="${esc(s)}" onclick="toggleSeason(${jsArg(s)})">${esc(s)} <span style="opacity:0.6">${counts[s]}</span></div>`
   ).join('');
 }
 function toggleSeason(s){
@@ -40,9 +40,9 @@ function renderStateList(){
   section.style.display='';hr.style.display='';
   const ss=document.getElementById('sel-state');if(ss)ss.textContent=selStates.size?'· '+selStates.size+' selected':'';
   document.getElementById('s-list').innerHTML=states.map(s=>
-    `<div class="mitem ${selStates.has(s)?'on':''}" onclick="toggleState('${escQ(s)}')">
+    `<div class="mitem ${selStates.has(s)?'on':''}" onclick="toggleState(${jsArg(s)})">
       <div class="chk ${selStates.has(s)?'on':''}">✓</div>
-      <span>${s}</span><span class="mcount">${counts[s]}</span>
+      <span>${esc(s)}</span><span class="mcount">${counts[s]}</span>
     </div>`
   ).join('');
 }
@@ -100,14 +100,14 @@ function renderTable(){
   const isFreeStr=f=>f&&(f.startsWith('0 ')||f==='0');
   tbody.innerHTML=filtered.map(c=>{
     const bc=CONT_COLORS[c.continent]||'b-Asia';
-    const feeHtml=isFreeStr(c.fee)?'<span class="fee-v free">FREE</span>':`<span class="fee-v">${c.fee||'—'}</span>`;
+    const feeHtml=isFreeStr(c.fee)?'<span class="fee-v free">FREE</span>':`<span class="fee-v">${esc(c.fee||'—')}</span>`;
     const campPer=c.cs&&c.ce?`<span class="dt-accent">${fmtDate(c.camp_starts)}</span><br><span class="dt">${fmtDate(c.camp_ends)}</span>`:'—';
     const famPer=c.fs?`<span class="dt-accent">${fmtDate(c.family_stay_starts)}</span><br><span class="dt">${fmtDate(c.family_stay_ends)}</span>`:'<span class="dt">—</span>';
     const presPer=c.arrival&&c.departure?`<span style="color:var(--orange)">${fmtDate2(c.arrival)}</span><br><span class="dt">${fmtDate2(c.departure)}</span>`:'—';
     return`<tr class="clickable-row" data-idx="${c._idx}" onclick="showCampDetail(${c._idx})">
-      <td><span class="badge ${bc}">${c.continent}</span></td>
-      <td>${c.country}</td><td class="dt" style="font-size:10px;color:var(--blue)">${c.state||''}</td><td class="camp-nm">${titleCase(c.camp_name)}</td>
-      <td>${c.age_requirements}</td><td>${feeHtml}</td>
+      <td><span class="badge ${bc}">${esc(c.continent)}</span></td>
+      <td>${esc(c.country)}</td><td class="dt" style="font-size:10px;color:var(--blue)">${esc(c.state||'')}</td><td class="camp-nm">${esc(titleCase(c.camp_name))}</td>
+      <td>${esc(c.age_requirements)}</td><td>${feeHtml}</td>
       <td class="dt">${campPer}</td><td class="dt">${famPer}</td><td class="dt">${presPer}</td>
     </tr>`;
   }).join('');
@@ -120,13 +120,13 @@ function renderMobileCards(filtered){
   const isFreeStr=f=>f&&(f.startsWith('0 ')||f==='0');
   mc.innerHTML=filtered.map(c=>{
     const bc=CONT_COLORS[c.continent]||'b-Asia';
-    const feeHtml=isFreeStr(c.fee)?'<span class="cc-chip cc-free">FREE</span>':(c.fee?`<span class="cc-chip cc-fee">${c.fee}</span>`:'');
-    const seasHtml=c.season?`<span class="cc-chip cc-season">📅 ${c.season}</span>`:'';
+    const feeHtml=isFreeStr(c.fee)?'<span class="cc-chip cc-free">FREE</span>':(c.fee?`<span class="cc-chip cc-fee">${esc(c.fee)}</span>`:'');
+    const seasHtml=c.season?`<span class="cc-chip cc-season">📅 ${esc(c.season)}</span>`:'';
     const famHtml=c.fs?`<div class="cc-date-row"><span class="cc-date-lbl">🏠 Family Stay</span><span class="cc-date-val">${fmtDate2(c.fs)} → ${fmtDate2(c.fe)}</span></div>`:'';
     return`<div class="camp-card" onclick="showCampDetail(${c._idx})">
-      <div class="mc-top"><div class="cc-name">${titleCase(c.camp_name)}</div><span class="badge ${bc}">${c.continent}</span></div>
-      <div class="mc-ctry">${c.country}${c.state?' — '+c.state:''}</div>
-      <div class="cc-row"><span class="cc-chip cc-age">👤 ${c.age_requirements}</span>${feeHtml}${seasHtml}</div>
+      <div class="mc-top"><div class="cc-name">${esc(titleCase(c.camp_name))}</div><span class="badge ${bc}">${esc(c.continent)}</span></div>
+      <div class="mc-ctry">${esc(c.country)}${c.state?' — '+esc(c.state):''}</div>
+      <div class="cc-row"><span class="cc-chip cc-age">👤 ${esc(c.age_requirements)}</span>${feeHtml}${seasHtml}</div>
       <div class="cc-dates"><div class="cc-date-row"><span class="cc-date-lbl">🏕️ Camp</span><span class="cc-date-val">${fmtDate2(c.cs)} → ${fmtDate2(c.ce)}</span></div>${famHtml}</div>
     </div>`;
   }).join('');
@@ -138,15 +138,15 @@ function renderFilterChips(){
   if(scont)scont.textContent=selContinents.size?'· '+selContinents.size+' selected':'';
   const bar=document.getElementById('f-chips');if(!bar)return;
   const parts=[];
-  selSeasons.forEach(s=>parts.push([`🗓️ <b>${s}</b>`,()=>toggleSeason(s)]));
-  selContinents.forEach(c=>parts.push([`🌍 <b>${c}</b>`,()=>toggleContinent(c)]));
-  selCountries.forEach(c=>parts.push([`🗺️ <b>${c}</b>`,()=>toggleCountry(c)]));
-  selStates.forEach(s=>parts.push([`📍 <b>${s}</b>`,()=>toggleState(s)]));
+  selSeasons.forEach(s=>parts.push([`🗓️ <b>${esc(s)}</b>`,()=>toggleSeason(s)]));
+  selContinents.forEach(c=>parts.push([`🌍 <b>${esc(c)}</b>`,()=>toggleContinent(c)]));
+  selCountries.forEach(c=>parts.push([`🗺️ <b>${esc(c)}</b>`,()=>toggleCountry(c)]));
+  selStates.forEach(s=>parts.push([`📍 <b>${esc(s)}</b>`,()=>toggleState(s)]));
   if(filterAge!==null)parts.push([`👤 <b>${filterAge} y</b>`,()=>{document.getElementById('age-in').value='';applyFilters();}]);
   if(periodType!=='none'&&periodRange){
     const sel=document.getElementById('p-sel');
     const o=sel._opts&&sel._opts[+sel.value];
-    parts.push([`📅 <b>${o?o.label:'Period'}</b>`,()=>setPeriodType('none')]);
+    parts.push([`📅 <b>${esc(o?o.label:'Period')}</b>`,()=>setPeriodType('none')]);
   }
   window._fchip=parts.map(p=>p[1]);
   bar.innerHTML=parts.map((p,i)=>`<button class="m-chip" onclick="_fchip[${i}]()">${p[0]}<span class="x">✕</span></button>`).join('');
@@ -168,7 +168,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeFilters();});
 function initContinentPills(){
   const counts={};CAMPS.forEach(c=>counts[c.continent]=(counts[c.continent]||0)+1);
   document.getElementById('cont-pills').innerHTML=CONT_ORDER.filter(ct=>counts[ct]).map(ct=>
-    `<div class="pill" data-ct="${ct}" onclick="toggleContinent('${ct}')">${ct} <span style="opacity:0.6">${counts[ct]}</span></div>`
+    `<div class="pill" data-ct="${esc(ct)}" onclick="toggleContinent(${jsArg(ct)})">${esc(ct)} <span style="opacity:0.6">${counts[ct]}</span></div>`
   ).join('');
 }
 
@@ -188,8 +188,8 @@ function renderCountryList(){
   const el=document.getElementById('c-list');
   if(!countries.length){el.innerHTML=`<div class="mitem" style="color:var(--muted)">No countries found</div>`;return;}
   el.innerHTML=countries.map(c=>
-    `<div class="mitem ${selCountries.has(c)?'on':''}" onclick="toggleCountry('${escQ(c)}')">
-      <div class="chk ${selCountries.has(c)?'on':''}">✓</div><span>${c}</span><span class="mcount">${counts[c]}</span>
+    `<div class="mitem ${selCountries.has(c)?'on':''}" onclick="toggleCountry(${jsArg(c)})">
+      <div class="chk ${selCountries.has(c)?'on':''}">✓</div><span>${esc(c)}</span><span class="mcount">${counts[c]}</span>
     </div>`
   ).join('');
 }

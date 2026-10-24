@@ -6,16 +6,20 @@ The visualisation docs/code_map.html reads the generated file.
 """
 import json, os, re, subprocess, datetime
 
-FILLER = ["js/assets.js", "js/xlsx.js", "js/docx.js", "js/signatures.js",
+FILLER = ["js/assets.js", "js/zip.js", "js/xlsx.js", "js/docx.js", "js/signatures.js",
           "js/attachments.js", "js/storage.js", "js/email.js",
           "js/club-signing.js", "js/sections.js", "js/country.js",
           "js/render.js", "js/form.js"]
-TRACKER = ["js/tracker-storage.js", "js/tracker-parser.js",
+TRACKER = ["js/zip.js", "js/tracker-storage.js", "js/tracker-parser.js",
            "js/tracker-export.js", "js/tracker-ui.js"]
+VAULT = ["js/zip.js", "js/vault-api.js", "js/vault.js"]
 
 ROLES = {
     "js/assets.js": "GENERATED — embedded templates (base64) + build version",
-    "js/xlsx.js": "zip library + workbook cell read/write",
+    "js/zip.js": "bounded ZIP reading (limits against booby-trapped archives) — shared",
+    "js/xlsx.js": "ZIP writing + workbook cell read/write",
+    "js/vault-api.js": "vault: the only layer talking to Supabase",
+    "js/vault.js": "vault UI: sign-in, dashboard, file, signatures, team, retention",
     "js/docx.js": "Commitment: text, validation, signed Word generation",
     "js/signatures.js": "signature pads + pasting signatures into the workbook",
     "js/attachments.js": "pass photo & payment proof",
@@ -33,7 +37,10 @@ ROLES = {
 }
 
 FN_ROLES = {
-    "unzip": "parse a zip into [{name,data}]", "buildZip": "rebuild a zip Blob",
+    "unzip": "parse a zip into [{name,data}] within ZIP_LIMITS", "zipDirectory": "validated central directory, no decompression",
+    "zipNames": "file names of an archive without decompressing", "ZIP_LIMITS": "entries / size / ratio caps",
+    "csvSafe": "neutralise spreadsheet formulas in CSV cells", "commitFiles": "atomic multi-file commit (Git Data API)",
+    "validDmy": "real calendar date check", "DRAFT_MAX_DAYS": "local draft expiry", "buildZip": "rebuild a zip Blob",
     "crc32": "CRC-32 for zip writing", "inflateRaw": "native inflate", "deflateRaw": "native deflate",
     "getCellValue": "read one cell", "getCell": "read one cell", "setCell": "write/clear one cell keeping style",
     "parseShared": "sharedStrings table", "textOf": "concat <t> runs", "decodeEnt": "XML entities",
@@ -117,7 +124,7 @@ site = {"file": "index.html", "lines": len(open("index.html").read().split("\n")
         "blocks": [
             {"name": _fl("index.html"), "role": "HTML shell: nav · hero · program · explorer · Brussels · apply · testimonials · team · footer"},
             {"name": _fl("css/site.css"), "role": "site + explorer + map + modal styles, light/dark, responsive"},
-            {"name": _fl("js/site-data.js"), "role": "date helpers, CAMPS enrichment, season stats, camp counts"},
+            {"name": _fl("js/site-data.js"), "role": "date helpers, CAMPS enrichment, season stats, HTML escaping (esc / jsArg / safeUrl / cleanHtml)"},
             {"name": _fl("js/site-explorer.js"), "role": "directory: getFiltered/getSorted/renderTable + all filters, tabs"},
             {"name": _fl("js/site-map.js"), "role": "world map (D3): initMap/renderWorldBubbles/zoomContinent/zoomCountry/showCountryCamps"},
             {"name": _fl("js/site-modal.js"), "role": "camp detail modal: showCampDetail/buildTimeline"},
@@ -138,7 +145,8 @@ data_files = [{"file": f, "bytes": os.path.getsize(f), "role": r} for f, r in [
     ("supabase/vault_schema.sql", "vault database: tables, row-level security, workflow, retention"),
     ("docs/VAULT_SETUP.md", "vault setup guide (Supabase project, SMTP, GDPR)"),
     ("tools/build_assets.py", "regenerates js/assets.js"),
-    ("tools/build_codemap.py", "regenerates this visualisation's data"),
+    ("tools/build_codemap.py", "regenerates this visualisation's data and docs/CODE_MAP.md"),
+    ("tests/", "security & regression tests run by GitHub Actions (npm test)"),
     ("tools/commit_template.docx", "Commitment template (markers)"),
 ]]
 
@@ -146,10 +154,54 @@ sha = subprocess.run(["git", "rev-parse", "--short", "HEAD"],
                      capture_output=True, text=True).stdout.strip() or "local"
 codemap = {"generated": datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"),
            "commit": sha,
-           "filler": pack(FILLER), "tracker": pack(TRACKER),
+           "filler": pack(FILLER), "tracker": pack(TRACKER), "vault": pack(VAULT),
            "site": site, "data": data_files}
 
 with open("docs/codemap-data.js", "w") as f:
     f.write("// FICHIER GENERE — python3 tools/build_codemap.py\n")
     f.write("const CODEMAP=" + json.dumps(codemap, ensure_ascii=False) + ";\n")
 print("docs/codemap-data.js written,", sha)
+
+# ---------- docs/CODE_MAP.md : même contenu, lisible sur GitHub (généré, ne pas éditer) ----------
+PAGES = [
+    ("index.html", "public site: programme, camp directory + world map, how to apply, district contacts"),
+    ("yce_form_filler.html", "candidate form → Excel AF + Commitment + ZIP; ?sign=club / ?sign=district countersigning; ?district=X"),
+    ("yce_tracker.html", "district coordinator tracker: drop received ZIPs, completeness, CSV export"),
+    ("yce_admin.html", "administration: season, coordinators, home page, gallery, documents (commits to GitHub)"),
+    ("yce_camps.html", "camp manager: import the YCE directory, edit, archive, JSON backup (commits to GitHub)"),
+    ("yce_vault.html", "application vault (Supabase): central storage, sign-off workflow, retention"),
+    ("docs/code_map.html", "interactive version of this map"),
+]
+def md_modules(title, group):
+    out = ["## " + title, "", "| Module | Lines | Size | Role |", "|---|---:|---:|---|"]
+    for m in group["modules"]:
+        out.append("| `%s` | %d | %.1f KB | %s |" % (m["file"], m["lines"], m["bytes"] / 1024, m["role"]))
+    out.append("")
+    for m in group["modules"]:
+        if m.get("generated"):
+            continue
+        fns = [d for d in m["defs"] if d["kind"] == "fn"]
+        if not fns:
+            continue
+        out.append("**`%s`** — " % m["file"] + ", ".join(
+            "`%s`%s" % (d["name"], " (" + d["role"] + ")" if d["role"] else "") for d in fns))
+        out.append("")
+    return out
+md = ["# Code map — Lions YCE", "",
+      "> **Generated file — do not edit by hand.** Rebuilt by `python3 tools/build_codemap.py` "
+      "(run automatically on every push to `main`).",
+      "> Commit `%s`, %s. Interactive version: [`code_map.html`](code_map.html)." % (sha, codemap["generated"]), "",
+      "## Pages", "", "| Page | Role |", "|---|---|"]
+md += ["| `%s` | %s |" % p for p in PAGES]
+md += ["", "## Public site (`index.html`)", "", "| File | Role |", "|---|---|"]
+md += ["| %s | %s |" % (b["name"], b["role"]) for b in site["blocks"]]
+md += [""] + md_modules("Form filler modules", codemap["filler"]) + md_modules("Tracker modules", codemap["tracker"]) \
+      + md_modules("Vault modules", codemap["vault"])
+md += ["## Data, tools and other files", "", "| File | Size | Role |", "|---|---:|---|"]
+md += ["| `%s` | %.1f KB | %s |" % (d["file"], d["bytes"] / 1024, d["role"]) for d in data_files]
+md += ["", "## Who uses what (form filler)", "", "| Defined in | Used by | Names |", "|---|---|---|"]
+md += ["| `%s` | `%s` | %s |" % (e["from"], e["to"], ", ".join(e["names"][:12]) + (" …" if len(e["names"]) > 12 else ""))
+       for e in codemap["filler"]["edges"]]
+with open("docs/CODE_MAP.md", "w") as f:
+    f.write("\n".join(md) + "\n")
+print("docs/CODE_MAP.md written")

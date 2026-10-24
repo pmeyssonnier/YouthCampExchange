@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<!-- CSP : scripts et connexions limités aux seules sources utilisées par cette page (protège aussi les sessions et jetons stockés sur la même origine) -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-src 'none'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; script-src 'self' 'unsafe-inline'; connect-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lions YCE — Application Form Filler 2026 — MD 112 Belgium</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
@@ -102,6 +104,7 @@ input.tel-bad{border-color:var(--red) !important;}
 .commit-btn{width:100%;margin-top:10px;padding:13px;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--muted);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.2s;}
 .commit-btn:hover{border-color:var(--gold);color:var(--gold);}
 .commit-btn.agreed{background:rgba(6,214,160,0.12);border-color:var(--accent);color:var(--accent);}
+.sign-warn{margin-top:10px;padding:9px 12px;border:1.5px solid var(--orange);border-radius:8px;background:rgba(255,183,77,0.1);color:var(--text);font-size:12.5px;line-height:1.5;}
 </style>
 </head>
 <body>
@@ -119,6 +122,8 @@ input.tel-bad{border-color:var(--red) !important;}
     <b id="sign-mode-title">Signing mode.</b> ① Load the dossier received by e-mail.
     ② Check the summary below, then sign in your box — draw it or upload an image of your signature.
     ③ Click “Sign &amp; download”: the countersigned dossier is downloaded — send it back by replying to the e-mail.
+    <div class="sign-warn">⚠ A drawn signature does not prove who signed: anyone who has this page can produce one.
+      Always send the countersigned file back <b>from your own e-mail address</b>, so the coordinator can check who sent it.</div>
     <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
       <label class="tpl-btn" style="flex:1;min-width:220px;text-align:center;"><span id="dossier-lbl">📂 Load the candidate's dossier — the ZIP received by e-mail…</span>
         <input type="file" accept=".zip,.xlsx" style="display:none" onchange="loadDossier(this)"></label>
@@ -151,6 +156,7 @@ input.tel-bad{border-color:var(--red) !important;}
 <script src="camps_data.js"></script>
 <script src="districts_data.js"></script>
 <script src="js/assets.js"></script>
+<script src="js/zip.js"></script>
 <script src="js/xlsx.js"></script>
 <script src="js/docx.js"></script>
 <script src="js/signatures.js"></script>

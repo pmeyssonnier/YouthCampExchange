@@ -29,50 +29,51 @@ function showCampDetail(idx){
   const det=c.detail||null;
   document.getElementById('md-continent').textContent=c.continent;
   document.getElementById('md-title').textContent=titleCase(c.camp_name);
-  document.getElementById('md-country').innerHTML=`🗺️ &nbsp;${c.country}${c.state?' <span style="color:var(--muted);font-size:11px">— '+c.state+'</span>':''}`;
+  document.getElementById('md-country').innerHTML=`🗺️ &nbsp;${esc(c.country)}${c.state?' <span style="color:var(--muted);font-size:11px">— '+esc(c.state)+'</span>':''}`;
   const encLoc=det&&det.location?encodeURIComponent(det.location):'';
 
   const secLocation=det&&det.location?`
     <div class="modal-section full">
       <div class="ms-title">📍 Location</div>
-      <a class="ms-link" href="https://www.google.com/maps/search/?api=1&query=${encLoc}" target="_blank" rel="noopener">📍 ${det.location} ↗</a>
+      <a class="ms-link" href="https://www.google.com/maps/search/?api=1&query=${encLoc}" target="_blank" rel="noopener">📍 ${esc(det.location)} ↗</a>
     </div>`:'';
 
   const secDesc=det&&det.description?`
     <div class="modal-section full">
       <div class="ms-title">🏕 Camp Activities</div>
-      <div class="ms-desc">${det.description}</div>
+      <div class="ms-desc">${esc(det.description)}</div>
     </div>`:'';
 
   const secHfa=det&&det.host_family_activities?`
     <div class="modal-section full">
       <div class="ms-title">🏠 Host Family Activities</div>
-      <div class="ms-desc">${det.host_family_activities}</div>
+      <div class="ms-desc">${esc(det.host_family_activities)}</div>
     </div>`:'';
 
   const hasLang=det&&det.languages&&det.languages.length;
-  const hasLinks=det&&(det.website||det.yce_url);
+  const web=det?safeUrl(det.website):null,yce=det?safeUrl(det.yce_url):null,mail=det?safeMail(det.contact_email):null;
+  const hasLinks=!!(web||yce);
   const hasContact=det&&(det.contact_email||det.contact_name||det.contact_phone||det.application_deadline);
 
   const secLang=hasLang?`
     <div class="modal-section ${!hasLinks&&!hasContact?'full':''}">
       <div class="ms-title">🗣 Languages</div>
-      <div style="margin-top:4px">${det.languages.map(l=>`<span class="ms-tag">${l}</span>`).join('')}</div>
+      <div style="margin-top:4px">${det.languages.map(l=>`<span class="ms-tag">${esc(l)}</span>`).join('')}</div>
     </div>`:'';
 
   const secLinks=hasLinks?`
     <div class="modal-section ${!hasLang&&!hasContact?'full':''}">
       <div class="ms-title">🔗 Links</div>
-      ${det.website?`<div class="ms-row" style="margin-bottom:6px"><span class="ms-lbl">Website</span><a class="ms-link" href="${det.website}" target="_blank" rel="noopener">${det.website.replace(/^https?:\/\//,'')}</a></div>`:''}
-      ${det.yce_url?`<div class="ms-row"><span class="ms-lbl">YCE Page</span><a class="ms-link" href="${det.yce_url}" target="_blank" rel="noopener">lions-yce-belgium.be ↗</a></div>`:''}
+      ${web?`<div class="ms-row" style="margin-bottom:6px"><span class="ms-lbl">Website</span><a class="ms-link" href="${esc(web)}" target="_blank" rel="noopener">${esc(det.website.replace(/^https?:\/\//,''))}</a></div>`:''}
+      ${yce?`<div class="ms-row"><span class="ms-lbl">YCE Page</span><a class="ms-link" href="${esc(yce)}" target="_blank" rel="noopener">lions-yce-belgium.be ↗</a></div>`:''}
     </div>`:'';
 
   const secContact=hasContact?`
     <div class="modal-section full">
       <div class="ms-title">📬 Contact</div>
-      ${det.contact_name?`<div class="ms-row"><span class="ms-lbl">Name</span><span class="ms-val">${det.contact_name}</span></div>`:''}
-      ${det.contact_email?`<div class="ms-row"><span class="ms-lbl">Email</span><a class="ms-link" href="mailto:${det.contact_email}">${det.contact_email}</a></div>`:''}
-      ${det.contact_phone?`<div class="ms-row"><span class="ms-lbl">Phone</span><span class="ms-val">${det.contact_phone}</span></div>`:''}
+      ${det.contact_name?`<div class="ms-row"><span class="ms-lbl">Name</span><span class="ms-val">${esc(det.contact_name)}</span></div>`:''}
+      ${det.contact_email?`<div class="ms-row"><span class="ms-lbl">Email</span>${mail?`<a class="ms-link" href="mailto:${esc(mail)}">${esc(mail)}</a>`:`<span class="ms-val">${esc(det.contact_email)}</span>`}</div>`:''}
+      ${det.contact_phone?`<div class="ms-row"><span class="ms-lbl">Phone</span><span class="ms-val">${esc(det.contact_phone)}</span></div>`:''}
       ${det.application_deadline?`<div class="ms-row"><span class="ms-lbl">Deadline</span><span class="ms-val orange">${fmtDate(det.application_deadline)}</span></div>`:''}
     </div>`:'';
 
@@ -81,12 +82,12 @@ function showCampDetail(idx){
   document.getElementById('md-body').innerHTML=`
     <div class="modal-section">
       <div class="ms-title">👤 Age Requirements</div>
-      <div class="ms-row"><span class="ms-lbl">Eligible ages</span><span class="ms-val big">${c.age_requirements}</span></div>
-      ${det&&det.participants?`<div class="ms-row"><span class="ms-lbl">Capacity</span><span class="ms-val">${det.participants} participants</span></div>`:''}
+      <div class="ms-row"><span class="ms-lbl">Eligible ages</span><span class="ms-val big">${esc(c.age_requirements)}</span></div>
+      ${det&&det.participants?`<div class="ms-row"><span class="ms-lbl">Capacity</span><span class="ms-val">${esc(det.participants)} participants</span></div>`:''}
     </div>
     <div class="modal-section">
       <div class="ms-title">💰 Participation Fee</div>
-      <div class="ms-row"><span class="ms-lbl">Amount</span><span class="ms-val big ${isFree?'free':''}">${isFree?'FREE':(c.fee||'—')}</span></div>
+      <div class="ms-row"><span class="ms-lbl">Amount</span><span class="ms-val big ${isFree?'free':''}">${isFree?'FREE':esc(c.fee||'—')}</span></div>
     </div>
     ${secLocation}${secDesc}${secHfa}${secLang}${secLinks}${secContact}${secNoDetail}
     <div class="modal-section full">

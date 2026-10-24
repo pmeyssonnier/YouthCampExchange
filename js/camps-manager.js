@@ -127,11 +127,18 @@ function saveEdit(){
   const c=CAMPS_W[EDIT_I];
   const name=gv("e-camp_name"),ctry=gv("e-country");
   if(!name||!ctry){log("Camp name and country are required.","err");return;}
-  const dre=/^\d{2}-\d{2}-\d{4}$/;
   for(const f of ["e-camp_starts","e-camp_ends","e-family_stay_starts","e-family_stay_ends","e-application_deadline"]){
     const v=gv(f);
-    if(v&&!dre.test(v)){log("Dates must be dd-mm-yyyy ("+f.slice(2)+").","err");return;}
+    if(v&&!validDmy(v)){log("Not a valid date (dd-mm-yyyy): "+f.slice(2).replace(/_/g," ")+" = "+esc(v),"err");return;}
   }
+  for(const p of [["e-camp_starts","e-camp_ends","Camp"],["e-family_stay_starts","e-family_stay_ends","Family stay"]]){
+    const a=gv(p[0]),b=gv(p[1]);
+    if(a&&b&&dmyKey(a)>dmyKey(b)){log(p[2]+": the start date is after the end date.","err");return;}
+  }
+  const ages=(gv("e-age_requirements")||"").match(/\d+/g);
+  if(ages&&ages.length>=2&&+ages[0]>+ages[1]){log("Ages: the minimum is above the maximum.","err");return;}
+  if(gv("e-website")&&!/^(https?:\/\/)?[a-z0-9-]+(\.[a-z0-9-]+)+(\/\S*)?$/i.test(gv("e-website"))){log("Website must be a web address (https://…).","err");return;}
+  if(gv("e-contact_email")&&!/^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/.test(gv("e-contact_email"))){log("Contact e-mail is not valid.","err");return;}
   const nc={};
   nc.continent=gv("e-continent")||"Europe";nc.country=ctry;
   if(gv("e-state"))nc.state=gv("e-state");
@@ -214,11 +221,17 @@ function colIdx(ref){let c=0;const m=ref.match(/^[A-Z]+/)[0];
 function serialToDmy(n){ // numéro de série Excel -> dd-mm-yyyy
   const d=new Date(Date.UTC(1899,11,30)+n*86400000);
   return String(d.getUTCDate()).padStart(2,"0")+"-"+String(d.getUTCMonth()+1).padStart(2,"0")+"-"+d.getUTCFullYear();}
-function mdyToDmy(v){ // MM-DD-YYYY (ou MM/DD/YYYY) -> dd-mm-yyyy ; série Excel acceptée
+// "dd-mm-yyyy" correspondant à une vraie date du calendrier (pas de 31-02, pas de mois 13)
+function validDmy(s){
+  const m=/^(\d{2})-(\d{2})-(\d{4})$/.exec(s||"");if(!m)return false;
+  const d=new Date(+m[3],+m[2]-1,+m[1]);
+  return d.getFullYear()===+m[3]&&d.getMonth()===+m[2]-1&&d.getDate()===+m[1];
+}
+function mdyToDmy(v){ // MM-DD-YYYY (ou MM/DD/YYYY) -> dd-mm-yyyy ; série Excel acceptée ; date impossible -> null
   if(v==null||v==="")return null;
   const s=String(v).trim();
   let m=s.match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})$/);
-  if(m)return m[2].padStart(2,"0")+"-"+m[1].padStart(2,"0")+"-"+m[3];
+  if(m){const r=m[2].padStart(2,"0")+"-"+m[1].padStart(2,"0")+"-"+m[3];return validDmy(r)?r:null;}
   if(/^\d+(\.\d+)?$/.test(s)&&+s>20000&&+s<70000)return serialToDmy(+s);
   return null;
 }
@@ -406,19 +419,19 @@ async function saveSite(){
     let src=b64ToUtf8(cur.content);
     if(!/const RAW = \[[\s\S]*?\];/.test(src))throw new Error("RAW block not found");
     src=src.replace(/const RAW = \[[\s\S]*?\];/,function(){return "const RAW = "+JSON.stringify(clean)+";";});
-    const commits=[];
-    if(src!==b64ToUtf8(cur.content)){
-      const r1=await putFile("camps_data.js",utf8ToB64(src),cur.sha,"Camp manager: "+clean.length+" active camps");
-      commits.push(r1.commit.sha.slice(0,7));
-    }
+    const changes=[];
+    if(src!==b64ToUtf8(cur.content))changes.push({path:"camps_data.js",b64:utf8ToB64(src),sha:cur.sha});
     const body=JSON.stringify({updated:new Date().toISOString().slice(0,10),count:ARCH.length,archive:ARCH},null,1)+"\n";
     const curA=await getFile("camps_archive.json");
-    if(!curA||b64ToUtf8(curA.content)!==body){
-      const r2=await putFile("camps_archive.json",utf8ToB64(body),curA?curA.sha:null,"Camp manager: "+ARCH.length+" archived camps");
-      commits.push(r2.commit.sha.slice(0,7));
+    // l'archive ne change que si son contenu change (la date seule ne déclenche pas de commit)
+    let sameArch=false;
+    try{sameArch=!!curA&&JSON.stringify(JSON.parse(b64ToUtf8(curA.content)).archive)===JSON.stringify(ARCH);}catch(e){}
+    if(!sameArch)changes.push({path:"camps_archive.json",b64:utf8ToB64(body),sha:curA?curA.sha:null});
+    if(!changes.length){log("Nothing changed on the repository.","info");}
+    else{
+      const sha=await commitFiles(changes,"Camp manager: "+clean.length+" active camps, "+ARCH.length+" archived");
+      log("Saved in one commit <b>"+sha.slice(0,7)+"</b> ("+changes.map(function(c){return esc(c.path);}).join(", ")+"). The site republishes in ~2 minutes.","ok");
     }
-    if(!commits.length){log("Nothing changed on the repository.","info");}
-    else log("Saved — commit"+(commits.length>1?"s":"")+" <b>"+commits.join(", ")+"</b>. The site republishes in ~2 minutes.","ok");
     DIRTY=false;document.getElementById("dirty").style.display="none";
   }catch(e){log("Save failed: "+esc(e.message),"err");}
   finally{updSave();}

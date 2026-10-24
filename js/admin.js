@@ -95,8 +95,8 @@ function galPick(inp){
 // -------------------- enregistrement des données --------------------
 function buildDistrictsLiteral(){
   const rows=Object.keys(DISTRICTS).map(function(d){
-    const g=function(k){return document.getElementById("d-"+d+"-"+k).value.trim().replace(/"/g,"'");};
-    return "  "+d+': {name: "'+g("name")+'", club: "'+g("club")+'", email: "'+g("email")+'", mobile: "'+g("mobile")+'"}';
+    const g=function(k){return document.getElementById("d-"+d+"-"+k).value.trim();}; // JSON.stringify échappe guillemets et barres obliques inverses
+    return "  "+d+": {name: "+JSON.stringify(g("name"))+", club: "+JSON.stringify(g("club"))+", email: "+JSON.stringify(g("email"))+", mobile: "+JSON.stringify(g("mobile"))+"}";
   });
   return "const DISTRICTS = {\n"+rows.join(",\n")+"\n};";
 }
@@ -126,18 +126,13 @@ async function saveData(){
     const ann=document.getElementById("in-announce").value.trim();
     if(/\n  announce: /.test(srcD))srcD=srcD.replace(/\n  announce: "(?:[^"\\]|\\.)*",/,function(){return "\n  announce: "+JSON.stringify(ann)+",";});
     if(/const GALLERY = \[[\s\S]*?\];/.test(srcD))srcD=srcD.replace(/const GALLERY = \[[\s\S]*?\];/,function(){return "const GALLERY = "+JSON.stringify(GAL)+";";});
-    let commits=[];
-    if(src!==b64ToUtf8(cur.content)){
-      const r1=await putFile("camps_data.js",utf8ToB64(src),cur.sha,
-        "Admin: update season data ("+season+(NEW_CAMPS?", "+NEW_CAMPS.length+" camps":"")+")");
-      commits.push(r1.commit.sha.slice(0,7));
-    }
-    if(srcD!==b64ToUtf8(curD.content)){
-      const r2=await putFile("districts_data.js",utf8ToB64(srcD),curD.sha,"Admin: update district coordinators");
-      commits.push(r2.commit.sha.slice(0,7));
-    }
-    if(!commits.length){log("Nothing changed — no commit made.","info");btn.disabled=false;return;}
-    log("Data saved — commit"+(commits.length>1?"s":"")+" <b>"+commits.join(", ")+"</b>. The site republishes in ~2 minutes.","ok");
+    const changes=[];
+    if(src!==b64ToUtf8(cur.content))changes.push({path:"camps_data.js",b64:utf8ToB64(src),sha:cur.sha});
+    if(srcD!==b64ToUtf8(curD.content))changes.push({path:"districts_data.js",b64:utf8ToB64(srcD),sha:curD.sha});
+    if(!changes.length){log("Nothing changed — no commit made.","info");btn.disabled=false;return;}
+    const sha=await commitFiles(changes,"Admin: update "+changes.map(function(c){return c.path;}).join(" + ")
+      +" (season "+season+(NEW_CAMPS?", "+NEW_CAMPS.length+" camps":"")+")");
+    log("Data saved in one commit <b>"+sha.slice(0,7)+"</b> ("+changes.map(function(c){return esc(c.path);}).join(", ")+"). The site republishes in ~2 minutes.","ok");
     if(NEW_CAMPS){
       const cf=document.getElementById("camps-fname");
       cf.textContent="\u2714 "+NEW_CAMPS.length+" camps saved into camps_data.js";cf.style.color="var(--accent)";

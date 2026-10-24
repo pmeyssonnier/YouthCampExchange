@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<!-- CSP : scripts et connexions limités aux seules sources utilisées par cette page (protège aussi les sessions et jetons stockés sur la même origine) -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-src 'none'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; script-src 'self' 'unsafe-inline'; connect-src 'self' https://api.github.com">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lions YCE — Camp Manager — MD 112 Belgium</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
@@ -106,7 +108,7 @@ tr:hover td{background:var(--hover);}
     <div class="sec-head"><span class="sec-title">Administrator access</span><span class="sec-note">needed only to save to the site — browsing, editing and backups work without it</span></div>
     <div class="sec-body"><div class="grid">
       <div class="fld g3" id="f-token"><label class="flbl">GitHub access token</label><input type="password" id="token" placeholder="github_pat_…"></div>
-      <div class="fld g1" id="f-pin"><label class="flbl" id="pin-lbl">PIN (4+ digits)</label><input type="password" id="pin" inputmode="numeric" placeholder="••••" onkeydown="if(event.key==='Enter')connect()"></div>
+      <div class="fld g1" id="f-pin"><label class="flbl" id="pin-lbl">Passphrase (8+ characters)</label><input type="password" id="pin" placeholder="8+ characters" autocomplete="current-password" onkeydown="if(event.key==='Enter')connect()"></div>
       <div class="fld g1" style="justify-content:flex-end"><button class="btn" id="connect" onclick="connect()">Connect</button></div>
       <div class="fld g1" style="justify-content:flex-end"><button class="btn2" onclick="logout()">Forget</button></div>
       <div class="fld g6"><span class="hint" id="access-hint"></span></div>
@@ -169,6 +171,7 @@ tr:hover td{background:var(--hover);}
 <script src="js/theme.js"></script>
 <script src="camps_data.js"></script>
 <script src="districts_data.js"></script>
+<script src="js/zip.js"></script>
 <script src="js/xlsx.js"></script>
 <script src="js/admin-core.js"></script>
 <script src="js/camps-manager.js"></script>

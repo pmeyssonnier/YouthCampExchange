@@ -5,7 +5,8 @@ let distFilter="ALL", sortKey="name", sortDir=1;
 // l'année affichée (titre, en-tête) vient de la constante YEAR (camps_data.js)
 document.querySelectorAll(".yr").forEach(function(s){s.textContent=YEAR;});
 document.title=document.title.replace(/20\d\d/,YEAR);
-function log(msg,cls){const l=document.getElementById("log");l.innerHTML='<div class="'+(cls||"")+'">'+msg+"</div>"+l.innerHTML;}
+// msg contient des noms de fichiers et de candidats issus des dossiers reçus : toujours en texte
+function log(msg,cls){const l=document.getElementById("log");l.innerHTML='<div class="'+esc(cls||"")+'">'+esc(msg)+"</div>"+l.innerHTML;}
 // ---------------- rendering ----------------
 function isComplete(r){return r.pct===100&&r.sigA&&r.sigP&&r.sigC&&r.commit&&r.commitClub&&r.photo&&r.pay&&r.letter;}
 function setDist(d,btn){distFilter=d;document.querySelectorAll(".pill").forEach(function(p){p.classList.remove("on");});btn.classList.add("on");render();}

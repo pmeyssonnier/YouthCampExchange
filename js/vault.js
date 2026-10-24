@@ -272,9 +272,9 @@ async function uploadZip(input){
   $("up-status").textContent = "Checking " + file.name + "…";
   try{
     const buf = await file.arrayBuffer();
-    let names;
-    try{ names = (await unzip(buf)).map(function(e){ return e.name; }); }
-    catch(e){ throw new Error("this file is not a valid ZIP"); }
+    let names; // liste des fichiers lue sans décompression : une archive piégée ne coûte rien
+    try{ names = zipNames(buf); }
+    catch(e){ throw new Error("this file is not a valid ZIP (" + e.message + ")"); }
     const sha = await sha256Hex(buf);
     $("up-status").textContent = "Uploading…";
     await API.upload(CUR.id, file, sha, names);

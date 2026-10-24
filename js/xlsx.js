@@ -1,5 +1,5 @@
-// xlsx.js — bibliothèque ZIP sans dépendance + lecture/écriture des cellules du classeur
-// Chargé par yce_form_filler.html ; scripts classiques partageant la portée globale.
+// xlsx.js — écriture ZIP sans dépendance + lecture/écriture des cellules du classeur
+// Chargé après js/zip.js ; scripts classiques partageant la portée globale.
 "use strict";
 // -------------------- mini-bibliothèque ZIP (aucune dépendance) --------------------
 // Lecture : le modèle embarqué est archivé sans compression (STORE) ; un modèle
@@ -10,43 +10,12 @@ const CRC_TABLE=(function(){const t=new Uint32Array(256);
 function crc32(u8){let c=0xFFFFFFFF;
   for(let i=0;i<u8.length;i++)c=CRC_TABLE[(c^u8[i])&0xFF]^(c>>>8);
   return (c^0xFFFFFFFF)>>>0;}
-async function inflateRaw(u8){
-  const ds=new DecompressionStream("deflate-raw");
-  const ab=await new Response(new Blob([u8]).stream().pipeThrough(ds)).arrayBuffer();
-  return new Uint8Array(ab);}
 async function deflateRaw(u8){
   if(typeof CompressionStream==="undefined")return null;
   const cs=new CompressionStream("deflate-raw");
   const ab=await new Response(new Blob([u8]).stream().pipeThrough(cs)).arrayBuffer();
   return new Uint8Array(ab);}
-async function unzip(buf){ // -> [{name, data:Uint8Array}]
-  const u8=new Uint8Array(buf), dv=new DataView(buf);
-  let eocd=-1;
-  for(let i=u8.length-22;i>=Math.max(0,u8.length-22-65536);i--){
-    if(dv.getUint32(i,true)===0x06054b50){eocd=i;break;}}
-  if(eocd<0)throw new Error("invalid .xlsx file (EOCD not found)");
-  const count=dv.getUint16(eocd+10,true);
-  let off=dv.getUint32(eocd+16,true);
-  const entries=[];const td=new TextDecoder();
-  for(let n=0;n<count;n++){
-    if(dv.getUint32(off,true)!==0x02014b50)throw new Error("corrupted central directory");
-    const method=dv.getUint16(off+10,true);
-    const csize=dv.getUint32(off+20,true);
-    const nameLen=dv.getUint16(off+28,true);
-    const extraLen=dv.getUint16(off+30,true);
-    const cmtLen=dv.getUint16(off+32,true);
-    const lho=dv.getUint32(off+42,true);
-    const name=td.decode(u8.subarray(off+46,off+46+nameLen));
-    const lnl=dv.getUint16(lho+26,true), lel=dv.getUint16(lho+28,true);
-    const start=lho+30+lnl+lel;
-    let data=u8.slice(start,start+csize);
-    if(method===8)data=await inflateRaw(data);
-    else if(method!==0)throw new Error("unsupported compression method: "+method);
-    entries.push({name:name,data:data});
-    off+=46+nameLen+extraLen+cmtLen;
-  }
-  return entries;
-}
+// lecture : unzip() et inflateRaw() sont dans js/zip.js (bornés contre les archives piégées)
 async function buildZip(entries,mime){ // -> Blob (xlsx par défaut)
   // sécurité : jamais deux entrées du même nom (interdit par le format OPC —
   // Excel proposerait de "réparer" le fichier) ; on garde la plus récente

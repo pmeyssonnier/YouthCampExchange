@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<!-- CSP : scripts et connexions limités aux seules sources utilisées par cette page (protège aussi les sessions et jetons stockés sur la même origine) -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-src 'none'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; script-src 'self' 'unsafe-inline'; connect-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lions YCE — Applications Tracker 2026 — MD 112 Belgium</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
@@ -139,6 +141,7 @@ tr:hover td{background:var(--hover);}
 <script src="camps_data.js"></script>
 <script src="districts_data.js"></script>
 <script src="js/tracker-storage.js"></script>
+<script src="js/zip.js"></script>
 <script src="js/tracker-parser.js"></script>
 <script src="js/tracker-export.js"></script>
 <script src="js/tracker-ui.js"></script>

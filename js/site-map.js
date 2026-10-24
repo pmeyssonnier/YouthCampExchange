@@ -82,7 +82,7 @@ function renderContInfo(cont){
   const mi=document.getElementById('map-info');mi.classList.add('vis');
   document.getElementById('mi-title').textContent=cont;
   document.getElementById('mi-rows').innerHTML=countries.length?countries.map(c=>
-    `<div class="mi-row" onclick="zoomCountry('${escQ(c)}')"><span>${c}</span><span class="mi-val">${counts[c]} camp${counts[c]>1?'s':''} ›</span></div>`
+    `<div class="mi-row" onclick="zoomCountry(${jsArg(c)})"><span>${esc(c)}</span><span class="mi-val">${counts[c]} camp${counts[c]>1?'s':''} ›</span></div>`
   ).join(''):'<div class="mi-row"><span style="color:var(--muted)">No camps with current filters</span></div>';
 }
 function refreshContinent(cont){renderContInfo(cont);renderCountryBubbles(cont,currentContProj);}
@@ -143,12 +143,12 @@ function showCountryCamps(country){
   document.getElementById('cp-country').textContent=country;document.getElementById('cp-count').textContent=camps.length;
   const isFree=f=>f&&(f.startsWith('0 ')||f==='0');
   document.getElementById('cp-body').innerHTML=!camps.length?'<div class="cp-empty">No camps found</div>':camps.map(c=>{
-    const feeHtml=isFree(c.fee)?'<span class="cc-chip cc-free">FREE</span>':`<span class="cc-chip cc-fee">${c.fee||'—'}</span>`;
+    const feeHtml=isFree(c.fee)?'<span class="cc-chip cc-free">FREE</span>':`<span class="cc-chip cc-fee">${esc(c.fee||'—')}</span>`;
     const presHtml=c.arrival&&c.departure?`<div class="cc-presence"><span class="cc-presence-lbl">✈ Arrival → Departure</span><span class="cc-presence-val">${fmtDate2(c.arrival)} → ${fmtDate2(c.departure)}</span></div>`:'';
     const famHtml=c.fs?`<div class="cc-date-row"><span class="cc-date-lbl">🏠 Family Stay</span><span class="cc-date-val">${fmtDate2(c.fs)} → ${fmtDate2(c.fe)}</span></div>`:'';
     return`<div class="camp-card" onclick="showCampDetail(${c._idx})">
-      <div class="cc-name">${titleCase(c.camp_name)}</div>
-      <div class="cc-row"><span class="cc-chip cc-age">👤 ${c.age_requirements}</span>${feeHtml}${c.season?`<span class="cc-chip cc-season">📅 ${c.season}</span>`:''}</div>
+      <div class="cc-name">${esc(titleCase(c.camp_name))}</div>
+      <div class="cc-row"><span class="cc-chip cc-age">👤 ${esc(c.age_requirements)}</span>${feeHtml}${c.season?`<span class="cc-chip cc-season">📅 ${esc(c.season)}</span>`:''}</div>
       <div class="cc-dates"><div class="cc-date-row"><span class="cc-date-lbl">🏕️ Camp</span><span class="cc-date-val">${fmtDate2(c.cs)} → ${fmtDate2(c.ce)}</span></div>${famHtml}${presHtml}</div>
     </div>`;
   }).join('');

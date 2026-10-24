@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<!-- CSP : scripts et connexions limités aux seules sources utilisées par cette page (protège aussi les sessions et jetons stockés sur la même origine) -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-src 'none'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; connect-src 'self' https://*.supabase.co wss://*.supabase.co">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lions YCE — Application Vault</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
@@ -264,7 +266,7 @@ ul.plain li.old{opacity:0.6;}
 <script src="camps_data.js"></script>
 <script src="districts_data.js"></script>
 <script>document.querySelectorAll('.md-lbl').forEach(function(e){if(typeof MD!=='undefined')e.textContent=MD;});</script>
-<script src="js/xlsx.js"></script>
+<script src="js/zip.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="js/vault-api.js"></script>
 <script src="js/vault.js"></script>

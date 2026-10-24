@@ -3,6 +3,10 @@
 "use strict";
 // -------------------- brouillon persistant (localStorage) --------------------
 const DRAFT_KEY="yce_form_draft_"+YEAR;
+// le brouillon contient des données personnelles (santé, pièce d'identité, signatures) :
+// il est effacé après 30 jours sans modification
+const DRAFT_MAX_DAYS=30;
+let DRAFT_INFO="";
 let saveTimer=null;
 function saveDraft(){
   if(SIGN_MODE)return;
@@ -18,13 +22,20 @@ function saveDraft(){
     const au={};
     ["G20","G22"].forEach(function(r){const el=document.getElementById("f-"+r);
       if(el&&el.dataset.auto==="1")au[r]=1;});
-    localStorage.setItem(DRAFT_KEY,JSON.stringify({v:v,x:XSTATE,t:t,s:sg,a:au,p:PHOTO.dataUrl?{d:PHOTO.dataUrl,w:PHOTO.w,h:PHOTO.h}:null,cm:COMMIT.agreed?{d:COMMIT.date}:null,pay:(PAY.dataUrl&&PAY.dataUrl.length<2500000)?{d:PAY.dataUrl,n:PAY.name,e:PAY.ext}:null,lt:(LETTER.dataUrl&&LETTER.dataUrl.length<2500000)?{d:LETTER.dataUrl,n:LETTER.name,e:LETTER.ext}:null}));
+    localStorage.setItem(DRAFT_KEY,JSON.stringify({ts:Date.now(),v:v,x:XSTATE,t:t,s:sg,a:au,p:PHOTO.dataUrl?{d:PHOTO.dataUrl,w:PHOTO.w,h:PHOTO.h}:null,cm:COMMIT.agreed?{d:COMMIT.date}:null,pay:(PAY.dataUrl&&PAY.dataUrl.length<2500000)?{d:PAY.dataUrl,n:PAY.name,e:PAY.ext}:null,lt:(LETTER.dataUrl&&LETTER.dataUrl.length<2500000)?{d:LETTER.dataUrl,n:LETTER.name,e:LETTER.ext}:null}));
   }catch(e){}
 }
 function restoreDraft(){
   try{
     const d=JSON.parse(localStorage.getItem(DRAFT_KEY)||"null");
     if(!d)return;
+    if(d.ts&&Date.now()-d.ts>DRAFT_MAX_DAYS*86400000){
+      localStorage.removeItem(DRAFT_KEY);
+      DRAFT_INFO="Your previous draft was older than "+DRAFT_MAX_DAYS+" days and has been erased from this browser.";
+      return;
+    }
+    DRAFT_INFO="Draft restored from this browser"+(d.ts?" (last saved "+new Date(d.ts).toLocaleDateString("en-GB")+")":"")
+      +". On a shared computer, click 🗑 Clear form when you have finished.";
     Object.keys(d.v||{}).forEach(function(ref){
       const el=document.getElementById("f-"+ref);if(!el)return;
       el.value=d.v[ref];
