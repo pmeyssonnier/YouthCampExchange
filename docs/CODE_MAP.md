@@ -1,7 +1,7 @@
 # Code map — Lions YCE
 
 > **Generated file — do not edit by hand.** Rebuilt by `python3 tools/build_codemap.py` (run automatically on every push to `main`).
-> Commit `b8ac25d`, 2026-10-24 17:33 UTC. Interactive version: [`code_map.html`](code_map.html).
+> Commit `fb6da87`, 2026-10-24 17:55 UTC. Interactive version: [`code_map.html`](code_map.html).
 
 ## Pages
 
