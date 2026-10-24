@@ -47,6 +47,14 @@ function isMinor(birth){
 }
 function validBirth(v){ return /^\d{4}-\d{2}-\d{2}$/.test(v) && v >= "1980-01-01" && v <= new Date().toISOString().slice(0, 10); }
 function latestFile(kind){ return CUR_FILES.find(function(f){ return f.kind === kind; }); }
+// passeport « à suivre » (note dans le dossier) et pas encore reçu — même règle que id_pending() en base
+function idPending(){
+  const z = latestFile("zip"); if(!z) return false;
+  const names = (z.contents || []).map(function(n){ return n.split("/").pop(); });
+  return names.some(function(n){ return /^ID_document_TO_FOLLOW/i.test(n); })
+      && !names.some(function(n){ return /^ID_document_(?!TO_FOLLOW)/i.test(n); })
+      && !latestFile("id");
+}
 // saison de candidature : de septembre à août (en octobre 2026 on postule pour 2026-2027)
 function applicationSeason(){
   const d = new Date(), y = d.getFullYear();
@@ -249,16 +257,20 @@ function renderDossier(sigs, events, comments){
     ? '<li class="sub">You have the club copy: the application form without health, religion and ID data, and the Commitment.</li>'
     : CHECKLIST.map(function(c){
     const hit = last && (last.contents || []).some(function(n){ return c.re.test(n.split("/").pop()); });
+    if(/ID_document/.test(c.re.source) && hit && idPending()) return '<li class="later">⏳ ' + c.label + " — to follow (passport being renewed)</li>";
     return '<li class="' + (hit ? "yes" : "no") + '">' + (hit ? "✔" : "✖") + " " + c.label + "</li>";
   }).join("") + (last && (last.contents || []).some(function(n){ return /_club-signed\.docx$/i.test(n); })
     ? '<li class="yes">✔ Commitment countersigned by the club</li>' : "");
   $("d-files").innerHTML = CUR_FILES.length ? CUR_FILES.map(function(f, i){
     return "<li" + (f !== latestFile(f.kind) ? ' class="old"' : "") + "><button class=\"lnk\" onclick=\"downloadFile('" + f.id + "')\">⬇ " + esc(f.file_name) + "</button>" +
       ' <span class="sub">' + (f.size_bytes / 1048576).toFixed(1) + " MB · " + esc(f.uploaded_by) + " · " + fmtDT(f.uploaded_at) +
-      " · <code>" + f.sha256.slice(0, 10) + "</code> · " + (f.kind === "club" ? "club copy" : "full file") +
+      " · <code>" + f.sha256.slice(0, 10) + "</code> · " + ({ club: "club copy", id: "passport / ID scan sent later" }[f.kind] || "full file") +
       (f === latestFile(f.kind) ? " · <b>current</b>" : " · previous") + "</span></li>";
   }).join("") : '<li class="sub">No file yet.</li>';
   show("d-upload", canUpload(d));
+  // passeport à suivre : le candidat le dépose à tout moment avant l'envoi au pays d'accueil
+  show("d-idupload", d.candidate_email === ME && d.status !== "draft" && idPending()
+    && ["sent_host", "accepted", "refused", "archived"].indexOf(d.status) < 0);
 
   // signatures
   $("d-sigs").innerHTML = sigs.length ? sigs.map(function(s){
@@ -303,7 +315,9 @@ function renderActions(d){
       (doc && doc.kind === "club" ? "club copy" : "version") + (doc ? " (<code>" + doc.sha256.slice(0, 10) + "</code>)" : "") + "</label>");
     A.push('<button class="btn" onclick="act(\'' + signStep[0] + '\',true)">✍ ' + signStep[1] + "</button>");
   }
-  if(d.status === "national_validated" && isStaff("national")) A.push('<button class="btn" onclick="act(\'sent_host\')">✈ Mark as sent to the host country</button>');
+  if(d.status === "national_validated" && isStaff("national")) A.push(idPending()
+    ? '<span class="sub">⏳ The passport scan is still to follow: the file can go to the host country once the candidate has uploaded it.</span>'
+    : '<button class="btn" onclick="act(\'sent_host\')">✈ Mark as sent to the host country</button>');
   if(d.status === "sent_host" && isStaff("national")){
     A.push('<button class="btn" onclick="act(\'accepted\')">✔ Accepted by the host country</button>');
     A.push('<button class="btn2 danger" onclick="act(\'refused\')">✖ Refused</button>');
@@ -351,6 +365,21 @@ async function uploadZip(input){
     msg("Uploaded: " + file.name + " (" + names.length + " files inside) and its club copy for the president.", "ok");
     openDossier(CUR.id);
   }catch(e){ $("up-status").textContent = ""; msg("Upload failed: " + e.message, "err"); }
+}
+
+// scan du passeport envoyé après coup (PDF ou image)
+async function uploadIdLater(input){
+  const file = input.files[0]; input.value = "";
+  if(!file) return;
+  if(!/\.(pdf|jpe?g|png)$/i.test(file.name)){ msg("Upload the passport scan as a PDF, JPG or PNG file.", "err"); return; }
+  if(file.size > 15 * 1048576){ msg("The scan is too large (15 MB maximum).", "err"); return; }
+  try{
+    const buf = await file.arrayBuffer();
+    const name = "ID_document_" + file.name.replace(/^ID_document_/i, "");
+    await API.upload(CUR.id, new File([buf], name, { type: file.type }), await sha256Hex(buf), [name], "id");
+    msg("Passport scan uploaded — thank you.", "ok");
+    openDossier(CUR.id);
+  }catch(e){ msg("Upload failed: " + e.message, "err"); }
 }
 
 async function downloadFile(fid){

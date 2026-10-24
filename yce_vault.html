@@ -104,6 +104,7 @@ ul.plain{list-style:none;display:grid;gap:6px;font-size:13px;}
 ul.plain li.old{opacity:0.6;}
 #d-check li.yes{color:var(--accent);font-weight:600;}
 #d-check li.no{color:var(--red);font-weight:600;}
+#d-check li.later{color:var(--orange);font-weight:600;}
 #d-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:6px;}
 #d-actions .chk{flex-basis:100%;}
 #notify{margin-top:10px;font-size:13px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
@@ -221,6 +222,10 @@ ul.plain li.old{opacity:0.6;}
               <label class="filebtn">⬆ Upload the ZIP from the application form<input type="file" accept=".zip,application/zip" onchange="uploadZip(this)"></label>
               <span class="sub" id="up-status"></span>
               <p class="hint" style="margin-top:6px">Generate it with the <a href="yce_form_filler.html" style="color:var(--blue)">application form</a>, then upload it here. A new upload becomes the current version; earlier versions stay in the history.</p>
+            </div>
+            <div id="d-idupload" hidden style="margin-top:10px">
+              <label class="filebtn">🛂 Upload the passport scan<input type="file" accept="application/pdf,image/*" onchange="uploadIdLater(this)"></label>
+              <p class="hint" style="margin-top:6px">Your file says the passport scan will follow. Upload it here as soon as you have the new passport: the file cannot be sent to the host country without it.</p>
             </div>
             <h3>What you can do now</h3>
             <div id="d-actions"></div>

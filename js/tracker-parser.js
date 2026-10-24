@@ -43,7 +43,7 @@ async function handleFiles(list){
         for(const e of entries){
           const base=e.name.split("/").pop();
           if(!base||e.name.indexOf("__MACOSX")>=0||base===".DS_Store")continue;
-          if(/\.(xlsx|docx|pdf|jpe?g|png)$/i.test(base)){items.push({name:base,buf:e.data.buffer.slice(e.data.byteOffset,e.data.byteOffset+e.data.byteLength)});found++;}
+          if(/\.(xlsx|docx|pdf|jpe?g|png)$/i.test(base)||/^ID_document_TO_FOLLOW.*\.txt$/i.test(base)){items.push({name:base,buf:e.data.buffer.slice(e.data.byteOffset,e.data.byteOffset+e.data.byteLength)});found++;}
         }
         log("📦 "+file.name+" — "+found+" file(s) extracted","ok");
       }catch(err){log("✖ "+file.name+" — "+err.message,"err");}
@@ -135,7 +135,8 @@ async function matchAux(fname){
   const key=findRowByName(fname);
   if(!key)throw new Error("no matching candidate row (load the .xlsx first)");
   const n=fname.toLowerCase();
-  if(n.indexOf("id_document")>=0||n.indexOf("passport")>=0){ROWS[key].iddoc=true;log("✔ "+fname+" → passport / ID scan for "+ROWS[key].fam+" "+ROWS[key].fir,"ok");}
+  if(n.indexOf("id_document_to_follow")>=0){if(ROWS[key].iddoc!==true)ROWS[key].iddoc="later";log("⏳ "+fname+" → passport scan to follow (renewal) for "+ROWS[key].fam+" "+ROWS[key].fir,"warn");}
+  else if(n.indexOf("id_document")>=0||n.indexOf("passport")>=0){ROWS[key].iddoc=true;log("✔ "+fname+" → passport / ID scan for "+ROWS[key].fam+" "+ROWS[key].fir,"ok");}
   else if(n.indexOf("photo")>=0){ROWS[key].photo=true;log("✔ "+fname+" → pass photo for "+ROWS[key].fam+" "+ROWS[key].fir,"ok");}
   else if(n.indexOf("payment")>=0||n.indexOf("proof")>=0||n.indexOf("paiement")>=0){ROWS[key].pay=true;log("✔ "+fname+" → payment proof for "+ROWS[key].fam+" "+ROWS[key].fir,"ok");}
   else if(n.indexOf("letter")>=0||n.indexOf("host")>=0||n.indexOf("family")>=0||n.indexOf("famille")>=0){ROWS[key].letter=true;log("✔ "+fname+" → host-family letter for "+ROWS[key].fam+" "+ROWS[key].fir,"ok");}

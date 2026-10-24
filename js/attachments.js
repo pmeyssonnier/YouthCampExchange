@@ -87,9 +87,41 @@ function payClear(e){e.stopPropagation();PAY.dataUrl=null;PAY.name=null;PAY.ext=
 // Pièce sensible : jamais gardée dans le brouillon du navigateur (à rajouter après un rechargement),
 // jointe au dossier complet mais pas à la copie destinée au président de club.
 const IDDOC={dataUrl:null,name:null,ext:null};
+let IDLATER=false; // passeport en cours de renouvellement : le scan suivra (ce choix, lui, est gardé dans le brouillon)
+// Pays « Europe » de la liste des camps où la carte d'identité belge ne suffit pas
+// (le Royaume-Uni exige le passeport des citoyens de l'UE depuis le 1er octobre 2021).
+const PASSPORT_ONLY_IN_EUROPE=["United Kingdom"];
+// pièce exigée selon les pays choisis : "passport" si l'un d'eux est hors d'Europe (le jeune peut être placé
+// sur n'importe lequel de ses choix), "idcard" si tous sont en Europe, "unknown" si aucun pays reconnu
+function idRequirement(){
+  const cont={};(typeof RAW!=="undefined"?RAW:[]).forEach(function(c){cont[c.country.toLowerCase()]=c.continent;});
+  let known=0,outside=false;
+  ["N10","N11","N12"].forEach(function(r){
+    const el=document.getElementById("f-"+r);const v=el&&el.value.trim();if(!v)return;
+    const k=cont[v.toLowerCase()];if(!k)return;
+    known++;
+    if(k!=="Europe"||PASSPORT_ONLY_IN_EUROPE.indexOf(v)>=0)outside=true;
+  });
+  return outside?"passport":(known?"idcard":"unknown");
+}
+function idLabel(){
+  const r=idRequirement();
+  return r==="passport"?"Passport scan":r==="idcard"?"ID card (or passport) scan":"Passport or ID card scan";
+}
 function idPick(inp){readDoc(inp,IDDOC,idShow,"ID document");}
-function idShow(){docShow("id",IDDOC,"🛂 Click to add the passport or ID card scan<br>(PDF, JPG or PNG — not kept in the browser)");}
+function idShow(){
+  const r=idRequirement();
+  docShow("id",IDDOC,"🛂 Click to add the "+(r==="passport"?"passport scan":r==="idcard"?"ID card or passport scan":"passport or ID card scan")
+    +"<br>(PDF, JPG or PNG — not kept in the browser)");
+  const req=document.getElementById("id-req");
+  if(req)req.innerHTML=r==="passport"?"<b>Passport required</b>: at least one of your choices is outside Europe"
+    +" (or in the United Kingdom, which no longer accepts ID cards)."
+    :r==="idcard"?"All your choices are in Europe: your <b>Belgian ID card</b> is enough."
+    :"Passport if one of your camp choices is outside Europe, otherwise your Belgian ID card.";
+  const lt=document.getElementById("id-later");if(lt)lt.checked=IDLATER;
+}
 function idClear(e){e.stopPropagation();IDDOC.dataUrl=null;IDDOC.name=null;IDDOC.ext=null;idShow();upd();}
+function idLaterToggle(cb){IDLATER=cb.checked;idShow();upd();}
 
 // -------------------- lettre à la future famille d'accueil --------------------
 const LETTER={dataUrl:null,name:null,ext:null};

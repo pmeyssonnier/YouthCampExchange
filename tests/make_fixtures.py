@@ -32,4 +32,6 @@ v1 = [('Application_form_2027_112A_Doe_Jane.xlsx', AF), ('Commitment_to_Reciproc
 z(os.path.join(VZ, 'Dossier_v1.zip'), v1)   # incomplet : ni pièce d'identité ni lettre
 z(os.path.join(VZ, 'Dossier_v2.zip'), v1 + [('ID_document_2027_112A_Doe_Jane.pdf', b'%PDF-1.4 passport'),
                                             ('Letter_to_Host_Family_2027_112A_Doe_Jane.pdf', b'%PDF-1.4 letter')])
+z(os.path.join(VZ, 'Dossier_late.zip'), v1 + [('ID_document_TO_FOLLOW_2027_112A_Doe_Jane.txt', b'Passport being renewed'),
+                                              ('Letter_to_Host_Family_2027_112A_Doe_Jane.pdf', b'%PDF-1.4 letter')])
 print('fixtures written to', FIX)

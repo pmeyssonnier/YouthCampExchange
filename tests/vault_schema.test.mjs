@@ -175,6 +175,36 @@ await root();
 ok((await q(`select count(*)::int n from dossiers where id=$1`, [DID]))[0].n === 0, 'purged');
 ok((await q(`select count(*)::int n from purge_log where dossier_id=$1`, [DID]))[0].n === 1, 'purge traced without personal data');
 
+// ================= passeport en renouvellement : le scan suit plus tard =================
+await as('late@x.be');
+const [L] = await q(`insert into dossiers (season,candidate_name,candidate_birth_date,president_email,district,consent_at,consent_version)
+  values ('2026-2027','Late Passport',$1,'pres@x.be','A',now(),'v2') returning id`, [adultBirth]);
+const LATE = FULL.map(f => f.startsWith('ID_document') ? 'ID_document_TO_FOLLOW_2027_112A_Late_Passport.txt' : f);
+await upFull(L.id, h('5'), LATE); await upClub(L.id, h('6'), h('5'));
+ok((await q(`select id_pending($1) p`, [L.id]))[0].p === true, 'note "to follow" detected');
+await q(`select dossier_transition($1,'submitted')`, [L.id]);
+ok((await q(`select status from dossiers where id=$1`, [L.id]))[0].status === 'submitted', 'file can be sent with the passport to follow');
+await as('pres@x.be'); await q(`select dossier_transition($1,'club_signed',null,$2)`, [L.id, h('6')]);
+await asStaff('coorda@x.be'); await q(`select dossier_transition($1,'district_validated',null,$2)`, [L.id, h('5')]);
+await asStaff('nat@x.be'); await q(`select dossier_transition($1,'national_validated',null,$2)`, [L.id, h('5')]);
+ok(/passport scan is still to follow/.test(await err(`select dossier_transition($1,'sent_host')`, [L.id]) || ''), 'cannot go to the host country without the scan');
+await as('pres@x.be');
+ok((await err(`insert into storage.objects (bucket_id,name) values ('dossiers',$1)`, [L.id + '/id/x.pdf'])) !== null, 'president cannot upload the scan');
+await as('late@x.be');
+ok((await err(`insert into storage.objects (bucket_id,name) values ('dossiers',$1)`, [L.id + '/full/x.zip'])) !== null, 'candidate cannot replace the file after sending');
+await q(`insert into storage.objects (bucket_id,name) values ('dossiers',$1)`, [L.id + '/id/passport.pdf']);
+await q(`insert into dossier_files (dossier_id,kind,path,file_name,sha256,size_bytes,contents) values ($1,'id',$2,'ID_document_passport.pdf',$3,9,'{ID_document_passport.pdf}')`, [L.id, L.id + '/id/passport.pdf', h('7')]);
+ok((await q(`select id_pending($1) p`, [L.id]))[0].p === false, 'scan received later: no longer pending');
+await as('pres@x.be');
+ok((await q(`select kind from dossier_files where dossier_id=$1`, [L.id])).every(f => f.kind === 'club'), 'president never sees the passport scan');
+ok((await q(`select name from storage.objects where name like $1`, [L.id + '/id/%'])).length === 0, 'president cannot read the scan in storage');
+await asStaff('nat@x.be');
+ok((await q(`select kind from dossier_files where dossier_id=$1 and kind='id'`, [L.id])).length === 1, 'national sees the scan');
+await q(`select dossier_transition($1,'sent_host')`, [L.id]);
+ok((await q(`select status from dossiers where id=$1`, [L.id]))[0].status === 'sent_host', 'sent to the host country once the scan is there');
+await as('late@x.be');
+ok((await err(`insert into storage.objects (bucket_id,name) values ('dossiers',$1)`, [L.id + '/id/again.pdf'])) !== null, 'no more upload once sent to the host country');
+
 // brouillon jamais envoyé : le candidat peut le supprimer
 await as('cand3@x.be');
 const [d3] = await q(`insert into dossiers (season,candidate_name,candidate_birth_date,district,consent_at,consent_version) values ('2026-2027','Ann Lee',$1,'C',now(),'v2') returning id`, [adultBirth]);

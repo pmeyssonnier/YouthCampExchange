@@ -37,7 +37,7 @@ function signSummary(){
       const it=function(ok,lbl){return (ok?'<b style="color:var(--accent)">\u2714</b>':'<b style="color:var(--red)">\u2716</b>')+' '+lbl;};
       out+='<br>Attachments in the dossier: '
         +[it(has(/commit/i),"Commitment"),it(has(/photo/i),"pass photo"),
-          it(has(/payment|proof|paiement/i),"payment proof"),it(has(/id_document|passport/i),"passport / ID scan"),it(has(/letter|host|famil/i),"host-family letter")].join(" \u00b7 ");
+          it(has(/payment|proof|paiement/i),"payment proof"),(has(/id_document_to_follow/i)&&!has(/id_document_(?!to_follow)/i)?'<b style="color:var(--orange)">\u23f3</b> passport / ID scan to follow':it(has(/id_document|passport/i),"passport / ID scan")),it(has(/letter|host|famil/i),"host-family letter")].join(" \u00b7 ");
       return out+"<br>";
     })()
     +'Signatures already in the file: applicant '+sig("applicant")+' &nbsp;parent '+sig("parent")+' &nbsp;club '+sig("club")
@@ -100,6 +100,10 @@ async function generate(){
     if(PHOTO.dataUrl)files.push({name:"Pass_photo_"+YEAR+"_"+MD+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+".jpg",data:dataUrlToBytes(PHOTO.dataUrl)});
     if(PAY.dataUrl)files.push({name:"Payment_proof_"+YEAR+"_"+MD+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+"."+PAY.ext,data:dataUrlToBytes(PAY.dataUrl)});
     if(IDDOC.dataUrl)files.push({name:"ID_document_"+YEAR+"_"+MD+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+"."+IDDOC.ext,data:dataUrlToBytes(IDDOC.dataUrl)});
+    else if(IDLATER)files.push({name:"ID_document_TO_FOLLOW_"+YEAR+"_"+MD+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+".txt",
+      data:new TextEncoder().encode("The candidate's passport is being renewed: the scan will be sent later.\r\n"
+        +"Document required for the chosen destinations: "+(idRequirement()==="idcard"?"ID card or passport":"passport")+".\r\n"
+        +"Declared on "+new Date().toISOString().slice(0,10)+".\r\n")});
     if(LETTER.dataUrl)files.push({name:"Letter_to_Host_Family_"+YEAR+"_"+MD+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+"."+LETTER.ext,data:dataUrlToBytes(LETTER.dataUrl)});
     if(typeof SIGN_EXTRAS!=="undefined")SIGN_EXTRAS.forEach(function(x){files.push({name:x.name,data:x.data});});
     const zipName="Dossier_YCE_"+YEAR+"_"+MD+currentDistrict+"_"+safe(fam)+"_"+safe(fir)+".zip";
