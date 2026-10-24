@@ -53,5 +53,5 @@ const DISTRICTS = {
   B: {name: "De Beule Dirk", club: "LC Antwerpen Voorkempen", email: "d.debeule@a-law.eu", mobile: "+32 478 44 69 98"},
   C: {name: "Meyssonnier Pierre", club: "LC Bruxelles Saint Hubert", email: "pmeyssonnier@gmail.com", mobile: "+32 477 20 08 88"},
   D: {name: "Loix George", club: "LC Hannut", email: "loixgeorges@hotmail.com", mobile: "+32 497 05 89 40"},
-  E: {name: "Florence Loeff", club: "", email: "floeff@yzhoo.com", mobile: "0496269397"}
+  E: {name: "Florence Loeff", club: "", email: "floeff@yahoo.com", mobile: "0496269397"}
 };
