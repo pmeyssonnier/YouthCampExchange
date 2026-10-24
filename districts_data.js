@@ -39,11 +39,11 @@ const SITE = {
 
 // Galerie photos animée de la page d'accueil — gérée depuis la page d'administration.
 // Chaque entrée : {"src": "assets/gallery/….jpg", "caption": "…"}. Vide = section masquée.
-const GALLERY = [{"src":"assets/gallery/37361.jpg","caption":""},{"src":"assets/gallery/37358.jpg","caption":""},{"src":"assets/gallery/37360.jpg","caption":""},{"src":"assets/gallery/37269.jpg","caption":""},{"src":"assets/gallery/37360.jpg","caption":""}];
+const GALLERY = [{"src":"assets/gallery/37361.jpg","caption":""},{"src":"assets/gallery/37358.jpg","caption":""},{"src":"assets/gallery/37360.jpg","caption":""},{"src":"assets/gallery/37269.jpg","caption":""}];
 
 const DISTRICTS = {
   A: {name: "Harboort Jan", club: "LC Zottegem", email: "jan@harboort.com", mobile: "+32 473 40 01 10"},
   B: {name: "De Beule Dirk", club: "LC Antwerpen Voorkempen", email: "d.debeule@a-law.eu", mobile: "+32 478 44 69 98"},
-  C: {name: "Meyssonnier Pierre", club: "LC Schaerbeek Les Cerisiers", email: "pmeyssonnier@gmail.com", mobile: "+32 477 20 08 88"},
+  C: {name: "Meyssonnier Pierre", club: "LC Bruxelles Saint Hubert", email: "pmeyssonnier@gmail.com", mobile: "+32 477 20 08 88"},
   D: {name: "Loix George", club: "LC Hannut", email: "loixgeorges@hotmail.com", mobile: "+32 497 05 89 40"}
 };
