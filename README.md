@@ -80,7 +80,7 @@ As long as `SUPABASE_URL` is empty in `districts_data.js`, the page says "Vault 
 ```
 index.html                            public site HTML shell (loads css/site.css + the js/site-* modules)
 css/site.css                          public site styles (nav, hero, explorer, filter drawer, map, modal, light/dark)
-css/tools.css                         styles shared by the tool pages (tool menu)
+css/tools.css                         styles shared by the tool pages (theme colours, header, tool menu, sections)
 camps_data.js                         season camp data (SEASON + YEAR + RAW array) — common to every deployment
 districts_data.js                     per-deployment data: MD number, country, coordinators, home-page texts (SITE), photo gallery (GALLERY), SITE_REPO, Supabase settings
 camps.json                            GENERATED — plain-JSON export of the camp data ({season, camps})
