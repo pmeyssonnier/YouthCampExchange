@@ -53,6 +53,14 @@ const cand = await menu('yce_form_filler.html?district=A');
 t.ok(cand.length === 1 && cand[0] === 'index.html', 'candidate form: only the link back to the site ' + cand);
 t.ok((await menu('yce_form_filler.html?sign=club')).length === 1, 'club president signing: only the link back to the site');
 t.ok((await menu('yce_form_filler.html?admin')).length === 5, 'form admin mode: full tool menu');
+// formulaire en mode admin : pas de doublon du menu ; réglages repliés derrière ⚙ Admin options
+await pg.goto(B + 'yce_form_filler.html?admin'); await pg.waitForTimeout(800);
+t.ok(!(await pg.$('#tracker-btn, #camps-btn, #siteadmin-btn, #codemap-btn')), 'form admin bar: no buttons duplicating the tool menu');
+t.ok(await vis('#opt-btn') && !(await vis('#tpl-btn')) && !(await vis('#ctry-btn')), 'form admin bar: options folded');
+await pg.click('#opt-btn');
+t.ok(await vis('#tpl-btn') && await vis('#ctry-btn') && (await pg.getAttribute('#opt-btn', 'aria-expanded')) === 'true', 'form admin bar: options shown on click');
+await pg.goto(B + 'yce_form_filler.html?district=A'); await pg.waitForTimeout(800);
+t.ok(!(await vis('#opt-btn')), 'candidate form: no admin options');
 await pg.goto(B + 'index.html'); await pg.waitForTimeout(300);
 t.ok(await pg.$eval('footer a[href="yce_tracker.html"]', a => /Staff/.test(a.textContent)), 'site footer links to the staff tools');
 
