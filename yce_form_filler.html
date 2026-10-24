@@ -10,40 +10,16 @@
 <link rel="stylesheet" href="css/tools.css">
 <script>try{if(localStorage.getItem('yce-theme')==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}</script>
 <style>
-:root{
-  --bg:#0d1827;--surface:#132038;--card:#1a2d4a;--border:#243d5c;
-  --gold:#e8a020;--gold2:#ffd166;--accent:#06d6a0;--blue:#4fc3f7;
-  --text:#dce8f5;--muted:#6b8aaa;--hover:#1e3355;--red:#ef5350;
-}
-html[data-theme="light"]{
-  --bg:#f4f6fa;--surface:#ffffff;--card:#edf1f7;--border:#c9d5e4;
-  --gold:#c07a00;--gold2:#e8a020;--accent:#08916f;--blue:#0277bd;
-  --text:#22344a;--muted:#5a7186;--hover:#e6edf6;--red:#d63230;--orange:#c1650a;
-}
-html[data-theme="light"] header{background:linear-gradient(135deg,#ffffff 0%,#e7edf6 100%);}
+.sec-head{cursor:pointer;user-select:none;flex-wrap:nowrap;}
 html[data-theme="light"] .footer-bar{background:rgba(255,255,255,0.97);}
 html[data-theme="light"] .xopt.on,html[data-theme="light"] .gen-btn{color:#fff;}
 html[data-theme="light"] input::placeholder{color:#9fb2c6;}
-.theme-btn{background:transparent;border:1px solid var(--border);border-radius:50%;width:34px;height:34px;cursor:pointer;font-size:15px;line-height:1;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
-.theme-btn:hover{border-color:var(--gold);}
-*{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;min-height:100vh;}
-::-webkit-scrollbar{width:6px;}::-webkit-scrollbar-track{background:var(--surface);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
-header{background:linear-gradient(135deg,#0a1628 0%,#182d4a 100%);border-bottom:2px solid var(--gold);padding:16px 24px;position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
-.emblem{height:48px;width:48px;object-fit:contain;flex-shrink:0;}
-.logo{font-family:Georgia,serif;font-size:24px;font-weight:700;color:var(--gold);}
-.logo em{color:var(--text);font-style:italic;font-weight:400;font-size:16px;}
-.header-sub{font-size:11px;color:var(--muted);margin-top:2px;}
 .progress{margin-left:auto;text-align:right;}
 .prog-num{font-family:monospace;font-size:20px;color:var(--gold);}
 .prog-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;}
 main{max-width:980px;margin:0 auto;padding:20px 16px 80px;}
 .intro{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--blue);border-radius:8px;padding:14px 18px;margin-bottom:20px;font-size:13px;color:var(--muted);line-height:1.6;}
 .intro b{color:var(--text);}
-.section{background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:18px;overflow:hidden;}
-.sec-head{background:linear-gradient(90deg,rgba(232,160,32,0.12),transparent);padding:12px 18px;border-bottom:1px solid var(--border);display:flex;align-items:baseline;gap:12px;cursor:pointer;user-select:none;}
-.sec-title{font-family:Georgia,serif;font-size:17px;font-weight:700;color:var(--gold);}
-.sec-note{font-size:11px;color:var(--muted);}
 .sec-toggle{margin-left:auto;color:var(--muted);font-size:12px;transition:transform 0.2s;}
 .section.closed .sec-toggle{transform:rotate(-90deg);}
 .sec-body{padding:16px 18px;display:grid;grid-template-columns:repeat(6,1fr);gap:12px 14px;}
@@ -51,7 +27,6 @@ main{max-width:980px;margin:0 auto;padding:20px 16px 80px;}
 .fld{display:flex;flex-direction:column;gap:4px;}
 .w2{grid-column:span 2;}.w3{grid-column:span 3;}.w4{grid-column:span 4;}.w6{grid-column:span 6;}
 @media(max-width:700px){.w2,.w3,.w4{grid-column:span 6;}.w1{grid-column:span 2;}.fld.half{grid-column:span 3;}}
-label.flbl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);}
 label.flbl .ref{font-family:monospace;font-size:9px;color:var(--border);font-weight:400;text-transform:none;margin-left:5px;}
 label.flbl .req{color:var(--red);}
 input[type=text],input[type=email],input[type=tel],input[type=date],input[type=number],select,textarea{
@@ -141,7 +116,7 @@ input.tel-bad{border-color:var(--red) !important;}
   <button class="tpl-btn" id="mail-btn" style="display:none;border-color:rgba(79,195,247,0.5);color:var(--blue);" onclick="mailPresident()">📧 E-mail my club president</button>
   <button class="tpl-btn" id="coord-btn" style="display:none;border-color:rgba(6,214,160,0.5);color:var(--accent);" onclick="mailCoordinator()">📧 E-mail the district coordinator</button>
   <a class="tpl-btn" id="tracker-btn" href="yce_tracker.html" style="display:none;text-decoration:none;">📋 Applications tracker</a>
-  <a class="tpl-btn" id="camps-btn" href="yce_camps.html" style="display:none;text-decoration:none;" title="Camp list manager: import the official YCE directory, edit camps, archive.">🏕 Camps</a>
+  <a class="tpl-btn" id="camps-btn" href="yce_admin.html#camps" style="display:none;text-decoration:none;" title="Camp list manager: import the official YCE directory, edit camps, archive.">🏕 Camps</a>
   <a class="tpl-btn" id="siteadmin-btn" href="yce_admin.html" style="display:none;text-decoration:none;" title="Edit season data, district coordinators, camp list and official documents — committed to GitHub.">⚙ Site admin</a>
   <a class="tpl-btn" id="codemap-btn" href="docs/code_map.html" style="display:none;text-decoration:none;">🗺 Code map</a>
   <label class="tpl-btn" id="ctry-btn" style="display:none" title="Default country used to prefill nationality and format phone numbers. Can also be set per link with ?country=FR.">🌐 Country <select class="ctry-sel" id="ctry-sel" onchange="setCountry(this.value)"></select></label>

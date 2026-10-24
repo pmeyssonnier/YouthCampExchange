@@ -1,7 +1,42 @@
-/* tools.css — styles communs aux pages d'outils (yce_form_filler, yce_tracker, yce_vault, yce_admin) */
+/* tools.css — styles communs aux pages d'outils (yce_form_filler, yce_tracker, yce_vault, yce_admin).
+   Chargé avant le <style> de chaque page : une page ne garde que ce qui lui est propre
+   et peut surcharger une règle d'ici. */
+
+/* thème sombre (défaut) et clair — bascule par js/theme.js (clé yce-theme) */
+:root{
+  --bg:#0d1827;--surface:#132038;--card:#1a2d4a;--border:#243d5c;
+  --gold:#e8a020;--gold2:#ffd166;--accent:#06d6a0;--blue:#4fc3f7;
+  --text:#dce8f5;--muted:#8aa5c2;--hover:#1e3355;--red:#ef5350;--orange:#ffb74d;--on-gold:#0d1827;
+}
+html[data-theme="light"]{
+  --bg:#f4f6fa;--surface:#ffffff;--card:#edf1f7;--border:#c9d5e4;
+  --gold:#c07a00;--gold2:#e8a020;--accent:#08916f;--blue:#0277bd;
+  --text:#22344a;--muted:#4d6479;--hover:#e6edf6;--red:#d63230;--orange:#c1650a;--on-gold:#fff;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;min-height:100vh;}
+::-webkit-scrollbar{width:6px;height:6px;}::-webkit-scrollbar-track{background:var(--surface);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+
+/* en-tête : logo, titre de l'outil, version, bouton de thème */
+header{background:linear-gradient(135deg,#0a1628 0%,#182d4a 100%);border-bottom:2px solid var(--gold);padding:14px 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;position:sticky;top:0;z-index:50;}
+html[data-theme="light"] header{background:linear-gradient(135deg,#ffffff 0%,#e7edf6 100%);}
+.emblem{height:44px;width:44px;object-fit:contain;flex-shrink:0;}
+.logo{font-family:Georgia,serif;font-size:22px;font-weight:700;color:var(--gold);}
+.logo em{color:var(--text);font-style:italic;font-weight:400;font-size:15px;}
+.header-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.theme-btn{background:transparent;border:1px solid var(--border);border-radius:50%;width:34px;height:34px;cursor:pointer;font-size:15px;line-height:1;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.theme-btn:hover{border-color:var(--gold);}
 
 /* menu des outils (js/toolnav.js) */
 .toolnav{display:flex;flex-wrap:wrap;gap:2px 4px;padding:6px 12px;background:var(--surface);border-bottom:1px solid var(--border);font-size:12px;}
 .toolnav a{color:var(--muted);text-decoration:none;padding:5px 10px;border-radius:6px;white-space:nowrap;}
 .toolnav a:hover{color:var(--gold);background:var(--hover);}
 .toolnav a.on{color:var(--gold);font-weight:600;background:rgba(232,160,32,0.12);}
+
+/* sections à en-tête doré */
+.section{background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:18px;overflow:hidden;}
+.sec-head{background:linear-gradient(90deg,rgba(232,160,32,0.12),transparent);padding:12px 18px;border-bottom:1px solid var(--border);display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;}
+.sec-title{font-family:Georgia,serif;font-size:17px;font-weight:700;color:var(--gold);}
+.sec-note{font-size:11px;color:var(--muted);}
+label.flbl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);}
+.badge{display:inline-block;background:rgba(6,214,160,0.12);color:var(--accent);border-radius:10px;padding:2px 10px;font-size:11px;}

@@ -10,31 +10,11 @@
 <link rel="stylesheet" href="css/tools.css">
 <script>try{if(localStorage.getItem('yce-theme')==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}</script>
 <style>
-:root{
-  --bg:#0d1827;--surface:#132038;--card:#1a2d4a;--border:#243d5c;
-  --gold:#e8a020;--gold2:#ffd166;--accent:#06d6a0;--blue:#4fc3f7;
-  --text:#dce8f5;--muted:#6b8aaa;--hover:#1e3355;--red:#ef5350;--orange:#ffb74d;
-}
-html[data-theme="light"]{
-  --bg:#f4f6fa;--surface:#ffffff;--card:#edf1f7;--border:#c9d5e4;
-  --gold:#c07a00;--gold2:#e8a020;--accent:#08916f;--blue:#0277bd;
-  --text:#22344a;--muted:#5a7186;--hover:#e6edf6;--red:#d63230;--orange:#c1650a;
-}
-html[data-theme="light"] header{background:linear-gradient(135deg,#ffffff 0%,#e7edf6 100%);}
+body{font-size:13px;}
 html[data-theme="light"] th{background:#e7edf5;}
 html[data-theme="light"] tr:nth-child(even) td{background:#f0f4f9;}
 html[data-theme="light"] td{border-bottom:1px solid #dfe7f0;}
 html[data-theme="light"] .pill.on{color:#fff;}
-.theme-btn{background:transparent;border:1px solid var(--border);border-radius:50%;width:34px;height:34px;cursor:pointer;font-size:15px;line-height:1;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
-.theme-btn:hover{border-color:var(--gold);}
-*{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:13px;min-height:100vh;}
-::-webkit-scrollbar{width:6px;height:6px;}::-webkit-scrollbar-track{background:var(--surface);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
-header{background:linear-gradient(135deg,#0a1628 0%,#182d4a 100%);border-bottom:2px solid var(--gold);padding:14px 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;position:sticky;top:0;z-index:50;}
-.emblem{height:44px;width:44px;object-fit:contain;}
-.logo{font-family:Georgia,serif;font-size:22px;font-weight:700;color:var(--gold);}
-.logo em{color:var(--text);font-style:italic;font-weight:400;font-size:15px;}
-.header-sub{font-size:11px;color:var(--muted);margin-top:2px;}
 .stats{margin-left:auto;display:flex;gap:18px;}
 .stat{text-align:center;}
 .stat-num{font-family:monospace;font-size:20px;color:var(--gold);}

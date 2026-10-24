@@ -5,6 +5,12 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.2.1 — 2026-10-24
+
+- Shared look of the tool pages (form filler, tracker, vault, administration) moved to `css/tools.css`: theme colours, header, tool menu, sections, labels. Each page keeps only its own styles.
+- Small harmonisation: same header size and section spacing on every tool; secondary text slightly more readable (the higher-contrast grey of the vault is now used everywhere); the orange warning colour was missing in the form filler's dark theme.
+- The form filler's "Camps" admin button opens the Camps tab of the administration page directly.
+
 ## 1.2.0 — 2026-10-24
 
 - One administration page with three tabs — Site & season, Camps, Documents — sharing a single GitHub token: the passphrase is typed once per visit instead of once per page.
