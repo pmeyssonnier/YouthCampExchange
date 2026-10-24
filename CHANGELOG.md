@@ -5,6 +5,10 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.4.1 — 2026-10-24
+
+- Compact header on phones for the tool pages (form filler, tracker, vault, administration): smaller logo and title on a single line, subtitle hidden, buttons kept on the same line. The version number now sits next to the page title.
+
 ## 1.4.0 — 2026-10-24
 
 - Administration, Site & season tab: districts are shown as a list (district, coordinator, club, e-mail, mobile) with an **Edit** button on each row, an **Add a district** button (one letter A–Z) and a **Remove district** button in the edit panel. Changes are published with "Save the data", in one commit.

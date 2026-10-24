@@ -24,8 +24,21 @@ html[data-theme="light"] header{background:linear-gradient(135deg,#ffffff 0%,#e7
 .logo{font-family:Georgia,serif;font-size:22px;font-weight:700;color:var(--gold);}
 .logo em{color:var(--text);font-style:italic;font-weight:400;font-size:15px;}
 .header-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.logo .ver{font:600 10px 'Segoe UI',system-ui,sans-serif;color:var(--muted);margin-left:4px;vertical-align:middle;letter-spacing:0.3px;white-space:nowrap;}
 .theme-btn{background:transparent;border:1px solid var(--border);border-radius:50%;width:34px;height:34px;cursor:pointer;font-size:15px;line-height:1;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
 .theme-btn:hover{border-color:var(--gold);}
+
+/* téléphone : en-tête sur une ligne — logo réduit, sous-titre masqué (la version reste à côté du titre) */
+@media(max-width:700px){
+  header{padding:8px 12px;gap:8px;}
+  header>div:first-of-type{flex:1;min-width:0;}
+  .emblem{height:30px;width:30px;}
+  .logo{font-size:17px;line-height:1.25;}
+  .logo em{font-size:13px;}
+  .header-sub{display:none;}
+  .theme-btn{width:30px;height:30px;font-size:13px;}
+  header .badge{max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+}
 
 /* menu des outils (js/toolnav.js) */
 .toolnav{display:flex;flex-wrap:wrap;gap:2px 4px;padding:6px 12px;background:var(--surface);border-bottom:1px solid var(--border);font-size:12px;}

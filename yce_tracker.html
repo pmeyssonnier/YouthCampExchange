@@ -19,6 +19,7 @@ html[data-theme="light"] .pill.on{color:#fff;}
 .stat{text-align:center;}
 .stat-num{font-family:monospace;font-size:20px;color:var(--gold);}
 .stat-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;}
+@media(max-width:700px){.stats{order:5;flex-basis:100%;justify-content:space-around;margin-left:0;}.stat-num{font-size:16px;}}
 main{max-width:1400px;margin:0 auto;padding:18px 16px 60px;}
 .dropzone{border:2px dashed var(--border);border-radius:10px;background:var(--surface);padding:26px;text-align:center;color:var(--muted);cursor:pointer;transition:all 0.2s;margin-bottom:16px;}
 .dropzone:hover,.dropzone.drag{border-color:var(--gold);color:var(--gold);}
@@ -65,8 +66,8 @@ tr:hover td{background:var(--hover);}
 <header>
   <img src="assets/logo_lions.png" alt="Lions Clubs International" class="emblem">
   <div>
-    <div class="logo">Lions <em>YCE Applications Tracker</em></div>
-    <div class="header-sub">Youth Camp &amp; Exchange <span class="yr">2026</span> — MD 112 Belgium · district coordinator tool · data stays in this browser · <span class="app-ver"></span></div>
+    <div class="logo">Lions <em>YCE Applications Tracker</em> <span class="app-ver ver"></span></div>
+    <div class="header-sub">Youth Camp &amp; Exchange <span class="yr">2026</span> — MD 112 Belgium · district coordinator tool · data stays in this browser</div>
   </div>
   <div class="stats">
     <div class="stat"><div class="stat-num" id="st-total">0</div><div class="stat-lbl">Applications</div></div>
