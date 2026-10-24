@@ -18,6 +18,18 @@ const KDF_ITER=600000;                      // PBKDF2-SHA256, niveau recommandé
 let ADMIN_TOKEN="";                          // jeton déverrouillé : en mémoire uniquement, jamais remis dans la page
 let UPGRADE=false;                           // déverrouillé avec un ancien PIN court : nouvelle phrase secrète attendue
 const ON_CONNECT=[], ON_LOGOUT=[];           // fonctions appelées après connexion / oubli du jeton
+// Session déverrouillée : le jeton déchiffré est gardé dans la session de l'onglet (sessionStorage),
+// pour survivre à un rafraîchissement ou au rechargement d'un onglet mis en veille par le mobile.
+// Elle disparaît à la fermeture de l'onglet et expire après SESSION_IDLE sans appel à GitHub.
+const SESSION_KEY="yce_admin_session";
+const SESSION_IDLE=60*60*1000;              // 1 heure d'inactivité
+function sessionSave(){try{sessionStorage.setItem(SESSION_KEY,JSON.stringify({t:ADMIN_TOKEN,exp:Date.now()+SESSION_IDLE}));}catch(e){}}
+function sessionClear(){try{sessionStorage.removeItem(SESSION_KEY);}catch(e){}}
+function sessionToken(){
+  try{const s=JSON.parse(sessionStorage.getItem(SESSION_KEY)||"null");
+    if(s&&s.t&&s.exp>Date.now())return s.t;}catch(e){}
+  sessionClear();return "";
+}
 
 // -------------------- chiffrement local du jeton par phrase secrète --------------------
 function b64e(a){let s="";for(let i=0;i<a.length;i++)s+=String.fromCharCode(a[i]);return btoa(s);}
@@ -46,7 +58,7 @@ function accessMode(mode){ // "token" = première connexion ; "pin" = déverroui
   document.getElementById("pin-lbl").textContent=mode==="pin"?"Passphrase":(mode==="upgrade"?"New passphrase":"Passphrase")+" ("+PASS_MIN+"+ characters)";
   if(mode==="upgrade"){document.getElementById("access-hint").innerHTML="Your old PIN is too short to protect the token. <b>Choose a new passphrase of at least "+PASS_MIN+" characters</b> and press Connect: the token is re-encrypted on this device, no need to paste it again.";return;}
   document.getElementById("access-hint").innerHTML=mode==="pin"
-    ?"Enter the passphrase chosen on this device to unlock the encrypted token. <a href=\"#\" onclick=\"logout();return false\" style=\"color:var(--blue)\">Use another token instead\u2026</a>"
+    ?"Enter the passphrase chosen on this device to unlock the encrypted token. It then stays unlocked in this browser tab (refresh included) until the tab is closed or after 1 hour without activity. <a href=\"#\" onclick=\"logout();return false\" style=\"color:var(--blue)\">Use another token instead\u2026</a>"
     :"First time: paste the token and choose a passphrase of at least "+PASS_MIN+" characters \u2014 the token is then stored <b>encrypted with your passphrase</b> on this device, and next visits only ask for the passphrase. Without a passphrase the token is not remembered."
      +(document.getElementById("help-dlg")?" <a href=\"#\" onclick=\"document.getElementById('help-dlg').showModal();return false\" style=\"color:var(--blue)\">Which token?</a>":"");
 }
@@ -66,6 +78,7 @@ async function gh(path,opts){
     "X-GitHub-Api-Version":"2022-11-28"
   },opts.headers||{});
   const r=await fetch("https://api.github.com/"+path,opts);
+  if(ADMIN_TOKEN&&!UPGRADE&&r.ok)sessionSave();
   if(!r.ok&&r.status!==404){
     let m="HTTP "+r.status;
     try{m+=" — "+(await r.json()).message;}catch(e){}
@@ -129,7 +142,7 @@ async function connect(){
     if(UPGRADE&&ADMIN_TOKEN){ // remplacement de l'ancien PIN : le jeton est déjà déverrouillé en mémoire
       if(pin.length<PASS_MIN)throw new Error("the passphrase needs at least "+PASS_MIN+" characters");
       localStorage.setItem(ENC_KEY,await encryptToken(ADMIN_TOKEN,pin));
-      UPGRADE=false;document.getElementById("pin").value="";accessMode("pin");
+      UPGRADE=false;document.getElementById("pin").value="";accessMode("pin");sessionSave();
       log("Passphrase saved: the token is now protected by your new passphrase.","ok");
       return;
     }
@@ -144,31 +157,44 @@ async function connect(){
       ADMIN_TOKEN=document.getElementById("token").value.trim();
     }
     document.getElementById("token").value=""; // le jeton ne reste pas lisible dans la page
-    const r=await gh("user");
-    if(r.status===404)throw new Error("invalid token");
-    const u=await r.json();
-    const probe=await getFile("camps_data.js");
-    if(!probe)throw new Error("token cannot read this repository (grant Contents on "+REPO+")");
-    try{
-      localStorage.removeItem(TOKEN_KEY);
-      if(pin.length>=PASS_MIN){ // mémorisation chiffrée uniquement (re-chiffré au format actuel)
-        localStorage.setItem(ENC_KEY,await encryptToken(ADMIN_TOKEN,pin));
-      }else if(unlocked){ // ancien PIN court : on demande tout de suite une phrase secrète plus forte
-        UPGRADE=true;accessMode("upgrade");
-        log("Your PIN is too short to keep protecting the token: choose a new passphrase of at least "+PASS_MIN+" characters above.","warn");
-      }
-    }catch(e){}
-    document.getElementById("pin").value="";
-    const who=document.getElementById("who");
-    who.textContent="✔ "+u.login;who.style.display="";
-    document.getElementById("panel").style.display="";
-    log("Connected as <b>"+esc(u.login)+"</b>","ok");
-    ON_CONNECT.forEach(function(f){f();});
-  }catch(e){if(!UPGRADE)ADMIN_TOKEN="";log("Connection failed: "+esc(e.message),"err");}
+    await finishConnect(pin,unlocked);
+  }catch(e){if(!UPGRADE){ADMIN_TOKEN="";sessionClear();}log("Connection failed: "+esc(e.message),"err");}
   finally{btn.disabled=false;}
+}
+// vérifie le jeton auprès de GitHub, mémorise ce qu'il faut, puis ouvre les onglets
+async function finishConnect(pin,unlocked){
+  const r=await gh("user");
+  if(r.status===404)throw new Error("invalid token");
+  const u=await r.json();
+  const probe=await getFile("camps_data.js");
+  if(!probe)throw new Error("token cannot read this repository (grant Contents on "+REPO+")");
+  try{
+    localStorage.removeItem(TOKEN_KEY);
+    if(pin.length>=PASS_MIN){ // mémorisation chiffrée uniquement (re-chiffré au format actuel)
+      localStorage.setItem(ENC_KEY,await encryptToken(ADMIN_TOKEN,pin));
+    }else if(unlocked){ // ancien PIN court : on demande tout de suite une phrase secrète plus forte
+      UPGRADE=true;accessMode("upgrade");
+      log("Your PIN is too short to keep protecting the token: choose a new passphrase of at least "+PASS_MIN+" characters above.","warn");
+    }
+  }catch(e){}
+  document.getElementById("pin").value="";
+  const who=document.getElementById("who");
+  who.textContent="✔ "+u.login;who.style.display="";
+  document.getElementById("panel").style.display="";
+  if(!UPGRADE)sessionSave();
+  log("Connected as <b>"+esc(u.login)+"</b>","ok");
+  ON_CONNECT.forEach(function(f){f();});
+}
+// reprise après un rafraîchissement : pas de phrase secrète tant que la session de l'onglet est valide
+async function resumeSession(){
+  ADMIN_TOKEN=sessionToken();
+  if(!ADMIN_TOKEN)return false;
+  try{await finishConnect("",false);log("Session resumed — no need to retype the passphrase in this tab.","info");return true;}
+  catch(e){ADMIN_TOKEN="";sessionClear();log("Session expired, please unlock again ("+esc(e.message)+")","warn");return false;}
 }
 function logout(){
   try{localStorage.removeItem(TOKEN_KEY);localStorage.removeItem(ENC_KEY);}catch(e){}
+  sessionClear();
   ADMIN_TOKEN="";UPGRADE=false;
   document.getElementById("token").value="";
   document.getElementById("pin").value="";
@@ -186,7 +212,12 @@ function initAccess(){
   initAccess.done=true;
   try{if(localStorage.getItem(TOKEN_KEY)){localStorage.removeItem(TOKEN_KEY);
     log("An old unencrypted token was found on this device and deleted. Paste your token again and choose a passphrase.","warn");}}catch(e){}
-  if(hasEnc()){accessMode("pin");document.getElementById("pin").focus();return;}
+  if(hasEnc()){
+    accessMode("pin");
+    resumeSession().then(function(ok){if(!ok)document.getElementById("pin").focus();});
+    return;
+  }
+  sessionClear(); // plus de jeton chiffré sur cet appareil : aucune session à reprendre
   accessMode("token");
 }
 

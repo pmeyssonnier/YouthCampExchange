@@ -5,6 +5,10 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.3.0 — 2026-10-24
+
+- Administration: once unlocked, the passphrase is no longer asked again after a refresh, or when a phone reloads the page after switching apps or browser tabs. The unlocked token is kept in the browser tab's session only: it disappears when the tab is closed, after 1 hour without activity, or with "Forget on this device".
+
 ## 1.2.2 — 2026-10-24
 
 - Administration page: the "How it works" explanation no longer takes the top of the page; it opens in a window from the **?** button of the header (or the "Which token?" link on first connection).

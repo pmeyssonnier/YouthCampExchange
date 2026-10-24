@@ -171,7 +171,7 @@ The platform stays server-less: **GitHub is the back end**. The admin page edits
 repository through the GitHub API — the administrator "account" is a GitHub account
 with write access plus a fine-grained personal access token (this repository only,
 permission *Contents: Read and write*; the token never leaves the admin's browser, where it is
-stored only encrypted with a passphrase of 8+ characters). The three tabs share this single token, so the passphrase is typed once per visit.
+stored only encrypted with a passphrase of 8+ characters). The three tabs share this single token, so the passphrase is typed once per visit; once unlocked, the token stays in the browser tab's session (it survives a refresh or a phone reloading the tab, and is dropped when the tab is closed or after 1 hour without activity).
 On connection the page reloads the current data from GitHub, so a stale browser cache
 can never overwrite recent changes. From the page you can change the season label and camp year, the district YCE
 coordinators (form stamping + site cards + e-mails follow), manage the camp list in the

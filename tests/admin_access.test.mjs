@@ -31,6 +31,8 @@ for (const pageName of ['yce_admin.html']) {
   const U = 'http://localhost:8874/' + pageName;
   const logText = () => pg.textContent('#log');
   const connected = () => pg.evaluate(() => document.getElementById('who').style.display !== 'none');
+  // simule un nouvel onglet : la session de l'onglet (sessionStorage) repart vide
+  const newTab = async () => { await pg.evaluate(() => sessionStorage.clear()); await pg.goto(U); await pg.waitForTimeout(300); };
 
   // 1. ancien jeton en clair : effacé, pas de connexion automatique
   await pg.goto(U); await pg.evaluate(t => { localStorage.clear(); localStorage.setItem('yce_admin_token', t); }, TOK);
@@ -50,8 +52,17 @@ for (const pageName of ['yce_admin.html']) {
   const blob = await pg.evaluate(() => localStorage.getItem('yce_admin_token_enc'));
   ok(/^v2\./.test(blob || '') && !(blob || '').includes(TOK), pageName + ': token stored encrypted (v2)');
 
-  // 4. rechargement : déverrouillage par phrase secrète
-  await pg.goto(U); await pg.waitForTimeout(300);
+  // 4a. rafraîchissement dans le même onglet : session reprise sans phrase secrète
+  await pg.reload(); await pg.waitForTimeout(2500);
+  ok(await connected(), pageName + ': refresh keeps the session, no passphrase asked');
+  ok(/Session resumed/.test(await logText()), pageName + ': user told the session was resumed');
+  // 4b. session expirée (1 h sans activité) : la phrase secrète est redemandée
+  await pg.evaluate(() => { const s = JSON.parse(sessionStorage.getItem('yce_admin_session')); s.exp = Date.now() - 1; sessionStorage.setItem('yce_admin_session', JSON.stringify(s)); });
+  await pg.reload(); await pg.waitForTimeout(800);
+  ok(!(await connected()) && !(await pg.evaluate(() => sessionStorage.getItem('yce_admin_session'))), pageName + ': expired session dropped, passphrase needed');
+
+  // 4c. nouvel onglet (session vide) : déverrouillage par phrase secrète
+  await newTab();
   ok(/Passphrase/.test(await pg.textContent('#pin-lbl')), pageName + ': unlock mode asks for the passphrase');
   await pg.fill('#pin', 'wrong passphrase'); await pg.click('#connect'); await pg.waitForTimeout(2500);
   ok(/wrong passphrase/.test(await logText()) && !(await connected()), pageName + ': wrong passphrase refused');
@@ -69,7 +80,7 @@ for (const pageName of ['yce_admin.html']) {
     return b(salt) + '.' + b(iv) + '.' + b(ct);
   }, TOK);
   await pg.evaluate(b => { localStorage.clear(); localStorage.setItem('yce_admin_token_enc', b); }, legacy);
-  await pg.goto(U); await pg.waitForTimeout(300);
+  await newTab();
   await pg.fill('#pin', '4321'); await pg.click('#connect'); await pg.waitForTimeout(2500);
   ok(await connected(), pageName + ': old 4-digit PIN still unlocks once');
   ok(/New passphrase/.test(await pg.textContent('#pin-lbl')), pageName + ': asked for a new passphrase right away');
@@ -78,7 +89,7 @@ for (const pageName of ['yce_admin.html']) {
   ok(/at least 8/.test(await logText()), pageName + ': new passphrase must be 8+');
   await pg.fill('#pin', 'brand new passphrase'); await pg.click('#connect'); await pg.waitForTimeout(2000);
   ok(/^v2\./.test(await pg.evaluate(() => localStorage.getItem('yce_admin_token_enc')) || ''), pageName + ': token re-encrypted with the new passphrase (v2)');
-  await pg.goto(U); await pg.waitForTimeout(300);
+  await newTab();
   await pg.fill('#pin', '4321'); await pg.click('#connect'); await pg.waitForTimeout(2000);
   ok(!(await connected()), pageName + ': old PIN no longer works');
   await pg.fill('#pin', 'brand new passphrase'); await pg.click('#connect'); await pg.waitForTimeout(2500);
@@ -86,7 +97,9 @@ for (const pageName of ['yce_admin.html']) {
 
   // 6. Forget
   await pg.evaluate(() => logout());
-  ok(!(await pg.evaluate(() => localStorage.getItem('yce_admin_token_enc') || localStorage.getItem('yce_admin_token'))), pageName + ': forget clears storage');
+  ok(!(await pg.evaluate(() => localStorage.getItem('yce_admin_token_enc') || localStorage.getItem('yce_admin_token') || sessionStorage.getItem('yce_admin_session'))), pageName + ': forget clears storage and the tab session');
+  await pg.reload(); await pg.waitForTimeout(800);
+  ok(!(await connected()), pageName + ': after forget, a refresh does not reconnect');
   ok(!errs.length, pageName + ': no page error ' + errs.join(' | '));
   await ctx.close();
 }
