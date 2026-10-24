@@ -33,7 +33,7 @@ for (const page of ['yce_form_filler.html', 'yce_tracker.html', 'yce_camps.html'
     }
     // un vrai .xlsx et un vrai .docx du dépôt se lisent toujours
     for (const f of ['Application_form_2026_MD112.xlsx', 'Commitment to Reciprocity.docx']) {
-      const e = await unzip(await (await fetch('/' + encodeURIComponent(f))).arrayBuffer());
+      const e = await unzip(await (await fetch('/documents/' + encodeURIComponent(f))).arrayBuffer());
       out[f] = { ok: e.length };
     }
     return out;

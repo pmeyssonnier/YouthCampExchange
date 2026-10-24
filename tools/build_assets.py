@@ -3,8 +3,8 @@
 and camps.json (plain-JSON export of the season's camp data).
 
 Run from the repository root after changing:
-  - Application_form_2026_MD112.xlsx           (single neutral reference form embedded in the filler)
-  - tools/commit_template.docx                 (Commitment template with §CAND§/§DATE§/[BODY]/[SIG*] markers)
+  - documents/Application_form_2026_MD112.xlsx (single neutral reference form embedded in the filler)
+  - documents/commit_template.docx             (Commitment template with §CAND§/§DATE§/[BODY]/[SIG*] markers)
   - camps_data.js                              (SEASON + RAW camp data → re-exports camps.json)
 
 Both templates are repacked without compression (STORE) so the browser can
@@ -28,8 +28,8 @@ with open("js/assets.js", "w") as f:
     f.write("// FICHIER GENERE — ne pas éditer à la main.\n")
     f.write("// Regénérer avec :  python3 tools/build_assets.py  (depuis la racine du dépôt)\n")
     f.write('const BUILD="%s";\n' % version)
-    f.write('const TEMPLATE_B64="%s";\n' % stored_b64(sorted(glob.glob("Application_form_*_MD*.xlsx"))[-1]))
-    f.write('const COMMIT_B64="%s";\n' % stored_b64("tools/commit_template.docx"))
+    f.write('const TEMPLATE_B64="%s";\n' % stored_b64(sorted(glob.glob("documents/Application_form_*_MD*.xlsx"))[-1]))
+    f.write('const COMMIT_B64="%s";\n' % stored_b64("documents/commit_template.docx"))
 print("js/assets.js written,", version)
 
 # camps.json — export JSON pur des données de camps_data.js (source unique)
