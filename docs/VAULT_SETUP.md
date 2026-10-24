@@ -11,6 +11,13 @@ Les e-mails ne contiennent plus qu'un lien.
   accueille l'année suivante (réciprocité). Après un refus, 90 jours.
 - **Signature** : signature électronique simple. Identité vérifiée par le lien envoyé par e-mail,
   horodatage, et empreinte SHA-256 de la version exacte du ZIP signée.
+- **Candidat mineur** : un parent ou tuteur approuve le dossier avant qu'il parte au club.
+- **Président de club** : il ne reçoit qu'une **copie réduite**, générée automatiquement au dépôt.
+  Elle contient l'AF sans la pièce d'identité, la religion ni la section santé, plus le Commitment.
+  Le dossier complet (avec le scan de la pièce d'identité) n'est visible que du candidat, du parent,
+  du district et du national.
+- **Double authentification** obligatoire pour les coordinateurs, l'équipe nationale et les
+  administrateurs : sans elle, la base ne leur donne aucun droit.
 
 Tant que `SUPABASE_URL` est vide dans `districts_data.js`, la page affiche
 « Vault not configured yet » et le reste du site fonctionne comme avant.
@@ -48,7 +55,7 @@ Les adresses doivent être en **minuscules**. Une même personne peut avoir plus
 (par exemple administrateur et national). Par la suite, l'administrateur gère l'équipe
 depuis le panneau **Team** de la page, sans repasser par le SQL.
 
-Les présidents de club n'ont **pas** besoin d'être déclarés. Le candidat indique l'adresse de son
+Les présidents de club et les parents n'ont **pas** besoin d'être déclarés. Le candidat indique l'adresse de son
 président dans son dossier, et seul ce président voit ce dossier.
 
 ## 3. Connexion par lien magique
@@ -74,6 +81,22 @@ il faut brancher un serveur d'envoi (SMTP) :
    le YCE, et ajustable dans **Authentication** → **Rate Limits**.
 4. Dans **Email Templates** → **Magic Link**, si votre offre permet de modifier les modèles, mettez un texte en anglais, par exemple :
    *Subject* : `Your Lions YCE sign-in link`, *Body* : `<p>Click to open the Lions YCE application vault:</p><p><a href="{{ .ConfirmationURL }}">Sign in</a></p><p>This link works once and expires in one hour.</p>`
+
+### Double authentification (TOTP)
+
+Vérifiez dans **Authentication** → **Multi-Factor** (ou *Sign In / Providers*, selon la version du
+tableau de bord) que *TOTP (App Authenticator)* est **activé**.
+Chaque coordinateur l'installe lui-même à sa première connexion. Le coffre affiche un QR code à
+scanner avec une application d'authentification (Google Authenticator, Microsoft Authenticator,
+1Password…), puis demande le code à 6 chiffres. Aux connexions suivantes, seul le code est demandé.
+Supabase ne fournit pas de codes de secours. **En cas de téléphone perdu**, l'administrateur
+supprime l'ancien facteur dans le SQL Editor (en remplaçant l'adresse) ; à sa prochaine connexion,
+la personne scanne un nouveau QR code :
+
+```sql
+delete from auth.mfa_factors
+ where user_id = (select id from auth.users where email = 'coordinateur.a@example.org');
+```
 
 ## 4. Relier le site au coffre
 
@@ -119,8 +142,9 @@ règles d'accès installées à l'étape 2.
 
 | Étape | Qui agit | Action |
 |---|---|---|
-| Draft | Candidat | crée son dossier, dépose le ZIP du formulaire, l'envoie |
-| Awaiting club president | Président de club | télécharge, vérifie, **signe**, ou renvoie avec un commentaire |
+| Draft | Candidat | crée son dossier, dépose le ZIP du formulaire (la copie club est générée automatiquement), l'envoie |
+| Awaiting parent / guardian | Parent (candidat de moins de 18 ans) | vérifie le dossier complet, **approuve**, ou renvoie avec un commentaire |
+| Awaiting club president | Président de club | télécharge la **copie club**, vérifie, **signe**, ou renvoie avec un commentaire |
 | Awaiting district coordinator | Coordinateur du district | vérifie, **contre-signe**, ou renvoie |
 | Awaiting national YCE team | Équipe nationale | **valide**, ou renvoie |
 | Ready to send to host country | Équipe nationale | marque « envoyé au pays d'accueil » |
@@ -131,7 +155,9 @@ règles d'accès installées à l'étape 2.
 
 - la page propose d'écrire l'e-mail à la personne suivante, avec **un lien et jamais de pièce jointe** ;
 - l'historique garde la trace de qui a déposé, téléchargé, signé ou renvoyé, et quand ;
-- chaque signature est liée à l'empreinte du ZIP signé : si le dossier est remplacé, il faut signer à nouveau.
+- chaque signature est liée à l'empreinte du ZIP signé : si le dossier est remplacé, il faut signer à nouveau ;
+- l'envoi est refusé tant qu'il manque une pièce : AF, Commitment, photo, preuve de paiement,
+  scan du passeport ou de la carte d'identité, lettre à la famille d'accueil.
 
 ## Déploiement dans un autre pays
 

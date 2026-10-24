@@ -1,9 +1,10 @@
 // vault.js — interface du coffre des dossiers (yce_vault.html).
 // Les droits réels sont appliqués par la base ; ici on n'affiche que les actions
 // que la base acceptera pour ce compte et cette étape.
-const CONSENT_VERSION = "2026-10-v1";
+const CONSENT_VERSION = "2026-10-v2"; // à augmenter quand le texte de l'avis change
 const STATUS = {
   draft:              { label: "Draft",                            cls: "st-draft" },
+  parent_review:      { label: "Awaiting parent / guardian",       cls: "st-wait" },
   submitted:          { label: "Awaiting club president",          cls: "st-wait" },
   club_signed:        { label: "Awaiting district coordinator",    cls: "st-wait" },
   district_validated: { label: "Awaiting national YCE team",       cls: "st-wait" },
@@ -18,10 +19,11 @@ const CHECKLIST = [
   { label: "Commitment to Reciprocity",        re: /^Commitment.*\.docx$/i },
   { label: "Passport-style photo",             re: /^Pass_photo/i },
   { label: "Proof of payment",                 re: /^Payment_proof/i },
+  { label: "Passport / ID card scan",          re: /^ID_document/i },
   { label: "Letter to the host family",        re: /^Letter_to_Host_Family/i }
 ];
 
-let API = null, ME = "", ROLES = [], DOSSIERS = [], CUR = null, CUR_FILES = [];
+let API = null, ME = "", ROLES = [], DOSSIERS = [], CUR = null, CUR_FILES = [], MFA_FACTOR = null;
 
 // ---------- utilitaires ----------
 function $(id){ return document.getElementById(id); }
@@ -37,6 +39,14 @@ async function sha256Hex(buf){
   const h = await crypto.subtle.digest("SHA-256", buf);
   return Array.from(new Uint8Array(h)).map(function(b){ return b.toString(16).padStart(2, "0"); }).join("");
 }
+// moins de 18 ans aujourd'hui : l'approbation d'un parent est requise (même règle que la base)
+function isMinor(birth){
+  if(!birth) return false;
+  const b = new Date(birth), lim = new Date(); lim.setFullYear(lim.getFullYear() - 18);
+  return b > lim;
+}
+function validBirth(v){ return /^\d{4}-\d{2}-\d{2}$/.test(v) && v >= "1980-01-01" && v <= new Date().toISOString().slice(0, 10); }
+function latestFile(kind){ return CUR_FILES.find(function(f){ return f.kind === kind; }); }
 // saison de candidature : de septembre à août (en octobre 2026 on postule pour 2026-2027)
 function applicationSeason(){
   const d = new Date(), y = d.getFullYear();
@@ -85,6 +95,46 @@ async function startSession(s){
   $("me").textContent = ME;
   try{ ROLES = await API.myRoles() || []; }catch(e){ ROLES = []; }
   $("me-roles").textContent = ROLES.map(function(r){ return r.role === "district" ? "District " + r.district + " coordinator" : r.role === "national" ? "National YCE team" : "Administrator"; }).join(" · ");
+  if(await mfaNeeded()){ show("work", false); return; }
+  continueSession();
+}
+
+// ---------- double authentification (coordinateurs, national, admin) ----------
+// Sans elle, la base ne leur donne aucun droit : on la demande avant d'afficher le travail.
+async function mfaNeeded(){
+  if(!ROLES.length) return false;
+  let st;
+  try{ st = await API.mfaStatus(); }catch(e){ msg("Could not check two-step verification: " + e.message, "err"); return true; }
+  if(st.current === "aal2") return false;
+  show("mfa", true);
+  if(st.verified.length){
+    MFA_FACTOR = st.verified[0].id;
+    show("mfa-setup", false);
+    $("mfa-intro").textContent = "Enter the 6-digit code shown by your authenticator app.";
+  }else{
+    try{
+      const e = await API.mfaEnroll();
+      MFA_FACTOR = e.factorId; $("mfa-qr").src = e.qr; $("mfa-secret").textContent = e.secret;
+      show("mfa-setup", true);
+      $("mfa-intro").textContent = "Coordinators and the national team protect the files with two-step verification. "
+        + "Scan this QR code once with an authenticator app (Google Authenticator, Microsoft Authenticator, 1Password…), then enter the 6-digit code it shows.";
+    }catch(e){ msg("Could not start two-step verification: " + e.message, "err"); }
+  }
+  setTimeout(function(){ $("mfa-code").focus(); }, 50);
+  return true;
+}
+async function mfaVerify(){
+  const code = $("mfa-code").value.replace(/\s+/g, "");
+  if(!/^\d{6}$/.test(code)){ msg("Enter the 6-digit code from your authenticator app.", "err"); return; }
+  try{
+    await API.mfaVerify(MFA_FACTOR, code);
+    $("mfa-code").value = ""; show("mfa", false); msg("Two-step verification done.", "ok");
+    continueSession();
+  }catch(e){ msg("Wrong or expired code — try the next one. (" + e.message + ")", "err"); }
+}
+
+async function continueSession(){
+  show("work", true);
   show("admin", isStaff("admin"));
   show("purge", isStaff("national"));
   await loadDashboard();
@@ -99,6 +149,7 @@ async function signOut(){ await API.signOut(); location.href = location.pathname
 // ---------- tableau de bord ----------
 function myTurn(d){
   if(d.status === "draft") return d.candidate_email === ME;
+  if(d.status === "parent_review") return d.parent_email === ME;
   if(d.status === "submitted") return d.president_email === ME;
   if(d.status === "club_signed") return isStaff("district", d.district);
   if(["district_validated", "national_validated", "sent_host"].indexOf(d.status) >= 0) return isStaff("national");
@@ -129,15 +180,18 @@ function renderList(){
 }
 
 async function createDossier(){
-  const name = $("n-name").value.trim(), pres = $("n-president").value.trim().toLowerCase();
+  const name = $("n-name").value.trim(), pres = $("n-president").value.trim().toLowerCase(), birth = $("n-birth").value;
+  const parent = $("n-parent").value.trim().toLowerCase();
   if(name.length < 2){ msg("Enter the candidate's first and last name.", "err"); return; }
+  if(!validBirth(birth)){ msg("Enter the candidate's date of birth.", "err"); return; }
+  if(isMinor(birth) && !parent){ msg("The candidate is under 18: enter the e-mail of a parent or legal guardian, who will approve the file.", "err"); return; }
   if(pres && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(pres)){ msg("The club president e-mail is not valid.", "err"); return; }
   if(!$("n-consent").checked){ msg("Please read and accept the data protection notice.", "err"); return; }
   try{
     const d = await API.createDossier({
-      season: $("n-season").value, candidate_name: name, district: $("n-district").value,
+      season: $("n-season").value, candidate_name: name, candidate_birth_date: birth, district: $("n-district").value,
       club: $("n-club").value.trim() || null, president_email: pres || null,
-      parent_email: $("n-parent").value.trim().toLowerCase() || null,
+      parent_email: parent || null,
       camp_choice: $("n-camp").value.trim() || null,
       consent_at: new Date().toISOString(), consent_version: CONSENT_VERSION
     });
@@ -163,9 +217,8 @@ async function openDossier(id){
 
 function closeDossier(){ CUR = null; show("dossier", false); history.replaceState(null, "", location.pathname); }
 
-function canUpload(d){
+function canUpload(d){ // le président ne dépose jamais : il ne reçoit que la copie club
   return (d.status === "draft" && d.candidate_email === ME) ||
-         (d.status === "submitted" && d.president_email === ME) ||
          (d.status === "club_signed" && isStaff("district", d.district)) ||
          ((d.status === "district_validated" || d.status === "national_validated") && isStaff("national"));
 }
@@ -180,38 +233,42 @@ function renderDossier(sigs, events, comments){
   // informations
   show("d-edit", editable); show("d-info", !editable);
   if(editable){
-    $("e-name").value = d.candidate_name; $("e-district").value = d.district;
+    $("e-name").value = d.candidate_name; $("e-district").value = d.district; $("e-birth").value = d.candidate_birth_date || "";
     $("e-club").value = d.club || ""; $("e-president").value = d.president_email || "";
     $("e-parent").value = d.parent_email || ""; $("e-camp").value = d.camp_choice || "";
   }else{
-    const rows = [["Candidate", d.candidate_email], ["District", (typeof MD !== "undefined" ? MD : "") + d.district],
+    const rows = [["Candidate", d.candidate_email], ["Date of birth", d.candidate_birth_date ? fmtD(d.candidate_birth_date) + (isMinor(d.candidate_birth_date) ? " (under 18)" : "") : ""],
+      ["District", (typeof MD !== "undefined" ? MD : "") + d.district],
       ["Club", d.club], ["Club president", d.president_email], ["Parent / guardian", d.parent_email], ["Preferred camp", d.camp_choice]];
     $("d-info").innerHTML = rows.map(function(r){ return "<div><span>" + r[0] + "</span><b>" + esc(r[1] || "—") + "</b></div>"; }).join("");
   }
 
-  // fichiers et checklist
-  const last = CUR_FILES[0];
-  $("d-check").innerHTML = CHECKLIST.map(function(c){
+  // fichiers et checklist (sur le dossier complet ; le président ne voit que la copie club)
+  const last = latestFile("zip");
+  $("d-check").innerHTML = !last && latestFile("club")
+    ? '<li class="sub">You have the club copy: the application form without health, religion and ID data, and the Commitment.</li>'
+    : CHECKLIST.map(function(c){
     const hit = last && (last.contents || []).some(function(n){ return c.re.test(n.split("/").pop()); });
     return '<li class="' + (hit ? "yes" : "no") + '">' + (hit ? "✔" : "✖") + " " + c.label + "</li>";
   }).join("") + (last && (last.contents || []).some(function(n){ return /_club-signed\.docx$/i.test(n); })
     ? '<li class="yes">✔ Commitment countersigned by the club</li>' : "");
   $("d-files").innerHTML = CUR_FILES.length ? CUR_FILES.map(function(f, i){
-    return "<li" + (i ? ' class="old"' : "") + "><button class=\"lnk\" onclick=\"downloadFile('" + f.id + "')\">⬇ " + esc(f.file_name) + "</button>" +
+    return "<li" + (f !== latestFile(f.kind) ? ' class="old"' : "") + "><button class=\"lnk\" onclick=\"downloadFile('" + f.id + "')\">⬇ " + esc(f.file_name) + "</button>" +
       ' <span class="sub">' + (f.size_bytes / 1048576).toFixed(1) + " MB · " + esc(f.uploaded_by) + " · " + fmtDT(f.uploaded_at) +
-      " · <code>" + f.sha256.slice(0, 10) + "</code>" + (i ? " · previous version" : " · <b>current version</b>") + "</span></li>";
+      " · <code>" + f.sha256.slice(0, 10) + "</code> · " + (f.kind === "club" ? "club copy" : "full file") +
+      (f === latestFile(f.kind) ? " · <b>current</b>" : " · previous") + "</span></li>";
   }).join("") : '<li class="sub">No file yet.</li>';
   show("d-upload", canUpload(d));
 
   // signatures
   $("d-sigs").innerHTML = sigs.length ? sigs.map(function(s){
-    const role = { president: "Club president", district: "District coordinator", national: "National YCE team" }[s.signer_role] || s.signer_role;
+    const role = { parent: "Parent / guardian", president: "Club president", district: "District coordinator", national: "National YCE team" }[s.signer_role] || s.signer_role;
     return "<li>✍ <b>" + esc(role) + "</b> — " + esc(s.signer_email) + " · " + fmtDT(s.signed_at) +
       " · version <code>" + s.doc_sha256.slice(0, 10) + "</code></li>";
   }).join("") : '<li class="sub">No signature yet.</li>';
 
   // actions possibles à cette étape
-  renderActions(d, last);
+  renderActions(d);
 
   // historique
   const items = events.map(function(e){
@@ -227,19 +284,23 @@ function renderDossier(sigs, events, comments){
   }).join("") || '<li class="sub">Nothing yet.</li>';
 }
 
-function renderActions(d, last){
+function renderActions(d){
   const A = [];
-  const signStep = { submitted: d.president_email === ME ? ["club_signed", "Sign as club president"] : null,
+  const signStep = { parent_review: d.parent_email === ME ? ["submitted", "Approve as parent / guardian"] : null,
+                     submitted: d.president_email === ME ? ["club_signed", "Sign as club president"] : null,
                      club_signed: isStaff("district", d.district) ? ["district_validated", "Validate & countersign (district)"] : null,
                      district_validated: isStaff("national") ? ["national_validated", "Validate (national YCE team)"] : null }[d.status];
   if(d.status === "draft" && d.candidate_email === ME){
-    A.push('<button class="btn" onclick="act(\'submitted\')">📤 Send to my club president</button>');
+    A.push(isMinor(d.candidate_birth_date)
+      ? '<button class="btn" onclick="act(\'parent_review\')">📤 Send to my parent / guardian for approval</button>'
+      : '<button class="btn" onclick="act(\'submitted\')">📤 Send to my club president</button>');
     if(!d.first_submitted_at) A.push('<button class="btn2 danger" onclick="withdraw()">Delete this draft</button>');
   }
-  if(d.status === "submitted" && d.candidate_email === ME) A.push('<button class="btn2" onclick="act(\'draft\')">↩ Take back to edit</button>');
+  if((d.status === "submitted" || d.status === "parent_review") && d.candidate_email === ME) A.push('<button class="btn2" onclick="act(\'draft\')">↩ Take back to edit</button>');
   if(signStep){
-    A.push('<label class="chk"><input type="checkbox" id="a-reviewed"> I have downloaded and reviewed the current version' +
-      (last ? " (<code>" + last.sha256.slice(0, 10) + "</code>)" : "") + "</label>");
+    const doc = signedDoc(d);
+    A.push('<label class="chk"><input type="checkbox" id="a-reviewed"> I have downloaded and reviewed the current ' +
+      (doc && doc.kind === "club" ? "club copy" : "version") + (doc ? " (<code>" + doc.sha256.slice(0, 10) + "</code>)" : "") + "</label>");
     A.push('<button class="btn" onclick="act(\'' + signStep[0] + '\',true)">✍ ' + signStep[1] + "</button>");
   }
   if(d.status === "national_validated" && isStaff("national")) A.push('<button class="btn" onclick="act(\'sent_host\')">✈ Mark as sent to the host country</button>');
@@ -248,17 +309,19 @@ function renderActions(d, last){
     A.push('<button class="btn2 danger" onclick="act(\'refused\')">✖ Refused</button>');
   }
   if((d.status === "accepted" || d.status === "refused") && isStaff("national")) A.push('<button class="btn2" onclick="act(\'archived\')">Archive</button>');
-  const canReturn = (d.status === "submitted" && d.president_email === ME) || (d.status === "club_signed" && isStaff("district", d.district)) ||
+  const canReturn = (d.status === "parent_review" && d.parent_email === ME) ||
+                    (d.status === "submitted" && d.president_email === ME) || (d.status === "club_signed" && isStaff("district", d.district)) ||
                     ((d.status === "district_validated" || d.status === "national_validated") && isStaff("national"));
   if(canReturn) A.push('<button class="btn2" onclick="act(\'draft\')">↩ Send back to the candidate for correction</button>');
   $("d-actions").innerHTML = A.length ? A.join("") : '<span class="sub">No action expected from you at this step.</span>';
 }
 
 async function saveEdit(){
-  const pres = $("e-president").value.trim().toLowerCase();
+  const pres = $("e-president").value.trim().toLowerCase(), birth = $("e-birth").value;
   if(pres && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(pres)){ msg("The club president e-mail is not valid.", "err"); return; }
+  if(!validBirth(birth)){ msg("Enter a valid date of birth.", "err"); return; }
   try{
-    await API.updateDossier(CUR.id, { candidate_name: $("e-name").value.trim(), district: $("e-district").value,
+    await API.updateDossier(CUR.id, { candidate_name: $("e-name").value.trim(), candidate_birth_date: birth, district: $("e-district").value,
       club: $("e-club").value.trim() || null, president_email: pres || null,
       parent_email: $("e-parent").value.trim().toLowerCase() || null, camp_choice: $("e-camp").value.trim() || null });
     msg("Saved.", "ok"); await loadDashboard(); openDossier(CUR.id);
@@ -276,10 +339,16 @@ async function uploadZip(input){
     try{ names = zipNames(buf); }
     catch(e){ throw new Error("this file is not a valid ZIP (" + e.message + ")"); }
     const sha = await sha256Hex(buf);
+    // copie pour le président : AF sans santé, religion ni pièce d'identité + Commitment
+    $("up-status").textContent = "Preparing the club copy…";
+    const clubBlob = await buildClubCopy(buf);
+    const clubBuf = await clubBlob.arrayBuffer();
+    const clubFile = new File([clubBuf], file.name.replace(/\.zip$/i, "") + "_CLUB-COPY.zip", { type: "application/zip" });
     $("up-status").textContent = "Uploading…";
-    await API.upload(CUR.id, file, sha, names);
+    await API.upload(CUR.id, file, sha, names, "zip");
+    await API.upload(CUR.id, clubFile, await sha256Hex(clubBuf), zipNames(clubBuf), "club", sha);
     $("up-status").textContent = "";
-    msg("Uploaded: " + file.name + " (" + names.length + " files inside).", "ok");
+    msg("Uploaded: " + file.name + " (" + names.length + " files inside) and its club copy for the president.", "ok");
     openDossier(CUR.id);
   }catch(e){ $("up-status").textContent = ""; msg("Upload failed: " + e.message, "err"); }
 }
@@ -290,8 +359,11 @@ async function downloadFile(fid){
   catch(e){ msg("Download failed: " + e.message, "err"); }
 }
 
+// document approuvé à l'étape en cours : la copie club pour le président, le dossier complet sinon
+function signedDoc(d){ return d.status === "submitted" && d.president_email === ME ? latestFile("club") : latestFile("zip"); }
+
 async function act(target, needsReview){
-  const d = CUR, last = CUR_FILES[0];
+  const d = CUR, doc = signedDoc(d);
   let note = null;
   if(needsReview && !$("a-reviewed").checked){ msg("Download and review the current version, then tick the box before signing.", "err"); return; }
   if(target === "draft" && d.candidate_email !== ME){
@@ -300,7 +372,7 @@ async function act(target, needsReview){
   }
   if(target === "refused"){ note = prompt("Reason for the refusal (optional, visible in the history):") || null; }
   try{
-    await API.transition(d.id, target, note, needsReview && last ? last.sha256 : null);
+    await API.transition(d.id, target, note, needsReview && doc ? doc.sha256 : null);
     msg("Done: " + (STATUS[target] || {}).label + ".", "ok");
     await loadDashboard();
     await openDossier(d.id);
@@ -312,7 +384,8 @@ async function act(target, needsReview){
 function offerNotify(target){
   const d = CUR;
   let to = "", who = "";
-  if(target === "submitted"){ to = d.president_email; who = "your club president"; }
+  if(target === "parent_review"){ to = d.parent_email; who = "your parent / guardian"; }
+  else if(target === "submitted"){ to = d.president_email; who = "the club president"; }
   else if(target === "club_signed" && typeof DISTRICTS !== "undefined" && DISTRICTS[d.district]){ to = DISTRICTS[d.district].email; who = "the district coordinator"; }
   else if(target === "draft" || target === "accepted" || target === "refused"){ to = d.candidate_email; who = "the candidate"; }
   const link = selfLink(d.id);

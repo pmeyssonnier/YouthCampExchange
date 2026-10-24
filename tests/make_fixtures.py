@@ -24,9 +24,12 @@ with zipfile.ZipFile(os.path.join(ZT, 'candidate.zip'), 'w', zipfile.ZIP_DEFLATE
     f.write(os.path.join(ROOT, 'Application_form_2026_MD112.xlsx'), 'Application_form_2027_112A_Doe_Jane.xlsx')
     f.write(os.path.join(ROOT, 'Commitment to Reciprocity.docx'), 'Commitment_to_Reciprocity_2027_112A_Doe_Jane.docx')
     f.writestr('Pass_photo_2027_112A_Doe_Jane.jpg', os.urandom(300000))
-# versions successives d'un dossier pour le coffre
-base = ['Application_form_2027_112A_Doe_Jane.xlsx', 'Commitment_to_Reciprocity_2027_112A_Doe_Jane.docx',
-        'Pass_photo_2027_112A_Doe_Jane.jpg', 'Payment_proof_2027_112A_Doe_Jane.pdf']
-z(os.path.join(VZ, 'Dossier_v1.zip'), [(n, 'fake content of ' + n) for n in base], zipfile.ZIP_STORED)
-z(os.path.join(VZ, 'Dossier_v2.zip'), [(n, 'fake content of ' + n) for n in base + ['Letter_to_Host_Family_2027_112A_Doe_Jane.pdf']], zipfile.ZIP_STORED)
+# versions successives d'un dossier pour le coffre : vrais AF et Commitment (la copie club en est tirée)
+AF = open(os.path.join(ROOT, 'Application_form_2026_MD112.xlsx'), 'rb').read()
+CM = open(os.path.join(ROOT, 'Commitment to Reciprocity.docx'), 'rb').read()
+v1 = [('Application_form_2027_112A_Doe_Jane.xlsx', AF), ('Commitment_to_Reciprocity_2027_112A_Doe_Jane.docx', CM),
+      ('Pass_photo_2027_112A_Doe_Jane.jpg', b'jpg'), ('Payment_proof_2027_112A_Doe_Jane.pdf', b'%PDF-1.4')]
+z(os.path.join(VZ, 'Dossier_v1.zip'), v1)   # incomplet : ni pièce d'identité ni lettre
+z(os.path.join(VZ, 'Dossier_v2.zip'), v1 + [('ID_document_2027_112A_Doe_Jane.pdf', b'%PDF-1.4 passport'),
+                                            ('Letter_to_Host_Family_2027_112A_Doe_Jane.pdf', b'%PDF-1.4 letter')])
 print('fixtures written to', FIX)

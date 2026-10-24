@@ -1,7 +1,7 @@
 # Code map — Lions YCE
 
 > **Generated file — do not edit by hand.** Rebuilt by `python3 tools/build_codemap.py` (run automatically on every push to `main`).
-> Commit `41adbb2`, 2026-10-24 17:04 UTC. Interactive version: [`code_map.html`](code_map.html).
+> Commit `07c9fca`, 2026-10-24 17:12 UTC. Interactive version: [`code_map.html`](code_map.html).
 
 ## Pages
 
@@ -92,14 +92,17 @@
 | Module | Lines | Size | Role |
 |---|---:|---:|---|
 | `js/zip.js` | 83 | 4.3 KB | bounded ZIP reading (limits against booby-trapped archives) — shared |
-| `js/vault-api.js` | 64 | 3.6 KB | vault: the only layer talking to Supabase |
-| `js/vault.js` | 396 | 22.4 KB | vault UI: sign-in, dashboard, file, signatures, team, retention |
+| `js/club-copy.js` | 48 | 2.7 KB | vault: reduced copy for the club president (AF without ID, religion, health + Commitment) |
+| `js/vault-api.js` | 82 | 4.9 KB | vault: the only layer talking to Supabase |
+| `js/vault.js` | 469 | 27.2 KB | vault UI: sign-in, dashboard, file, signatures, team, retention |
 
 **`js/zip.js`** — `zipDirectory` (validated central directory, no decompression), `zipNames` (file names of an archive without decompressing), `inflateRaw` (native inflate), `unzip` (parse a zip into [{name,data}] within ZIP_LIMITS)
 
+**`js/club-copy.js`** — `zipBase`, `u8buf`, `dropUnusedShared` (removes orphan Excel shared strings), `redactApplicationForm` (empties ID / religion / health cells), `buildClubCopy` (full dossier ZIP → club copy ZIP)
+
 **`js/vault-api.js`** — `makeVaultApi`
 
-**`js/vault.js`** — `esc` (escape HTML), `show`, `msg`, `fmtDT`, `fmtD`, `isStaff`, `selfLink`, `sha256Hex`, `applicationSeason`, `vaultInit`, `fillStaticLists`, `sendLink`, `startSession`, `signOut`, `myTurn`, `loadDashboard`, `renderList`, `createDossier`, `openDossier`, `closeDossier`, `canUpload`, `renderDossier`, `renderActions`, `saveEdit`, `uploadZip`, `downloadFile`, `act`, `offerNotify`, `copyLink`, `withdraw`, `addComment`, `loadStaff`, `staffAdd`, `staffDelete`, `loadPurge`, `runPurge`
+**`js/vault.js`** — `esc` (escape HTML), `show`, `msg`, `fmtDT`, `fmtD`, `isStaff`, `selfLink`, `sha256Hex`, `isMinor`, `validBirth`, `latestFile`, `applicationSeason`, `vaultInit`, `fillStaticLists`, `sendLink`, `startSession`, `mfaNeeded`, `mfaVerify`, `continueSession`, `signOut`, `myTurn`, `loadDashboard`, `renderList`, `createDossier`, `openDossier`, `closeDossier`, `canUpload`, `renderDossier`, `renderActions`, `saveEdit`, `uploadZip`, `downloadFile`, `signedDoc`, `act`, `offerNotify`, `copyLink`, `withdraw`, `addComment`, `loadStaff`, `staffAdd`, `staffDelete`, `loadPurge`, `runPurge`
 
 ## Data, tools and other files
 
@@ -112,13 +115,13 @@
 | `yce_camps.html` | 11.7 KB | camp manager HTML shell |
 | `js/admin-core.js` | 10.9 KB | shared admin plumbing (token, PIN, GitHub API) |
 | `js/camps-manager.js` | 26.2 KB | camp manager: directory import, editing, backups, archive |
-| `yce_vault.html` | 18.5 KB | application vault HTML shell (Supabase) |
-| `js/vault-api.js` | 3.6 KB | vault: the only layer talking to Supabase |
-| `js/vault.js` | 22.4 KB | vault UI: sign-in, dashboard, file, signatures, team, retention |
-| `supabase/vault_schema.sql` | 18.6 KB | vault database: tables, row-level security, workflow, retention |
-| `docs/VAULT_SETUP.md` | 7.2 KB | vault setup guide (Supabase project, SMTP, GDPR) |
+| `yce_vault.html` | 20.6 KB | application vault HTML shell (Supabase) |
+| `js/vault-api.js` | 4.9 KB | vault: the only layer talking to Supabase |
+| `js/vault.js` | 27.2 KB | vault UI: sign-in, dashboard, file, signatures, team, retention |
+| `supabase/vault_schema.sql` | 24.1 KB | vault database: tables, row-level security, workflow, retention |
+| `docs/VAULT_SETUP.md` | 9.1 KB | vault setup guide (Supabase project, SMTP, GDPR) |
 | `tools/build_assets.py` | 2.2 KB | regenerates js/assets.js |
-| `tools/build_codemap.py` | 12.8 KB | regenerates this visualisation's data and docs/CODE_MAP.md |
+| `tools/build_codemap.py` | 13.1 KB | regenerates this visualisation's data and docs/CODE_MAP.md |
 | `tests/` | 4.0 KB | security & regression tests run by GitHub Actions (npm test) |
 | `tools/commit_template.docx` | 33.0 KB | Commitment template (markers) |
 
