@@ -52,6 +52,22 @@ await pg.goto(B + 'yce_tracker.html'); await pg.waitForTimeout(500);
 const csv = await pg.evaluate(() => ['=HYPERLINK("http://x","y")', '+SUM(A1)', '-2+3+cmd|x', '@SUM(1)', '\t=1', '+32 470 12 34 56', '-12', '2008-05-12', 'Doe', ''].map(csvSafe));
 ok(csv[0] === "'=HYPERLINK(\"http://x\",\"y\")" && csv[1] === "'+SUM(A1)" && csv[2] === "'-2+3+cmd|x" && csv[3] === "'@SUM(1)" && csv[4] === "'\t=1", 'formulas neutralised: ' + JSON.stringify(csv.slice(0, 5)));
 ok(csv[5] === '+32 470 12 34 56' && csv[6] === '-12' && csv[7] === '2008-05-12' && csv[8] === 'Doe', 'phones, numbers and text untouched');
+// variantes : espaces de tête (normaux, insécables, idéographiques, retour à la ligne) et signes pleine chasse
+const csv2 = await pg.evaluate(() => [' =HYPERLINK("http://x")', ' =1+1', '\n@SUM(1)', '　+SUM(A1)', '＝HYPERLINK(1)', '＠SUM(1)', ' +32 470 12 34 56', 'Jean-Pierre'].map(csvSafe));
+ok(csv2.slice(0, 6).every(s => s[0] === "'"), 'formulas behind leading spaces or full-width signs neutralised: ' + JSON.stringify(csv2.slice(0, 6)));
+ok(csv2[6] === ' +32 470 12 34 56' && csv2[7] === 'Jean-Pierre', 'spaced phone and hyphenated name untouched');
+// export complet : toutes les colonnes d'une candidature piégée passent par la protection
+{
+  const evil = '=HYPERLINK("http://evil","x")';
+  await pg.evaluate(e => { ROWS['C_evil_x'] = { dist: 'C', fam: e, fir: ' ' + e, sex: '+cmd|x', dob: '@SUM(1)', age: 17, club: '＝1+1', email: '-1+cmd', mobile: '+32 470 12 34 56',
+    pref1: e, pref2: '', pref3: '', missing: [e], status: 'Incomplete', notes: '\n' + e, updated: '' }; }, evil);
+  const [dl] = await Promise.all([pg.waitForEvent('download'), pg.evaluate(() => exportCsv())]);
+  const text = fs.readFileSync(await dl.path(), 'utf8');
+  const cells = text.split('\r\n')[1].split(';').map(c => c.replace(/^"|"$/g, '').replace(/""/g, '"'));
+  const risky = cells.filter(c => /^\s*[=+\-@＝＋－＠]/.test(c) && !/^[+-]?[\d\s().\/-]+$/.test(c.trim()));
+  ok(!risky.length && cells.includes('+32 470 12 34 56'), 'CSV export: no cell can start a formula ' + JSON.stringify(risky));
+  await pg.evaluate(() => { delete ROWS['C_evil_x']; });
+}
 
 // SEC-10 : dates du site et du gestionnaire de camps
 await pg.goto(B + 'index.html'); await pg.waitForTimeout(500);

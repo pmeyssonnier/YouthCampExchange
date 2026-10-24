@@ -5,6 +5,10 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.7.1 — 2026-10-24
+
+- Tracker CSV export: the protection against spreadsheet formulas (a cell starting with `=`, `+`, `-` or `@` is prefixed with an apostrophe) now also catches formulas hidden behind leading spaces, non-breaking spaces or line breaks, and the full-width signs `＝ ＋ － ＠`. Phone numbers and plain numbers stay unchanged.
+
 ## 1.7.0 — 2026-10-24
 
 - Administration, Site & season tab: the national team section is titled **Multi District 112** and starts with an editable **multiple district number** (`MD` in `districts_data.js`, published with "Save the data"). The number is used in the district badges ("112 A"), the team titles, the application form and the generated file names.
