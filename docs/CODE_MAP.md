@@ -1,7 +1,7 @@
 # Code map — Lions YCE
 
 > **Generated file — do not edit by hand.** Rebuilt by `python3 tools/build_codemap.py` (run automatically on every push to `main`).
-> Commit `4a4e447`, 2026-10-24 23:46 UTC. Interactive version: [`code_map.html`](code_map.html).
+> Commit `23b61df`, 2026-10-24 23:54 UTC. Interactive version: [`code_map.html`](code_map.html).
 
 ## Pages
 
@@ -31,20 +31,20 @@
 | Module | Lines | Size | Role |
 |---|---:|---:|---|
 | `js/assets.js` | 6 | 504.5 KB | GENERATED — embedded templates (base64) + build version |
-| `js/zip.js` | 83 | 4.3 KB | bounded ZIP reading (limits against booby-trapped archives) — shared |
+| `js/zip.js` | 126 | 7.5 KB | bounded ZIP reading (limits against booby-trapped archives) — shared |
 | `js/xlsx.js` | 211 | 9.6 KB | ZIP writing + workbook cell read/write |
-| `js/docx.js` | 173 | 9.5 KB | Commitment: text, validation, signed Word generation |
+| `js/docx.js` | 174 | 9.5 KB | Commitment: text, validation, signed Word generation |
 | `js/signatures.js` | 141 | 7.5 KB | signature pads + pasting signatures into the workbook |
 | `js/attachments.js` | 147 | 7.0 KB | pass photo & payment proof |
 | `js/storage.js` | 75 | 3.6 KB | local draft persistence |
 | `js/email.js` | 49 | 3.4 KB | prefilled e-mails (club president, district coordinator) |
-| `js/club-signing.js` | 83 | 4.6 KB | ?sign=club remote counter-signing |
+| `js/club-signing.js` | 84 | 4.7 KB | ?sign=club remote counter-signing |
 | `js/sections.js` | 165 | 10.6 KB | declarative form definition (SECTIONS, camps list, mode flags) |
 | `js/country.js` | 87 | 4.0 KB | default country, dial codes, phone normalisation |
 | `js/render.js` | 238 | 13.7 KB | section/widget rendering, X-groups, counter |
 | `js/form.js` | 231 | 15.2 KB | orchestration: generate() and init() — loaded last |
 
-**`js/zip.js`** — `zipDirectory` (validated central directory, no decompression), `zipNames` (file names of an archive without decompressing), `inflateRaw` (native inflate), `unzip` (parse a zip into [{name,data}] within ZIP_LIMITS)
+**`js/zip.js`** — `zipBudget`, `zipCheckSize`, `zipDirectory` (validated central directory, no decompression), `zipNames` (file names of an archive without decompressing), `inflateRaw` (native inflate), `unzip` (parse a zip into [{name,data}] within ZIP_LIMITS)
 
 **`js/xlsx.js`** — `crc32` (CRC-32 for zip writing), `deflateRaw` (native deflate), `buildZip` (rebuild a zip Blob), `decodeEnt` (XML entities), `textOf` (concat <t> runs), `parseShared` (sharedStrings table), `getCellValue` (read one cell), `syncFromTemplate` (prefill inputs + X-groups from a workbook), `b64ToBuf` (base64 → ArrayBuffer), `loadTemplate` ('Other template' input), `setStatus` (status bar helper), `escXml` (escape XML), `fmtDate` (ISO → dd-mm-yyyy), `setCell` (write/clear one cell keeping style), `collectValues` (gather all field values (+phone check))
 
@@ -70,13 +70,13 @@
 
 | Module | Lines | Size | Role |
 |---|---:|---:|---|
-| `js/zip.js` | 83 | 4.3 KB | bounded ZIP reading (limits against booby-trapped archives) — shared |
+| `js/zip.js` | 126 | 7.5 KB | bounded ZIP reading (limits against booby-trapped archives) — shared |
 | `js/tracker-storage.js` | 14 | 0.6 KB | rows + localStorage persistence |
-| `js/tracker-parser.js` | 146 | 8.3 KB | file ingestion: zip, xlsx forms, commitment, attachments |
+| `js/tracker-parser.js` | 149 | 8.6 KB | file ingestion: zip, xlsx forms, commitment, attachments |
 | `js/tracker-export.js` | 31 | 2.0 KB | CSV export for Excel |
 | `js/tracker-ui.js` | 69 | 5.6 KB | table, filters, sorting, stats — runs render() |
 
-**`js/zip.js`** — `zipDirectory` (validated central directory, no decompression), `zipNames` (file names of an archive without decompressing), `inflateRaw` (native inflate), `unzip` (parse a zip into [{name,data}] within ZIP_LIMITS)
+**`js/zip.js`** — `zipBudget`, `zipCheckSize`, `zipDirectory` (validated central directory, no decompression), `zipNames` (file names of an archive without decompressing), `inflateRaw` (native inflate), `unzip` (parse a zip into [{name,data}] within ZIP_LIMITS)
 
 **`js/tracker-storage.js`** — `save` (persist rows), `clearAll` (wipe rows)
 
@@ -90,12 +90,12 @@
 
 | Module | Lines | Size | Role |
 |---|---:|---:|---|
-| `js/zip.js` | 83 | 4.3 KB | bounded ZIP reading (limits against booby-trapped archives) — shared |
-| `js/club-copy.js` | 48 | 2.7 KB | vault: reduced copy for the club president (AF without ID, religion, health + Commitment) |
+| `js/zip.js` | 126 | 7.5 KB | bounded ZIP reading (limits against booby-trapped archives) — shared |
+| `js/club-copy.js` | 49 | 2.8 KB | vault: reduced copy for the club president (AF without ID, religion, health + Commitment) |
 | `js/vault-api.js` | 89 | 5.2 KB | vault: the only layer talking to Supabase |
-| `js/vault.js` | 509 | 29.6 KB | vault UI: sign-in, dashboard, file, signatures, team, retention |
+| `js/vault.js` | 510 | 29.7 KB | vault UI: sign-in, dashboard, file, signatures, team, retention |
 
-**`js/zip.js`** — `zipDirectory` (validated central directory, no decompression), `zipNames` (file names of an archive without decompressing), `inflateRaw` (native inflate), `unzip` (parse a zip into [{name,data}] within ZIP_LIMITS)
+**`js/zip.js`** — `zipBudget`, `zipCheckSize`, `zipDirectory` (validated central directory, no decompression), `zipNames` (file names of an archive without decompressing), `inflateRaw` (native inflate), `unzip` (parse a zip into [{name,data}] within ZIP_LIMITS)
 
 **`js/club-copy.js`** — `zipBase`, `u8buf`, `dropUnusedShared` (removes orphan Excel shared strings), `redactApplicationForm` (empties ID / religion / health cells), `buildClubCopy` (full dossier ZIP → club copy ZIP)
 
@@ -110,7 +110,7 @@
 | `camps_data.js` | 92.6 KB | season data: SEASON + YEAR + RAW camps — common to every deployment |
 | `districts_data.js` | 5.3 KB | per-deployment data: SITE_REPO + DISTRICTS coordinators |
 | `js/version.js` | 0.5 KB | site version number (VERSION), shown on every page — bumped by each pull request |
-| `CHANGELOG.md` | 8.5 KB | what changed in each version |
+| `CHANGELOG.md` | 9.4 KB | what changed in each version |
 | `yce_form_filler.html` | 12.1 KB | filler HTML shell + styles |
 | `yce_tracker.html` | 8.8 KB | tracker HTML shell + styles |
 | `yce_admin.html` | 22.6 KB | administration HTML shell: tabs Site & season / Camps / Documents |
@@ -123,7 +123,7 @@
 | `css/tools.css` | 3.8 KB | styles shared by the tool pages |
 | `yce_vault.html` | 19.3 KB | application vault HTML shell (Supabase) |
 | `js/vault-api.js` | 5.2 KB | vault: the only layer talking to Supabase |
-| `js/vault.js` | 29.6 KB | vault UI: sign-in, dashboard, file, signatures, team, retention |
+| `js/vault.js` | 29.7 KB | vault UI: sign-in, dashboard, file, signatures, team, retention |
 | `supabase/vault_schema.sql` | 26.6 KB | vault database: tables, row-level security, workflow, retention |
 | `docs/VAULT_SETUP.md` | 9.8 KB | vault setup guide (Supabase project, SMTP, GDPR) |
 | `tools/build_assets.py` | 2.2 KB | regenerates js/assets.js |
@@ -141,7 +141,7 @@
 | `js/country.js` | `js/xlsx.js` | normPhone, validPhone |
 | `js/render.js` | `js/xlsx.js` | XSTATE, depShow, upd |
 | `js/assets.js` | `js/docx.js` | COMMIT_B64 |
-| `js/zip.js` | `js/docx.js` | unzip |
+| `js/zip.js` | `js/docx.js` | unzip, zipCheckSize |
 | `js/xlsx.js` | `js/docx.js` | b64ToBuf, buildZip, currentDistrict, decodeEnt, escXml, setStatus |
 | `js/signatures.js` | `js/docx.js` | SIGS, dataUrlToBytes |
 | `js/render.js` | `js/docx.js` | esc, upd |
@@ -155,7 +155,7 @@
 | `js/sections.js` | `js/storage.js` | SECTIONS, SIGN_MODE |
 | `js/render.js` | `js/storage.js` | XSTATE, depShow, upd |
 | `js/xlsx.js` | `js/email.js` | currentDistrict, setStatus |
-| `js/zip.js` | `js/club-signing.js` | unzip |
+| `js/zip.js` | `js/club-signing.js` | unzip, zipCheckSize |
 | `js/xlsx.js` | `js/club-signing.js` | buildZip, decodeEnt, setStatus, syncFromTemplate, templateBuf |
 | `js/docx.js` | `js/club-signing.js` | docxSigRun |
 | `js/signatures.js` | `js/club-signing.js` | SIGS, dataUrlToBytes |
