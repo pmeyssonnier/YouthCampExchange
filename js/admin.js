@@ -5,22 +5,26 @@ let NEW_CAMPS=null; // liste de camps en attente d'enregistrement (upload JSON)
 let GAL=[];         // galerie en cours d'édition (copie de GALLERY, enregistrée avec Save)
 
 // -------------------- formulaire --------------------
-function fillForm(){
-  document.getElementById("in-season").value=SEASON;
-  document.getElementById("in-year").value=YEAR;
+// d = données à afficher ; par défaut celles chargées avec la page (peut-être une copie en cache :
+// à la connexion, onConnected() recharge les fichiers actuels depuis GitHub)
+function fillForm(d){
+  d=d||{season:SEASON,year:YEAR,districts:DISTRICTS,camps:RAW.length,
+    announce:(typeof SITE!=="undefined"&&SITE.announce)||"",gallery:(typeof GALLERY!=="undefined")?GALLERY:[]};
+  document.getElementById("in-season").value=d.season;
+  document.getElementById("in-year").value=d.year;
   const b=document.getElementById("dist-body");
-  b.innerHTML=Object.keys(DISTRICTS).map(function(d){
-    const c=DISTRICTS[d];
-    return '<div class="fld w1" style="justify-content:center"><span class="badge">'+MD+' '+d+'</span></div>'
-      +'<div class="fld w2"><label class="flbl">Name (as on the form)</label><input id="d-'+d+'-name" value="'+esc(c.name)+'"></div>'
-      +'<div class="fld w3"><label class="flbl">Lions club</label><input id="d-'+d+'-club" value="'+esc(c.club||"")+'"></div>'
+  b.innerHTML=Object.keys(d.districts).map(function(k){
+    const c=d.districts[k];
+    return '<div class="fld w1" style="justify-content:center"><span class="badge">'+MD+' '+k+'</span></div>'
+      +'<div class="fld w2"><label class="flbl">Name (as on the form)</label><input id="d-'+k+'-name" value="'+esc(c.name)+'"></div>'
+      +'<div class="fld w3"><label class="flbl">Lions club</label><input id="d-'+k+'-club" value="'+esc(c.club||"")+'"></div>'
       +'<div class="fld w1"></div>'
-      +'<div class="fld w2"><label class="flbl">E-mail</label><input id="d-'+d+'-email" value="'+esc(c.email)+'"></div>'
-      +'<div class="fld w3"><label class="flbl">Mobile</label><input id="d-'+d+'-mobile" value="'+esc(c.mobile)+'"></div>';
+      +'<div class="fld w2"><label class="flbl">E-mail</label><input id="d-'+k+'-email" value="'+esc(c.email)+'"></div>'
+      +'<div class="fld w3"><label class="flbl">Mobile</label><input id="d-'+k+'-mobile" value="'+esc(c.mobile)+'"></div>';
   }).join("");
-  document.getElementById("camps-note").textContent=RAW.length+" camps currently on the site (season "+SEASON+")";
-  document.getElementById("in-announce").value=(typeof SITE!=="undefined"&&SITE.announce)||"";
-  GAL=(typeof GALLERY!=="undefined")?GALLERY.slice():[];
+  document.getElementById("camps-note").textContent=d.camps+" camps currently on the site (season "+d.season+")";
+  document.getElementById("in-announce").value=d.announce||"";
+  GAL=d.gallery.slice();
   galShow();
   updPaths();
 }
@@ -206,6 +210,37 @@ function uploadPick(inp,kind){
   };
   r.readAsArrayBuffer(f);
   inp.value="";
+}
+
+// -------------------- connexion : données actuelles lues sur GitHub --------------------
+// Lues comme du texte (la politique de sécurité de la page interdit d'exécuter du code reçu) :
+// constantes simples, tableaux JSON et lignes DISTRICTS écrites par buildDistrictsLiteral().
+function parseSiteData(campsSrc,distSrc){
+  const str=function(src,name){const m=new RegExp("const "+name+' = "([^"]*)";').exec(src);return m?m[1]:null;};
+  const json=function(src,re){const m=re.exec(src);return m?JSON.parse(m[1]):null;};
+  const raw=json(campsSrc,/const RAW = (\[[\s\S]*?\]);/);
+  const gallery=json(distSrc,/const GALLERY = (\[[\s\S]*?\]);/);
+  const ann=/\n  announce: ("(?:[^"\\]|\\.)*"),/.exec(distSrc);
+  const block=/const DISTRICTS = \{([\s\S]*?)\n\};/.exec(distSrc);
+  const districts={};
+  if(block)block[1].split("\n").forEach(function(line){
+    const m=/^\s*([A-Z]): \{name: ("(?:[^"\\]|\\.)*"), club: ("(?:[^"\\]|\\.)*"), email: ("(?:[^"\\]|\\.)*"), mobile: ("(?:[^"\\]|\\.)*")\}/.exec(line);
+    if(m)districts[m[1]]={name:JSON.parse(m[2]),club:JSON.parse(m[3]),email:JSON.parse(m[4]),mobile:JSON.parse(m[5])};
+  });
+  if(!raw||!gallery||!Object.keys(districts).length||str(campsSrc,"SEASON")===null)throw new Error("unexpected file format");
+  return {season:str(campsSrc,"SEASON"),year:str(campsSrc,"YEAR"),camps:raw.length,
+    districts:districts,announce:ann?JSON.parse(ann[1]):"",gallery:gallery};
+}
+async function onConnected(){
+  try{
+    const c=await getFile("camps_data.js"),d=await getFile("districts_data.js");
+    if(!c||!d)throw new Error("data files not found on main");
+    fillForm(parseSiteData(b64ToUtf8(c.content),b64ToUtf8(d.content)));
+    NEW_CAMPS=null;
+    log("Current data loaded from GitHub (not from the browser cache).","ok");
+  }catch(e){
+    log("Could not reload the current data from GitHub ("+esc(e.message)+"). The form may show an older cached copy: reload the page before saving.","err");
+  }
 }
 
 // -------------------- démarrage --------------------
