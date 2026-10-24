@@ -129,27 +129,6 @@
   {
    "continent": "Asia",
    "country": "India",
-   "camp_name": "India Cultural Heritage Camp",
-   "age_requirements": "18-22",
-   "fee": "400 EURO",
-   "camp_starts": "02-08-2026",
-   "camp_ends": "14-08-2026",
-   "family_stay_starts": "24-07-2026",
-   "family_stay_ends": "02-08-2026",
-   "detail": {
-    "location": "Mumbai",
-    "description": "Immerse yourself in the vibrant soul of India through a camp experience filled with culture, color, and connection. Explore iconic wonders like India Gate, Lotus Temple, and the majestic Taj Mahal. Celebrate Diwali and Holi, learn traditional art forms, savor diverse cuisines, and feel the warmth of true Indian hospitality. Engage in meaningful community service and discover India�s rich heritage in a way that inspires, transforms, and stays with you forever.",
-    "host_family_activities": "During their stay with host families, youths truly immerse themselves in India�s rich culture and timeless traditions. They experience the soul of Mumbai/Pune�vibrant cities where heritage and modernity breathe side by side. From iconic landmarks and bustling streets to diverse street food and the energy that defines city life, every moment becomes a memory to cherish. This journey offers not just sightseeing, but a profound understanding of Indian daily life, cherished rituals, and the warmth of our unmatched hospitality.",
-    "languages": [
-     "English"
-    ],
-    "website": "https://www.instagram.com/youthexchange_india/",
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/india-cultural-heritage-camp"
-   }
-  },
-  {
-   "continent": "Asia",
-   "country": "India",
    "camp_name": "Namaste India (Central) Youth Camp",
    "age_requirements": "16-22",
    "fee": "550 USD",
@@ -444,46 +423,6 @@
     ],
     "website": "https://sites.google.com/view/lions-camp-2countries-2026/home",
     "yce_url": "https://www.lions-yce-belgium.be/destinations/lions-international-youth-camp-two-countries%2C-one-adventure"
-   }
-  },
-  {
-   "continent": "Europe",
-   "country": "Denmark",
-   "camp_name": "Camp Western Jutland",
-   "age_requirements": "17-21",
-   "fee": "100 EURO",
-   "camp_starts": "04-07-2026",
-   "camp_ends": "18-07-2026",
-   "family_stay_starts": "27-06-2026",
-   "family_stay_ends": "04-07-2026",
-   "detail": {
-    "location": "Videobaek, Denmark",
-    "description": "Agriculture Alternative energy sources Environmental protection History of the Vikings A lot of fun",
-    "languages": [
-     "English"
-    ],
-    "website": "https://yce.lions.dk/",
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/camp-western-jutland"
-   }
-  },
-  {
-   "continent": "Europe",
-   "country": "Denmark",
-   "camp_name": "Catch the Future between Earth, Heaven and Sea",
-   "age_requirements": "17-21",
-   "fee": "100 EURO",
-   "camp_starts": "04-07-2026",
-   "camp_ends": "18-07-2026",
-   "family_stay_starts": "27-06-2026",
-   "family_stay_ends": "04-07-2026",
-   "detail": {
-    "location": "Hirtshals, Denmark",
-    "description": "Studies of the history of an old fishing society Visits to modern fishing industries The fantastic nature surrounding Hirtshals",
-    "languages": [
-     "English"
-    ],
-    "website": "https://yce.lions.dk/",
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/catch-the-future-between-earth%2C-heaven-and-sea"
    }
   },
   {
@@ -935,27 +874,6 @@
   },
   {
    "continent": "Europe",
-   "country": "Hungary",
-   "camp_name": "The hidden treasures of Central-Hungary",
-   "age_requirements": "18-22",
-   "fee": "250 EURO",
-   "camp_starts": "03-08-2026",
-   "camp_ends": "11-08-2026",
-   "family_stay_starts": "20-07-2026",
-   "family_stay_ends": "27-07-2026",
-   "detail": {
-    "location": "Monor, Budapest",
-    "description": "Program venues: Sightseeing and leisure programs in Monor, sightseeing and leisure programs in Budapest and in the central region of Hungary, Godollo Sissi Castle, and many more... Activities: horse-drawn carriage ride, walk in the cellar village, wine tasting, folk dancing, wellness, swimming, sensitisation programmes, City tour in Budapest (Buda Castle, Parliament, Heroes square and more), Budapest by night...\"",
-    "host_family_activities": "Depending on the families",
-    "languages": [
-     "English"
-    ],
-    "website": "https://www.lions.hu/youth-camp-in-hungary",
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/the-hidden-treasures-of-central-hungary"
-   }
-  },
-  {
-   "continent": "Europe",
    "country": "Ireland",
    "camp_name": "Discover Ireland Youth Camp 2026",
    "age_requirements": "16-21",
@@ -1061,25 +979,6 @@
     "contact_name": "Barbara De Giacomi",
     "contact_email": "barbara@studiocogeas.com",
     "contact_phone": "00393357049046"
-   }
-  },
-  {
-   "continent": "Europe",
-   "country": "Italy",
-   "camp_name": "Winter Camp Italy MD",
-   "age_requirements": "18-21",
-   "fee": "Euro",
-   "camp_starts": "28-12-2025",
-   "camp_ends": "09-01-2026",
-   "family_stay_starts": "20-12-2025",
-   "family_stay_ends": "20-12-2025",
-   "detail": {
-    "description": "Arts, italian's culture, history's topics in Puglia and Umbria's areas",
-    "host_family_activities": "Host family's program depend of each host family There will be time to relax, share time tougether talking about country's presentation, have meals with all family to know and taste italian food. It's Christmas time and the campers could visit our beautil cities with a lot of lights.",
-    "languages": [
-     "English"
-    ],
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/winter-camp-italy-md"
    }
   },
   {
@@ -1347,25 +1246,6 @@
   },
   {
    "continent": "Europe",
-   "country": "Switzerland",
-   "camp_name": "Swiss Historical Experience",
-   "age_requirements": "18-23",
-   "fee": "0 CHF",
-   "camp_starts": "25-07-2026",
-   "camp_ends": "08-08-2026",
-   "family_stay_starts": null,
-   "family_stay_ends": null,
-   "detail": {
-    "location": "Schaan-Vaduz; Switzerland",
-    "description": "History of the Eastern part of Switzerland History of Liechtenstein Excursions throughout the eastern german part of Switzerland and Liechtenstein Hiking in the mountains Look behind the scenes of local people and culture Trips to the mountains, sports activities, shopping tour in Zurich, Schaffhausen and other cities Enjoy the Walensee and many other lakes Experience different activities with your new youth camp friends Enjoy the time with new friends from all over the world Celebration of the Swiss National Day with Lions clubs and friends and much more to go",
-    "languages": [
-     "English"
-    ],
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/swiss-historical-experience"
-   }
-  },
-  {
-   "continent": "Europe",
    "country": "Turkey",
    "camp_name": "19.LIONS ISTANBUL FASHION & CULTURE CAMP",
    "age_requirements": "for boys: 17-21; for girls: 17-23",
@@ -1538,26 +1418,6 @@
      "English"
     ],
     "yce_url": "https://www.lions-yce-belgium.be/destinations/loughborough-legends"
-   }
-  },
-  {
-   "continent": "Middle America",
-   "country": "Mexico",
-   "camp_name": "Exploring Mexico City and Morelos",
-   "age_requirements": "16-21",
-   "fee": "400 EURO",
-   "camp_starts": "12-06-2026",
-   "camp_ends": "18-06-2026",
-   "family_stay_starts": "12-06-2026",
-   "family_stay_ends": "18-06-2026",
-   "detail": {
-    "location": "Mexico City and the state of Morelos",
-    "description": "Guided tour of the Z�calo, Metropolitan Cathedral, and National Palace in Mexico City; excursion to Xochimilco in Mexico City; visit to Tepoztl�n in Morelos; visit to Oaxtepec and Cuernavaca in Morelos. Includes excursions, walks, and recreational and cultural activities.",
-    "languages": [
-     "English",
-     "Spanish"
-    ],
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/exploring-mexico-city-and-morelos"
    }
   },
   {
