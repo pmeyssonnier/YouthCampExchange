@@ -47,7 +47,8 @@ function accessMode(mode){ // "token" = première connexion ; "pin" = déverroui
   if(mode==="upgrade"){document.getElementById("access-hint").innerHTML="Your old PIN is too short to protect the token. <b>Choose a new passphrase of at least "+PASS_MIN+" characters</b> and press Connect: the token is re-encrypted on this device, no need to paste it again.";return;}
   document.getElementById("access-hint").innerHTML=mode==="pin"
     ?"Enter the passphrase chosen on this device to unlock the encrypted token. <a href=\"#\" onclick=\"logout();return false\" style=\"color:var(--blue)\">Use another token instead\u2026</a>"
-    :"First time: paste the token and choose a passphrase of at least "+PASS_MIN+" characters \u2014 the token is then stored <b>encrypted with your passphrase</b> on this device, and next visits only ask for the passphrase. Without a passphrase the token is not remembered.";
+    :"First time: paste the token and choose a passphrase of at least "+PASS_MIN+" characters \u2014 the token is then stored <b>encrypted with your passphrase</b> on this device, and next visits only ask for the passphrase. Without a passphrase the token is not remembered."
+     +(document.getElementById("help-dlg")?" <a href=\"#\" onclick=\"document.getElementById('help-dlg').showModal();return false\" style=\"color:var(--blue)\">Which token?</a>":"");
 }
 function log(msg,cls){
   const l=document.getElementById("log");

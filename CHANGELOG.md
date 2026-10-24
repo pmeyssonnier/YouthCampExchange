@@ -5,6 +5,10 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.2.2 — 2026-10-24
+
+- Administration page: the "How it works" explanation no longer takes the top of the page; it opens in a window from the **?** button of the header (or the "Which token?" link on first connection).
+
 ## 1.2.1 — 2026-10-24
 
 - Shared look of the tool pages (form filler, tracker, vault, administration) moved to `css/tools.css`: theme colours, header, tool menu, sections, labels. Each page keeps only its own styles.
