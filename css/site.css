@@ -248,7 +248,7 @@ tr.clickable-row.selected td{background:rgba(79,195,247,0.07);border-left:2px so
 .brx-blason{height:170px;width:auto;margin-bottom:16px;filter:drop-shadow(0 6px 18px rgba(0,0,0,0.35));}
 .brx-visual h3{font-family:'Crimson Pro',serif;font-size:26px;color:var(--head);margin-bottom:8px;}
 .brx-visual .brx-meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;}
-.brx-chip{padding:6px 13px;border-radius:20px;font-size:12px;font-family:'IBM Plex Mono',monospace;background:rgba(232,160,32,0.1);color:var(--gold2);border:1px solid rgba(232,160,32,0.3);}
+.brx-chip{padding:6px 13px;border-radius:20px;font-size:12.5px;font-weight:600;font-family:'IBM Plex Mono',monospace;background:rgba(232,160,32,0.12);color:var(--gold);border:1.5px solid var(--gold);}
 .brx ul{list-style:none;margin:22px 0 28px;}
 .brx li{padding:9px 0 9px 30px;position:relative;color:var(--muted);font-size:14.5px;border-bottom:1px solid rgba(36,61,92,0.4);}
 .brx li::before{content:'✓';position:absolute;left:2px;color:var(--accent);font-weight:700;}
