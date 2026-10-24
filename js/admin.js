@@ -81,7 +81,8 @@ function galPick(inp){
         fn.textContent="\u23f3 "+f.name+"\u2026";
         const cur=await getFile(path);
         await putFile(path,b64,cur?cur.sha:null,"Admin: gallery photo "+path);
-        GAL.push({src:path,caption:""});galShow();
+        if(!GAL.some(function(g){return g.src===path;}))GAL.push({src:path,caption:""}); // même nom = photo remplacée, pas une 2e entrée
+        galShow();
         fn.textContent="\u2714 "+f.name+" uploaded — add a caption, then Save the data";
         log("Gallery photo committed: "+esc(path),"ok");
       }catch(e){fn.textContent="\u2716 "+f.name+" failed";log("Gallery upload failed: "+esc(e.message),"err");}
@@ -125,7 +126,8 @@ async function saveData(){
     srcD=srcD.replace(/const DISTRICTS = \{[\s\S]*?\n\};/,function(){return buildDistrictsLiteral();});
     const ann=document.getElementById("in-announce").value.trim();
     if(/\n  announce: /.test(srcD))srcD=srcD.replace(/\n  announce: "(?:[^"\\]|\\.)*",/,function(){return "\n  announce: "+JSON.stringify(ann)+",";});
-    if(/const GALLERY = \[[\s\S]*?\];/.test(srcD))srcD=srcD.replace(/const GALLERY = \[[\s\S]*?\];/,function(){return "const GALLERY = "+JSON.stringify(GAL)+";";});
+    const galU=GAL.filter(function(g,i){return GAL.findIndex(function(x){return x.src===g.src;})===i;}); // jamais deux fois la même photo
+    if(/const GALLERY = \[[\s\S]*?\];/.test(srcD))srcD=srcD.replace(/const GALLERY = \[[\s\S]*?\];/,function(){return "const GALLERY = "+JSON.stringify(galU)+";";});
     const changes=[];
     if(src!==b64ToUtf8(cur.content))changes.push({path:"camps_data.js",b64:utf8ToB64(src),sha:cur.sha});
     if(srcD!==b64ToUtf8(curD.content))changes.push({path:"districts_data.js",b64:utf8ToB64(srcD),sha:curD.sha});

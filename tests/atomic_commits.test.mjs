@@ -79,6 +79,10 @@ const lastLog = pg => pg.evaluate(() => document.querySelector('#log div').textC
   const D = new Function(st.files['districts_data.js'] + ';return DISTRICTS;')();
   ok(D.A.name === 'Jane "Q" Back\\slash', 'admin: quotes/backslash kept and districts_data.js still valid JS: ' + D.A.name);
   ok(/SUPABASE_URL/.test(st.files['districts_data.js']), 'admin: vault settings preserved');
+  await pg.evaluate(() => { GAL = [{ src: 'assets/gallery/a.jpg', caption: '' }, { src: 'assets/gallery/a.jpg', caption: '' }, { src: 'assets/gallery/b.jpg', caption: 'x' }]; });
+  await pg.evaluate(() => saveData()); await pg.waitForTimeout(1500);
+  const G = new Function(st.files['districts_data.js'] + ';return GALLERY;')();
+  ok(G.length === 2 && G[0].src.endsWith('a.jpg') && G[1].src.endsWith('b.jpg'), 'admin: duplicate gallery entries never saved: ' + JSON.stringify(G));
 
   // conflit : quelqu'un modifie camps_data.js entre la lecture et l'écriture
   const before = st.refUpdates;
