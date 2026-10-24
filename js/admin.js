@@ -7,6 +7,7 @@ let DIST_W={};      // districts en cours d'édition {A:{name,club,email,mobile}
 let DIST_EDIT=null; // code du district ouvert dans le panneau d'édition ("" = nouveau district)
 let TEAM_W={national:[],outgoing:[]}; // équipe nationale en cours d'édition (copie de TEAM)
 let TEAM_EDIT=null;  // {g:"national"|"outgoing", i:index, -1 = nouveau membre}
+let MD_W=MD;         // numéro du district multiple en cours d'édition (const MD de districts_data.js)
 const PAY_KEYS=["amount","iban","bic","beneficiary","communication"];
 
 // -------------------- formulaire --------------------
@@ -15,9 +16,10 @@ const PAY_KEYS=["amount","iban","bic","beneficiary","communication"];
 function fillForm(d){
   d=d||{season:SEASON,year:YEAR,districts:DISTRICTS,camps:RAW.length,
     announce:(typeof SITE!=="undefined"&&SITE.announce)||"",gallery:(typeof GALLERY!=="undefined")?GALLERY:[],
-    team:(typeof TEAM!=="undefined")?TEAM:null,payment:(typeof PAYMENT!=="undefined")?PAYMENT:null};
+    team:(typeof TEAM!=="undefined")?TEAM:null,payment:(typeof PAYMENT!=="undefined")?PAYMENT:null,md:MD};
   document.getElementById("in-season").value=d.season;
   document.getElementById("in-year").value=d.year;
+  MD_W=d.md||MD;document.getElementById("in-md").value=MD_W;mdShow();
   DIST_W=JSON.parse(JSON.stringify(d.districts));DIST_EDIT=null;
   distShow();
   const t=d.team||{};
@@ -38,7 +40,7 @@ function distShow(){
   let form="";
   if(DIST_EDIT!==null){
     const isNew=DIST_EDIT==="",c=isNew?{}:DIST_W[DIST_EDIT];
-    form='<div class="dist-form"><div class="dist-form-title">'+(isNew?"New district":"District "+esc(MD+" "+DIST_EDIT))+'</div>'
+    form='<div class="dist-form"><div class="dist-form-title">'+(isNew?"New district":"District "+esc(MD_W+" "+DIST_EDIT))+'</div>'
       +'<div class="dist-grid">'
       +(isNew?'<div class="fld w1"><label class="flbl">Code</label><input id="de-code" maxlength="4" placeholder="E, CC…" style="text-transform:uppercase"></div>':"")
       +DIST_FIELDS.map(function(f){return '<div class="fld '+f[2]+'"><label class="flbl">'+f[1]+'</label><input id="de-'+f[0]+'" value="'+esc(c[f[0]]||"")+'"></div>';}).join("")
@@ -50,7 +52,7 @@ function distShow(){
   // le panneau d'édition s'ouvre sous la ligne du district ; un nouveau district en tête de liste
   const rows=Object.keys(DIST_W).sort().map(function(k){
     const c=DIST_W[k];
-    return '<div class="dist-item'+(DIST_EDIT===k?" editing":"")+'"><span class="badge">'+esc(MD+" "+k)+'</span>'
+    return '<div class="dist-item'+(DIST_EDIT===k?" editing":"")+'"><span class="badge">'+esc(MD_W+" "+k)+'</span>'
       +'<div class="dist-who"><b>'+esc(c.name||"—")+'</b><span>'+esc(c.club||"")+'</span>'
       +'<span>'+esc(c.email||"")+'</span>'+(c.mobile?'<span>'+esc(c.mobile)+'</span>':"")+'</div>'
       +'<button class="btn2" onclick="distEdit(\''+k+'\')">✏️ Edit</button></div>'
@@ -70,17 +72,26 @@ function distApply(){
   const k=isNew?document.getElementById("de-code").value.trim().toUpperCase():DIST_EDIT;
   const v={};DIST_FIELDS.forEach(function(f){v[f[0]]=document.getElementById("de-"+f[0]).value.trim();});
   if(!/^[A-Z][A-Z0-9]{0,3}$/.test(k)){log("The district code is 1 to 4 characters: a letter, then letters or digits (A, CC, A1).","err");return;}
-  if(isNew&&DIST_W[k]){log("District "+esc(MD+" "+k)+" already exists — use its Edit button.","err");return;}
+  if(isNew&&DIST_W[k]){log("District "+esc(MD_W+" "+k)+" already exists — use its Edit button.","err");return;}
   if(!v.name){log("The coordinator name is required.","err");return;}
   if(!/^[^\s@"<>]+@[^\s@"<>]+\.[^\s@"<>]+$/.test(v.email)){log("Invalid e-mail address: "+esc(v.email),"err");return;}
   DIST_W[k]=v;DIST_EDIT=null;distShow();
-  log((isNew?"District "+esc(MD+" "+k)+" added":"District "+esc(MD+" "+k)+" updated")+" — press “Save the data” to publish.","info");
+  log((isNew?"District "+esc(MD_W+" "+k)+" added":"District "+esc(MD_W+" "+k)+" updated")+" — press “Save the data” to publish.","info");
 }
 function distRemove(k){
   if(Object.keys(DIST_W).length<=1){log("At least one district is needed.","err");return;}
-  if(!confirm("Remove district "+MD+" "+k+" ("+(DIST_W[k].name||"")+")? Its form links and site card disappear once saved."))return;
+  if(!confirm("Remove district "+MD_W+" "+k+" ("+(DIST_W[k].name||"")+")? Its form links and site card disappear once saved."))return;
   delete DIST_W[k];DIST_EDIT=null;distShow();
-  log("District "+esc(MD+" "+k)+" removed — press “Save the data” to publish.","info");
+  log("District "+esc(MD_W+" "+k)+" removed — press “Save the data” to publish.","info");
+}
+// -------------------- district multiple (numéro) --------------------
+// Le numéro (112) figure dans le titre de la section, les puces des districts ("112 A"), les intitulés
+// de l'équipe nationale, le formulaire (cellule AB1) et les noms de fichiers générés.
+function mdShow(){
+  document.getElementById("md-title").textContent=MD_W;
+}
+function mdInput(el){
+  MD_W=el.value.trim();mdShow();distShow();teamShow();
 }
 // -------------------- équipe nationale (commission, secrétaires outgoing) --------------------
 // Même principe que les districts : liste avec Edit, ajout, retrait, ordre d'affichage (▲ ▼), publié avec "Save the data".
@@ -100,13 +111,13 @@ function teamShow(){
     const g=gr[0],list=TEAM_W[g];
     const rows=list.map(function(m,i){
       return '<div class="dist-item'+(E&&E.g===g&&E.i===i?" editing":"")+'"><div class="dist-who"><b>'+esc(m.name||"—")+'</b>'
-        +'<span>'+esc([m.role,m.club].filter(Boolean).join(" · "))+'</span>'+(m.email?'<span>'+esc(m.email)+'</span>':"")+(m.mobile?'<span>'+esc(m.mobile)+'</span>':"")+'</div>'
+        +(m.role?'<span>'+esc(m.role)+'</span>':"")+(m.club?'<span>'+esc(m.club)+'</span>':"")+(m.email?'<span>'+esc(m.email)+'</span>':"")+(m.mobile?'<span>'+esc(m.mobile)+'</span>':"")+'</div>'
         +'<span class="team-move"><button class="btn2" title="Move up" aria-label="Move up" onclick="teamMove(\''+g+'\','+i+',-1)"'+(i===0?" disabled":"")+'>▲</button>'
         +'<button class="btn2" title="Move down" aria-label="Move down" onclick="teamMove(\''+g+'\','+i+',1)"'+(i===list.length-1?" disabled":"")+'>▼</button></span>'
         +'<button class="btn2" onclick="teamEdit(\''+g+'\','+i+')">✏️ Edit</button></div>'
         +(E&&E.g===g&&E.i===i?teamForm(g,i):"");
     }).join("");
-    return '<div class="fld w6"><label class="flbl">'+gr[1]+'</label><div class="dist-list">'+rows
+    return '<div class="fld w6"><label class="flbl">'+gr[1]+" MD "+esc(MD_W)+'</label><div class="dist-list">'+rows
       +(E&&E.g===g&&E.i<0?teamForm(g,-1):"")+'</div>'
       +(E===null?'<button class="btn2" style="margin-top:8px;align-self:flex-start" onclick="teamEdit(\''+g+'\',-1)">➕ Add a member</button>':"")+'</div>';
   }).join("");
@@ -258,6 +269,7 @@ async function saveData(){
     const year=document.getElementById("in-year").value.trim();
     if(!/^20\d\d$/.test(year))throw new Error("the camp year must look like 2027");
     if(!season)throw new Error("season label is required");
+    if(!/^\d{1,4}$/.test(MD_W))throw new Error("the multiple district number must be digits, e.g. 112");
     // camps_data.js : données communes (saison, année, camps)
     const cur=await getFile("camps_data.js");
     if(!cur)throw new Error("camps_data.js not found on main");
@@ -270,6 +282,7 @@ async function saveData(){
     let srcD=b64ToUtf8(curD.content);
     if(!/const DISTRICTS = \{[\s\S]*?\n\};/.test(srcD))throw new Error("DISTRICTS block not found");
     srcD=srcD.replace(/const DISTRICTS = \{[\s\S]*?\n\};/,function(){return buildDistrictsLiteral();});
+    srcD=srcD.replace(/^const MD = "[^"]*";$/m,function(){return 'const MD = "'+MD_W+'";';});
     const ann=document.getElementById("in-announce").value.trim();
     if(/\n  announce: /.test(srcD))srcD=srcD.replace(/\n  announce: "(?:[^"\\]|\\.)*",/,function(){return "\n  announce: "+JSON.stringify(ann)+",";});
     const galU=GAL.filter(function(g,i){return GAL.findIndex(function(x){return x.src===g.src;})===i;}); // jamais deux fois la même photo
@@ -332,7 +345,7 @@ function parseSiteData(campsSrc,distSrc){
   if(!raw||!gallery||!Object.keys(districts).length||str(campsSrc,"SEASON")===null)throw new Error("unexpected file format");
   const line=function(name){const m=new RegExp("^const "+name+" = (.*);$","m").exec(distSrc);return m?JSON.parse(m[1]):null;};
   return {season:str(campsSrc,"SEASON"),year:str(campsSrc,"YEAR"),camps:raw.length,
-    districts:districts,announce:ann?JSON.parse(ann[1]):"",gallery:gallery,team:line("TEAM"),payment:line("PAYMENT")};
+    districts:districts,md:str(distSrc,"MD"),announce:ann?JSON.parse(ann[1]):"",gallery:gallery,team:line("TEAM"),payment:line("PAYMENT")};
 }
 ON_CONNECT.push(async function(){
   try{

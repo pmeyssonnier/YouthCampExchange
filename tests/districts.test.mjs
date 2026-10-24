@@ -38,6 +38,7 @@ t.ok(/Eve Example/.test(await pg.textContent('#dist-grid')) && await pg.$('a[hre
 const team = await pg.evaluate(() => ({ n: document.getElementById('team-national').textContent, o: document.getElementById('team-outgoing').textContent,
   img: !!document.querySelector('#team img'), js: !!document.querySelector('#team a[href^="mailto:javascript"]'), av: document.querySelector('#team-national .tm-av').textContent }));
 t.ok(/Nina <img src=x onerror=alert\(1\)> National/.test(team.n) && !team.img, 'site: national team from TEAM, names shown as text');
+t.ok(await pg.textContent('#team-national-title') === 'National Commission MD 112' && await pg.textContent('#team-outgoing-title') === 'Outgoing Secretaries MD 112', 'site: team titles carry the multiple district');
 t.ok(/Oscar Out/.test(team.o) && !team.js && !/Gautier/.test(team.o), 'site: outgoing secretaries from TEAM, unsafe e-mail not linked');
 t.ok(team.av === 'NI' || team.av.length <= 2, 'site: initials avatar ' + team.av);
 const pay = await pg.evaluate(() => ({ fees: [...document.querySelectorAll('.fee-amt')].map(e => e.textContent), iban: document.getElementById('pay-iban').textContent,

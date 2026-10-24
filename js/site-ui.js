@@ -45,6 +45,11 @@
 
 // national team cards generated from the TEAM constant (districts_data.js, edited from the admin page)
 (function(){
+  if(typeof MD!=='undefined'){
+    const nt=document.getElementById('team-national-title'),ot=document.getElementById('team-outgoing-title');
+    if(nt)nt.textContent='National Commission MD '+MD;
+    if(ot)ot.textContent='Outgoing Secretaries MD '+MD;
+  }
   if(typeof TEAM==='undefined'||!TEAM)return;
   const initials=n=>String(n||'').split(/\s+/).filter(Boolean).map(w=>w[0]).slice(0,2).join('').toUpperCase();
   const card=m=>{

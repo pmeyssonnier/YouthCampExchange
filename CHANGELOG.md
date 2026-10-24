@@ -5,6 +5,12 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.7.0 — 2026-10-24
+
+- Administration, Site & season tab: the national team section is titled **Multi District 112** and starts with an editable **multiple district number** (`MD` in `districts_data.js`, published with "Save the data"). The number is used in the district badges ("112 A"), the team titles, the application form and the generated file names.
+- The team lists are titled **National Commission MD 112** and **Outgoing Secretaries MD 112**, in the administration and on the home page.
+- National team list in the administration: role, club, e-mail and phone each on their own line.
+
 ## 1.6.0 — 2026-10-24
 
 - District codes can now have several characters: a letter, then letters or digits, up to 4 (`A`, `CC`, `A1`), for multiple districts whose districts are not single letters. The administration accepts them when adding a district, and the form filler (`?district=CC`), the tracker, the generated file names and the vault follow.

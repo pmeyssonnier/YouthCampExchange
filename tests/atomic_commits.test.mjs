@@ -231,6 +231,26 @@ const lastLog = pg => pg.evaluate(() => document.querySelector('#log div').textC
   await o2.ctx.close();
 }
 
+// ---- numéro du district multiple : titre, puces des districts, intitulés de l'équipe, enregistrement ----
+{
+  const st = makeRepo();
+  const { pg, ctx, errs } = await openPage('yce_admin.html', st);
+  ok(await pg.inputValue('#in-md') === '112' && await pg.textContent('#md-title') === '112', 'MD: number loaded, section titled Multi District 112');
+  ok(/National Commission MD 112/.test(await pg.textContent('#team-body')) && /Outgoing Secretaries MD 112/.test(await pg.textContent('#team-body')), 'MD: team titles carry the number');
+  await pg.fill('#in-md', '1x');
+  await pg.evaluate(() => saveData()); await pg.waitForTimeout(1200);
+  ok(st.refUpdates === 0 && /multiple district number/.test(await lastLog(pg)), 'MD: non-numeric value blocks the save');
+  await pg.fill('#in-md', '103');
+  const badges = await pg.$$eval('#dist-body .dist-item .badge', b => b.map(x => x.textContent));
+  ok(badges.length && badges.every(b => /^103 /.test(b)) && await pg.textContent('#md-title') === '103' && /National Commission MD 103/.test(await pg.textContent('#team-body')), 'MD: district badges and titles follow the edit ' + badges);
+  await pg.evaluate(() => saveData()); await pg.waitForTimeout(1500);
+  ok(st.refUpdates === 1 && /^const MD = "103";$/m.test(st.files['districts_data.js']) && new Function(st.files['districts_data.js'] + ';return MD;')() === '103', 'MD: saved in districts_data.js');
+  await pg.reload(); await pg.waitForTimeout(2500);
+  ok(await pg.inputValue('#in-md') === '103', 'MD: reloaded from GitHub after the save');
+  ok(!errs.length, 'MD: no page error ' + errs.join(' | '));
+  await ctx.close();
+}
+
 // ---- gestionnaire de camps : camps + archive dans UN commit ----
 {
   const st = makeRepo();
