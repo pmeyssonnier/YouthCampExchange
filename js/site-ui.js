@@ -43,6 +43,27 @@
   }
 })();
 
+// national team cards generated from the TEAM constant (districts_data.js, edited from the admin page)
+(function(){
+  if(typeof TEAM==='undefined'||!TEAM)return;
+  const initials=n=>String(n||'').split(/\s+/).filter(Boolean).map(w=>w[0]).slice(0,2).join('').toUpperCase();
+  const card=m=>{
+    const tel=(m.mobile||'').replace(/[^+\d]/g,''),mail=safeMail(m.email);
+    return `<div class="tm reveal"><div class="tm-av">${esc(initials(m.name))}</div><div><h4>${esc(m.name)}</h4>`
+      +(m.role?`<div class="tm-role">${esc(m.role)}</div>`:'')+(m.club?`<div class="tm-club">${esc(m.club)}</div>`:'')
+      +(mail?`<a href="mailto:${esc(mail)}">${esc(m.email)}</a>`:'')+(tel?`<a href="tel:${esc(tel)}">${esc(m.mobile)}</a>`:'')+'</div></div>';
+  };
+  [['team-national',TEAM.national],['team-outgoing',TEAM.outgoing]].forEach(([id,list])=>{
+    const g=document.getElementById(id);
+    if(g&&Array.isArray(list))g.innerHTML=list.map(card).join('');
+  });
+})();
+// administration fee and bank details from the PAYMENT constant (districts_data.js, edited from the admin page)
+(function(){
+  if(typeof PAYMENT==='undefined'||!PAYMENT)return;
+  if(PAYMENT.amount)document.querySelectorAll('.fee-amt').forEach(e=>{e.textContent=PAYMENT.amount;});
+  ['iban','bic','beneficiary','communication'].forEach(k=>{const e=document.getElementById('pay-'+k);if(e&&PAYMENT[k])e.textContent=PAYMENT[k];});
+})();
 // district responsable cards generated from the DISTRICTS constant (camps_data.js)
 (function(){
   const g=document.getElementById('dist-grid');

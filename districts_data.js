@@ -1,6 +1,6 @@
 // Lions YCE - données propres à CE déploiement (les autres fichiers sont communs à tous les pays).
 // Pour déployer le programme dans un autre pays : forker le dépôt, puis n'éditer QUE ce fichier
-// (via la page d'administration ou à la main) : dépôt GitHub du déploiement + responsables de district.
+// (via la page d'administration ou à la main) : dépôt, districts, équipe nationale, frais et coordonnées bancaires.
 
 // Dépôt GitHub servi par ce déploiement (owner/repo) — utilisé par la page d'administration.
 // Sur *.github.io il est détecté automatiquement ; cette valeur sert pour un domaine personnalisé.
@@ -36,6 +36,13 @@ const SITE = {
   address: "📍 Houba de Strooperlaan 90, 1020 Brussels",
   phone: "+32 2 478 17 31"
 };
+
+// Équipe nationale affichée sur la page d'accueil (section « The Team ») — gérée depuis la page d'administration.
+// national = commission nationale, outgoing = secrétaires outgoing ; chaque membre : name, role, club, email, mobile.
+const TEAM = {"national":[{"name":"Stijn Renier","role":"President · Incoming","club":"LC Aarschot","email":"stijn.renier@renier.be","mobile":"+32 475 78 25 93"},{"name":"Frank Lauwers","role":"Camp Organizer","club":"LC Bruxelles Royal","email":"frank@lauwco.be","mobile":"+32 473 22 20 04"},{"name":"Astrid Ricquier","role":"Secretary","club":"Leo Club Schelde-Leie","email":"astridricquier@live.fr","mobile":"+32 496 20 99 47"},{"name":"Paul Vanderhaeghen","role":"Treasurer","club":"LC Damme Zwin","email":"paulvdh@skynet.be","mobile":"+32 479 72 95 20"}],"outgoing":[{"name":"Gautier Vanhonacker","role":"Outgoing · Europe","club":"LC Silly Arenberg","email":"gvanhonacker@gmail.com","mobile":""},{"name":"Paul Berghmans","role":"Outgoing · USA & Canada","club":"LC Mechelen","email":"paulberghmans@nysna.be","mobile":"+32 473 85 06 25"},{"name":"Alexander Vissers","role":"Outgoing · Far Destinations","club":"LC Antwerpen-Moerland","email":"alexander.vissers.12@gmail.com","mobile":"+32 497 91 99 52"}]};
+
+// Frais de dossier et coordonnées bancaires affichés sur la page d'accueil — gérés depuis la page d'administration.
+const PAYMENT = {"amount":"€125","iban":"BE62 3100 7424 1361","bic":"BBRUBEBB","beneficiary":"Lions Youth Camp & Exchange","communication":"Name · Destination · District"};
 
 // Galerie photos animée de la page d'accueil — gérée depuis la page d'administration.
 // Chaque entrée : {"src": "assets/gallery/….jpg", "caption": "…"}. Vide = section masquée.

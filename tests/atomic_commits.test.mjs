@@ -167,6 +167,56 @@ const lastLog = pg => pg.evaluate(() => document.querySelector('#log div').textC
   await ctx.close();
 }
 
+// ---- équipe nationale et coordonnées bancaires ----
+{
+  const st = makeRepo();
+  const { pg, ctx, errs } = await openPage('yce_admin.html', st);
+  const names = g => pg.evaluate(g => TEAM_W[g].map(m => m.name), g);
+  ok((await names('national')).length === 4 && (await names('outgoing')).length === 3, 'team: both lists loaded from districts_data.js');
+  ok(await pg.inputValue('#pay-iban') === 'BE62 3100 7424 1361', 'payment: IBAN loaded');
+  // modifier le 2e membre de la commission
+  await pg.click('#team-body .fld:nth-child(1) .dist-item:nth-child(2) button:has-text("Edit")');
+  await pg.fill('#te-role', 'Camp Organizer & Webmaster'); await pg.click('#team-body .dist-form .btn');
+  ok(await pg.evaluate(() => TEAM_W.national[1].role === 'Camp Organizer & Webmaster'), 'team: member edited');
+  // ajouter un secrétaire outgoing (nom obligatoire, e-mail valide), puis le monter en tête
+  await pg.click('#team-body .fld:nth-child(2) button:has-text("Add a member")');
+  await pg.fill('#te-email', 'bad'); await pg.click('#team-body .dist-form .btn');
+  ok(/name is required/.test(await lastLog(pg)), 'team: name required');
+  await pg.fill('#te-name', 'Olga <i>Out</i>'); await pg.click('#team-body .dist-form .btn');
+  ok(/Invalid e-mail/.test(await lastLog(pg)), 'team: invalid e-mail refused');
+  await pg.fill('#te-email', 'olga@example.org'); await pg.fill('#te-role', 'Outgoing · Asia'); await pg.click('#team-body .dist-form .btn');
+  ok((await names('outgoing')).slice(-1)[0] === 'Olga <i>Out</i>' && !(await pg.$('#team-body i')), 'team: member added, name shown as text');
+  for (let k = 0; k < 3; k++) {
+    const i = await pg.evaluate(() => TEAM_W.outgoing.findIndex(m => m.name.startsWith('Olga')));
+    await pg.click(`#team-body .fld:nth-child(2) .dist-item:nth-child(${i + 1}) button[aria-label="Move up"]`);
+  }
+  ok((await names('outgoing'))[0] === 'Olga <i>Out</i>', 'team: member moved to the top ' + await names('outgoing'));
+  // retirer le dernier membre de la commission
+  await pg.click('#team-body .fld:nth-child(1) .dist-item:nth-child(4) button:has-text("Edit")'); await pg.click('#team-body button:has-text("Remove")');
+  ok((await names('national')).length === 3, 'team: member removed');
+  // IBAN faux : rien n'est publié
+  await pg.fill('#pay-iban', 'BE62 3100 7424 1362');
+  await pg.evaluate(() => saveData()); await pg.waitForTimeout(1200);
+  ok(st.refUpdates === 0 && /IBAN .* is not valid/.test(await lastLog(pg)), 'payment: wrong IBAN check digits block the save');
+  await pg.fill('#pay-iban', 'BE71 0961 2345 6769'); await pg.fill('#pay-amount', '€150'); await pg.fill('#pay-bic', 'gkccbebb');
+  await pg.evaluate(() => saveData()); await pg.waitForTimeout(1500);
+  const X = new Function(st.files['districts_data.js'] + ';return {T:TEAM,P:PAYMENT,D:DISTRICTS};')();
+  ok(st.refUpdates === 1, 'team + payment: one commit');
+  ok(X.T.national.length === 3 && X.T.national[1].role === 'Camp Organizer & Webmaster' && X.T.outgoing[0].name === 'Olga <i>Out</i>' && X.T.outgoing.length === 4, 'team: written exactly');
+  ok(X.P.iban === 'BE71 0961 2345 6769' && X.P.amount === '€150' && X.P.bic === 'GKCCBEBB' && Object.keys(X.D).length === 4, 'payment written, BIC upper-cased, districts kept');
+  await ctx.close();
+  // ancien districts_data.js sans TEAM ni PAYMENT : les lignes sont ajoutées au premier enregistrement
+  const st2 = makeRepo();
+  st2.files['districts_data.js'] = st2.files['districts_data.js'].replace(/^const (TEAM|PAYMENT) = .*;$/gm, '');
+  const o2 = await openPage('yce_admin.html', st2);
+  await o2.pg.fill('#pay-amount', '€125'); await o2.pg.fill('#pay-iban', 'BE62 3100 7424 1361');
+  await o2.pg.evaluate(() => saveData()); await o2.pg.waitForTimeout(1500);
+  const Y = new Function(st2.files['districts_data.js'] + ';return {P:PAYMENT,G:GALLERY,T:TEAM};')();
+  ok(Y.P.iban === 'BE62 3100 7424 1361' && Array.isArray(Y.G) && Array.isArray(Y.T.national), 'old data file: TEAM and PAYMENT added, file still valid');
+  ok(!errs.length && !o2.errs.length, 'team/payment: no page error ' + errs.concat(o2.errs).join(' | '));
+  await o2.ctx.close();
+}
+
 // ---- gestionnaire de camps : camps + archive dans UN commit ----
 {
   const st = makeRepo();
