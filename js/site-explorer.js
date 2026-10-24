@@ -219,6 +219,9 @@ function populatePeriodSelect(t){
   if(t==='month'){opts=MONTHS.map((m,i)=>({value:i,label:m.lbl,start:new Date(m.y,m.m,1),end:new Date(m.y,m.m+1,0)}));}
   else if(t==='qzn'){MONTHS.forEach(m=>{const d=new Date(m.y,m.m+1,0).getDate();opts.push({value:opts.length,label:`1–15 ${m.lbl}`,start:new Date(m.y,m.m,1),end:new Date(m.y,m.m,15)});opts.push({value:opts.length,label:`16–${d} ${m.lbl}`,start:new Date(m.y,m.m,16),end:new Date(m.y,m.m,d)});});}
   else if(t==='week'){let d=new Date(SEASON_RANGE.start);while(d<=SEASON_RANGE.end){const we=new Date(d);we.setDate(we.getDate()+6);opts.push({value:opts.length,label:`Sem. ${d.toLocaleDateString('fr-BE',{day:'2-digit',month:'short'})} – ${we.toLocaleDateString('fr-BE',{day:'2-digit',month:'short',year:'numeric'})}`,start:new Date(d),end:new Date(we)});d=new Date(d);d.setDate(d.getDate()+7);}}
+  // ne garder que les périodes où au moins un camp est présent (arrivée → départ)
+  opts=opts.filter(o=>CAMPS.some(c=>c.arrival&&c.departure&&!(c.departure<o.start||c.arrival>o.end)));
+  opts.forEach((o,i)=>o.value=i);
   sel.innerHTML=opts.map(o=>`<option value="${o.value}">${o.label}</option>`).join('');
   sel._opts=opts;
   const today=new Date();const idx=opts.findIndex(o=>o.start<=today&&today<=o.end);
