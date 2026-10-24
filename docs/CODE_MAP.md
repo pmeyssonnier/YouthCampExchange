@@ -1,7 +1,7 @@
 # Code map — Lions YCE
 
 > **Generated file — do not edit by hand.** Rebuilt by `python3 tools/build_codemap.py` (run automatically on every push to `main`).
-> Commit `fb6da87`, 2026-10-24 17:55 UTC. Interactive version: [`code_map.html`](code_map.html).
+> Commit `97e44b6`, 2026-10-24 18:07 UTC. Interactive version: [`code_map.html`](code_map.html).
 
 ## Pages
 
@@ -19,7 +19,7 @@
 
 | File | Role |
 |---|---|
-| index.html (374 ln, 26.4 KB) | HTML shell: nav · hero · program · explorer · Brussels · apply · testimonials · team · footer |
+| index.html (375 ln, 26.5 KB) | HTML shell: nav · hero · program · explorer · Brussels · apply · testimonials · team · footer |
 | css/site.css (450 ln, 36.4 KB) | site + explorer + map + modal styles, light/dark, responsive |
 | js/site-data.js (97 ln, 5.4 KB) | date helpers, CAMPS enrichment, season stats, HTML escaping (esc / jsArg / safeUrl / cleanHtml) |
 | js/site-explorer.js (265 ln, 15.1 KB) | directory: getFiltered/getSorted/renderTable + all filters, tabs |
@@ -43,7 +43,7 @@
 | `js/sections.js` | 165 | 10.6 KB | declarative form definition (SECTIONS, camps list, mode flags) |
 | `js/country.js` | 87 | 4.0 KB | default country, dial codes, phone normalisation |
 | `js/render.js` | 238 | 13.7 KB | section/widget rendering, X-groups, counter |
-| `js/form.js` | 225 | 14.6 KB | orchestration: generate() and init() — loaded last |
+| `js/form.js` | 225 | 14.7 KB | orchestration: generate() and init() — loaded last |
 
 **`js/zip.js`** — `zipDirectory` (validated central directory, no decompression), `zipNames` (file names of an archive without decompressing), `inflateRaw` (native inflate), `unzip` (parse a zip into [{name,data}] within ZIP_LIMITS)
 
@@ -110,18 +110,20 @@
 |---|---:|---|
 | `camps_data.js` | 92.6 KB | season data: SEASON + YEAR + RAW camps — common to every deployment |
 | `districts_data.js` | 3.8 KB | per-deployment data: SITE_REPO + DISTRICTS coordinators |
-| `yce_form_filler.html` | 13.9 KB | filler HTML shell + styles |
-| `yce_tracker.html` | 10.2 KB | tracker HTML shell + styles |
-| `yce_camps.html` | 11.7 KB | camp manager HTML shell |
+| `js/version.js` | 0.5 KB | site version number (VERSION), shown on every page — bumped by each pull request |
+| `CHANGELOG.md` | 1.3 KB | what changed in each version |
+| `yce_form_filler.html` | 14.0 KB | filler HTML shell + styles |
+| `yce_tracker.html` | 10.3 KB | tracker HTML shell + styles |
+| `yce_camps.html` | 11.8 KB | camp manager HTML shell |
 | `js/admin-core.js` | 10.9 KB | shared admin plumbing (token, PIN, GitHub API) |
 | `js/camps-manager.js` | 26.2 KB | camp manager: directory import, editing, backups, archive |
-| `yce_vault.html` | 21.1 KB | application vault HTML shell (Supabase) |
+| `yce_vault.html` | 21.2 KB | application vault HTML shell (Supabase) |
 | `js/vault-api.js` | 4.9 KB | vault: the only layer talking to Supabase |
 | `js/vault.js` | 29.0 KB | vault UI: sign-in, dashboard, file, signatures, team, retention |
 | `supabase/vault_schema.sql` | 25.9 KB | vault database: tables, row-level security, workflow, retention |
 | `docs/VAULT_SETUP.md` | 9.5 KB | vault setup guide (Supabase project, SMTP, GDPR) |
 | `tools/build_assets.py` | 2.2 KB | regenerates js/assets.js |
-| `tools/build_codemap.py` | 13.1 KB | regenerates this visualisation's data and docs/CODE_MAP.md |
+| `tools/build_codemap.py` | 13.3 KB | regenerates this visualisation's data and docs/CODE_MAP.md |
 | `tests/` | 4.0 KB | security & regression tests run by GitHub Actions (npm test) |
 | `tools/commit_template.docx` | 33.0 KB | Commitment template (markers) |
 
