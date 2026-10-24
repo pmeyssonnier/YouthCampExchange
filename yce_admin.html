@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lions YCE — Administration — MD 112 Belgium</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
-<link rel="stylesheet" href="css/tools.css?v=1.6.0">
+<link rel="stylesheet" href="css/tools.css?v=1.7.0">
 <meta name="robots" content="noindex">
 <script>try{if(localStorage.getItem('yce-theme')==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}</script>
 <style>
@@ -36,6 +36,7 @@ input:focus{border-color:var(--gold);}
 .team-move{display:flex;gap:4px;}
 .team-move .btn2{padding:6px 9px;}
 .team-move .btn2:disabled{opacity:0.35;cursor:default;}
+@media(max-width:700px){.dist-item{gap:8px;padding:10px;}.team-move{flex-direction:column;}.team-move .btn2{padding:3px 8px;font-size:11px;}.dist-item>.btn2{padding:7px 10px;}}
 .dist-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
 .help-dlg{margin:auto;max-width:560px;width:calc(100% - 32px);background:var(--surface);color:var(--muted);border:1px solid var(--border);border-left:3px solid var(--blue);border-radius:10px;padding:18px 20px;font-size:13px;line-height:1.65;box-shadow:0 10px 40px rgba(0,0,0,0.5);}
 .help-dlg::backdrop{background:rgba(5,10,20,0.7);}
@@ -172,7 +173,11 @@ tr:hover td{background:var(--hover);}
   </div>
 
   <div class="section">
-    <div class="sec-head"><span class="sec-title">National team</span><span class="sec-note">shown in “The Team” on the home page</span></div>
+    <div class="sec-head"><span class="sec-title">Multi District <span id="md-title"></span></span><span class="sec-note">national team, shown in “The Team” on the home page</span></div>
+    <div class="sec-body">
+      <div class="fld w2"><label class="flbl" for="in-md">Multiple district number</label><input id="in-md" inputmode="numeric" maxlength="4" placeholder="112" oninput="mdInput(this)"></div>
+      <div class="fld w4"><span class="hint">Shown with the districts (“112 A”), in the team titles, stamped in the application form and in the generated file names.</span></div>
+    </div>
     <div class="sec-body" id="team-body"></div>
   </div>
 
@@ -286,16 +291,16 @@ tr:hover td{background:var(--hover);}
     <div class="sec-body"><div class="fld w6" id="log"></div></div>
   </div>
 </main>
-<script src="js/version.js?v=1.6.0"></script>
-<script src="js/toolnav.js?v=1.6.0"></script>
-<script src="js/theme.js?v=1.6.0"></script>
-<script src="camps_data.js?v=1.6.0"></script>
-<script src="districts_data.js?v=1.6.0"></script>
-<script src="js/zip.js?v=1.6.0"></script>
-<script src="js/xlsx.js?v=1.6.0"></script>
-<script src="js/admin-core.js?v=1.6.0"></script>
-<script src="js/admin.js?v=1.6.0"></script>
-<script src="js/camps-manager.js?v=1.6.0"></script>
-<script src="js/admin-tabs.js?v=1.6.0"></script>
+<script src="js/version.js?v=1.7.0"></script>
+<script src="js/toolnav.js?v=1.7.0"></script>
+<script src="js/theme.js?v=1.7.0"></script>
+<script src="camps_data.js?v=1.7.0"></script>
+<script src="districts_data.js?v=1.7.0"></script>
+<script src="js/zip.js?v=1.7.0"></script>
+<script src="js/xlsx.js?v=1.7.0"></script>
+<script src="js/admin-core.js?v=1.7.0"></script>
+<script src="js/admin.js?v=1.7.0"></script>
+<script src="js/camps-manager.js?v=1.7.0"></script>
+<script src="js/admin-tabs.js?v=1.7.0"></script>
 </body>
 </html>

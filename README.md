@@ -176,7 +176,7 @@ stored only encrypted with a passphrase of 8+ characters). The three tabs share 
 On connection the page reloads the current data from GitHub, so a stale browser cache
 can never overwrite recent changes. From the page you can change the season label and camp year, manage the districts and
 their YCE coordinators — list with an Edit button per district, add or remove a district (form stamping,
-site cards, tracker filters and e-mails follow) —, edit the national team (National Commission and Outgoing Secretaries, same list editor) and the administration fee with the bank details (IBAN check digits verified) — manage the camp list in the
+site cards, tracker filters and e-mails follow) —, set the multiple district number (MD, used in district badges, team titles, the form and file names), edit the national team (National Commission and Outgoing Secretaries, same list editor) and the administration fee with the bank details (IBAN check digits verified) — manage the camp list in the
 Camps tab, edit the home-page announcement banner, manage the animated
 photo gallery (large previews, reordering; images are resized and committed to `assets/gallery/`), and upload
 new official documents (reference form, Commitment,
