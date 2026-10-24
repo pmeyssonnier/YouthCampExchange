@@ -2,11 +2,13 @@
 // Chargé par yce_tracker.html ; scripts classiques partageant la portée globale.
 "use strict";
 // Une cellule commençant par = + - @ (ou tabulation / retour) serait exécutée comme formule
-// par Excel : préfixée d'une apostrophe. Les valeurs purement numériques (« +32 470 12 34 56 »)
-// ne peuvent appeler aucune fonction et restent intactes.
+// par Excel, LibreOffice ou Google Sheets : préfixée d'une apostrophe. Le test se fait aussi après
+// les espaces de tête (y compris insécables et retours à la ligne, que certains tableurs retirent)
+// et sur les variantes pleine chasse ＝ ＋ － ＠. Les valeurs purement numériques
+// (« +32 470 12 34 56 ») ne peuvent appeler aucune fonction et restent intactes.
 function csvSafe(v){
-  const s=String(v==null?"":v);
-  return /^[=+\-@\t\r]/.test(s)&&!/^[+-]?[\d\s().\/-]+$/.test(s)?"'"+s:s;
+  const s=String(v==null?"":v),t=s.replace(/^\s+/,"");
+  return /^[=+\-@\t\r\uFF1D\uFF0B\uFF0D\uFF20]/.test(t)&&!/^[+-]?[\d\s().\/-]+$/.test(t)?"'"+s:s;
 }
 function exportCsv(){
   const cols=["District","Family name","First name","Sex","Date of birth","Age 01/07/"+YEAR,"Club","E-mail","Mobile",
