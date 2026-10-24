@@ -5,6 +5,10 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.0.1 — 2026-10-24
+
+- README brought up to date: application vault, passport / ID card rule, camp explorer filters and mobile drawer, version number, contribution rules (one pull request per change), current repository layout.
+
 ## 1.0.0 — 2026-10-24
 
 First numbered version, covering the platform as it stands:
