@@ -65,7 +65,7 @@ function makeVaultApi(){
     updateDossier: async(id,p)=>{const k=Object.keys(p);return (await run('update dossiers set '+k.map((x,i)=>x+'=$'+(i+2)).join(',')+' where id=$1 returning *',[id].concat(k.map(x=>p[x]))))[0];},
     deleteDossier: async(id,paths)=>{for(const p of paths||[])await run('delete from storage.objects where name=$1',[p]);await run('delete from dossiers where id=$1',[id]);},
     files: id=>run('select * from dossier_files where dossier_id=$1 order by uploaded_at desc',[id]),
-    upload: async(id,file,sha,contents,kind,src)=>{kind=kind||'zip';const p=id+'/'+(kind==='zip'?'full':'club')+'/'+Date.now()+Math.random().toString(36).slice(2,6)+'_'+file.name;
+    upload: async(id,file,sha,contents,kind,src)=>{kind=kind||'zip';const p=id+'/'+(kind==='zip'?'full':kind)+'/'+Date.now()+Math.random().toString(36).slice(2,6)+'_'+file.name;
       await run("insert into storage.objects (bucket_id,name) values ('dossiers',$1)",[p]);
       const b=new Uint8Array(await file.arrayBuffer());let s='';for(let i=0;i<b.length;i+=8192)s+=String.fromCharCode.apply(null,b.subarray(i,i+8192));
       await window.__blob(p,btoa(s));
@@ -250,6 +250,37 @@ ok(red.F16 === 'Doe' && red.S16 === 'Jane', 'club copy keeps the candidate ident
 ok(!red.X22 && !red.G23 && !red.X45 && !red.K42 && !red.X47 && !red.J31, 'ID, health and religion cells emptied: ' + JSON.stringify(red));
 ok(!red.sstLeak && !red.xmlLeak, 'no sensitive text left anywhere in the club copy (incl. Excel shared strings)');
 ok(red.names.length === 2 && !red.names.some(n => /ID_document/.test(n)), 'ID scan not in the club copy');
+
+// ===== passeport en renouvellement : le scan suit plus tard =====
+await pg.evaluate(() => { localStorage.setItem('fake-aal-nat@x.be', 'aal1'); });
+await login('late@x.be');
+await pg.fill('#n-name', 'Late Passport'); await pg.fill('#n-birth', '2000-01-01'); await pg.selectOption('#n-district', 'A');
+await pg.fill('#n-president', 'pres@x.be'); await pg.check('#n-consent'); await pg.click('#create .btn'); await settle();
+const LID = await pg.evaluate(() => CUR.id);
+await pg.setInputFiles('#d-upload input[type=file]', FIX + '/vaultzip/Dossier_late.zip'); await pg.waitForTimeout(1500);
+ok(/to follow/.test(await pg.textContent('#d-check')), 'checklist shows the passport as to follow');
+await pg.click('#d-actions .btn'); await settle();
+ok(/Awaiting club president/.test(await pg.textContent('#d-status')), 'file sent with the passport to follow');
+ok(await pg.isVisible('#d-idupload'), 'candidate offered to upload the passport later');
+// le circuit avance jusqu'au national (directement en base)
+const cs = (await runAs('pres@x.be', 'aal1', "select sha256 from dossier_files where dossier_id=$1 and kind='club' order by uploaded_at desc limit 1", [LID])).rows[0].sha256;
+const fs2 = (await runAs('coorda@x.be', 'aal2', "select sha256 from dossier_files where dossier_id=$1 and kind='zip' order by uploaded_at desc limit 1", [LID])).rows[0].sha256;
+await runAs('pres@x.be', 'aal1', "select dossier_transition($1,'club_signed',null,$2)", [LID, cs]);
+await runAs('coorda@x.be', 'aal2', "select dossier_transition($1,'district_validated',null,$2)", [LID, fs2]);
+await runAs('nat@x.be', 'aal2', "select dossier_transition($1,'national_validated',null,$2)", [LID, fs2]);
+await login('nat@x.be', '?d=' + LID);
+await pg.fill('#mfa-code', '123456'); await pg.click('#mfa .btn'); await pg.waitForTimeout(900);
+ok(/still to follow/.test(await pg.textContent('#d-actions')) && !/Mark as sent/.test(await pg.textContent('#d-actions')), 'national cannot send to the host country yet');
+await login('late@x.be', '?d=' + LID);
+await pg.setInputFiles('#d-idupload input[type=file]', { name: 'new-passport.pdf', mimeType: 'application/pdf', buffer: Buffer.from('%PDF-1.4 new passport') }); await pg.waitForTimeout(1000);
+ok(/Passport scan uploaded/.test(await msgText()), 'candidate uploads the passport scan later');
+ok(!(await pg.isVisible('#d-idupload')) && /✔ Passport/.test(await pg.textContent('#d-check')), 'checklist now complete');
+await login('pres@x.be', '?d=' + LID);
+ok(!(await pg.$$eval('#d-files li', l => l.map(x => x.textContent))).some(x => /passport/i.test(x)), 'president never sees the passport scan');
+await login('nat@x.be', '?d=' + LID);
+ok((await pg.$$eval('#d-files li', l => l.map(x => x.textContent))).some(x => /passport \/ ID scan sent later/.test(x)), 'national sees the scan sent later');
+await pg.click('#d-actions .btn'); await settle();
+ok(/Sent to host country/.test(await pg.textContent('#d-status')), 'file sent to the host country once the scan is there');
 
 // ===== mobile =====
 await pg.setViewportSize({ width: 390, height: 844 });

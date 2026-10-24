@@ -17,7 +17,7 @@ function exportCsv(){
     const c=function(v){return '"'+csvSafe(v).replace(/"/g,'""')+'"';};
     lines.push([MD+" "+r.dist,r.fam,r.fir,r.sex,r.dob,r.age,r.club,r.email,r.mobile,r.pref1,r.pref2,r.pref3,
       r.sigA?"yes":"no",r.sigP?"yes":"no",r.sigC?"yes":"no",r.commit?"yes":"no",r.commitClub?"yes":"no",
-      r.photo?"yes":"no",r.pay?"yes":"no",r.iddoc?"yes":"no",r.letter?"yes":"no",r.pct,(r.missing||[]).join(", "),r.status,r.notes,r.updated].map(c).join(";"));
+      r.photo?"yes":"no",r.pay?"yes":"no",r.iddoc===true?"yes":(r.iddoc==="later"?"to follow":"no"),r.letter?"yes":"no",r.pct,(r.missing||[]).join(", "),r.status,r.notes,r.updated].map(c).join(";"));
   });
   const blob=new Blob(["﻿"+lines.join("\r\n")],{type:"text/csv;charset=utf-8"});
   const a=document.createElement("a");

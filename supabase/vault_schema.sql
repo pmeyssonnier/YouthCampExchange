@@ -18,7 +18,8 @@
 -- authentification (session « aal2 » de Supabase).
 -- Les changements de statut et les signatures passent UNIQUEMENT par la
 -- fonction dossier_transition() : impossible de sauter une étape.
--- Fichiers : <dossier>/full/… = dossier complet ; <dossier>/club/… = copie du président.
+-- Fichiers : <dossier>/full/… = dossier complet ; <dossier>/club/… = copie du président ;
+--            <dossier>/id/… = scan du passeport envoyé plus tard (passeport en renouvellement).
 -- ============================================================================
 
 -- ---------- types ----------
@@ -142,6 +143,14 @@ language sql stable as $$
   select birth > (current_date - interval '18 years')::date
 $$;
 
+-- scan du passeport envoyé après coup (passeport en renouvellement) : par le candidat,
+-- à tout moment tant que le dossier n'est pas parti au pays d'accueil
+create function public.can_upload_id(did uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from dossiers d where d.id = did and d.candidate_email = my_email()
+                   and d.status not in ('sent_host', 'accepted', 'refused', 'archived'))
+$$;
+
 -- qui peut déposer / remplacer un fichier, selon l'étape en cours
 -- (le président n'en dépose jamais : il ne reçoit que la copie club)
 create function public.can_upload_dossier(did uuid) returns boolean
@@ -168,17 +177,17 @@ begin
 exception when others then
   return null;
 end $$;
--- "<uuid>/full/…" → 'zip' ; "<uuid>/club/…" → 'club' ; autre → null
+-- "<uuid>/full/…" → 'zip' ; "<uuid>/club/…" → 'club' ; "<uuid>/id/…" → 'id' ; autre → null
 create function public.path_kind(path text) returns text
 language sql immutable as $$
-  select case split_part(path, '/', 2) when 'full' then 'zip' when 'club' then 'club' end
+  select case split_part(path, '/', 2) when 'full' then 'zip' when 'club' then 'club' when 'id' then 'id' end
 $$;
 
 -- ---------- fichiers, signatures, commentaires, journal ----------
 create table public.dossier_files (
   id          uuid primary key default gen_random_uuid(),
   dossier_id  uuid not null references public.dossiers on delete cascade,
-  kind        text not null check (kind in ('zip', 'club')),   -- dossier complet / copie du président
+  kind        text not null check (kind in ('zip', 'club', 'id')),   -- dossier complet / copie du président / scan envoyé plus tard
   path        text not null unique,
   file_name   text not null,
   sha256      text not null check (sha256 ~ '^[0-9a-f]{64}$'),
@@ -191,7 +200,7 @@ create table public.dossier_files (
   check (public.path_dossier(path) is not distinct from dossier_id),
   check (public.path_kind(path) is not distinct from kind),
   -- « is not null » explicite : une comparaison avec null ne ferait pas échouer la contrainte
-  check ((kind = 'zip' and source_sha is null) or (kind = 'club' and source_sha is not null and source_sha ~ '^[0-9a-f]{64}$'))
+  check ((kind in ('zip', 'id') and source_sha is null) or (kind = 'club' and source_sha is not null and source_sha ~ '^[0-9a-f]{64}$'))
 );
 
 create table public.signatures (
@@ -248,7 +257,18 @@ language sql stable security definer set search_path = public as $$
   select * from dossier_files where dossier_id = did and kind = k order by uploaded_at desc limit 1
 $$;
 
--- pièces manquantes dans la dernière version du dossier (bloque l'envoi)
+-- le dossier annonce un passeport « à suivre » (ID_document_TO_FOLLOW…) et aucun scan n'est encore arrivé :
+-- ni dans la dernière version du dossier, ni déposé à part
+create function public.id_pending(did uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  with z as (select coalesce((latest_file(did, 'zip')).contents, '{}') c)
+  select exists (select 1 from z, unnest(z.c) n where regexp_replace(n, '^.*/', '') ~* '^ID_document_TO_FOLLOW')
+     and not exists (select 1 from z, unnest(z.c) n where regexp_replace(n, '^.*/', '') ~* '^ID_document_(?!TO_FOLLOW)')
+     and not exists (select 1 from dossier_files where dossier_id = did and kind = 'id')
+$$;
+
+-- pièces manquantes dans la dernière version du dossier (bloque l'envoi ;
+-- une note « passeport à suivre » compte comme présente, voir id_pending)
 create function public.missing_documents(did uuid) returns text[]
 language sql stable security definer set search_path = public as $$
   with f as (select latest_file(did, 'zip') z, latest_file(did, 'club') c),
@@ -320,6 +340,9 @@ begin
   elsif target = 'national_validated' and d.status = 'district_validated' and is_staff('national') then
     who := 'national';
   elsif target = 'sent_host' and d.status = 'national_validated' and is_staff('national') then
+    if id_pending(did) then
+      raise exception 'The passport scan is still to follow: the candidate must upload it before the file goes to the host country';
+    end if;
     who := 'national';
   elsif target in ('accepted', 'refused') and d.status = 'sent_host' and is_staff('national') then
     who := 'national';
@@ -457,7 +480,8 @@ create policy dossiers_withdraw on public.dossiers for delete to authenticated
 create policy files_read on public.dossier_files for select to authenticated
   using (public.can_read_file(dossier_id, kind));
 create policy files_add on public.dossier_files for insert to authenticated
-  with check (public.can_upload_dossier(dossier_id) and uploaded_by = public.my_email());
+  with check (uploaded_by = public.my_email() and
+              case when kind = 'id' then public.can_upload_id(dossier_id) else public.can_upload_dossier(dossier_id) end);
 create policy files_remove on public.dossier_files for delete to authenticated
   using (public.can_upload_dossier(dossier_id) and uploaded_by = public.my_email());
 
@@ -482,7 +506,8 @@ create policy yce_files_read on storage.objects for select to authenticated
                                      or public.is_purgeable(public.path_dossier(name))));
 create policy yce_files_upload on storage.objects for insert to authenticated
   with check (bucket_id = 'dossiers' and public.path_kind(name) is not null
-              and public.can_upload_dossier(public.path_dossier(name)));
+              and case when public.path_kind(name) = 'id' then public.can_upload_id(public.path_dossier(name))
+                       else public.can_upload_dossier(public.path_dossier(name)) end);
 create policy yce_files_delete on storage.objects for delete to authenticated
   using (bucket_id = 'dossiers' and (public.can_upload_dossier(public.path_dossier(name))
                                      or public.is_purgeable(public.path_dossier(name))));

@@ -158,6 +158,11 @@ règles d'accès installées à l'étape 2.
 - chaque signature est liée à l'empreinte du ZIP signé : si le dossier est remplacé, il faut signer à nouveau ;
 - l'envoi est refusé tant qu'il manque une pièce : AF, Commitment, photo, preuve de paiement,
   scan du passeport ou de la carte d'identité, lettre à la famille d'accueil.
+- pièce d'identité : **passeport** si l'un des pays choisis est hors d'Europe (Royaume-Uni compris),
+  sinon la carte d'identité belge suffit. Si le passeport est en renouvellement, le candidat coche
+  « scan à suivre » dans le formulaire : le dossier peut être envoyé et validé, le candidat dépose le
+  scan plus tard dans le coffre, et le national ne peut pas transmettre le dossier au pays d'accueil
+  avant de l'avoir reçu.
 
 ## Déploiement dans un autre pays
 

@@ -31,10 +31,10 @@ function makeVaultApi(sb){
 
     files(id){ return x(sb.from("dossier_files").select("*").eq("dossier_id", id).order("uploaded_at", { ascending: false })); },
     // kind "zip" = dossier complet (dossier full/) ; "club" = copie du président (dossier club/),
-    // qui indique l'empreinte du dossier complet dont elle est tirée
+    // qui indique l'empreinte du dossier complet dont elle est tirée ; "id" = scan du passeport envoyé plus tard
     async upload(id, file, sha256, contents, kind, sourceSha){
       kind = kind || "zip";
-      const path = id + "/" + (kind === "zip" ? "full" : "club") + "/" + Date.now() + "_" + safeName(file.name);
+      const path = id + "/" + (kind === "zip" ? "full" : kind) + "/" + Date.now() + "_" + safeName(file.name);
       await x(sb.storage.from(VAULT_BUCKET).upload(path, file, { contentType: file.type || "application/zip", upsert: false }));
       return x(sb.from("dossier_files").insert({ dossier_id: id, kind: kind, path: path, file_name: file.name,
         sha256: sha256, size_bytes: file.size, contents: contents || [], source_sha: sourceSha || null }).select().single());
