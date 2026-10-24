@@ -5,6 +5,15 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.7.3 — 2026-10-24
+
+- Stricter limits when reading ZIP archives (application files, Excel and Word documents, camp directory):
+  - archives larger than 100 MB are refused before being loaded (50 MB for the vault, its storage limit);
+  - "non-recursive" ZIP bombs — hundreds of entries pointing at the same compressed bytes — are refused without unpacking anything;
+  - two files with the same name, encrypted entries, and names with control characters or right-to-left override characters (which can disguise an extension, e.g. `photo‮gpj.exe`) are refused;
+  - a file whose compression ratio is suspicious is stopped as soon as the limit is crossed, instead of after unpacking up to 60 MB;
+  - one unpacking budget per dropped file, shared with the Excel / Word files it contains: a ZIP full of small Office files can no longer make the browser unpack tens of GB.
+
 ## 1.7.2 — 2026-10-24
 
 - Vault signatures (not activated yet), stronger link between a signature and the file signed:

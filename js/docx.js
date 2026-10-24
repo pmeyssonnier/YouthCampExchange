@@ -85,6 +85,7 @@ function commitTextShow(){
 async function commitTextUpload(inp){
   const file=inp.files[0];if(!file)return;
   try{
+    zipCheckSize(file);
     const entries=await unzip(await file.arrayBuffer());
     const docE=entries.find(function(e){return e.name==="word/document.xml";});
     if(!docE)throw new Error("not a Word document");

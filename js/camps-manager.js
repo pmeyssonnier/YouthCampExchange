@@ -288,6 +288,7 @@ function stripNoise(s){return simple(String(s||"").replace(/\b(20\d\d|lions?|cam
 async function dirPick(inp){
   const f=inp.files[0];if(!f)return;
   try{
+    zipCheckSize(f);
     const rows=await parseDirectory(await f.arrayBuffer());
     if(rows.length<2)throw new Error("empty sheet");
     const hdr=rows[0].map(function(h){return String(h||"").toLowerCase();});

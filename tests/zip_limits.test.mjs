@@ -24,7 +24,7 @@ for (const page of ['yce_form_filler.html', 'yce_tracker.html', 'yce_admin.html'
   ok(!errs.length, page + ' loads without error: ' + errs.join(' | '));
   const r = await pg.evaluate(async () => {
     const out = {};
-    for (const f of ['candidate', 'bomb_big', 'bomb_ratio', 'bomb_total', 'traversal', 'many', 'not_a_zip']) {
+    for (const f of ['candidate', 'bomb_big', 'bomb_ratio', 'bomb_total', 'traversal', 'many', 'not_a_zip', 'too_big', 'overlap', 'dup', 'bidi', 'encrypted']) {
       const buf = await (await fetch('/ziptest/' + f + '.zip')).arrayBuffer();
       const t0 = performance.now();
       try { const e = await unzip(buf); out[f] = { ok: e.length, names: e.map(x => x.name).slice(0, 3) }; }
@@ -36,17 +36,29 @@ for (const page of ['yce_form_filler.html', 'yce_tracker.html', 'yce_admin.html'
       const e = await unzip(await (await fetch('/documents/' + encodeURIComponent(f))).arrayBuffer());
       out[f] = { ok: e.length };
     }
+    // budget partagé : le même dossier lu deux fois avec un budget trop petit est arrêté
+    const cand = await (await fetch('/ziptest/candidate.zip')).arrayBuffer();
+    const b = zipBudget(1.5 * 1024 * 1024);
+    try { await unzip(cand, b); await unzip(cand, b); await unzip(cand, b); out.budget = { ok: 1, left: b.left }; } catch (err) { out.budget = { err: err.message }; }
+    out.sizeCheck = (() => { try { zipCheckSize({ size: 101 * 1048576 }); return 'passed'; } catch (e) { return e.message; } })();
     return out;
   });
   if (page === 'yce_form_filler.html') console.log(JSON.stringify(r, null, 0));
   ok(r.candidate.ok === 3, page + ' realistic candidate ZIP read');
   ok(r['Application_form_2026_MD112.xlsx'].ok > 5 && r['Commitment to Reciprocity.docx'].ok > 3, page + ' real Office files read');
-  ok(/too large/.test(r.bomb_big.err || ''), page + ' 100 MB bomb stopped: ' + JSON.stringify(r.bomb_big));
+  ok(/too large|ratio/.test(r.bomb_big.err || ''), page + ' 100 MB bomb stopped: ' + JSON.stringify(r.bomb_big));
   ok(/ratio/.test(r.bomb_ratio.err || ''), page + ' compression-ratio bomb stopped: ' + JSON.stringify(r.bomb_ratio));
   ok(/too large/.test(r.bomb_total.err || ''), page + ' cumulative size stopped: ' + JSON.stringify(r.bomb_total));
   ok(/unsafe path/.test(r.traversal.err || ''), page + ' ../ path refused');
   ok(/too many/.test(r.many.err || ''), page + ' 600-file archive refused');
   ok(/not a valid/.test(r.not_a_zip.err || ''), page + ' non-ZIP refused');
+  ok(/too large/.test(r.too_big.err || ''), page + ' archive over 100 MB refused: ' + JSON.stringify(r.too_big));
+  ok(/overlapping/.test(r.overlap.err || '') && r.overlap.ms < 500, page + ' overlapping-entries bomb refused without unpacking: ' + JSON.stringify(r.overlap));
+  ok(/duplicate/.test(r.dup.err || ''), page + ' duplicate file names refused');
+  ok(/unsafe path/.test(r.bidi.err || ''), page + ' disguised name (right-to-left override) refused');
+  ok(/encrypted/.test(r.encrypted.err || ''), page + ' encrypted entry refused');
+  ok(/too much data/.test(r.budget.err || ''), page + ' shared budget stops repeated unpacking: ' + JSON.stringify(r.budget));
+  ok(/too large/.test(r.sizeCheck), page + ' file over 100 MB refused before reading');
   await pg.close();
 }
 
@@ -75,7 +87,7 @@ for (const page of ['yce_form_filler.html', 'yce_tracker.html', 'yce_admin.html'
   pg.on('pageerror', e => errs.push(e.message));
   await pg.goto('http://localhost:8873/yce_tracker.html', { waitUntil: 'load' }); await pg.waitForTimeout(400);
   await pg.setInputFiles('input[type=file]', ZT + '/bomb_big.zip'); await pg.waitForTimeout(1500);
-  ok(/too large/.test(await pg.textContent('#log')), 'tracker reports the bomb in its log');
+  ok(/too large|ratio/.test(await pg.textContent('#log')), 'tracker reports the bomb in its log');
   ok(!errs.length, 'tracker survives the bomb: ' + errs.join(' | '));
   await pg.close();
 }
