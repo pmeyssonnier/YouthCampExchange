@@ -23,7 +23,7 @@ const MD_COUNTRY = "Belgium";
 // Une clé absente/vide laisse le texte par défaut écrit dans index.html.
 const SITE = {
   label: "MD112 Belgium",
-  announce: "📢 <strong>Registrations for 2026 are closed.</strong> Next info session in November — date to be announced. Follow us on Facebook for updates.",
+  announce: "📢 <strong>Registrations for 2026 are closed.</strong> Next info session 8 November at 10:00 — date to be announced. Follow us on Facebook for updates.",
   heroTitle: "Bringing youth together, <em>worldwide</em>",
   heroLead: "Live with a host family, join an international camp, and share ideas with young people from every continent. Lions Youth Camp & Exchange sends Belgian youth aged 16–22 abroad for 2 to 4 unforgettable weeks — and welcomes the world to Belgium.",
   welcomeNav: "Come to Belgium",
@@ -39,7 +39,7 @@ const SITE = {
 
 // Galerie photos animée de la page d'accueil — gérée depuis la page d'administration.
 // Chaque entrée : {"src": "assets/gallery/….jpg", "caption": "…"}. Vide = section masquée.
-const GALLERY = [{"src":"assets/gallery/20190726_184657.jpg","caption":""},{"src":"assets/gallery/20190726_184627.jpg","caption":""},{"src":"assets/gallery/20190726_191740.jpg","caption":""},{"src":"assets/gallery/20190726_201436.jpg","caption":""},{"src":"assets/gallery/20190726_202353.jpg","caption":""},{"src":"assets/gallery/20190726_202736.jpg","caption":""},{"src":"assets/gallery/20190726_203022.jpg","caption":""},{"src":"assets/gallery/20190726_203949.jpg","caption":""},{"src":"assets/gallery/20190726_203952.jpg","caption":""}];
+const GALLERY = [{"src":"assets/gallery/37361.jpg","caption":""},{"src":"assets/gallery/37358.jpg","caption":""},{"src":"assets/gallery/37360.jpg","caption":""},{"src":"assets/gallery/37269.jpg","caption":""},{"src":"assets/gallery/37360.jpg","caption":""}];
 
 const DISTRICTS = {
   A: {name: "Harboort Jan", club: "LC Zottegem", email: "jan@harboort.com", mobile: "+32 473 40 01 10"},
