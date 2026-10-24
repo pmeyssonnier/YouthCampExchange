@@ -156,6 +156,10 @@ règles d'accès installées à l'étape 2.
 - la page propose d'écrire l'e-mail à la personne suivante, avec **un lien et jamais de pièce jointe** ;
 - l'historique garde la trace de qui a déposé, téléchargé, signé ou renvoyé, et quand ;
 - chaque signature est liée à l'empreinte du ZIP signé : si le dossier est remplacé, il faut signer à nouveau ;
+  au moment de signer, le navigateur du signataire recalcule l'empreinte du fichier réellement stocké
+  et refuse la signature si elle ne correspond pas ;
+- une version signée ne peut plus être effacée (ni le fichier, ni sa trace) avant la purge de fin de
+  conservation ; seul un brouillon jamais envoyé peut perdre un dépôt erroné ;
 - l'envoi est refusé tant qu'il manque une pièce : AF, Commitment, photo, preuve de paiement,
   scan du passeport ou de la carte d'identité, lettre à la famille d'accueil.
 - pièce d'identité : **passeport** si l'un des pays choisis est hors d'Europe (Royaume-Uni compris),

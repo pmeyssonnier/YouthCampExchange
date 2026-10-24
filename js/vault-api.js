@@ -45,6 +45,13 @@ function makeVaultApi(sb){
       return d.signedUrl;
     },
 
+    // contenu réel d'un fichier du stockage : avant de signer, le navigateur du signataire
+    // recalcule son empreinte au lieu de faire confiance à celle déclarée au dépôt
+    async fileBytes(f){
+      const b = await x(sb.storage.from(VAULT_BUCKET).download(f.path));
+      return b.arrayBuffer();
+    },
+
     transition(id, target, note, sha){
       return x(sb.rpc("dossier_transition", { did: id, target: target, note: note || null, doc_sha256: sha || null }));
     },
