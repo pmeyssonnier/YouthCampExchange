@@ -76,8 +76,9 @@ renderCountryList();
 renderStateList();
 renderTable();
 document.querySelector('th[data-c="continent"]').classList.add('asc');
-// sur mobile, les accordéons Country / State démarrent repliés pour raccourcir le tiroir
+// sur mobile, les accordéons Continent / Country / State démarrent repliés pour raccourcir le tiroir
 if(matchMedia('(max-width:900px)').matches){
+  document.getElementById('sec-continent').classList.add('closed');
   document.getElementById('sec-country').classList.add('closed');
   document.getElementById('state-section').classList.add('closed');
 }

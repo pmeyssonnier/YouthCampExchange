@@ -134,6 +134,8 @@ function renderMobileCards(filtered){
 
 // puces des filtres actifs + pastille du bouton ⚙ Filters (barre mobile)
 function renderFilterChips(){
+  const scont=document.getElementById('sel-continent');
+  if(scont)scont.textContent=selContinents.size?'· '+selContinents.size+' selected':'';
   const bar=document.getElementById('f-chips');if(!bar)return;
   const parts=[];
   selSeasons.forEach(s=>parts.push([`🗓️ <b>${s}</b>`,()=>toggleSeason(s)]));
