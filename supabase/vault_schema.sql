@@ -7,18 +7,24 @@
 -- la famille du jeune accueille l'année suivante) ; 90 jours après un refus.
 --
 -- Principe : la base elle-même décide qui voit quoi (Row Level Security).
---   candidat / parent  → son dossier
---   président de club  → les dossiers qui le désignent (president_email), une fois envoyés
+--   candidat / parent  → son dossier ; le parent approuve si le candidat est mineur
+--   président de club  → les dossiers qui le désignent, une fois envoyés, et UNIQUEMENT
+--                        la copie « club » (AF sans santé, religion ni n° de pièce
+--                        d'identité + Commitment) ; jamais le dossier complet
 --   coordinateur       → les dossiers de son district (table staff), une fois envoyés
 --   national           → tous les dossiers envoyés
 --   admin              → gère la table staff, ne voit pas le contenu des dossiers
+-- Coordinateurs, national et admin n'ont leurs droits qu'avec la double
+-- authentification (session « aal2 » de Supabase).
 -- Les changements de statut et les signatures passent UNIQUEMENT par la
 -- fonction dossier_transition() : impossible de sauter une étape.
+-- Fichiers : <dossier>/full/… = dossier complet ; <dossier>/club/… = copie du président.
 -- ============================================================================
 
 -- ---------- types ----------
 create type public.dossier_status as enum (
   'draft',               -- brouillon (candidat)
+  'parent_review',       -- candidat mineur : attend l'approbation du parent / tuteur
   'submitted',           -- envoyé, attend la signature du président de club
   'club_signed',         -- signé par le club, attend le coordinateur de district
   'district_validated',  -- validé par le district, attend le national
@@ -48,9 +54,16 @@ language sql stable as $$
   select lower(coalesce(auth.jwt() ->> 'email', ''))
 $$;
 
+-- session ouverte avec la double authentification (code TOTP vérifié)
+create function public.mfa_ok() returns boolean
+language sql stable as $$
+  select coalesce(auth.jwt() ->> 'aal', 'aal1') = 'aal2'
+$$;
+
+-- droits d'un intervenant : seulement avec la double authentification
 create function public.is_staff(r public.staff_role, d text default null) returns boolean
 language sql stable security definer set search_path = public as $$
-  select exists (select 1 from staff
+  select mfa_ok() and exists (select 1 from staff
                  where email = my_email() and role = r and (d is null or district = d))
 $$;
 
@@ -66,6 +79,7 @@ create table public.dossiers (
   season             text not null check (season ~ '^\d{4}-\d{4}$'),
   candidate_email    text not null default public.my_email(),
   candidate_name     text not null check (length(trim(candidate_name)) > 1),
+  candidate_birth_date date not null check (candidate_birth_date between '1980-01-01' and '2100-01-01'),
   parent_email       text check (parent_email = lower(parent_email)),
   president_email    text check (president_email = lower(president_email)),
   district           text not null check (district ~ '^[A-Z]$'),
@@ -78,7 +92,10 @@ create table public.dossiers (
   purge_after        date not null default '2999-12-31',
   created_at         timestamptz not null default now(),
   updated_at         timestamptz not null default now(),
-  unique (candidate_email, season)
+  unique (candidate_email, season),
+  -- personne ne s'approuve soi-même
+  check (parent_email is distinct from candidate_email),
+  check (president_email is distinct from candidate_email)
 );
 
 create function public.dossiers_before_write() returns trigger
@@ -106,13 +123,32 @@ language sql stable security definer set search_path = public as $$
            or is_staff('district', d.district)))))
 $$;
 
+-- qui peut lire un fichier : le président n'a accès qu'à la copie « club »
+create function public.can_read_file(did uuid, k text) returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (
+    select 1 from dossiers d where d.id = did and (
+         d.candidate_email = my_email()
+      or d.parent_email    = my_email()
+      or (d.first_submitted_at is not null and (
+              is_staff('national')
+           or is_staff('district', d.district)
+           or (k = 'club' and d.president_email = my_email())))))
+$$;
+
+-- candidat mineur au moment de l'envoi : l'approbation d'un parent est requise
+create function public.is_minor(birth date) returns boolean
+language sql stable as $$
+  select birth > (current_date - interval '18 years')::date
+$$;
+
 -- qui peut déposer / remplacer un fichier, selon l'étape en cours
+-- (le président n'en dépose jamais : il ne reçoit que la copie club)
 create function public.can_upload_dossier(did uuid) returns boolean
 language sql stable security definer set search_path = public as $$
   select exists (
     select 1 from dossiers d where d.id = did and (
          (d.status = 'draft'       and d.candidate_email = my_email())
-      or (d.status = 'submitted'   and d.president_email = my_email())
       or (d.status = 'club_signed' and is_staff('district', d.district))
       or (d.status in ('district_validated', 'national_validated') and is_staff('national'))))
 $$;
@@ -124,7 +160,7 @@ language sql stable security definer set search_path = public as $$
     select 1 from dossiers where id = did and purge_after < current_date)
 $$;
 
--- "<uuid>/fichier.zip" → uuid (null si le chemin n'a pas cette forme)
+-- "<uuid>/full/fichier.zip" → uuid (null si le chemin n'a pas cette forme)
 create function public.path_dossier(path text) returns uuid
 language plpgsql immutable as $$
 begin
@@ -132,20 +168,30 @@ begin
 exception when others then
   return null;
 end $$;
+-- "<uuid>/full/…" → 'zip' ; "<uuid>/club/…" → 'club' ; autre → null
+create function public.path_kind(path text) returns text
+language sql immutable as $$
+  select case split_part(path, '/', 2) when 'full' then 'zip' when 'club' then 'club' end
+$$;
 
 -- ---------- fichiers, signatures, commentaires, journal ----------
 create table public.dossier_files (
   id          uuid primary key default gen_random_uuid(),
   dossier_id  uuid not null references public.dossiers on delete cascade,
-  kind        text not null check (kind in ('zip', 'other')),
+  kind        text not null check (kind in ('zip', 'club')),   -- dossier complet / copie du président
   path        text not null unique,
   file_name   text not null,
   sha256      text not null check (sha256 ~ '^[0-9a-f]{64}$'),
   size_bytes  bigint not null,
   contents    text[] not null default '{}',   -- noms des fichiers du ZIP (checklist)
+  source_sha  text,                            -- copie club : empreinte du dossier complet d'origine
   uploaded_by text not null default public.my_email(),
   uploaded_at timestamptz not null default now(),
-  check (public.path_dossier(path) = dossier_id)
+  -- « is not distinct from » : un chemin mal formé (null) doit faire échouer la contrainte
+  check (public.path_dossier(path) is not distinct from dossier_id),
+  check (public.path_kind(path) is not distinct from kind),
+  -- « is not null » explicite : une comparaison avec null ne ferait pas échouer la contrainte
+  check ((kind = 'zip' and source_sha is null) or (kind = 'club' and source_sha is not null and source_sha ~ '^[0-9a-f]{64}$'))
 );
 
 create table public.signatures (
@@ -196,10 +242,36 @@ end $$;
 create trigger files_after_insert after insert on public.dossier_files
   for each row execute function public.files_after_insert();
 
+-- dernière version déposée d'un type de fichier
+create function public.latest_file(did uuid, k text) returns public.dossier_files
+language sql stable security definer set search_path = public as $$
+  select * from dossier_files where dossier_id = did and kind = k order by uploaded_at desc limit 1
+$$;
+
+-- pièces manquantes dans la dernière version du dossier (bloque l'envoi)
+create function public.missing_documents(did uuid) returns text[]
+language sql stable security definer set search_path = public as $$
+  with f as (select latest_file(did, 'zip') z, latest_file(did, 'club') c),
+       names as (select regexp_replace(n, '^.*/', '') n from f, unnest(coalesce((f.z).contents, '{}')) n),
+       req(label, re) as (values
+         ('Application form (Excel)', '\.xlsx$'),
+         ('Commitment to Reciprocity', '^Commitment.*\.docx$'),
+         ('Pass photo', '^Pass_photo'),
+         ('Payment proof', '^Payment_proof'),
+         ('Passport / ID scan', '^ID_document'),
+         ('Letter to the host family', '^Letter_to_Host_Family'))
+  select coalesce(array_agg(label), '{}') from (
+    select label from req where not exists (select 1 from names where names.n ~* req.re)
+    union all
+    select 'Club copy of the current version' from f
+     where (f.z).id is not null and ((f.c).id is null or (f.c).source_sha is distinct from (f.z).sha256)
+  ) m
+$$;
+
 -- ---------- circuit de validation ----------
--- Seule porte d'entrée pour changer un statut. Les étapes de signature
--- (club, district, national) exigent l'empreinte SHA-256 du dernier ZIP
--- déposé : la signature est liée à une version précise du dossier.
+-- Seule porte d'entrée pour changer un statut. Chaque approbation (parent, club,
+-- district, national) exige l'empreinte SHA-256 de la version signée : dernier
+-- dossier complet, ou pour le président la copie club tirée de ce dossier.
 create function public.dossier_transition(did uuid, target public.dossier_status,
                                           note text default null, doc_sha256 text default null)
 returns public.dossier_status
@@ -208,21 +280,39 @@ declare
   d    dossiers;
   me   text := my_email();
   who  text;
-  last_zip text;
+  z    dossier_files;
+  c    dossier_files;
+  missing text[];
 begin
   select * into d from dossiers where id = did for update;
   if not found or not can_see_dossier(did) then
     raise exception 'Dossier not found';
   end if;
 
-  if target = 'submitted' and d.status = 'draft' and d.candidate_email = me then
-    if not exists (select 1 from dossier_files where dossier_id = did and kind = 'zip') then
+  if target in ('parent_review', 'submitted') and d.status = 'draft' and d.candidate_email = me then
+    if latest_file(did, 'zip') is null or (latest_file(did, 'zip')).id is null then
       raise exception 'Upload the application ZIP before sending';
+    end if;
+    missing := missing_documents(did);
+    if cardinality(missing) > 0 then
+      raise exception 'Missing documents: %', array_to_string(missing, ', ');
     end if;
     if d.president_email is null then
       raise exception 'The club president e-mail is required';
     end if;
+    if is_minor(d.candidate_birth_date) then
+      if target <> 'parent_review' then
+        raise exception 'The candidate is under 18: a parent or guardian must approve the file first';
+      end if;
+      if d.parent_email is null then
+        raise exception 'The parent or guardian e-mail is required for a candidate under 18';
+      end if;
+    elsif target <> 'submitted' then
+      raise exception 'Parental approval is only needed for a candidate under 18';
+    end if;
     who := 'candidate';
+  elsif target = 'submitted' and d.status = 'parent_review' and d.parent_email = me then
+    who := 'parent';
   elsif target = 'club_signed' and d.status = 'submitted' and d.president_email = me then
     who := 'president';
   elsif target = 'district_validated' and d.status = 'club_signed' and is_staff('district', d.district) then
@@ -235,25 +325,35 @@ begin
     who := 'national';
   elsif target = 'archived' and d.status in ('accepted', 'refused') and is_staff('national') then
     who := 'national';
-  elsif target = 'draft' and d.status = 'submitted' and d.candidate_email = me then
-    who := 'candidate';  -- le candidat reprend son dossier avant la signature du club
+  elsif target = 'draft' and d.status in ('parent_review', 'submitted') and d.candidate_email = me then
+    who := 'candidate';  -- le candidat reprend son dossier avant toute approbation
   elsif target = 'draft' and (
-         (d.status = 'submitted'   and d.president_email = me)
+         (d.status = 'parent_review' and d.parent_email = me)
+      or (d.status = 'submitted'   and d.president_email = me)
       or (d.status = 'club_signed' and is_staff('district', d.district))
       or (d.status in ('district_validated', 'national_validated') and is_staff('national'))) then
     if coalesce(trim(note), '') = '' then
       raise exception 'A comment is required to send the file back for correction';
     end if;
-    who := case when d.status = 'submitted' then 'president'
+    who := case when d.status = 'parent_review' then 'parent'
+                when d.status = 'submitted' then 'president'
                 when d.status = 'club_signed' then 'district' else 'national' end;
   else
     raise exception 'Step % → % is not allowed for this account', d.status, target;
   end if;
 
-  if target in ('club_signed', 'district_validated', 'national_validated') then
-    select sha256 into last_zip from dossier_files
-     where dossier_id = did and kind = 'zip' order by uploaded_at desc limit 1;
-    if doc_sha256 is null or doc_sha256 is distinct from last_zip then
+  if who in ('parent', 'president', 'district', 'national') and target <> 'draft'
+     and target in ('submitted', 'club_signed', 'district_validated', 'national_validated') then
+    z := latest_file(did, 'zip');
+    if who = 'president' then
+      c := latest_file(did, 'club');
+      if c.id is null or c.source_sha is distinct from z.sha256 then
+        raise exception 'The club copy is not up to date with the latest file — ask the candidate to upload it again';
+      end if;
+      if doc_sha256 is null or doc_sha256 is distinct from c.sha256 then
+        raise exception 'The signed document does not match the latest club copy — reload the file';
+      end if;
+    elsif doc_sha256 is null or doc_sha256 is distinct from z.sha256 then
       raise exception 'The signed document does not match the latest ZIP — reload the file';
     end if;
     insert into signatures (dossier_id, step, signer_email, signer_role, doc_sha256)
@@ -323,9 +423,9 @@ revoke all on all tables in schema public from anon;
 
 -- colonnes modifiables par l'interface ; statut, échéance et signatures : jamais en direct
 revoke insert, update on public.dossiers from authenticated;
-grant insert (season, candidate_name, parent_email, president_email, district, club,
+grant insert (season, candidate_name, candidate_birth_date, parent_email, president_email, district, club,
               camp_choice, consent_at, consent_version) on public.dossiers to authenticated;
-grant update (candidate_name, parent_email, president_email, district, club, camp_choice)
+grant update (candidate_name, candidate_birth_date, parent_email, president_email, district, club, camp_choice)
   on public.dossiers to authenticated;
 revoke insert, update, delete on public.signatures, public.events, public.purge_log from authenticated;
 revoke update on public.dossier_files, public.comments from authenticated;
@@ -355,7 +455,7 @@ create policy dossiers_withdraw on public.dossiers for delete to authenticated
   using (candidate_email = public.my_email() and status = 'draft' and first_submitted_at is null);
 
 create policy files_read on public.dossier_files for select to authenticated
-  using (public.can_see_dossier(dossier_id));
+  using (public.can_read_file(dossier_id, kind));
 create policy files_add on public.dossier_files for insert to authenticated
   with check (public.can_upload_dossier(dossier_id) and uploaded_by = public.my_email());
 create policy files_remove on public.dossier_files for delete to authenticated
@@ -378,10 +478,11 @@ values ('dossiers', 'dossiers', false, 52428800)
 on conflict (id) do nothing;
 
 create policy yce_files_read on storage.objects for select to authenticated
-  using (bucket_id = 'dossiers' and (public.can_see_dossier(public.path_dossier(name))
+  using (bucket_id = 'dossiers' and (public.can_read_file(public.path_dossier(name), public.path_kind(name))
                                      or public.is_purgeable(public.path_dossier(name))));
 create policy yce_files_upload on storage.objects for insert to authenticated
-  with check (bucket_id = 'dossiers' and public.can_upload_dossier(public.path_dossier(name)));
+  with check (bucket_id = 'dossiers' and public.path_kind(name) is not null
+              and public.can_upload_dossier(public.path_dossier(name)));
 create policy yce_files_delete on storage.objects for delete to authenticated
   using (bucket_id = 'dossiers' and (public.can_upload_dossier(public.path_dossier(name))
                                      or public.is_purgeable(public.path_dossier(name))));

@@ -147,25 +147,46 @@ ul.plain li.old{opacity:0.6;}
     <div class="userbar">Signed in as <b id="me"></b> <span class="role" id="me-roles"></span><span class="sp"></span>
       <button class="btn2" onclick="signOut()">Sign out</button></div>
 
+    <div class="section" id="mfa" hidden>
+      <div class="sec-head"><span class="sec-title">Two-step verification</span><span class="sec-note">required for coordinators, the national team and administrators</span></div>
+      <div class="sec-body">
+        <p class="hint" id="mfa-intro" style="font-size:13px;margin-bottom:10px"></p>
+        <div id="mfa-setup" hidden style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
+          <img id="mfa-qr" alt="QR code to scan with an authenticator app" style="width:180px;height:180px;background:#fff;border-radius:8px;padding:6px">
+          <div class="hint">Cannot scan? Enter this key in the app:<br><code id="mfa-secret" style="font-size:13px;word-break:break-all"></code></div>
+        </div>
+        <div class="grid">
+          <div class="fld g2"><label class="flbl" for="mfa-code">6-digit code</label>
+            <input id="mfa-code" inputmode="numeric" autocomplete="one-time-code" maxlength="7" onkeydown="if(event.key==='Enter')mfaVerify()"></div>
+          <div class="fld g2" style="justify-content:flex-end"><button class="btn" onclick="mfaVerify()">Verify</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="work">
     <div class="section" id="create" hidden>
       <div class="sec-head"><span class="sec-title">Start my application</span><span class="sec-note">one file per candidate and season</span></div>
       <div class="sec-body"><div class="grid">
         <div class="fld g3"><label class="flbl" for="n-name">Candidate first and last name</label><input id="n-name" autocomplete="name"></div>
+        <div class="fld g3"><label class="flbl" for="n-birth">Candidate date of birth</label><input type="date" id="n-birth"></div>
         <div class="fld g3"><label class="flbl" for="n-season">Season</label><select id="n-season"></select></div>
         <div class="fld g3"><label class="flbl" for="n-district">District</label><select id="n-district"></select></div>
         <div class="fld g3"><label class="flbl" for="n-club">Sponsoring Lions club</label><input id="n-club"></div>
         <div class="fld g3"><label class="flbl" for="n-president">Club president e-mail</label><input type="email" id="n-president" placeholder="needed to send the file"></div>
-        <div class="fld g3"><label class="flbl" for="n-parent">Parent / guardian e-mail</label><input type="email" id="n-parent" placeholder="gets read access"></div>
-        <div class="fld g6"><label class="flbl" for="n-camp">Preferred camp (optional)</label><input id="n-camp" list="camp-list" placeholder="Country — camp name"></div>
+        <div class="fld g3"><label class="flbl" for="n-parent">Parent / guardian e-mail</label><input type="email" id="n-parent" placeholder="required under 18 — approves the file"></div>
+        <div class="fld g3"><label class="flbl" for="n-camp">Preferred camp (optional)</label><input id="n-camp" list="camp-list" placeholder="Country — camp name"></div>
         <div class="g6 notice">
           <b>Data protection.</b> The data controller is <b>Lions Multiple District <span class="md-lbl">112</span></b>.
           Your application file is stored in a secure vault hosted in the European Union. Only you, your parent or guardian, your club
           president, your district coordinator and the national YCE team can open it, and every access is recorded.
+          Your club president only receives a reduced copy, without health, religion or identity-document data.
           It is kept <b>for 2 years after the end of the season</b>, because the reciprocity commitment means your family hosts a young
-          person the following year; it is then deleted automatically (90 days after a refusal). To access, correct or delete your data,
-          contact your district coordinator.
+          person the following year; it is then deleted automatically (90 days after a refusal).
+          <b>Health data</b> (section III of the form) is processed only to organise a safe stay, with your explicit consent.
+          <b>Transfer abroad</b>: if you are selected, the file is sent to the Lions youth exchange team of the host country, which may be
+          outside the European Union; it is needed to organise your stay. To access, correct or delete your data, contact your district coordinator.
         </div>
-        <label class="chk g6"><input type="checkbox" id="n-consent"> I have read this notice and I agree. If I am under 18, my parent or legal guardian agrees too.</label>
+        <label class="chk g6"><input type="checkbox" id="n-consent"> I have read this notice and I agree, including the use of my health data and the transfer of my file to the host country. If I am under 18, my parent or legal guardian agrees too and will approve the file.</label>
         <div class="g6"><button class="btn" onclick="createDossier()">Create my application file</button></div>
       </div></div>
     </div>
@@ -180,6 +201,7 @@ ul.plain li.old{opacity:0.6;}
             <div id="d-info"></div>
             <div id="d-edit" class="grid" hidden>
               <div class="fld g3"><label class="flbl" for="e-name">Candidate name</label><input id="e-name"></div>
+              <div class="fld g3"><label class="flbl" for="e-birth">Date of birth</label><input type="date" id="e-birth"></div>
               <div class="fld g3"><label class="flbl" for="e-district">District</label><select id="e-district"></select></div>
               <div class="fld g3"><label class="flbl" for="e-club">Club</label><input id="e-club"></div>
               <div class="fld g3"><label class="flbl" for="e-president">Club president e-mail</label><input type="email" id="e-president"></div>
@@ -259,6 +281,7 @@ ul.plain li.old{opacity:0.6;}
         </div>
       </div>
     </div>
+    </div><!-- /#work -->
   </div>
   <datalist id="camp-list"></datalist>
 </main>
@@ -267,6 +290,8 @@ ul.plain li.old{opacity:0.6;}
 <script src="districts_data.js"></script>
 <script>document.querySelectorAll('.md-lbl').forEach(function(e){if(typeof MD!=='undefined')e.textContent=MD;});</script>
 <script src="js/zip.js"></script>
+<script src="js/xlsx.js"></script>
+<script src="js/club-copy.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="js/vault-api.js"></script>
 <script src="js/vault.js"></script>

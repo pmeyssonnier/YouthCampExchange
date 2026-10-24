@@ -12,13 +12,14 @@ FILLER = ["js/assets.js", "js/zip.js", "js/xlsx.js", "js/docx.js", "js/signature
           "js/render.js", "js/form.js"]
 TRACKER = ["js/zip.js", "js/tracker-storage.js", "js/tracker-parser.js",
            "js/tracker-export.js", "js/tracker-ui.js"]
-VAULT = ["js/zip.js", "js/vault-api.js", "js/vault.js"]
+VAULT = ["js/zip.js", "js/club-copy.js", "js/vault-api.js", "js/vault.js"]
 
 ROLES = {
     "js/assets.js": "GENERATED — embedded templates (base64) + build version",
     "js/zip.js": "bounded ZIP reading (limits against booby-trapped archives) — shared",
     "js/xlsx.js": "ZIP writing + workbook cell read/write",
     "js/vault-api.js": "vault: the only layer talking to Supabase",
+    "js/club-copy.js": "vault: reduced copy for the club president (AF without ID, religion, health + Commitment)",
     "js/vault.js": "vault UI: sign-in, dashboard, file, signatures, team, retention",
     "js/docx.js": "Commitment: text, validation, signed Word generation",
     "js/signatures.js": "signature pads + pasting signatures into the workbook",
@@ -39,7 +40,7 @@ ROLES = {
 FN_ROLES = {
     "unzip": "parse a zip into [{name,data}] within ZIP_LIMITS", "zipDirectory": "validated central directory, no decompression",
     "zipNames": "file names of an archive without decompressing", "ZIP_LIMITS": "entries / size / ratio caps",
-    "csvSafe": "neutralise spreadsheet formulas in CSV cells", "commitFiles": "atomic multi-file commit (Git Data API)",
+    "csvSafe": "neutralise spreadsheet formulas in CSV cells", "buildClubCopy": "full dossier ZIP → club copy ZIP", "redactApplicationForm": "empties ID / religion / health cells", "dropUnusedShared": "removes orphan Excel shared strings", "commitFiles": "atomic multi-file commit (Git Data API)",
     "validDmy": "real calendar date check", "DRAFT_MAX_DAYS": "local draft expiry", "buildZip": "rebuild a zip Blob",
     "crc32": "CRC-32 for zip writing", "inflateRaw": "native inflate", "deflateRaw": "native deflate",
     "getCellValue": "read one cell", "getCell": "read one cell", "setCell": "write/clear one cell keeping style",
