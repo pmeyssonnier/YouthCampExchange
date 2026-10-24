@@ -98,7 +98,7 @@ async function parseForm(fname,buf){
     sigA:sigRows.indexOf(126)>=0,sigP:sigRows.indexOf(128)>=0,sigC:sigRows.indexOf(130)>=0,
     pct:pct,missing:missing,
     commit:prev.commit||false,commitClub:prev.commitClub||false,
-    photo:prev.photo||false,pay:prev.pay||false,letter:prev.letter||false,
+    photo:prev.photo||false,pay:prev.pay||false,iddoc:prev.iddoc||false,letter:prev.letter||false,
     status:prev.status||"Received",notes:prev.notes||"",
     updated:new Date().toISOString().slice(0,10)
   };
@@ -135,9 +135,10 @@ async function matchAux(fname){
   const key=findRowByName(fname);
   if(!key)throw new Error("no matching candidate row (load the .xlsx first)");
   const n=fname.toLowerCase();
-  if(n.indexOf("photo")>=0){ROWS[key].photo=true;log("✔ "+fname+" → pass photo for "+ROWS[key].fam+" "+ROWS[key].fir,"ok");}
+  if(n.indexOf("id_document")>=0||n.indexOf("passport")>=0){ROWS[key].iddoc=true;log("✔ "+fname+" → passport / ID scan for "+ROWS[key].fam+" "+ROWS[key].fir,"ok");}
+  else if(n.indexOf("photo")>=0){ROWS[key].photo=true;log("✔ "+fname+" → pass photo for "+ROWS[key].fam+" "+ROWS[key].fir,"ok");}
   else if(n.indexOf("payment")>=0||n.indexOf("proof")>=0||n.indexOf("paiement")>=0){ROWS[key].pay=true;log("✔ "+fname+" → payment proof for "+ROWS[key].fam+" "+ROWS[key].fir,"ok");}
   else if(n.indexOf("letter")>=0||n.indexOf("host")>=0||n.indexOf("family")>=0||n.indexOf("famille")>=0){ROWS[key].letter=true;log("✔ "+fname+" → host-family letter for "+ROWS[key].fam+" "+ROWS[key].fir,"ok");}
-  else{log("⚠ "+fname+" matched "+ROWS[key].fam+" "+ROWS[key].fir+" but type unknown (name it Pass_photo_…, Payment_proof_… or Letter_to_Host_Family_…)","warn");}
+  else{log("⚠ "+fname+" matched "+ROWS[key].fam+" "+ROWS[key].fir+" but type unknown (name it Pass_photo_…, Payment_proof_…, ID_document_… or Letter_to_Host_Family_…)","warn");}
 }
 
