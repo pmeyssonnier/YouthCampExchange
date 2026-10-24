@@ -97,7 +97,7 @@ async function syncFromTemplate(buf){
     const xml=new TextDecoder().decode(sheet.data);
     const sst=parseShared(entries);
     const d=getCellValue(xml,sst,"AF1");
-    if(/^[A-D]$/i.test(d))currentDistrict=d.toUpperCase();
+    if(/^[A-Z]$/i.test(d))currentDistrict=d.toUpperCase();
     // en mode signature, le fichier chargé fait TOUJOURS foi : on écrase tout
     // (permet aussi d'enchaîner plusieurs dossiers sans résidus du précédent)
     const fileWins=(typeof SIGN_MODE!=="undefined")&&SIGN_MODE;
