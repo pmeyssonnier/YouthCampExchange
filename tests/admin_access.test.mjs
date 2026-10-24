@@ -15,7 +15,8 @@ let pass = 0, fail = 0;
 const ok = (c, m) => { if (c) pass++; else { fail++; console.log('FAIL:', m); } };
 const TOK = 'github_pat_TESTTOKEN123';
 
-for (const pageName of ['yce_admin.html', 'yce_camps.html']) {
+// une seule page d'administration (onglets Site / Camps / Documents) : un jeton, une phrase secrète
+for (const pageName of ['yce_admin.html']) {
   const ctx = await br.newContext();
   const auth = [];
   await ctx.route('https://api.github.com/**', r => {

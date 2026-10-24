@@ -1,5 +1,5 @@
 // theme.js — bascule thème clair/sombre, préférence partagée entre toutes les pages (clé yce-theme)
-// Chargé par yce_form_filler.html, yce_tracker.html et yce_admin.html (index.html a la sienne dans site-ui.js).
+// Chargé par yce_form_filler.html, yce_tracker.html, yce_vault.html et yce_admin.html (index.html a la sienne dans site-ui.js).
 "use strict";
 function toggleTheme(){
   const h=document.documentElement;

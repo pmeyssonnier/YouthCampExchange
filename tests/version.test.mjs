@@ -12,7 +12,7 @@ t.ok(top === v, 'CHANGELOG.md top entry (' + top + ') matches js/version.js (' +
 
 const srv = await serve(8879);
 const br = await chromium.launch(launchOpts);
-for (const p of ['index.html', 'yce_form_filler.html', 'yce_tracker.html', 'yce_admin.html', 'yce_camps.html', 'yce_vault.html']) {
+for (const p of ['index.html', 'yce_form_filler.html', 'yce_tracker.html', 'yce_admin.html', 'yce_vault.html']) {
   const pg = await br.newPage();
   await pg.route('**cdnjs.cloudflare.com/**', r => r.fulfill({ path: /topojson/.test(r.request().url()) ? CDN.topojson : CDN.d3, contentType: 'text/javascript' }));
   await pg.route('**unpkg.com/world-atlas**', r => r.fulfill({ path: CDN.atlas, contentType: 'application/json' }));

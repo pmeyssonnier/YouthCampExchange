@@ -1,6 +1,6 @@
 // camps-manager.js — gestionnaire de la liste des camps : import du répertoire YCE officiel (xlsx),
 // édition des fiches, export/import JSON de sauvegarde, archivage, enregistrement vers le site.
-// Chargé par yce_camps.html après camps_data.js, js/xlsx.js (unzip) et js/admin-core.js.
+// Onglet Camps de yce_admin.html ; chargé après camps_data.js, js/zip.js, js/xlsx.js et js/admin-core.js.
 "use strict";
 let CAMPS_W=RAW.map(function(c){return JSON.parse(JSON.stringify(c));}); // copie de travail
 let ARCH=[];              // camps archivés (camps_archive.json)
@@ -438,7 +438,7 @@ async function saveSite(){
 }
 
 // -------------------- connexion : recharge l'état du dépôt --------------------
-async function onConnected(){
+ON_CONNECT.push(async function(){
   CONNECTED=true;
   try{
     if(!DIRTY){
@@ -451,8 +451,8 @@ async function onConnected(){
     }else log("Connected — local unsaved changes kept.","warn");
   }catch(e){log("Could not refresh from the repository: "+esc(e.message),"warn");}
   render();
-}
-function onLoggedOut(){CONNECTED=false;updSave();}
+});
+ON_LOGOUT.push(function(){CONNECTED=false;updSave();});
 
 // -------------------- démarrage --------------------
 (function(){

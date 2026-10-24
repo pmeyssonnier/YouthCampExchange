@@ -1,5 +1,6 @@
-// admin-core.js — tronc commun des pages d'administration (yce_admin.html, yce_camps.html) :
-// chiffrement du jeton par PIN, API GitHub du dépôt, connexion/déconnexion.
+// admin-core.js — tronc commun de la page d'administration (yce_admin.html, onglets Site / Camps / Documents) :
+// chiffrement du jeton par phrase secrète, API GitHub du dépôt, connexion/déconnexion.
+// Les modules de la page s'inscrivent dans ON_CONNECT / ON_LOGOUT (un seul jeton, une seule saisie).
 "use strict";
 // Dépôt administré : détecté depuis l'URL sur *.github.io, sinon SITE_REPO (districts_data.js).
 // Un fork national fonctionne ainsi sans toucher au code.
@@ -16,6 +17,7 @@ const PASS_MIN=8;                           // longueur minimale de la phrase se
 const KDF_ITER=600000;                      // PBKDF2-SHA256, niveau recommandé OWASP ; 310000 pour les anciens blocs
 let ADMIN_TOKEN="";                          // jeton déverrouillé : en mémoire uniquement, jamais remis dans la page
 let UPGRADE=false;                           // déverrouillé avec un ancien PIN court : nouvelle phrase secrète attendue
+const ON_CONNECT=[], ON_LOGOUT=[];           // fonctions appelées après connexion / oubli du jeton
 
 // -------------------- chiffrement local du jeton par phrase secrète --------------------
 function b64e(a){let s="";for(let i=0;i<a.length;i++)s+=String.fromCharCode(a[i]);return btoa(s);}
@@ -160,7 +162,7 @@ async function connect(){
     who.textContent="✔ "+u.login;who.style.display="";
     document.getElementById("panel").style.display="";
     log("Connected as <b>"+esc(u.login)+"</b>","ok");
-    if(typeof onConnected==="function")onConnected();
+    ON_CONNECT.forEach(function(f){f();});
   }catch(e){if(!UPGRADE)ADMIN_TOKEN="";log("Connection failed: "+esc(e.message),"err");}
   finally{btn.disabled=false;}
 }
@@ -173,12 +175,14 @@ function logout(){
   document.getElementById("panel").style.display="none";
   document.getElementById("who").style.display="none";
   log("Token forgotten on this device.");
-  if(typeof onLoggedOut==="function")onLoggedOut();
+  ON_LOGOUT.forEach(function(f){f();});
 }
 
 // démarrage commun : phrase secrète si un jeton chiffré existe, sinon champ jeton.
 // Un ancien jeton stocké en clair n'est jamais réutilisé : il est effacé.
 function initAccess(){
+  if(initAccess.done)return; // appelé par chaque module de la page : une seule fois
+  initAccess.done=true;
   try{if(localStorage.getItem(TOKEN_KEY)){localStorage.removeItem(TOKEN_KEY);
     log("An old unencrypted token was found on this device and deleted. Paste your token again and choose a passphrase.","warn");}}catch(e){}
   if(hasEnc()){accessMode("pin");document.getElementById("pin").focus();return;}

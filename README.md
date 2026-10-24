@@ -17,8 +17,9 @@ Current version: see [`CHANGELOG.md`](CHANGELOG.md) — the number is also shown
 | `yce_form_filler.html?admin` | District coordinators | Unlocks the admin tools (see below) |
 | `yce_tracker.html` | District coordinators | **Applications tracker**: drop the received files, get a live status table + CSV export |
 | `yce_vault.html` | Everyone involved in a file | **Application vault** (optional): one central copy of each file, sign-off workflow, retention — see [`docs/VAULT_SETUP.md`](docs/VAULT_SETUP.md) |
-| `yce_camps.html` | Site administrator | **Camp manager**: import the official LCI directory (xlsx) with a reviewed merge, edit every camp, JSON backup/restore, archive old camps |
-| `yce_admin.html` | Site administrator | **Site administration**: season/year, district coordinators, home-page texts, photo gallery, official documents — committed straight to GitHub |
+| `yce_admin.html` | Site administrator | **Administration**, one token and one passphrase for three tabs — **Site & season**: season/year, district coordinators, home-page banner, photo gallery · **Camps** (`#camps`): import the official LCI directory (xlsx) with a reviewed merge, edit every camp, JSON backup/restore, archive old camps · **Documents**: official documents — committed straight to GitHub. The old `yce_camps.html` address opens the Camps tab |
+
+Every tool page shows a menu under its header (site, form filler, tracker, vault, administration); the candidate and club-president screens of the form only show the link back to the site. The site footer links to the staff tools.
 
 ## The camp explorer
 
@@ -79,20 +80,22 @@ As long as `SUPABASE_URL` is empty in `districts_data.js`, the page says "Vault 
 ```
 index.html                            public site HTML shell (loads css/site.css + the js/site-* modules)
 css/site.css                          public site styles (nav, hero, explorer, filter drawer, map, modal, light/dark)
+css/tools.css                         styles shared by the tool pages (tool menu)
 camps_data.js                         season camp data (SEASON + YEAR + RAW array) — common to every deployment
 districts_data.js                     per-deployment data: MD number, country, coordinators, home-page texts (SITE), photo gallery (GALLERY), SITE_REPO, Supabase settings
 camps.json                            GENERATED — plain-JSON export of the camp data ({season, camps})
 camps_archive.json                    archived camps — created by the camp manager at the first archive
 yce_form_filler.html                  form filler HTML shell (loads the js/ modules below)
 yce_tracker.html                      tracker HTML shell
-yce_camps.html                        camp manager HTML shell
-yce_admin.html                        site administration HTML shell
+yce_admin.html                        administration HTML shell (tabs Site & season / Camps / Documents)
+yce_camps.html                        old camp manager address, redirects to yce_admin.html#camps
 yce_vault.html                        application vault HTML shell (Supabase — disabled until configured)
 CHANGELOG.md                          what changed in each version
 CLAUDE.md                             working rules for changes to this repository
 js/
   version.js                          site version number (VERSION), shown on every page
   theme.js                            light/dark theme toggle shared by the tool pages
+  toolnav.js                          tool menu under the header of every tool page
   site-data.js                        site: date helpers, CAMPS enrichment, season stats, HTML escaping (esc/safeUrl/cleanHtml)
   site-explorer.js                    site: camp directory (filters, drawer, sort, table, tabs)
   site-map.js                         site: D3 world map (bubbles, zooms, country panel) following the filters
@@ -111,9 +114,10 @@ js/
   country.js                          default country, dial codes, phone normalisation
   render.js                           section/widget rendering, X-groups, counter
   form.js                             orchestration: generate() and init() — loaded last
-  admin-core.js                       shared admin plumbing: passphrase-encrypted token, GitHub API, atomic commits
-  admin.js                            site administration page logic
-  camps-manager.js                    camp manager: directory import, editing, backups, archive
+  admin-core.js                       admin plumbing: passphrase-encrypted token, GitHub API, atomic commits, connect hooks
+  admin.js                            admin Site & season and Documents tabs
+  camps-manager.js                    admin Camps tab: directory import, editing, backups, archive
+  admin-tabs.js                       admin tab switching (#site, #camps, #docs)
   tracker-storage.js / -parser.js / -export.js / -ui.js   tracker modules
   club-copy.js                        vault: redacted copy for the club president
   vault-api.js / vault.js             vault: Supabase access layer + interface
@@ -167,11 +171,11 @@ The platform stays server-less: **GitHub is the back end**. The admin page edits
 repository through the GitHub API — the administrator "account" is a GitHub account
 with write access plus a fine-grained personal access token (this repository only,
 permission *Contents: Read and write*; the token never leaves the admin's browser, where it is
-stored only encrypted with a passphrase of 8+ characters).
+stored only encrypted with a passphrase of 8+ characters). The three tabs share this single token, so the passphrase is typed once per visit.
 On connection the page reloads the current data from GitHub, so a stale browser cache
 can never overwrite recent changes. From the page you can change the season label and camp year, the district YCE
-coordinators (form stamping + site cards + e-mails follow), replace the whole camp
-list from a JSON file, edit the home-page announcement banner, manage the animated
+coordinators (form stamping + site cards + e-mails follow), manage the camp list in the
+Camps tab, edit the home-page announcement banner, manage the animated
 photo gallery (large previews, reordering; images are resized and committed to `assets/gallery/`), and upload
 new official documents (reference form, Commitment,
 host-family letter, generation template). Every save is **one atomic commit** on `main` (all files or nothing; a file changed on GitHub in the meantime is never overwritten); the

@@ -56,7 +56,7 @@ ok(csv[5] === '+32 470 12 34 56' && csv[6] === '-12' && csv[7] === '2008-05-12' 
 // SEC-10 : dates du site et du gestionnaire de camps
 await pg.goto(B + 'index.html'); await pg.waitForTimeout(500);
 ok(await pg.evaluate(() => parseDate('31-02-2026') === null && parseDate('45-13-2026') === null && parseDate('29-02-2028') !== null && parseDate('28-02-2027') !== null), 'site rejects impossible dates, keeps leap day');
-await pg.goto(B + 'yce_camps.html'); await pg.waitForTimeout(700);
+await pg.goto(B + 'yce_admin.html#camps'); await pg.waitForTimeout(700);
 const r = await pg.evaluate(() => {
   const res = {};
   const tryIt = (label, f) => { openEdit(0); f(); document.getElementById('log').innerHTML = ''; saveEdit(); res[label] = document.getElementById('log').textContent; };

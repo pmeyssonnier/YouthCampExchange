@@ -1,0 +1,7 @@
+/* tools.css — styles communs aux pages d'outils (yce_form_filler, yce_tracker, yce_vault, yce_admin) */
+
+/* menu des outils (js/toolnav.js) */
+.toolnav{display:flex;flex-wrap:wrap;gap:2px 4px;padding:6px 12px;background:var(--surface);border-bottom:1px solid var(--border);font-size:12px;}
+.toolnav a{color:var(--muted);text-decoration:none;padding:5px 10px;border-radius:6px;white-space:nowrap;}
+.toolnav a:hover{color:var(--gold);background:var(--hover);}
+.toolnav a.on{color:var(--gold);font-weight:600;background:rgba(232,160,32,0.12);}

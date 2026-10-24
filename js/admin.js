@@ -1,12 +1,12 @@
-// admin.js — page d'administration du site (saison, districts, camps, accueil, documents)
-// Chargé par yce_admin.html après js/admin-core.js ; scripts classiques partageant la portée globale.
+// admin.js — onglets Site (saison, coordinateurs, page d'accueil, galerie) et Documents de yce_admin.html
+// Chargé après js/admin-core.js ; scripts classiques partageant la portée globale.
+// La liste des camps se gère dans l'onglet Camps (js/camps-manager.js).
 "use strict";
-let NEW_CAMPS=null; // liste de camps en attente d'enregistrement (upload JSON)
 let GAL=[];         // galerie en cours d'édition (copie de GALLERY, enregistrée avec Save)
 
 // -------------------- formulaire --------------------
 // d = données à afficher ; par défaut celles chargées avec la page (peut-être une copie en cache :
-// à la connexion, onConnected() recharge les fichiers actuels depuis GitHub)
+// à la connexion, ON_CONNECT recharge les fichiers actuels depuis GitHub)
 function fillForm(d){
   d=d||{season:SEASON,year:YEAR,districts:DISTRICTS,camps:RAW.length,
     announce:(typeof SITE!=="undefined"&&SITE.announce)||"",gallery:(typeof GALLERY!=="undefined")?GALLERY:[]};
@@ -32,29 +32,6 @@ function updPaths(){
   const y=document.getElementById("in-year").value||YEAR;
   document.getElementById("p-af").textContent="documents/Application_form_"+y+"_MD"+MD+".xlsx";
   document.getElementById("p-letter").textContent="documents/Letter_to_Host_Family_"+y+".docx";
-}
-
-function campsPick(inp){
-  const f=inp.files[0];if(!f)return;
-  const r=new FileReader();
-  r.onload=function(){
-    try{
-      let d=JSON.parse(r.result);
-      if(d&&d.camps)d=d.camps;
-      if(!Array.isArray(d)||!d.length||!d[0].camp_name||!d[0].country)throw new Error("expected an array of camps with country/camp_name");
-      NEW_CAMPS=d;
-      const cf=document.getElementById("camps-fname");
-      cf.textContent="\u2714 "+f.name+" \u2014 "+d.length+" camps staged";cf.style.color="var(--accent)";
-      document.getElementById("camps-note").innerHTML='<span style="color:var(--orange)">'+d.length+" camps staged from "+esc(f.name)+" — press “Save the data”</span>";
-      log(d.length+" camps loaded from "+esc(f.name)+" (staged)","ok");
-    }catch(e){
-      const cf=document.getElementById("camps-fname");
-      cf.textContent="\u2716 "+f.name+" rejected";cf.style.color="var(--red)";
-      log("Camp file rejected: "+esc(e.message),"err");
-    }
-  };
-  r.readAsText(f);
-  inp.value="";
 }
 
 // -------------------- galerie de la page d'accueil --------------------
@@ -154,10 +131,6 @@ async function saveData(){
     let src=b64ToUtf8(cur.content);
     src=src.replace(/const SEASON = "[^"]*";/,'const SEASON = "'+season.replace(/"/g,"'")+'";');
     src=src.replace(/const YEAR = "[^"]*";/,'const YEAR = "'+year+'";');
-    if(NEW_CAMPS){
-      if(!/const RAW = \[[\s\S]*?\];/.test(src))throw new Error("RAW block not found");
-      src=src.replace(/const RAW = \[[\s\S]*?\];/,function(){return "const RAW = "+JSON.stringify(NEW_CAMPS)+";";});
-    }
     // districts_data.js : données propres à ce déploiement (coordinateurs) — SITE_REPO préservé
     const curD=await getFile("districts_data.js");
     if(!curD)throw new Error("districts_data.js not found on main");
@@ -173,14 +146,8 @@ async function saveData(){
     if(srcD!==b64ToUtf8(curD.content))changes.push({path:"districts_data.js",b64:utf8ToB64(srcD),sha:curD.sha});
     if(!changes.length){log("Nothing changed — no commit made.","info");btn.disabled=false;return;}
     const sha=await commitFiles(changes,"Admin: update "+changes.map(function(c){return c.path;}).join(" + ")
-      +" (season "+season+(NEW_CAMPS?", "+NEW_CAMPS.length+" camps":"")+")");
+      +" (season "+season+")");
     log("Data saved in one commit <b>"+sha.slice(0,7)+"</b> ("+changes.map(function(c){return esc(c.path);}).join(", ")+"). The site republishes in ~2 minutes.","ok");
-    if(NEW_CAMPS){
-      const cf=document.getElementById("camps-fname");
-      cf.textContent="\u2714 "+NEW_CAMPS.length+" camps saved into camps_data.js";cf.style.color="var(--accent)";
-      document.getElementById("camps-note").textContent=NEW_CAMPS.length+" camps on the site (season "+season+")";
-    }
-    NEW_CAMPS=null;
   }catch(e){log("Save failed: "+esc(e.message),"err");}
   finally{btn.disabled=false;}
 }
@@ -231,17 +198,16 @@ function parseSiteData(campsSrc,distSrc){
   return {season:str(campsSrc,"SEASON"),year:str(campsSrc,"YEAR"),camps:raw.length,
     districts:districts,announce:ann?JSON.parse(ann[1]):"",gallery:gallery};
 }
-async function onConnected(){
+ON_CONNECT.push(async function(){
   try{
     const c=await getFile("camps_data.js"),d=await getFile("districts_data.js");
     if(!c||!d)throw new Error("data files not found on main");
     fillForm(parseSiteData(b64ToUtf8(c.content),b64ToUtf8(d.content)));
-    NEW_CAMPS=null;
     log("Current data loaded from GitHub (not from the browser cache).","ok");
   }catch(e){
     log("Could not reload the current data from GitHub ("+esc(e.message)+"). The form may show an older cached copy: reload the page before saving.","err");
   }
-}
+});
 
 // -------------------- démarrage --------------------
 (function(){
