@@ -401,7 +401,18 @@ async function act(target, needsReview){
   }
   if(target === "refused"){ note = prompt("Reason for the refusal (optional, visible in the history):") || null; }
   try{
-    await API.transition(d.id, target, note, needsReview && doc ? doc.sha256 : null);
+    // la signature porte sur l'empreinte du fichier réellement stocké, recalculée ici :
+    // un fichier altéré ou déclaré avec une fausse empreinte ne peut pas être signé
+    let sha = null;
+    if(needsReview && doc){
+      msg("Checking the file fingerprint…", "info");
+      sha = await sha256Hex(await API.fileBytes(doc));
+      if(sha !== doc.sha256){
+        msg("The stored file does not match its recorded fingerprint: do not sign. Send the file back to the candidate or contact the national YCE team.", "err");
+        return;
+      }
+    }
+    await API.transition(d.id, target, note, sha);
     msg("Done: " + (STATUS[target] || {}).label + ".", "ok");
     await loadDashboard();
     await openDossier(d.id);

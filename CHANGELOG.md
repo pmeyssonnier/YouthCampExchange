@@ -5,6 +5,12 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.7.2 — 2026-10-24
+
+- Vault signatures (not activated yet), stronger link between a signature and the file signed:
+  - before signing, the signer's browser downloads the stored file and recomputes its SHA-256 fingerprint; the signature is refused if it does not match the fingerprint recorded at upload (file altered, or declared with a false fingerprint). The fingerprint sent with the signature is the one computed from the real file.
+  - a signed version can no longer be deleted — neither the stored file nor its record — by the candidate, the coordinator or the national team, until the end of the retention period. Only a draft that was never sent and never signed can lose a wrong upload. Before, the candidate (file sent back for correction) or the coordinator / national team at their step could delete the stored copy of a version already signed.
+
 ## 1.7.1 — 2026-10-24
 
 - Tracker CSV export: the protection against spreadsheet formulas (a cell starting with `=`, `+`, `-` or `@` is prefixed with an apostrophe) now also catches formulas hidden behind leading spaces, non-breaking spaces or line breaks, and the full-width signs `＝ ＋ － ＠`. Phone numbers and plain numbers stay unchanged.

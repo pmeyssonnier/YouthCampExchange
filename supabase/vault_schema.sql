@@ -288,6 +288,17 @@ language sql stable security definer set search_path = public as $$
   ) m
 $$;
 
+-- qui peut effacer un fichier déposé : seulement le candidat, pour un brouillon jamais envoyé
+-- et sans aucune signature. Une version approuvée (parent, président, district, national) reste
+-- la preuve de ce qui a été signé : personne ne peut l'effacer, ni sa ligne ni l'objet du stockage,
+-- jusqu'à la purge en fin de conservation (is_purgeable).
+create function public.can_remove_files(did uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from dossiers d where d.id = did and d.candidate_email = my_email()
+                   and d.status = 'draft' and d.first_submitted_at is null)
+     and not exists (select 1 from signatures s where s.dossier_id = did)
+$$;
+
 -- ---------- circuit de validation ----------
 -- Seule porte d'entrée pour changer un statut. Chaque approbation (parent, club,
 -- district, national) exige l'empreinte SHA-256 de la version signée : dernier
@@ -483,7 +494,7 @@ create policy files_add on public.dossier_files for insert to authenticated
   with check (uploaded_by = public.my_email() and
               case when kind = 'id' then public.can_upload_id(dossier_id) else public.can_upload_dossier(dossier_id) end);
 create policy files_remove on public.dossier_files for delete to authenticated
-  using (public.can_upload_dossier(dossier_id) and uploaded_by = public.my_email());
+  using (public.can_remove_files(dossier_id) and uploaded_by = public.my_email());
 
 create policy signatures_read on public.signatures for select to authenticated
   using (public.can_see_dossier(dossier_id));
@@ -509,5 +520,5 @@ create policy yce_files_upload on storage.objects for insert to authenticated
               and case when public.path_kind(name) = 'id' then public.can_upload_id(public.path_dossier(name))
                        else public.can_upload_dossier(public.path_dossier(name)) end);
 create policy yce_files_delete on storage.objects for delete to authenticated
-  using (bucket_id = 'dossiers' and (public.can_upload_dossier(public.path_dossier(name))
+  using (bucket_id = 'dossiers' and (public.can_remove_files(public.path_dossier(name))
                                      or public.is_purgeable(public.path_dossier(name))));

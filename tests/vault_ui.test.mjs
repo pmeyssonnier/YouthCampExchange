@@ -72,6 +72,8 @@ function makeVaultApi(){
       return (await run("insert into dossier_files (dossier_id,kind,path,file_name,sha256,size_bytes,contents,source_sha) values ($1,$2,$3,$4,$5,$6,$7,$8) returning *",[id,kind,p,file.name,sha,file.size,contents,src||null]))[0];},
     downloadUrl: async f=>{const r=await run('select id from storage.objects where name=$1',[f.path]);if(!r.length)throw new Error('not allowed');
       await run('select dossier_log($1,$2,$3)',[f.dossier_id,'download',JSON.stringify({file:f.file_name})]);window.__DL=f.path;return '#dl';},
+    fileBytes: async f=>{const r=await run('select id from storage.objects where name=$1',[f.path]);if(!r.length)throw new Error('not allowed');
+      const b=await window.__getblob(f.path);return Uint8Array.from(atob(b),c=>c.charCodeAt(0)).buffer;},
     transition: (id,t,n,s)=>run('select dossier_transition($1,$2,$3,$4)',[id,t,n,s]),
     comments: id=>run('select * from comments where dossier_id=$1 order by created_at',[id]),
     addComment: (id,b)=>run('insert into comments (dossier_id,body) values ($1,$2)',[id,b]),
@@ -97,6 +99,7 @@ const br = await chromium.launch(launchOpts);
 const ctx = await br.newContext({ viewport: { width: 1100, height: 900 } });
 await ctx.exposeFunction('__sql', (e, a, sql, p) => runAs(e, a, sql, p));
 await ctx.exposeFunction('__blob', (p, b64) => { BLOBS[p] = Buffer.from(b64, 'base64'); });
+await ctx.exposeFunction('__getblob', p => (BLOBS[p] || Buffer.alloc(0)).toString('base64'));
 await ctx.route('**/@supabase/supabase-js@*/**', r => r.fulfill({ contentType: 'text/javascript', body: 'window.supabase={createClient:function(){return {};}};' }));
 
 const pg = await ctx.newPage();
@@ -193,6 +196,14 @@ await pg.fill('#mfa-code', '123456'); await pg.click('#mfa .btn'); await pg.wait
 ok(await pg.isVisible('#work') && !(await pg.isVisible('#mfa')), 'verified: work shown');
 ok(await pg.isVisible('#dossier'), 'deep link opens after verification');
 ok((await pg.$$eval('#d-files li', l => l.length)) >= 4, 'coordinator sees full files and club copies');
+// fichier altéré dans le stockage après le dépôt : l'empreinte recalculée ne correspond plus, signature refusée
+{
+  const fullPath = Object.keys(BLOBS).filter(p => /\/full\//.test(p)).sort((a, b) => a.split('/').pop() < b.split('/').pop() ? 1 : -1)[0];
+  const orig = BLOBS[fullPath]; BLOBS[fullPath] = Buffer.concat([orig, Buffer.from('tampered')]);
+  await pg.check('#a-reviewed'); await pg.click('#d-actions .btn'); await settle();
+  ok(/does not match its recorded fingerprint/.test(await msgText()) && /Awaiting district coordinator/.test(await pg.textContent('#d-status')), 'tampered file: fingerprint mismatch, signature refused');
+  BLOBS[fullPath] = orig;
+}
 await pg.check('#a-reviewed'); await pg.click('#d-actions .btn'); await settle();
 ok(/Awaiting national/.test(await pg.textContent('#d-status')), 'district validated');
 // session suivante : code seulement, pas de nouveau QR

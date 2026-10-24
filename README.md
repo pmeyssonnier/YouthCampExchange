@@ -67,7 +67,7 @@ District/status/search filters, sortable columns, per-candidate status (`Receive
 
 `yce_vault.html` replaces e-mailed ZIPs with **one stored copy per file** in a Supabase project (EU region), MD 112 being the data controller. Candidate, parent, club president, district coordinator and national team open the same file through an e-mailed sign-in link:
 
-- workflow `draft → parent review → submitted → club signed → district validated → national validated → sent to host → accepted / refused → archived`, every step timestamped with the SHA-256 fingerprint of the exact ZIP signed (simple electronic signature)
+- workflow `draft → parent review → submitted → club signed → district validated → national validated → sent to host → accepted / refused → archived`, every step timestamped with the SHA-256 fingerprint of the exact ZIP signed (simple electronic signature); the signer's browser recomputes that fingerprint from the stored file before signing, and a signed version can no longer be deleted until the end of the retention period
 - the club president only sees an automatically **redacted copy** (no ID scan, religion or health section)
 - coordinators, national team and administrators must use **two-factor sign-in** (authenticator app)
 - files are kept **2 years after the season** (the family hosts the following year), 90 days after a refusal, then purged

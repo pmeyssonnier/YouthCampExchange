@@ -211,4 +211,34 @@ const [d3] = await q(`insert into dossiers (season,candidate_name,candidate_birt
 await q(`delete from dossiers where id=$1`, [d3.id]);
 ok((await q(`select id from dossiers where id=$1`, [d3.id])).length === 0, 'candidate can withdraw an unsent draft');
 
+// ================= une version signée ne s'efface plus =================
+await as('sig@x.be');
+const [S] = await q(`insert into dossiers (season,candidate_name,candidate_birth_date,president_email,district,consent_at,consent_version)
+  values ('2026-2027','Sig Test',$1,'pres@x.be','A',now(),'v2') returning id`, [adultBirth]);
+await upFull(S.id, h('8')); await upClub(S.id, h('9'), h('8'));
+const counts = async () => { await root(); const r = (await q(`select (select count(*)::int from storage.objects where name like $1) o, (select count(*)::int from dossier_files where dossier_id=$2) f`, [S.id + '/%', S.id]))[0]; return r.o + '/' + r.f; };
+// brouillon jamais envoyé et non signé : le candidat peut encore retirer un dépôt
+await as('sig@x.be');
+await upFull(S.id, h('e'));
+const wrong = (await q(`select path from dossier_files where dossier_id=$1 and sha256=$2`, [S.id, h('e')]))[0].path;
+await q(`delete from storage.objects where name=$1`, [wrong]); await q(`delete from dossier_files where path=$1`, [wrong]);
+ok(await counts() === '2/2', 'unsent, unsigned draft: the candidate can remove a wrong upload');
+await as('sig@x.be'); await q(`select dossier_transition($1,'submitted')`, [S.id]);
+await as('pres@x.be'); await q(`select dossier_transition($1,'club_signed',null,$2)`, [S.id, h('9')]);
+// au district : ni le coordinateur ni le candidat ne peuvent effacer la version signée
+await asStaff('coorda@x.be');
+await q(`delete from storage.objects where name like $1`, [S.id + '/%']); await q(`delete from dossier_files where dossier_id=$1`, [S.id]);
+await as('sig@x.be');
+await q(`delete from storage.objects where name like $1`, [S.id + '/%']); await q(`delete from dossier_files where dossier_id=$1`, [S.id]);
+ok(await counts() === '2/2', 'signed version: coordinator and candidate cannot delete it (storage and record)');
+// renvoyé au candidat après la signature du président : la version signée reste, une nouvelle version s'ajoute
+await asStaff('coorda@x.be'); await q(`select dossier_transition($1,'draft','Fix the camp choice')`, [S.id]);
+await as('sig@x.be');
+await q(`delete from storage.objects where name like $1`, [S.id + '/%']); await q(`delete from dossier_files where dossier_id=$1`, [S.id]);
+ok(await counts() === '2/2', 'sent back after a signature: the signed version cannot be deleted');
+await as('sig@x.be'); await upFull(S.id, h('f'));
+ok(await counts() === '3/3', 'sent back after a signature: a corrected version can be added');
+await as('sig@x.be');
+ok((await err(`delete from dossiers where id=$1`, [S.id])) !== null || (await counts()) === '3/3', 'a file sent once cannot be withdrawn');
+
 process.exit(t.done() ? 1 : 0);
