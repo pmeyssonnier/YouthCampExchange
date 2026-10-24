@@ -23,8 +23,8 @@ function dropUnusedShared(sheetXml, sstXml){
   return sstXml.replace(/<si>[\s\S]*?<\/si>|<si\/>/g, function(si){ i++; return used[i] ? si : "<si><t></t></si>"; });
 }
 
-async function redactApplicationForm(afU8){
-  const entries = await unzip(u8buf(afU8));
+async function redactApplicationForm(afU8, budget){
+  const entries = await unzip(u8buf(afU8), budget);
   const sheet = entries.find(function(e){ return e.name === "xl/worksheets/sheet1.xml"; });
   if(!sheet) throw new Error("the application form has no worksheet");
   let xml = new TextDecoder().decode(sheet.data);
@@ -37,11 +37,12 @@ async function redactApplicationForm(afU8){
 
 // dossier complet (ZIP du formulaire) -> copie club (ZIP : AF réduit + Commitment)
 async function buildClubCopy(zipBuf){
-  const entries = await unzip(zipBuf);
+  const budget = zipBudget(); // partagé entre le ZIP et le formulaire .xlsx qu'il contient
+  const entries = await unzip(zipBuf, budget);
   const af = entries.find(function(e){ return /\.xlsx$/i.test(zipBase(e.name)); });
   const cm = entries.find(function(e){ return /^Commitment.*\.docx$/i.test(zipBase(e.name)); });
   if(!af) throw new Error("no application form (.xlsx) in the ZIP");
-  const files = [{ name: zipBase(af.name).replace(/\.xlsx$/i, "_CLUB-COPY.xlsx"), data: await redactApplicationForm(af.data) }];
+  const files = [{ name: zipBase(af.name).replace(/\.xlsx$/i, "_CLUB-COPY.xlsx"), data: await redactApplicationForm(af.data, budget) }];
   if(cm) files.push({ name: zipBase(cm.name), data: cm.data });
   return buildZip(files, "application/zip");
 }

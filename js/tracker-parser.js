@@ -33,22 +33,25 @@ function rowKey(dist,fam,fir){return dist+"_"+norm(fam)+"_"+norm(fir);}
 // ---------------- file handling ----------------
 async function handleFiles(list){
   const files=Array.from(list); // fige la FileList avant le reset de l'input
-  const items=[]; // {name, buf}
+  const items=[]; // {name, buf, budget}
   for(const file of files){
     const n=file.name.toLowerCase();
+    // un budget de décompression par fichier déposé, partagé avec les .xlsx / .docx qu'il contient
+    const budget=zipBudget();
+    try{zipCheckSize(file);}catch(err){log("✖ "+file.name+" — "+err.message,"err");continue;}
     if(n.endsWith(".zip")){
       try{
-        const entries=await unzip(await file.arrayBuffer());
+        const entries=await unzip(await file.arrayBuffer(),budget);
         let found=0;
         for(const e of entries){
           const base=e.name.split("/").pop();
           if(!base||e.name.indexOf("__MACOSX")>=0||base===".DS_Store")continue;
-          if(/\.(xlsx|docx|pdf|jpe?g|png)$/i.test(base)||/^ID_document_TO_FOLLOW.*\.txt$/i.test(base)){items.push({name:base,buf:e.data.buffer.slice(e.data.byteOffset,e.data.byteOffset+e.data.byteLength)});found++;}
+          if(/\.(xlsx|docx|pdf|jpe?g|png)$/i.test(base)||/^ID_document_TO_FOLLOW.*\.txt$/i.test(base)){items.push({name:base,buf:e.data.buffer.slice(e.data.byteOffset,e.data.byteOffset+e.data.byteLength),budget:budget});found++;}
         }
         log("📦 "+file.name+" — "+found+" file(s) extracted","ok");
       }catch(err){log("✖ "+file.name+" — "+err.message,"err");}
     }else{
-      items.push({name:file.name,buf:await file.arrayBuffer()});
+      items.push({name:file.name,buf:await file.arrayBuffer(),budget:budget});
     }
   }
   // les formulaires d'abord : les pièces se rattachent à des lignes existantes
@@ -60,15 +63,15 @@ async function handleFiles(list){
   for(const it of items){
     const n=it.name.toLowerCase();
     try{
-      if(n.endsWith(".xlsx"))await parseForm(it.name,it.buf);
-      else if(n.endsWith(".docx")&&/commit/i.test(n))await matchCommit(it.name,it.buf);
+      if(n.endsWith(".xlsx"))await parseForm(it.name,it.buf,it.budget);
+      else if(n.endsWith(".docx")&&/commit/i.test(n))await matchCommit(it.name,it.buf,it.budget);
       else await matchAux(it.name); // photo, preuve de paiement, lettre famille d'accueil (docx ou pdf)
     }catch(e){log("✖ "+it.name+" — "+e.message,"err");}
   }
   save();render();
 }
-async function parseForm(fname,buf){
-  const entries=await unzip(buf);
+async function parseForm(fname,buf,budget){
+  const entries=await unzip(buf,budget);
   const sheet=entries.find(function(e){return e.name==="xl/worksheets/sheet1.xml";});
   if(!sheet)throw new Error("no worksheet found (is this an application form?)");
   const xml=new TextDecoder().decode(sheet.data);
@@ -113,8 +116,8 @@ function findRowByName(str){
   });
   return hit;
 }
-async function matchCommit(fname,buf){
-  const entries=await unzip(buf);
+async function matchCommit(fname,buf,budget){
+  const entries=await unzip(buf,budget);
   const de=entries.find(function(e){return e.name==="word/document.xml";});
   if(!de)throw new Error("not a Word document");
   const doc=new TextDecoder().decode(de.data);

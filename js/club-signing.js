@@ -6,6 +6,7 @@ const COMMIT_FILE={buf:null,name:null};
 const SIGN_EXTRAS=[]; // pièces du dossier (photo, preuve de paiement) reconduites telles quelles
 function loadDossier(inp){
   const file=inp.files[0];if(!file)return;
+  try{zipCheckSize(file);}catch(e){setStatus("⚠ "+file.name+" — "+e.message,true);inp.value="";return;}
   const r=new FileReader();
   r.onload=async function(){
     if(SIGN_MODE){ // chaque dossier chargé repart de zéro : pads, Commitment et pièces du précédent effacés
