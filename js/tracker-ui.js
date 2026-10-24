@@ -61,7 +61,7 @@ const dz=document.getElementById("dropzone");
 dz.addEventListener("drop",function(e){handleFiles(e.dataTransfer.files);});
 // un bouton de filtre par district déclaré dans districts_data.js (page d'administration)
 document.getElementById("dist-pills").innerHTML=Object.keys(DISTRICTS).sort().map(function(d){
-  return '<button class="pill" data-d="'+esc(d)+'" onclick="setDist(\''+esc(d)+'\',this)">'+esc(MD+" "+d)+"</button>";}).join("");
+  return '<button class="pill" data-d="'+esc(d)+'" title="'+esc("YCE coordinator: "+(DISTRICTS[d].name||"—"))+'" onclick="setDist(\''+esc(d)+'\',this)">'+esc(MD+" "+d)+"</button>";}).join("");
 // status filter options
 document.getElementById("f-status").innerHTML='<option value="">All statuses</option>'+STATUSES.map(function(s){return "<option>"+s+"</option>";}).join("");
 render();

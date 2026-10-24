@@ -132,6 +132,9 @@ const lastLog = pg => pg.evaluate(() => document.querySelector('#log div').textC
 // ---- districts : liste, édition, ajout, retrait, puis un seul enregistrement ----
 {
   const st = makeRepo();
+  // liste fictive A–D, indépendante des districts réellement déclarés sur le site
+  st.files['districts_data.js'] = st.files['districts_data.js'].replace(/const DISTRICTS = \{[\s\S]*?\n\};/, 'const DISTRICTS = {\n'
+    + ['A', 'B', 'C', 'D'].map(k => '  ' + k + ': {name: "Coord ' + k + '", club: "LC ' + k + '", email: "' + k.toLowerCase() + '@example.org", mobile: ""}').join(',\n') + '\n};');
   const { pg, ctx, errs } = await openPage('yce_admin.html', st);
   const rows = () => pg.$$eval('#dist-body .dist-item .badge', b => b.map(x => x.textContent));
   ok(JSON.stringify(await rows()) === JSON.stringify(['112 A', '112 B', '112 C', '112 D']), 'districts: list with one row per district ' + await rows());
@@ -152,17 +155,28 @@ const lastLog = pg => pg.evaluate(() => document.querySelector('#log div').textC
   await pg.fill('#de-name', 'Eve Example'); await pg.fill('#de-club', 'LC Test'); await pg.fill('#de-email', 'eve@example.org'); await pg.fill('#de-mobile', '+32 470 00 00 00');
   await pg.click('.dist-form .btn');
   ok((await rows()).includes('112 E'), 'districts: new district E listed');
+  // codes de plusieurs caractères : une lettre puis lettres/chiffres, 4 au plus
+  for (const bad of ['1A', 'C-C', 'é']) {
+    await pg.click('text=➕ Add a district'); await pg.fill('#de-code', bad); await pg.fill('#de-name', 'X'); await pg.fill('#de-email', 'x@example.org');
+    await pg.click('.dist-form .btn');
+    ok(/1 to 4 characters/.test(await lastLog(pg)), 'districts: code ' + bad + ' refused');
+    if (bad === 'é') ok(await pg.getAttribute('#de-code', 'maxlength') === '4', 'districts: code limited to 4 characters');
+    await pg.click('.dist-form .btn2');
+  }
+  await pg.click('text=➕ Add a district');
+  await pg.fill('#de-code', 'cc'); await pg.fill('#de-name', 'Cecile Centre'); await pg.fill('#de-email', 'cc@example.org'); await pg.click('.dist-form .btn');
+  ok((await rows()).includes('112 CC'), 'districts: multi-letter district CC listed');
   // retirer D
-  await pg.click('#dist-body .dist-item:nth-child(4) button'); await pg.click('text=🗑 Remove district');
+  await pg.click('#dist-body .dist-item:has(.badge:text-is("112 D")) button'); await pg.click('text=🗑 Remove district');
   ok(!(await rows()).includes('112 D'), 'districts: D removed from the list');
   ok(st.refUpdates === 0, 'districts: nothing published before "Save the data"');
   await pg.evaluate(() => saveData()); await pg.waitForTimeout(1500);
   const D = new Function(st.files['districts_data.js'] + ';return DISTRICTS;')();
-  ok(st.refUpdates === 1 && JSON.stringify(Object.keys(D)) === JSON.stringify(['A', 'B', 'C', 'E']), 'districts: saved in one commit (A, B, C, E): ' + Object.keys(D));
-  ok(D.B.name === 'New <b>Coordinator</b>' && D.E.club === 'LC Test' && D.E.mobile === '+32 470 00 00 00', 'districts: values written exactly');
+  ok(st.refUpdates === 1 && JSON.stringify(Object.keys(D)) === JSON.stringify(['A', 'B', 'C', 'CC', 'E']), 'districts: saved in one commit (A, B, C, CC, E): ' + Object.keys(D));
+  ok(D.B.name === 'New <b>Coordinator</b>' && D.CC.name === 'Cecile Centre' && D.E.club === 'LC Test' && D.E.mobile === '+32 470 00 00 00', 'districts: values written exactly');
   // relecture depuis GitHub : la liste revient identique
   await pg.reload(); await pg.waitForTimeout(2500);
-  ok(JSON.stringify(await rows()) === JSON.stringify(['112 A', '112 B', '112 C', '112 E']), 'districts: list reloaded from GitHub after the save');
+  ok(JSON.stringify(await rows()) === JSON.stringify(['112 A', '112 B', '112 C', '112 CC', '112 E']), 'districts: list reloaded from GitHub after the save');
   ok(!errs.length, 'districts: no page error ' + errs.join(' | '));
   await ctx.close();
 }
@@ -203,7 +217,7 @@ const lastLog = pg => pg.evaluate(() => document.querySelector('#log div').textC
   const X = new Function(st.files['districts_data.js'] + ';return {T:TEAM,P:PAYMENT,D:DISTRICTS};')();
   ok(st.refUpdates === 1, 'team + payment: one commit');
   ok(X.T.national.length === 3 && X.T.national[1].role === 'Camp Organizer & Webmaster' && X.T.outgoing[0].name === 'Olga <i>Out</i>' && X.T.outgoing.length === 4, 'team: written exactly');
-  ok(X.P.iban === 'BE71 0961 2345 6769' && X.P.amount === '€150' && X.P.bic === 'GKCCBEBB' && Object.keys(X.D).length === 4, 'payment written, BIC upper-cased, districts kept');
+  ok(X.P.iban === 'BE71 0961 2345 6769' && X.P.amount === '€150' && X.P.bic === 'GKCCBEBB' && Object.keys(X.D).length === Object.keys(new Function(fs.readFileSync(ROOT + '/districts_data.js', 'utf8') + ';return DISTRICTS;')()).length, 'payment written, BIC upper-cased, districts kept');
   await ctx.close();
   // ancien districts_data.js sans TEAM ni PAYMENT : les lignes sont ajoutées au premier enregistrement
   const st2 = makeRepo();

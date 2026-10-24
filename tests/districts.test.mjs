@@ -1,4 +1,4 @@
-// Les pages suivent la liste des districts de districts_data.js : un district ajouté (E) apparaît partout.
+// Les pages suivent la liste des districts de districts_data.js : un district ajouté (E, ou CC à plusieurs lettres) apparaît partout.
 import { chromium } from '@playwright/test';
 import fs from 'fs';
 import { ROOT, CDN, launchOpts, serve, checker } from './helpers.mjs';
@@ -8,7 +8,7 @@ const srv = await serve(8881);
 const br = await chromium.launch(launchOpts);
 const B = 'http://localhost:8881/';
 const data = fs.readFileSync(ROOT + '/districts_data.js', 'utf8')
-  .replace(/(const DISTRICTS = \{[\s\S]*?)\n\};/, '$1,\n  E: {name: "Eve Example", club: "LC Test", email: "eve@example.org", mobile: "+32 470 00 00 00"}\n};')
+  .replace(/(const DISTRICTS = \{[\s\S]*?)\n\};/, (m, b) => b.replace(/,?\n  E: .*/, '') + ',\n  E: {name: "Eve Example", club: "LC Test", email: "eve@example.org", mobile: "+32 470 00 00 00"},\n  CC: {name: "Cecile Centre", club: "LC Multi", email: "cc@example.org", mobile: ""}\n};')
   .replace(/^const TEAM = .*;$/m, 'const TEAM = ' + JSON.stringify({ national: [{ name: 'Nina <img src=x onerror=alert(1)> National', role: 'President', club: 'LC N', email: 'nina@example.org', mobile: '+32 470 11 11 11' }], outgoing: [{ name: 'Oscar Out', role: 'Outgoing · Asia', club: 'LC O', email: 'javascript:alert(1)', mobile: '' }] }) + ';')
   .replace(/^const PAYMENT = .*;$/m, 'const PAYMENT = ' + JSON.stringify({ amount: '€150', iban: 'BE71 0961 2345 6769', bic: 'GKCCBEBB', beneficiary: 'Test <b>Beneficiary</b>', communication: 'Name · District' }) + ';');
 const ctx = await br.newContext();
@@ -21,11 +21,15 @@ pg.on('pageerror', e => errs.push(e.message));
 
 await pg.goto(B + 'yce_tracker.html'); await pg.waitForTimeout(400);
 const pills = await pg.$$eval('#dist-pills .pill', p => p.map(x => x.textContent));
-t.ok(JSON.stringify(pills) === JSON.stringify(['112 A', '112 B', '112 C', '112 D', '112 E']), 'tracker: one filter per district ' + pills);
+t.ok(JSON.stringify(pills) === JSON.stringify(['112 A', '112 B', '112 C', '112 CC', '112 D', '112 E']), 'tracker: one filter per district ' + pills);
+t.ok(await pg.getAttribute('#dist-pills .pill[data-d="CC"]', 'title') === 'YCE coordinator: Cecile Centre', 'tracker: filter shows the district coordinator');
 
 await pg.goto(B + 'yce_form_filler.html?district=E'); await pg.waitForTimeout(1500);
 t.ok(/District 112 E form ready — YCE coordinator: Eve Example/.test(await pg.textContent('#status')), 'form: new district E stamped with its coordinator');
-t.ok(/A · B · C · D · E/.test(await pg.textContent('#dist-letters')), 'form header lists the districts');
+t.ok(/A · B · C · CC · D · E/.test(await pg.textContent('#dist-letters')), 'form header lists the districts');
+await pg.goto(B + 'yce_form_filler.html?district=cc'); await pg.waitForTimeout(1500);
+t.ok(/District 112 CC form ready — YCE coordinator: Cecile Centre/.test(await pg.textContent('#status')), 'form: multi-letter district CC stamped');
+t.ok(await pg.evaluate(() => currentDistrict) === 'CC', 'form: district CC read back from the stamped form (AF1)');
 await pg.goto(B + 'yce_form_filler.html?district=Z'); await pg.waitForTimeout(1500);
 t.ok(!/District 112 Z/.test(await pg.textContent('#status')), 'form: unknown district not stamped');
 

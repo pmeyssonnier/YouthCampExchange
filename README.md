@@ -11,7 +11,7 @@ Current version: see [`CHANGELOG.md`](CHANGELOG.md) — the number is also shown
 | Page | Audience | Purpose |
 |---|---|---|
 | `index.html` | Candidates & families | Public site: programme presentation, **camp explorer** (filterable table + interactive world map of the season's camps), how to apply, district contacts, photo gallery, document downloads |
-| `yce_form_filler.html?district=A/B/C/D` | Candidates | **Online application form**: fills the official Excel *Application & Indemnity Form* |
+| `yce_form_filler.html?district=A` (district code) | Candidates | **Online application form**: fills the official Excel *Application & Indemnity Form* |
 | `yce_form_filler.html?sign=club` | Club presidents | **Remote counter-signing** of a candidate's application received by e-mail |
 | `yce_form_filler.html?sign=district` | District coordinators | Counter-signing of the district boxes |
 | `yce_form_filler.html?admin` | District coordinators | Unlocks the admin tools (see below) |
@@ -27,7 +27,7 @@ The public site lists every camp of the season with filters on **season, contine
 
 ## The application form filler
 
-Opened from the site with `?district=A/B/C/D`, it loads the **single reference form** and stamps the district into it (header letter and YCE coordinator name/e-mail/mobile, from the `DISTRICTS` constant in `districts_data.js` — the only cells that ever differed between the four district files). The candidate fills ~85 fields with proper controls (date pickers, Yes/No pill buttons, camp choices suggested from the season's camp list, international phone-number normalisation `+32 …`, conditional fields shown only when relevant), attaches the required documents and signs on screen.
+Opened from the site with `?district=<code>` (a letter, or up to 4 letters/digits such as `CC` or `A1`, as declared in the administration), it loads the **single reference form** and stamps the district into it (header letter and YCE coordinator name/e-mail/mobile, from the `DISTRICTS` constant in `districts_data.js` — the only cells that ever differed between the four district files). The candidate fills ~85 fields with proper controls (date pickers, Yes/No pill buttons, camp choices suggested from the season's camp list, international phone-number normalisation `+32 …`, conditional fields shown only when relevant), attaches the required documents and signs on screen.
 
 **Identity document**: a **passport** scan is required when one of the camp choices is outside Europe (the United Kingdom also counts as passport-only); otherwise the **identity card** is enough. When the passport is being renewed, the candidate ticks *scan will follow* and sends it later.
 

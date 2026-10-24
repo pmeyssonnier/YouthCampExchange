@@ -31,7 +31,7 @@ function fillForm(d){
   updPaths();
 }
 // -------------------- districts et coordinateurs --------------------
-// Code = une lettre A–Z (estampillée dans le formulaire, cellule AF1, et exigée par le coffre).
+// Code = 1 à 4 caractères, une lettre puis lettres ou chiffres : A, CC, A1 (estampillé dans le formulaire, cellule AF1, et exigée par le coffre).
 // Liste avec bouton d'édition ; ajout, modification et retrait se font ici puis partent avec "Save the data".
 const DIST_FIELDS=[["name","Name (as on the form)","w3"],["club","Lions club","w3"],["email","E-mail","w3"],["mobile","Mobile","w3"]];
 function distShow(){
@@ -40,7 +40,7 @@ function distShow(){
     const isNew=DIST_EDIT==="",c=isNew?{}:DIST_W[DIST_EDIT];
     form='<div class="dist-form"><div class="dist-form-title">'+(isNew?"New district":"District "+esc(MD+" "+DIST_EDIT))+'</div>'
       +'<div class="dist-grid">'
-      +(isNew?'<div class="fld w1"><label class="flbl">Code</label><input id="de-code" maxlength="1" placeholder="E" style="text-transform:uppercase"></div>':"")
+      +(isNew?'<div class="fld w1"><label class="flbl">Code</label><input id="de-code" maxlength="4" placeholder="E, CC…" style="text-transform:uppercase"></div>':"")
       +DIST_FIELDS.map(function(f){return '<div class="fld '+f[2]+'"><label class="flbl">'+f[1]+'</label><input id="de-'+f[0]+'" value="'+esc(c[f[0]]||"")+'"></div>';}).join("")
       +'</div><div class="dist-actions"><button class="btn" onclick="distApply()">✔ Apply</button>'
       +'<button class="btn2" onclick="distCancel()">Cancel</button>'
@@ -52,7 +52,7 @@ function distShow(){
     const c=DIST_W[k];
     return '<div class="dist-item'+(DIST_EDIT===k?" editing":"")+'"><span class="badge">'+esc(MD+" "+k)+'</span>'
       +'<div class="dist-who"><b>'+esc(c.name||"—")+'</b><span>'+esc(c.club||"")+'</span>'
-      +'<span>'+esc(c.email||"")+(c.mobile?" · "+esc(c.mobile):"")+'</span></div>'
+      +'<span>'+esc(c.email||"")+'</span>'+(c.mobile?'<span>'+esc(c.mobile)+'</span>':"")+'</div>'
       +'<button class="btn2" onclick="distEdit(\''+k+'\')">✏️ Edit</button></div>'
       +(DIST_EDIT===k?form:"");
   }).join("");
@@ -69,7 +69,7 @@ function distApply(){
   const isNew=DIST_EDIT==="";
   const k=isNew?document.getElementById("de-code").value.trim().toUpperCase():DIST_EDIT;
   const v={};DIST_FIELDS.forEach(function(f){v[f[0]]=document.getElementById("de-"+f[0]).value.trim();});
-  if(!/^[A-Z]$/.test(k)){log("The district code must be one letter (A–Z).","err");return;}
+  if(!/^[A-Z][A-Z0-9]{0,3}$/.test(k)){log("The district code is 1 to 4 characters: a letter, then letters or digits (A, CC, A1).","err");return;}
   if(isNew&&DIST_W[k]){log("District "+esc(MD+" "+k)+" already exists — use its Edit button.","err");return;}
   if(!v.name){log("The coordinator name is required.","err");return;}
   if(!/^[^\s@"<>]+@[^\s@"<>]+\.[^\s@"<>]+$/.test(v.email)){log("Invalid e-mail address: "+esc(v.email),"err");return;}
@@ -100,7 +100,7 @@ function teamShow(){
     const g=gr[0],list=TEAM_W[g];
     const rows=list.map(function(m,i){
       return '<div class="dist-item'+(E&&E.g===g&&E.i===i?" editing":"")+'"><div class="dist-who"><b>'+esc(m.name||"—")+'</b>'
-        +'<span>'+esc([m.role,m.club].filter(Boolean).join(" · "))+'</span><span>'+esc([m.email,m.mobile].filter(Boolean).join(" · "))+'</span></div>'
+        +'<span>'+esc([m.role,m.club].filter(Boolean).join(" · "))+'</span>'+(m.email?'<span>'+esc(m.email)+'</span>':"")+(m.mobile?'<span>'+esc(m.mobile)+'</span>':"")+'</div>'
         +'<span class="team-move"><button class="btn2" title="Move up" aria-label="Move up" onclick="teamMove(\''+g+'\','+i+',-1)"'+(i===0?" disabled":"")+'>▲</button>'
         +'<button class="btn2" title="Move down" aria-label="Move down" onclick="teamMove(\''+g+'\','+i+',1)"'+(i===list.length-1?" disabled":"")+'>▼</button></span>'
         +'<button class="btn2" onclick="teamEdit(\''+g+'\','+i+')">✏️ Edit</button></div>'
@@ -245,7 +245,7 @@ function galPick(inp){
 
 // -------------------- enregistrement des données --------------------
 function buildDistrictsLiteral(){
-  const rows=Object.keys(DIST_W).sort().filter(function(d){return /^[A-Z]$/.test(d);}).map(function(d){
+  const rows=Object.keys(DIST_W).sort().filter(function(d){return /^[A-Z][A-Z0-9]{0,3}$/.test(d);}).map(function(d){
     const c=DIST_W[d],g=function(k){return String(c[k]||"");}; // JSON.stringify échappe guillemets et barres obliques inverses
     return "  "+d+": {name: "+JSON.stringify(g("name"))+", club: "+JSON.stringify(g("club"))+", email: "+JSON.stringify(g("email"))+", mobile: "+JSON.stringify(g("mobile"))+"}";
   });
@@ -326,7 +326,7 @@ function parseSiteData(campsSrc,distSrc){
   const block=/const DISTRICTS = \{([\s\S]*?)\n\};/.exec(distSrc);
   const districts={};
   if(block)block[1].split("\n").forEach(function(line){
-    const m=/^\s*([A-Z]): \{name: ("(?:[^"\\]|\\.)*"), club: ("(?:[^"\\]|\\.)*"), email: ("(?:[^"\\]|\\.)*"), mobile: ("(?:[^"\\]|\\.)*")\}/.exec(line);
+    const m=/^\s*([A-Z][A-Z0-9]{0,3}): \{name: ("(?:[^"\\]|\\.)*"), club: ("(?:[^"\\]|\\.)*"), email: ("(?:[^"\\]|\\.)*"), mobile: ("(?:[^"\\]|\\.)*")\}/.exec(line);
     if(m)districts[m[1]]={name:JSON.parse(m[2]),club:JSON.parse(m[3]),email:JSON.parse(m[4]),mobile:JSON.parse(m[5])};
   });
   if(!raw||!gallery||!Object.keys(districts).length||str(campsSrc,"SEASON")===null)throw new Error("unexpected file format");

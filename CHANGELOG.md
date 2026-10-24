@@ -5,6 +5,13 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.6.0 — 2026-10-24
+
+- District codes can now have several characters: a letter, then letters or digits, up to 4 (`A`, `CC`, `A1`), for multiple districts whose districts are not single letters. The administration accepts them when adding a district, and the form filler (`?district=CC`), the tracker, the generated file names and the vault follow.
+- Tracker: each district filter shows its YCE coordinator (from the administration's district list) when hovered.
+- Administration: in the district and national team lists, the phone number is on its own line.
+- The Commitment file name used a fixed "2026_112"; it now follows the season year and the multiple district.
+
 ## 1.5.1 — 2026-10-24
 
 - After an update, pages no longer mix the new page with old scripts kept by the browser (which could show, for example, empty "National team" lists in the administration with the header still at the previous version). Every page now loads its scripts and stylesheets with the version number in their address (`js/admin.js?v=1.5.1`), so a new version is picked up at once.

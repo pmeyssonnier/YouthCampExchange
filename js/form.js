@@ -197,7 +197,7 @@ async function init(){
   const d=(params.get("district")||"").toUpperCase();
   { // le fichier de référence est neutre : on y écrit le MD/pays du déploiement, et le district s'il est connu
     try{
-      const cfg=(/^[A-Z]$/.test(d)&&typeof DISTRICTS!=="undefined")?DISTRICTS[d]||null:null;
+      const cfg=(/^[A-Z][A-Z0-9]{0,3}$/.test(d)&&typeof DISTRICTS!=="undefined")?DISTRICTS[d]||null:null;
       const entries=await unzip(templateBuf||b64ToBuf(TEMPLATE_B64));
       const sheet=entries.find(function(e){return e.name==="xl/worksheets/sheet1.xml";});
       let xml=new TextDecoder().decode(sheet.data);
