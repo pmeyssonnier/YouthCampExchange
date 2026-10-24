@@ -173,8 +173,9 @@ with write access plus a fine-grained personal access token (this repository onl
 permission *Contents: Read and write*; the token never leaves the admin's browser, where it is
 stored only encrypted with a passphrase of 8+ characters). The three tabs share this single token, so the passphrase is typed once per visit; once unlocked, the token stays in the browser tab's session (it survives a refresh or a phone reloading the tab, and is dropped when the tab is closed or after 1 hour without activity).
 On connection the page reloads the current data from GitHub, so a stale browser cache
-can never overwrite recent changes. From the page you can change the season label and camp year, the district YCE
-coordinators (form stamping + site cards + e-mails follow), manage the camp list in the
+can never overwrite recent changes. From the page you can change the season label and camp year, manage the districts and
+their YCE coordinators — list with an Edit button per district, add or remove a district (form stamping,
+site cards, tracker filters and e-mails follow) — manage the camp list in the
 Camps tab, edit the home-page announcement banner, manage the animated
 photo gallery (large previews, reordering; images are resized and committed to `assets/gallery/`), and upload
 new official documents (reference form, Commitment,

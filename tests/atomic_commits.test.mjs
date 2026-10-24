@@ -71,7 +71,7 @@ const lastLog = pg => pg.evaluate(() => document.querySelector('#log div').textC
 {
   const st = makeRepo();
   const { pg, ctx, errs } = await openPage('yce_admin.html', st);
-  await pg.evaluate(() => { document.getElementById('in-season').value = '2026–2027'; document.getElementById('d-A-name').value = 'Jane "Q" Back\\slash'; });
+  await pg.evaluate(() => { document.getElementById('in-season').value = '2026–2027'; DIST_W.A.name = 'Jane "Q" Back\\slash'; });
   await pg.evaluate(() => saveData()); await pg.waitForTimeout(1500);
   ok(st.refUpdates === 1, 'admin: one single commit for two files (' + st.refUpdates + ')');
   ok(/SEASON = "2026–2027"/.test(st.files['camps_data.js']) && /Jane/.test(st.files['districts_data.js']), 'admin: both files updated');
@@ -96,7 +96,7 @@ const lastLog = pg => pg.evaluate(() => document.querySelector('#log div').textC
   st.failBlob = true; st.blobs = {};
   await pg.reload(); await pg.waitForTimeout(300); await pg.fill('#pin', 'correct horse'); await pg.click('#connect'); await pg.waitForTimeout(2500);
   const snap = JSON.stringify(st.files);
-  await pg.evaluate(() => { document.getElementById('in-season').value = '2028–2029'; document.getElementById('d-B-name').value = 'Other'; });
+  await pg.evaluate(() => { document.getElementById('in-season').value = '2028–2029'; DIST_W.B.name = 'Other'; });
   await pg.evaluate(() => saveData()); await pg.waitForTimeout(1500);
   ok(JSON.stringify(st.files) === snap, 'admin: failure half-way leaves the repository untouched');
   ok(/Save failed/.test(await lastLog(pg)), 'admin: failure reported');
@@ -113,19 +113,57 @@ const lastLog = pg => pg.evaluate(() => document.querySelector('#log div').textC
     .replace(/(\n  A: \{name: )"[^"]*"/, '$1"Fresh Name"');
   st.files['camps_data.js'] = st.files['camps_data.js'].replace(/const SEASON = "[^"]*";/, 'const SEASON = "2031–2032";');
   const { pg, ctx, errs } = await openPage('yce_admin.html', st);
-  const f = await pg.evaluate(() => ({ gal: GAL.map(g => g.src), a: document.getElementById('d-A-name').value,
+  const f = await pg.evaluate(() => ({ gal: GAL.map(g => g.src), a: DIST_W.A.name,
     season: document.getElementById('in-season').value, log: document.getElementById('log').textContent }));
   ok(f.gal.length === 1 && f.gal[0] === 'assets/gallery/new1.jpg', 'admin: gallery reloaded from GitHub on connect: ' + f.gal);
   ok(f.a === 'Fresh Name', 'admin: coordinators reloaded from GitHub: ' + f.a);
   ok(f.season === '2031–2032', 'admin: season reloaded from GitHub: ' + f.season);
   ok(/loaded from GitHub/.test(f.log), 'admin: user told the data is current');
-  await pg.evaluate(() => { document.getElementById('d-B-name').value = 'Changed B'; });
+  await pg.evaluate(() => { DIST_W.B.name = 'Changed B'; });
   await pg.evaluate(() => saveData()); await pg.waitForTimeout(1500);
   const D = new Function(st.files['districts_data.js'] + ';return {G:GALLERY,D:DISTRICTS};')();
   ok(D.G.length === 1 && D.G[0].src.endsWith('new1.jpg') && D.D.A.name === 'Fresh Name' && D.D.B.name === 'Changed B',
     'admin: saving keeps GitHub data and only applies the edit');
   ok(/2031–2032/.test(st.files['camps_data.js']), 'admin: season not reverted by the save');
   ok(!errs.length, 'admin (stale cache): no page error ' + errs.join(' | '));
+  await ctx.close();
+}
+
+// ---- districts : liste, édition, ajout, retrait, puis un seul enregistrement ----
+{
+  const st = makeRepo();
+  const { pg, ctx, errs } = await openPage('yce_admin.html', st);
+  const rows = () => pg.$$eval('#dist-body .dist-item .badge', b => b.map(x => x.textContent));
+  ok(JSON.stringify(await rows()) === JSON.stringify(['112 A', '112 B', '112 C', '112 D']), 'districts: list with one row per district ' + await rows());
+  ok((await pg.$$('#dist-body .dist-item button')).length === 4, 'districts: an Edit button per district');
+  // modifier B
+  await pg.click('#dist-body .dist-item:nth-child(2) button');
+  ok(await pg.inputValue('#de-name') !== '' && !(await pg.$('#de-code')), 'districts: edit form prefilled, code not editable');
+  await pg.fill('#de-name', 'New <b>Coordinator</b>'); await pg.fill('#de-email', 'new.coord@example.org');
+  await pg.click('.dist-form .btn');
+  ok(await pg.evaluate(() => DIST_W.B.name === 'New <b>Coordinator</b>' && DIST_W.B.email === 'new.coord@example.org'), 'districts: edit applied');
+  ok(!(await pg.$('#dist-body b b')) && /New <b>Coordinator<\/b>/.test(await pg.textContent('#dist-body')), 'districts: names shown as text, never as HTML');
+  // ajouter E (refus d'un code existant, d'un e-mail invalide)
+  await pg.click('text=➕ Add a district');
+  await pg.fill('#de-code', 'a'); await pg.fill('#de-name', 'Dup'); await pg.fill('#de-email', 'x@example.org'); await pg.click('.dist-form .btn');
+  ok(/already exists/.test(await lastLog(pg)), 'districts: existing code refused');
+  await pg.fill('#de-code', 'e'); await pg.fill('#de-email', 'not-an-email'); await pg.click('.dist-form .btn');
+  ok(/Invalid e-mail/.test(await lastLog(pg)), 'districts: invalid e-mail refused');
+  await pg.fill('#de-name', 'Eve Example'); await pg.fill('#de-club', 'LC Test'); await pg.fill('#de-email', 'eve@example.org'); await pg.fill('#de-mobile', '+32 470 00 00 00');
+  await pg.click('.dist-form .btn');
+  ok((await rows()).includes('112 E'), 'districts: new district E listed');
+  // retirer D
+  await pg.click('#dist-body .dist-item:nth-child(4) button'); await pg.click('text=🗑 Remove district');
+  ok(!(await rows()).includes('112 D'), 'districts: D removed from the list');
+  ok(st.refUpdates === 0, 'districts: nothing published before "Save the data"');
+  await pg.evaluate(() => saveData()); await pg.waitForTimeout(1500);
+  const D = new Function(st.files['districts_data.js'] + ';return DISTRICTS;')();
+  ok(st.refUpdates === 1 && JSON.stringify(Object.keys(D)) === JSON.stringify(['A', 'B', 'C', 'E']), 'districts: saved in one commit (A, B, C, E): ' + Object.keys(D));
+  ok(D.B.name === 'New <b>Coordinator</b>' && D.E.club === 'LC Test' && D.E.mobile === '+32 470 00 00 00', 'districts: values written exactly');
+  // relecture depuis GitHub : la liste revient identique
+  await pg.reload(); await pg.waitForTimeout(2500);
+  ok(JSON.stringify(await rows()) === JSON.stringify(['112 A', '112 B', '112 C', '112 E']), 'districts: list reloaded from GitHub after the save');
+  ok(!errs.length, 'districts: no page error ' + errs.join(' | '));
   await ctx.close();
 }
 

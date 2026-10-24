@@ -131,6 +131,8 @@ async function init(){
   // l'année affichée (titre, en-tête, statut) vient de la constante YEAR (camps_data.js)
   document.querySelectorAll(".yr").forEach(function(s){s.textContent=YEAR;});
   document.title=document.title.replace(/20\d\d/,YEAR);
+  const dl=document.getElementById("dist-letters"); // districts déclarés dans districts_data.js (page d'administration)
+  if(dl&&typeof DISTRICTS!=="undefined")dl.textContent=Object.keys(DISTRICTS).sort().join(" · ");
   const bs=document.getElementById("build");
   if(bs&&typeof BUILD!=="undefined")bs.textContent="(build "+BUILD.replace(/^v/,"")+")";
   if(!SIGN_MODE)restoreDraft(); // les écrans de signature partent toujours du dossier chargé, jamais d'un brouillon local
@@ -191,7 +193,7 @@ async function init(){
   const d=(params.get("district")||"").toUpperCase();
   { // le fichier de référence est neutre : on y écrit le MD/pays du déploiement, et le district s'il est connu
     try{
-      const cfg=(/^[A-D]$/.test(d)&&typeof DISTRICTS!=="undefined")?DISTRICTS[d]:null;
+      const cfg=(/^[A-Z]$/.test(d)&&typeof DISTRICTS!=="undefined")?DISTRICTS[d]||null:null;
       const entries=await unzip(templateBuf||b64ToBuf(TEMPLATE_B64));
       const sheet=entries.find(function(e){return e.name==="xl/worksheets/sheet1.xml";});
       let xml=new TextDecoder().decode(sheet.data);

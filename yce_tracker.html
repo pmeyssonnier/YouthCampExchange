@@ -40,7 +40,7 @@ th.asc::after{content:' ▲';color:var(--gold);}th.desc::after{content:' ▼';co
 td{padding:8px 10px;border-bottom:1px solid rgba(36,61,92,0.4);vertical-align:middle;}
 tr:nth-child(even) td{background:rgba(19,34,56,0.5);}
 tr:hover td{background:var(--hover);}
-.b-dist{display:inline-block;padding:2px 8px;border-radius:3px;font-size:10px;font-weight:700;}
+.b-dist{display:inline-block;padding:2px 8px;border-radius:3px;font-size:10px;font-weight:700;background:rgba(232,160,32,0.14);color:var(--gold);}
 .b-A{background:rgba(255,167,38,0.15);color:#FFA726;}.b-B{background:rgba(6,214,160,0.12);color:var(--accent);}
 .b-C{background:rgba(79,195,247,0.12);color:var(--blue);}.b-D{background:rgba(206,147,216,0.12);color:#ce93d8;}
 .cand{font-weight:600;color:var(--text);white-space:nowrap;}
@@ -83,10 +83,7 @@ tr:hover td{background:var(--hover);}
   </div>
   <div class="toolbar">
     <button class="pill on" data-d="ALL" onclick="setDist('ALL',this)">All districts</button>
-    <button class="pill" data-d="A" onclick="setDist('A',this)">112 A</button>
-    <button class="pill" data-d="B" onclick="setDist('B',this)">112 B</button>
-    <button class="pill" data-d="C" onclick="setDist('C',this)">112 C</button>
-    <button class="pill" data-d="D" onclick="setDist('D',this)">112 D</button>
+    <span id="dist-pills" style="display:contents"></span>
     <input class="srch" id="q" placeholder="Search name, club, camp…" oninput="render()">
     <select class="status-sel" id="f-status" onchange="render()">
       <option value="">All statuses</option>

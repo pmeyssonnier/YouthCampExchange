@@ -25,6 +25,15 @@ input:focus{border-color:var(--gold);}
 .btn:disabled{opacity:0.5;cursor:wait;}
 .btn2{background:transparent;border:1px solid var(--border);border-radius:8px;padding:9px 16px;color:var(--muted);cursor:pointer;font-size:12px;font-family:inherit;}
 .btn2:hover{border-color:var(--blue);color:var(--blue);}
+.dist-list{display:flex;flex-direction:column;gap:8px;}
+.dist-item{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 12px;}
+.dist-item.editing{border-color:var(--blue);}
+.dist-who{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;font-size:12.5px;}
+.dist-who span{color:var(--muted);font-size:11.5px;overflow-wrap:anywhere;}
+.dist-form{border:1.5px solid var(--blue);border-radius:8px;padding:12px;background:var(--surface);display:flex;flex-direction:column;gap:10px;}
+.dist-form-title{font-family:Georgia,serif;font-weight:700;color:var(--gold);}
+.dist-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px 12px;}
+.dist-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
 .help-dlg{margin:auto;max-width:560px;width:calc(100% - 32px);background:var(--surface);color:var(--muted);border:1px solid var(--border);border-left:3px solid var(--blue);border-radius:10px;padding:18px 20px;font-size:13px;line-height:1.65;box-shadow:0 10px 40px rgba(0,0,0,0.5);}
 .help-dlg::backdrop{background:rgba(5,10,20,0.7);}
 .help-dlg b{color:var(--text);}
@@ -32,7 +41,6 @@ input:focus{border-color:var(--gold);}
 .help-head .sec-title{flex:1;}
 #log{font-size:12px;line-height:1.7;max-height:180px;overflow-y:auto;font-family:monospace;}
 #log .ok{color:var(--accent);}#log .err{color:var(--red);}#log .info{color:var(--muted);}
-.dist-row{display:contents;}
 .upl{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--card);border:1px dashed var(--border);border-radius:8px;padding:10px 14px;}
 .upl b{font-size:12.5px;min-width:230px;}
 .filebtn{display:inline-block;background:transparent;border:1px solid var(--border);border-radius:8px;padding:9px 16px;color:var(--muted);cursor:pointer;font-size:12px;}
@@ -155,7 +163,7 @@ tr:hover td{background:var(--hover);}
   </div>
 
   <div class="section">
-    <div class="sec-head"><span class="sec-title">District YCE coordinators</span><span class="sec-note">stamped in the form + shown on the site</span></div>
+    <div class="sec-head"><span class="sec-title">District YCE coordinators</span><span class="sec-note">stamped in the form + shown on the site — one letter per district</span></div>
     <div class="sec-body" id="dist-body"></div>
   </div>
 

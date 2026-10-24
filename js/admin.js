@@ -3,6 +3,8 @@
 // La liste des camps se gère dans l'onglet Camps (js/camps-manager.js).
 "use strict";
 let GAL=[];         // galerie en cours d'édition (copie de GALLERY, enregistrée avec Save)
+let DIST_W={};      // districts en cours d'édition {A:{name,club,email,mobile}}, enregistrés avec Save
+let DIST_EDIT=null; // code du district ouvert dans le panneau d'édition ("" = nouveau district)
 
 // -------------------- formulaire --------------------
 // d = données à afficher ; par défaut celles chargées avec la page (peut-être une copie en cache :
@@ -12,21 +14,65 @@ function fillForm(d){
     announce:(typeof SITE!=="undefined"&&SITE.announce)||"",gallery:(typeof GALLERY!=="undefined")?GALLERY:[]};
   document.getElementById("in-season").value=d.season;
   document.getElementById("in-year").value=d.year;
-  const b=document.getElementById("dist-body");
-  b.innerHTML=Object.keys(d.districts).map(function(k){
-    const c=d.districts[k];
-    return '<div class="fld w1" style="justify-content:center"><span class="badge">'+MD+' '+k+'</span></div>'
-      +'<div class="fld w2"><label class="flbl">Name (as on the form)</label><input id="d-'+k+'-name" value="'+esc(c.name)+'"></div>'
-      +'<div class="fld w3"><label class="flbl">Lions club</label><input id="d-'+k+'-club" value="'+esc(c.club||"")+'"></div>'
-      +'<div class="fld w1"></div>'
-      +'<div class="fld w2"><label class="flbl">E-mail</label><input id="d-'+k+'-email" value="'+esc(c.email)+'"></div>'
-      +'<div class="fld w3"><label class="flbl">Mobile</label><input id="d-'+k+'-mobile" value="'+esc(c.mobile)+'"></div>';
-  }).join("");
+  DIST_W=JSON.parse(JSON.stringify(d.districts));DIST_EDIT=null;
+  distShow();
   document.getElementById("camps-note").textContent=d.camps+" camps currently on the site (season "+d.season+")";
   document.getElementById("in-announce").value=d.announce||"";
   GAL=d.gallery.slice();
   galShow();
   updPaths();
+}
+// -------------------- districts et coordinateurs --------------------
+// Code = une lettre A–Z (estampillée dans le formulaire, cellule AF1, et exigée par le coffre).
+// Liste avec bouton d'édition ; ajout, modification et retrait se font ici puis partent avec "Save the data".
+const DIST_FIELDS=[["name","Name (as on the form)","w3"],["club","Lions club","w3"],["email","E-mail","w3"],["mobile","Mobile","w3"]];
+function distShow(){
+  let form="";
+  if(DIST_EDIT!==null){
+    const isNew=DIST_EDIT==="",c=isNew?{}:DIST_W[DIST_EDIT];
+    form='<div class="dist-form"><div class="dist-form-title">'+(isNew?"New district":"District "+esc(MD+" "+DIST_EDIT))+'</div>'
+      +'<div class="dist-grid">'
+      +(isNew?'<div class="fld w1"><label class="flbl">Code</label><input id="de-code" maxlength="1" placeholder="E" style="text-transform:uppercase"></div>':"")
+      +DIST_FIELDS.map(function(f){return '<div class="fld '+f[2]+'"><label class="flbl">'+f[1]+'</label><input id="de-'+f[0]+'" value="'+esc(c[f[0]]||"")+'"></div>';}).join("")
+      +'</div><div class="dist-actions"><button class="btn" onclick="distApply()">✔ Apply</button>'
+      +'<button class="btn2" onclick="distCancel()">Cancel</button>'
+      +(isNew?"":'<button class="btn2 danger" style="margin-left:auto" onclick="distRemove(\''+DIST_EDIT+'\')">🗑 Remove district</button>')
+      +'</div><span class="hint">Applied changes are published with “Save the data” below.</span></div>';
+  }
+  // le panneau d'édition s'ouvre sous la ligne du district ; un nouveau district en tête de liste
+  const rows=Object.keys(DIST_W).sort().map(function(k){
+    const c=DIST_W[k];
+    return '<div class="dist-item'+(DIST_EDIT===k?" editing":"")+'"><span class="badge">'+esc(MD+" "+k)+'</span>'
+      +'<div class="dist-who"><b>'+esc(c.name||"—")+'</b><span>'+esc(c.club||"")+'</span>'
+      +'<span>'+esc(c.email||"")+(c.mobile?" · "+esc(c.mobile):"")+'</span></div>'
+      +'<button class="btn2" onclick="distEdit(\''+k+'\')">✏️ Edit</button></div>'
+      +(DIST_EDIT===k?form:"");
+  }).join("");
+  document.getElementById("dist-body").innerHTML='<div class="fld w6"><div class="dist-list">'
+    +(DIST_EDIT===""?form:"")+rows+'</div>'
+    +(DIST_EDIT===null?'<button class="btn2" style="margin-top:10px;align-self:flex-start" onclick="distNew()">➕ Add a district</button>':"")
+    +'</div>';
+  const first=document.querySelector("#dist-body .dist-form input");if(first)first.focus();
+}
+function distEdit(k){DIST_EDIT=k;distShow();}
+function distNew(){DIST_EDIT="";distShow();}
+function distCancel(){DIST_EDIT=null;distShow();}
+function distApply(){
+  const isNew=DIST_EDIT==="";
+  const k=isNew?document.getElementById("de-code").value.trim().toUpperCase():DIST_EDIT;
+  const v={};DIST_FIELDS.forEach(function(f){v[f[0]]=document.getElementById("de-"+f[0]).value.trim();});
+  if(!/^[A-Z]$/.test(k)){log("The district code must be one letter (A–Z).","err");return;}
+  if(isNew&&DIST_W[k]){log("District "+esc(MD+" "+k)+" already exists — use its Edit button.","err");return;}
+  if(!v.name){log("The coordinator name is required.","err");return;}
+  if(!/^[^\s@"<>]+@[^\s@"<>]+\.[^\s@"<>]+$/.test(v.email)){log("Invalid e-mail address: "+esc(v.email),"err");return;}
+  DIST_W[k]=v;DIST_EDIT=null;distShow();
+  log((isNew?"District "+esc(MD+" "+k)+" added":"District "+esc(MD+" "+k)+" updated")+" — press “Save the data” to publish.","info");
+}
+function distRemove(k){
+  if(Object.keys(DIST_W).length<=1){log("At least one district is needed.","err");return;}
+  if(!confirm("Remove district "+MD+" "+k+" ("+(DIST_W[k].name||"")+")? Its form links and site card disappear once saved."))return;
+  delete DIST_W[k];DIST_EDIT=null;distShow();
+  log("District "+esc(MD+" "+k)+" removed — press “Save the data” to publish.","info");
 }
 function updPaths(){
   const y=document.getElementById("in-year").value||YEAR;
@@ -112,8 +158,8 @@ function galPick(inp){
 
 // -------------------- enregistrement des données --------------------
 function buildDistrictsLiteral(){
-  const rows=Object.keys(DISTRICTS).map(function(d){
-    const g=function(k){return document.getElementById("d-"+d+"-"+k).value.trim();}; // JSON.stringify échappe guillemets et barres obliques inverses
+  const rows=Object.keys(DIST_W).sort().filter(function(d){return /^[A-Z]$/.test(d);}).map(function(d){
+    const c=DIST_W[d],g=function(k){return String(c[k]||"");}; // JSON.stringify échappe guillemets et barres obliques inverses
     return "  "+d+": {name: "+JSON.stringify(g("name"))+", club: "+JSON.stringify(g("club"))+", email: "+JSON.stringify(g("email"))+", mobile: "+JSON.stringify(g("mobile"))+"}";
   });
   return "const DISTRICTS = {\n"+rows.join(",\n")+"\n};";

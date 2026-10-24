@@ -5,6 +5,12 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.4.0 — 2026-10-24
+
+- Administration, Site & season tab: districts are shown as a list (district, coordinator, club, e-mail, mobile) with an **Edit** button on each row, an **Add a district** button (one letter A–Z) and a **Remove district** button in the edit panel. Changes are published with "Save the data", in one commit.
+- The pages follow the list of districts instead of assuming A–D: tracker filters, form filler header and district stamping (`?district=E`), application forms read back by the tracker and the form. The site's contact cards already did.
+- In the vault (once activated), the coordinator of a new district is added in its Team panel.
+
 ## 1.3.0 — 2026-10-24
 
 - Administration: once unlocked, the passphrase is no longer asked again after a refresh, or when a phone reloads the page after switching apps or browser tabs. The unlocked token is kept in the browser tab's session only: it disappears when the tab is closed, after 1 hour without activity, or with "Forget on this device".
