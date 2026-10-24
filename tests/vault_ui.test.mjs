@@ -220,7 +220,7 @@ ok(await pg.isVisible('#admin') && (await pg.$$eval('#staff-list tr', r => r.len
 // ===== copie club : cellules sensibles effacées (y compris dans les textes partagés d'Excel) =====
 await login('kid2@x.be');
 const red = await pg.evaluate(async () => {
-  const af = await (await fetch('Application_form_2026_MD112.xlsx')).arrayBuffer();
+  const af = await (await fetch('documents/Application_form_2026_MD112.xlsx')).arrayBuffer();
   const e = await unzip(af);
   const sh = e.find(x => x.name === 'xl/worksheets/sheet1.xml');
   let xml = new TextDecoder().decode(sh.data);

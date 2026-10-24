@@ -30,8 +30,8 @@ function fillForm(d){
 }
 function updPaths(){
   const y=document.getElementById("in-year").value||YEAR;
-  document.getElementById("p-af").textContent="Application_form_"+y+"_MD"+MD+".xlsx";
-  document.getElementById("p-letter").textContent="Letter_to_Host_Family_"+y+".docx";
+  document.getElementById("p-af").textContent="documents/Application_form_"+y+"_MD"+MD+".xlsx";
+  document.getElementById("p-letter").textContent="documents/Letter_to_Host_Family_"+y+".docx";
 }
 
 function campsPick(inp){
@@ -189,10 +189,10 @@ async function saveData(){
 function uploadPick(inp,kind){
   const f=inp.files[0];if(!f)return;
   const y=document.getElementById("in-year").value||YEAR;
-  const path={af:"Application_form_"+y+"_MD"+MD+".xlsx",
+  const path="documents/"+{af:"Application_form_"+y+"_MD"+MD+".xlsx",
               commit:"Commitment to Reciprocity.docx",
               letter:"Letter_to_Host_Family_"+y+".docx",
-              tpl:"tools/commit_template.docx"}[kind];
+              tpl:"commit_template.docx"}[kind];
   if(!confirm("Replace "+path+" on the site with "+f.name+" ?")){inp.value="";return;}
   const fn=document.getElementById("u-"+kind);
   if(fn)fn.textContent="\u23f3 "+f.name+"\u2026";

@@ -150,7 +150,7 @@ data_files = [{"file": f, "bytes": os.path.getsize(f), "role": r} for f, r in [
     ("tools/build_assets.py", "regenerates js/assets.js"),
     ("tools/build_codemap.py", "regenerates this visualisation's data and docs/CODE_MAP.md"),
     ("tests/", "security & regression tests run by GitHub Actions (npm test)"),
-    ("tools/commit_template.docx", "Commitment template (markers)"),
+    ("documents/", "official documents: reference form, Commitment, host-family letter, Commitment template (markers)"),
 ]]
 
 sha = subprocess.run(["git", "rev-parse", "--short", "HEAD"],

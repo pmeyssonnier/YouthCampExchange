@@ -123,18 +123,18 @@ docs/
   SEASON_UPDATE.md                    yearly season checklist
   VAULT_SETUP.md                      vault setup guide (Supabase project, e-mail, two-factor, GDPR)
 tests/                                security & regression tests (npm test)
+documents/                            official documents, replaced from the admin page
+  Application_form_2026_MD112.xlsx    single neutral reference form (embedded via js/assets.js, downloadable)
+  Commitment to Reciprocity.docx      official reciprocity contract (downloadable)
+  Letter_to_Host_Family_2026.docx     "Dear Host Family" letter template (downloadable)
+  commit_template.docx                Commitment generation template with §CAND§/§DATE§/[BODY]/[SIG*] markers
 tools/
   build_assets.py                     regenerates js/assets.js and camps.json
   build_codemap.py                    regenerates docs/codemap-data.js and docs/CODE_MAP.md
-  commit_template.docx                Commitment template with §CAND§/§DATE§/[BODY]/[SIG*] markers
+  scraper/                            Lions Camp Scraper.ipynb (camps from the LCI directory) + enriched_lions_camps.py (details from lions-yce-belgium.be)
 .github/workflows/
   tests.yml                           runs the tests on every push and pull request
   rebuild.yml                         regenerates the generated files after each change on main
-Application_form_2026_MD112.xlsx      single neutral reference form (embedded via js/assets.js, downloadable)
-Commitment to Reciprocity.docx        official reciprocity contract (downloadable)
-Letter_to_Host_Family_2026.docx       "Dear Host Family" letter template (downloadable)
-Lions Camp Scraper.ipynb              notebook collecting the camps from the LCI directory
-enriched_lions_camps.py               scraper enriching each camp from lions-yce-belgium.be
 assets/                               logos, favicon, gallery photos
 ```
 
