@@ -5,6 +5,12 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.5.0 — 2026-10-24
+
+- Administration, Site & season tab: the **National Commission** and the **Outgoing Secretaries** shown in "The Team" are managed like the districts — list with an Edit button per member, add, remove, ▲ ▼ to change the display order.
+- New **Administration fee & bank details** section: fee, IBAN (check digits verified before saving), BIC, beneficiary, communication. The home page shows these values in "How to Apply" (fee amount everywhere it appears).
+- Both are stored in `districts_data.js` (`TEAM`, `PAYMENT`) and published with "Save the data".
+
 ## 1.4.2 — 2026-10-24
 
 - Form filler (admin mode): the bottom bar no longer repeats the tool menu — the "Applications tracker", "Camps", "Site admin" buttons are gone (use the menu under the header). "Other template" and "Country" are grouped behind an **⚙ Admin options** button. The code map link moved to the administration page's **?** help.

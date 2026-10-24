@@ -227,7 +227,7 @@
       <div class="step reveal"><div class="step-n">1</div><h4>Find a sponsor club</h4><p>Contact a Lions Club in your district willing to sponsor your application. Your club president will also sign your form.</p></div>
       <div class="step reveal"><div class="step-n">2</div><h4>Contact your district responsable</h4><p>Reach out by phone or e-mail (see below) and fill in the application form online — it stamps your district automatically (or download the blank form).</p></div>
       <div class="step reveal"><div class="step-n">3</div><h4>Complete the form &amp; documents</h4><p>Fill in the Excel form in English on a computer. Print page 4 as PDF and collect three digital signatures: you, your parent(s) and the club president.</p></div>
-      <div class="step reveal"><div class="step-n">4</div><h4>Pay the administration fee</h4><p>Transfer the €125 administration fee to the YCE account, mentioning your name, destination and district. Save the proof as PDF or JPEG.</p></div>
+      <div class="step reveal"><div class="step-n">4</div><h4>Pay the administration fee</h4><p>Transfer the <span class="fee-amt">€125</span> administration fee to the YCE account, mentioning your name, destination and district. Save the proof as PDF or JPEG.</p></div>
       <div class="step reveal"><div class="step-n">5</div><h4>Submit &amp; get matched</h4><p>Send the complete file to your district responsable, who verifies it and coordinates your placement with the Youth Exchange team.</p></div>
     </div>
     <div class="apply-detail">
@@ -240,18 +240,18 @@
           <li><strong><a href="documents/Letter_to_Host_Family_2026.docx" download style="color:inherit;text-decoration:underline dotted">Letter of introduction</a></strong> to your (still unknown) host family, in English: who you are and why you want to take part — <a href="documents/Letter_to_Host_Family_2026.docx" download>📥 template</a> <span class="doc-fmt">DOCX</span></li>
           <li><strong>Passport scan</strong> if one of your camp choices is outside Europe (United Kingdom included) — otherwise your Belgian ID card is enough. If your passport is being renewed, you can send the scan later. <span class="doc-fmt">PDF/JPG</span></li>
           <li><strong>Passport-style photo</strong> <span class="doc-fmt">JPG</span></li>
-          <li><strong>Proof of payment</strong> of the €125 administration fee <span class="doc-fmt">PDF/JPG</span></li>
+          <li><strong>Proof of payment</strong> of the <span class="fee-amt">€125</span> administration fee <span class="doc-fmt">PDF/JPG</span></li>
         </ul>
       </div>
       <div class="pay-card reveal">
         <h3>💳 Administration fee</h3>
-        <div class="pay-amount">€125</div>
+        <div class="pay-amount fee-amt">€125</div>
         <div class="pay-sub">Per application · Non-refundable</div>
         <div class="pay-rows">
-          <div class="pay-row"><span class="pay-lbl">IBAN</span><span class="pay-val">BE62 3100 7424 1361</span></div>
-          <div class="pay-row"><span class="pay-lbl">BIC</span><span class="pay-val">BBRUBEBB</span></div>
-          <div class="pay-row"><span class="pay-lbl">Beneficiary</span><span class="pay-val">Lions Youth Camp &amp; Exchange</span></div>
-          <div class="pay-row"><span class="pay-lbl">Communication</span><span class="pay-val">Name · Destination · District</span></div>
+          <div class="pay-row"><span class="pay-lbl">IBAN</span><span class="pay-val" id="pay-iban">BE62 3100 7424 1361</span></div>
+          <div class="pay-row"><span class="pay-lbl">BIC</span><span class="pay-val" id="pay-bic">BBRUBEBB</span></div>
+          <div class="pay-row"><span class="pay-lbl">Beneficiary</span><span class="pay-val" id="pay-beneficiary">Lions Youth Camp &amp; Exchange</span></div>
+          <div class="pay-row"><span class="pay-lbl">Communication</span><span class="pay-val" id="pay-communication">Name · Destination · District</span></div>
         </div>
         <div class="pay-warn">⚠ The fee is <strong>non-refundable</strong>, even if the candidate does not travel. Camp fees (if any) are separate — see each destination in the <a href="#explorer">Camp Explorer</a>.</div>
       </div>
@@ -302,14 +302,15 @@
     <h2 class="sec-title reveal">The people behind the program</h2>
     <p class="sec-sub reveal">A national commission of volunteers from Lions Clubs across Belgium makes every exchange possible.</p>
     <h3 class="team-sub reveal">National Commission</h3>
-    <div class="team-grid">
+    <!-- cartes regénérées depuis TEAM (districts_data.js) par js/site-ui.js ; ce contenu sert de repli -->
+    <div class="team-grid" id="team-national">
       <div class="tm reveal"><div class="tm-av">SR</div><div><h4>Stijn Renier</h4><div class="tm-role">President · Incoming</div><div class="tm-club">LC Aarschot</div><a href="mailto:stijn.renier@renier.be">stijn.renier@renier.be</a><a href="tel:+32475782593">+32 475 78 25 93</a></div></div>
       <div class="tm reveal"><div class="tm-av">FL</div><div><h4>Frank Lauwers</h4><div class="tm-role">Camp Organizer</div><div class="tm-club">LC Bruxelles Royal</div><a href="mailto:frank@lauwco.be">frank@lauwco.be</a><a href="tel:+32473222004">+32 473 22 20 04</a></div></div>
       <div class="tm reveal"><div class="tm-av">AR</div><div><h4>Astrid Ricquier</h4><div class="tm-role">Secretary</div><div class="tm-club">Leo Club Schelde-Leie</div><a href="mailto:astridricquier@live.fr">astridricquier@live.fr</a><a href="tel:+32496209947">+32 496 20 99 47</a></div></div>
       <div class="tm reveal"><div class="tm-av">PV</div><div><h4>Paul Vanderhaeghen</h4><div class="tm-role">Treasurer</div><div class="tm-club">LC Damme Zwin</div><a href="mailto:paulvdh@skynet.be">paulvdh@skynet.be</a><a href="tel:+32479729520">+32 479 72 95 20</a></div></div>
     </div>
     <h3 class="team-sub reveal">Outgoing Secretaries</h3>
-    <div class="team-grid">
+    <div class="team-grid" id="team-outgoing">
       <div class="tm reveal"><div class="tm-av">GV</div><div><h4>Gautier Vanhonacker</h4><div class="tm-role">Outgoing · Europe</div><div class="tm-club">LC Silly Arenberg</div><a href="mailto:gvanhonacker@gmail.com">gvanhonacker@gmail.com</a></div></div>
       <div class="tm reveal"><div class="tm-av">PB</div><div><h4>Paul Berghmans</h4><div class="tm-role">Outgoing · USA &amp; Canada</div><div class="tm-club">LC Mechelen</div><a href="mailto:paulberghmans@nysna.be">paulberghmans@nysna.be</a><a href="tel:+32473850625">+32 473 85 06 25</a></div></div>
       <div class="tm reveal"><div class="tm-av">AV</div><div><h4>Alexander Vissers</h4><div class="tm-role">Outgoing · Far Destinations</div><div class="tm-club">LC Antwerpen-Moerland</div><a href="mailto:alexander.vissers.12@gmail.com">alexander.vissers.12@gmail.com</a><a href="tel:+32497919952">+32 497 91 99 52</a></div></div>

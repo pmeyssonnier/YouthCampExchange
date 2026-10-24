@@ -33,6 +33,9 @@ input:focus{border-color:var(--gold);}
 .dist-form{border:1.5px solid var(--blue);border-radius:8px;padding:12px;background:var(--surface);display:flex;flex-direction:column;gap:10px;}
 .dist-form-title{font-family:Georgia,serif;font-weight:700;color:var(--gold);}
 .dist-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px 12px;}
+.team-move{display:flex;gap:4px;}
+.team-move .btn2{padding:6px 9px;}
+.team-move .btn2:disabled{opacity:0.35;cursor:default;}
 .dist-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
 .help-dlg{margin:auto;max-width:560px;width:calc(100% - 32px);background:var(--surface);color:var(--muted);border:1px solid var(--border);border-left:3px solid var(--blue);border-radius:10px;padding:18px 20px;font-size:13px;line-height:1.65;box-shadow:0 10px 40px rgba(0,0,0,0.5);}
 .help-dlg::backdrop{background:rgba(5,10,20,0.7);}
@@ -166,6 +169,23 @@ tr:hover td{background:var(--hover);}
   <div class="section">
     <div class="sec-head"><span class="sec-title">District YCE coordinators</span><span class="sec-note">stamped in the form + shown on the site — one letter per district</span></div>
     <div class="sec-body" id="dist-body"></div>
+  </div>
+
+  <div class="section">
+    <div class="sec-head"><span class="sec-title">National team</span><span class="sec-note">shown in “The Team” on the home page</span></div>
+    <div class="sec-body" id="team-body"></div>
+  </div>
+
+  <div class="section">
+    <div class="sec-head"><span class="sec-title">Administration fee &amp; bank details</span><span class="sec-note">shown in “How to Apply” on the home page</span></div>
+    <div class="sec-body">
+      <div class="fld w2"><label class="flbl">Fee (as displayed)</label><input id="pay-amount" placeholder="€125"></div>
+      <div class="fld w4"><label class="flbl">IBAN</label><input id="pay-iban" placeholder="BE.. .... .... ...." autocomplete="off"></div>
+      <div class="fld w2"><label class="flbl">BIC</label><input id="pay-bic" autocomplete="off"></div>
+      <div class="fld w4"><label class="flbl">Beneficiary</label><input id="pay-beneficiary"></div>
+      <div class="fld w6"><label class="flbl">Communication</label><input id="pay-communication"></div>
+      <div class="fld w6"><span class="hint">The IBAN is checked (check digits) before saving. Published with “Save the data”.</span></div>
+    </div>
   </div>
 
   <div class="section">

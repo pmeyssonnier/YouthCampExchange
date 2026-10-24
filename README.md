@@ -82,7 +82,7 @@ index.html                            public site HTML shell (loads css/site.css
 css/site.css                          public site styles (nav, hero, explorer, filter drawer, map, modal, light/dark)
 css/tools.css                         styles shared by the tool pages (theme colours, header, tool menu, sections)
 camps_data.js                         season camp data (SEASON + YEAR + RAW array) — common to every deployment
-districts_data.js                     per-deployment data: MD number, country, coordinators, home-page texts (SITE), photo gallery (GALLERY), SITE_REPO, Supabase settings
+districts_data.js                     per-deployment data: MD number, country, coordinators, home-page texts (SITE), national team (TEAM), fee & bank details (PAYMENT), photo gallery (GALLERY), SITE_REPO, Supabase settings
 camps.json                            GENERATED — plain-JSON export of the camp data ({season, camps})
 camps_archive.json                    archived camps — created by the camp manager at the first archive
 yce_form_filler.html                  form filler HTML shell (loads the js/ modules below)
@@ -175,7 +175,7 @@ stored only encrypted with a passphrase of 8+ characters). The three tabs share 
 On connection the page reloads the current data from GitHub, so a stale browser cache
 can never overwrite recent changes. From the page you can change the season label and camp year, manage the districts and
 their YCE coordinators — list with an Edit button per district, add or remove a district (form stamping,
-site cards, tracker filters and e-mails follow) — manage the camp list in the
+site cards, tracker filters and e-mails follow) —, edit the national team (National Commission and Outgoing Secretaries, same list editor) and the administration fee with the bank details (IBAN check digits verified) — manage the camp list in the
 Camps tab, edit the home-page announcement banner, manage the animated
 photo gallery (large previews, reordering; images are resized and committed to `assets/gallery/`), and upload
 new official documents (reference form, Commitment,

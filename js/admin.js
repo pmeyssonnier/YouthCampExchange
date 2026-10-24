@@ -5,17 +5,25 @@
 let GAL=[];         // galerie en cours d'édition (copie de GALLERY, enregistrée avec Save)
 let DIST_W={};      // districts en cours d'édition {A:{name,club,email,mobile}}, enregistrés avec Save
 let DIST_EDIT=null; // code du district ouvert dans le panneau d'édition ("" = nouveau district)
+let TEAM_W={national:[],outgoing:[]}; // équipe nationale en cours d'édition (copie de TEAM)
+let TEAM_EDIT=null;  // {g:"national"|"outgoing", i:index, -1 = nouveau membre}
+const PAY_KEYS=["amount","iban","bic","beneficiary","communication"];
 
 // -------------------- formulaire --------------------
 // d = données à afficher ; par défaut celles chargées avec la page (peut-être une copie en cache :
 // à la connexion, ON_CONNECT recharge les fichiers actuels depuis GitHub)
 function fillForm(d){
   d=d||{season:SEASON,year:YEAR,districts:DISTRICTS,camps:RAW.length,
-    announce:(typeof SITE!=="undefined"&&SITE.announce)||"",gallery:(typeof GALLERY!=="undefined")?GALLERY:[]};
+    announce:(typeof SITE!=="undefined"&&SITE.announce)||"",gallery:(typeof GALLERY!=="undefined")?GALLERY:[],
+    team:(typeof TEAM!=="undefined")?TEAM:null,payment:(typeof PAYMENT!=="undefined")?PAYMENT:null};
   document.getElementById("in-season").value=d.season;
   document.getElementById("in-year").value=d.year;
   DIST_W=JSON.parse(JSON.stringify(d.districts));DIST_EDIT=null;
   distShow();
+  const t=d.team||{};
+  TEAM_W={national:(t.national||[]).map(function(m){return Object.assign({},m);}),outgoing:(t.outgoing||[]).map(function(m){return Object.assign({},m);})};
+  TEAM_EDIT=null;teamShow();
+  PAY_KEYS.forEach(function(k){document.getElementById("pay-"+k).value=(d.payment&&d.payment[k])||"";});
   document.getElementById("camps-note").textContent=d.camps+" camps currently on the site (season "+d.season+")";
   document.getElementById("in-announce").value=d.announce||"";
   GAL=d.gallery.slice();
@@ -74,6 +82,85 @@ function distRemove(k){
   delete DIST_W[k];DIST_EDIT=null;distShow();
   log("District "+esc(MD+" "+k)+" removed — press “Save the data” to publish.","info");
 }
+// -------------------- équipe nationale (commission, secrétaires outgoing) --------------------
+// Même principe que les districts : liste avec Edit, ajout, retrait, ordre d'affichage (▲ ▼), publié avec "Save the data".
+const TEAM_GROUPS=[["national","National Commission"],["outgoing","Outgoing Secretaries"]];
+const TEAM_FIELDS=[["name","Name","w3"],["role","Role (e.g. Treasurer, Outgoing · Europe)","w3"],["club","Lions club","w3"],["email","E-mail","w3"],["mobile","Mobile (optional)","w3"]];
+function teamForm(g,i){
+  const isNew=i<0,m=isNew?{}:TEAM_W[g][i];
+  return '<div class="dist-form"><div class="dist-form-title">'+(isNew?"New member":esc(m.name||"Member"))+'</div><div class="dist-grid">'
+    +TEAM_FIELDS.map(function(f){return '<div class="fld '+f[2]+'"><label class="flbl">'+f[1]+'</label><input id="te-'+f[0]+'" value="'+esc(m[f[0]]||"")+'"></div>';}).join("")
+    +'</div><div class="dist-actions"><button class="btn" onclick="teamApply()">✔ Apply</button><button class="btn2" onclick="teamCancel()">Cancel</button>'
+    +(isNew?"":'<button class="btn2 danger" style="margin-left:auto" onclick="teamRemove()">🗑 Remove</button>')
+    +'</div><span class="hint">Applied changes are published with “Save the data” below.</span></div>';
+}
+function teamShow(){
+  const E=TEAM_EDIT;
+  document.getElementById("team-body").innerHTML=TEAM_GROUPS.map(function(gr){
+    const g=gr[0],list=TEAM_W[g];
+    const rows=list.map(function(m,i){
+      return '<div class="dist-item'+(E&&E.g===g&&E.i===i?" editing":"")+'"><div class="dist-who"><b>'+esc(m.name||"—")+'</b>'
+        +'<span>'+esc([m.role,m.club].filter(Boolean).join(" · "))+'</span><span>'+esc([m.email,m.mobile].filter(Boolean).join(" · "))+'</span></div>'
+        +'<span class="team-move"><button class="btn2" title="Move up" aria-label="Move up" onclick="teamMove(\''+g+'\','+i+',-1)"'+(i===0?" disabled":"")+'>▲</button>'
+        +'<button class="btn2" title="Move down" aria-label="Move down" onclick="teamMove(\''+g+'\','+i+',1)"'+(i===list.length-1?" disabled":"")+'>▼</button></span>'
+        +'<button class="btn2" onclick="teamEdit(\''+g+'\','+i+')">✏️ Edit</button></div>'
+        +(E&&E.g===g&&E.i===i?teamForm(g,i):"");
+    }).join("");
+    return '<div class="fld w6"><label class="flbl">'+gr[1]+'</label><div class="dist-list">'+rows
+      +(E&&E.g===g&&E.i<0?teamForm(g,-1):"")+'</div>'
+      +(E===null?'<button class="btn2" style="margin-top:8px;align-self:flex-start" onclick="teamEdit(\''+g+'\',-1)">➕ Add a member</button>':"")+'</div>';
+  }).join("");
+  const first=document.querySelector("#team-body .dist-form input");if(first)first.focus();
+}
+function teamEdit(g,i){TEAM_EDIT={g:g,i:i};teamShow();}
+function teamCancel(){TEAM_EDIT=null;teamShow();}
+function teamApply(){
+  const E=TEAM_EDIT,v={};
+  TEAM_FIELDS.forEach(function(f){v[f[0]]=document.getElementById("te-"+f[0]).value.trim();});
+  if(!v.name){log("The member's name is required.","err");return;}
+  if(v.email&&!/^[^\s@"<>]+@[^\s@"<>]+\.[^\s@"<>]+$/.test(v.email)){log("Invalid e-mail address: "+esc(v.email),"err");return;}
+  if(E.i<0)TEAM_W[E.g].push(v);else TEAM_W[E.g][E.i]=v;
+  TEAM_EDIT=null;teamShow();
+  log(esc(v.name)+(E.i<0?" added":" updated")+" — press “Save the data” to publish.","info");
+}
+function teamRemove(){
+  const E=TEAM_EDIT,m=TEAM_W[E.g][E.i];
+  if(!confirm("Remove "+(m.name||"this member")+" from the team?"))return;
+  TEAM_W[E.g].splice(E.i,1);TEAM_EDIT=null;teamShow();
+  log(esc(m.name||"Member")+" removed — press “Save the data” to publish.","info");
+}
+function teamMove(g,i,dir){
+  const l=TEAM_W[g],j=i+dir;if(j<0||j>=l.length)return;
+  const x=l[i];l[i]=l[j];l[j]=x;TEAM_EDIT=null;teamShow();
+}
+
+// -------------------- frais de dossier et coordonnées bancaires --------------------
+// IBAN contrôlé par sa clé (modulo 97) : une faute de frappe dans un numéro de compte publié serait grave.
+function ibanOk(s){
+  const t=String(s).replace(/\s+/g,"").toUpperCase();
+  if(!/^[A-Z]{2}\d{2}[A-Z0-9]{10,30}$/.test(t))return false;
+  const r=(t.slice(4)+t.slice(0,4)).replace(/[A-Z]/g,function(c){return String(c.charCodeAt(0)-55);});
+  let m=0;for(let i=0;i<r.length;i++)m=(m*10+(+r[i]))%97;
+  return m===1;
+}
+function paymentValues(){
+  const p={};PAY_KEYS.forEach(function(k){p[k]=document.getElementById("pay-"+k).value.trim();});
+  if(!p.amount)throw new Error("the administration fee amount is required");
+  if(!ibanOk(p.iban))throw new Error("the IBAN "+p.iban+" is not valid (check digits)");
+  if(p.bic&&!/^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/.test(p.bic.toUpperCase()))throw new Error("the BIC "+p.bic+" is not valid");
+  p.bic=p.bic.toUpperCase();
+  return p;
+}
+// remplace la ligne "const NOM = …;" de districts_data.js, ou l'ajoute avant la galerie si elle n'existe pas encore
+function upsertConst(src,name,value,comment){
+  const line="const "+name+" = "+JSON.stringify(value)+";";
+  const re=new RegExp("^const "+name+" = .*;$","m");
+  if(re.test(src))return src.replace(re,function(){return line;});
+  const at=src.indexOf("\n// Galerie photos");
+  const block="\n// "+comment+"\n"+line+"\n";
+  return at>=0?src.slice(0,at)+block+src.slice(at):src+block;
+}
+
 function updPaths(){
   const y=document.getElementById("in-year").value||YEAR;
   document.getElementById("p-af").textContent="documents/Application_form_"+y+"_MD"+MD+".xlsx";
@@ -187,6 +274,8 @@ async function saveData(){
     if(/\n  announce: /.test(srcD))srcD=srcD.replace(/\n  announce: "(?:[^"\\]|\\.)*",/,function(){return "\n  announce: "+JSON.stringify(ann)+",";});
     const galU=GAL.filter(function(g,i){return GAL.findIndex(function(x){return x.src===g.src;})===i;}); // jamais deux fois la même photo
     if(/const GALLERY = \[[\s\S]*?\];/.test(srcD))srcD=srcD.replace(/const GALLERY = \[[\s\S]*?\];/,function(){return "const GALLERY = "+JSON.stringify(galU)+";";});
+    srcD=upsertConst(srcD,"TEAM",TEAM_W,"Équipe nationale affichée sur la page d'accueil — gérée depuis la page d'administration.");
+    srcD=upsertConst(srcD,"PAYMENT",paymentValues(),"Frais de dossier et coordonnées bancaires — gérés depuis la page d'administration.");
     const changes=[];
     if(src!==b64ToUtf8(cur.content))changes.push({path:"camps_data.js",b64:utf8ToB64(src),sha:cur.sha});
     if(srcD!==b64ToUtf8(curD.content))changes.push({path:"districts_data.js",b64:utf8ToB64(srcD),sha:curD.sha});
@@ -241,8 +330,9 @@ function parseSiteData(campsSrc,distSrc){
     if(m)districts[m[1]]={name:JSON.parse(m[2]),club:JSON.parse(m[3]),email:JSON.parse(m[4]),mobile:JSON.parse(m[5])};
   });
   if(!raw||!gallery||!Object.keys(districts).length||str(campsSrc,"SEASON")===null)throw new Error("unexpected file format");
+  const line=function(name){const m=new RegExp("^const "+name+" = (.*);$","m").exec(distSrc);return m?JSON.parse(m[1]):null;};
   return {season:str(campsSrc,"SEASON"),year:str(campsSrc,"YEAR"),camps:raw.length,
-    districts:districts,announce:ann?JSON.parse(ann[1]):"",gallery:gallery};
+    districts:districts,announce:ann?JSON.parse(ann[1]):"",gallery:gallery,team:line("TEAM"),payment:line("PAYMENT")};
 }
 ON_CONNECT.push(async function(){
   try{
