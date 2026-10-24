@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lions YCE — Application Vault</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<meta name="robots" content="noindex">
+<script>try{if(localStorage.getItem('yce-theme')==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}</script>
+<style>
+:root{
+  --bg:#0d1827;--surface:#132038;--card:#1a2d4a;--border:#243d5c;
+  --gold:#e8a020;--gold2:#ffd166;--accent:#06d6a0;--blue:#4fc3f7;
+  --text:#dce8f5;--muted:#8aa5c2;--hover:#1e3355;--red:#ef5350;--orange:#ffb74d;--on-gold:#0d1827;
+}
+html[data-theme="light"]{
+  --bg:#f4f6fa;--surface:#ffffff;--card:#edf1f7;--border:#c9d5e4;
+  --gold:#c07a00;--gold2:#e8a020;--accent:#08916f;--blue:#0277bd;
+  --text:#22344a;--muted:#4d6479;--hover:#e6edf6;--red:#d63230;--orange:#c1650a;--on-gold:#fff;
+}
+html[data-theme="light"] header{background:linear-gradient(135deg,#ffffff 0%,#e7edf6 100%);}
+*{box-sizing:border-box;margin:0;padding:0;}
+[hidden]{display:none!important;}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;min-height:100vh;}
+header{background:linear-gradient(135deg,#0a1628 0%,#182d4a 100%);border-bottom:2px solid var(--gold);padding:14px 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;position:sticky;top:0;z-index:50;}
+.emblem{height:44px;width:44px;object-fit:contain;}
+.logo{font-family:Georgia,serif;font-size:22px;font-weight:700;color:var(--gold);}
+.logo em{color:var(--text);font-style:italic;font-weight:400;font-size:15px;}
+.header-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.theme-btn{background:transparent;border:1px solid var(--border);border-radius:50%;width:34px;height:34px;cursor:pointer;font-size:15px;margin-left:auto;}
+main{max-width:1100px;margin:0 auto;padding:18px 16px 70px;}
+.section{background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:16px;overflow:hidden;}
+.sec-head{background:linear-gradient(90deg,rgba(232,160,32,0.12),transparent);padding:11px 16px;border-bottom:1px solid var(--border);display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;}
+.sec-title{font-family:Georgia,serif;font-size:16px;font-weight:700;color:var(--gold);}
+.sec-note{font-size:11px;color:var(--muted);}
+.sec-body{padding:14px 16px;}
+.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px 12px;}
+.g2{grid-column:span 2;}.g3{grid-column:span 3;}.g6{grid-column:span 6;}
+@media(max-width:760px){.g2,.g3{grid-column:span 6;}}
+.fld{display:flex;flex-direction:column;gap:4px;}
+label.flbl{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);}
+input,select,textarea{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:8px 10px;color:var(--text);font-size:13.5px;font-family:inherit;outline:none;width:100%;}
+input:focus,select:focus,textarea:focus{border-color:var(--gold);}
+input[type=checkbox]{width:auto;}
+.btn{background:var(--gold);color:var(--on-gold);border:none;border-radius:8px;padding:10px 18px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit;}
+.btn:hover{background:var(--gold2);}
+.btn:disabled{opacity:0.45;cursor:not-allowed;}
+.btn2{display:inline-block;background:transparent;border:1px solid var(--border);border-radius:8px;padding:8px 14px;color:var(--text);cursor:pointer;font-size:12.5px;font-family:inherit;text-decoration:none;}
+.btn2:hover{border-color:var(--blue);color:var(--blue);}
+.btn2.danger:hover{border-color:var(--red);color:var(--red);}
+.lnk{background:none;border:none;color:var(--blue);cursor:pointer;font:inherit;font-weight:600;padding:0;text-align:left;}
+.filebtn{display:inline-block;background:var(--gold);color:var(--on-gold);border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer;font-size:13.5px;}
+.filebtn input{display:none;}
+.hint,.sub{font-size:11px;color:var(--muted);line-height:1.5;}
+code{font-family:monospace;font-size:11px;}
+.msg{border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:13px;font-weight:500;border:1.5px solid;}
+.msg.ok{border-color:var(--accent);color:var(--text);background:rgba(6,214,160,0.1);}
+.msg.err{border-color:var(--red);color:var(--text);background:rgba(239,83,80,0.12);}
+.msg.info{border-color:var(--blue);color:var(--text);background:rgba(79,195,247,0.1);}
+.notice{font-size:12.5px;line-height:1.6;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px 14px;}
+.notice b{color:var(--gold);}
+.chk{display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.5;cursor:pointer;}
+.chk input{margin-top:3px;}
+.userbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px;font-size:13px;}
+.userbar .sp{flex:1;}
+.role{color:var(--gold);font-weight:600;}
+.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px;}
+.toolbar select{width:auto;}
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{background:var(--card);padding:8px 10px;text-align:left;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);border-bottom:1px solid var(--border);}
+td{padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:middle;}
+#list tr{cursor:pointer;}
+#list tr:hover td{background:var(--hover);}
+#list tr.todo td:first-child{box-shadow:inset 3px 0 0 var(--gold);}
+.empty{text-align:center;color:var(--muted);padding:24px;}
+.st{display:inline-block;border-radius:12px;padding:2px 10px;font-size:11.5px;font-weight:600;white-space:nowrap;}
+.st-draft{background:rgba(138,165,194,0.15);color:var(--muted);}
+.st-wait{background:rgba(232,160,32,0.14);color:var(--gold);}
+.st-host{background:rgba(79,195,247,0.14);color:var(--blue);}
+.st-ok{background:rgba(6,214,160,0.15);color:var(--accent);}
+.st-ko{background:rgba(239,83,80,0.14);color:var(--red);}
+.turn{font-size:10px;font-weight:700;color:var(--on-gold);background:var(--gold);border-radius:8px;padding:1px 7px;}
+#dossier{border:1.5px solid var(--blue);scroll-margin-top:90px;}
+@media(max-width:640px){
+  header{position:static;padding:10px 14px;gap:10px;flex-wrap:nowrap;}
+  .emblem{height:34px;width:34px;}
+  .logo{font-size:18px;}
+  .header-sub{display:none;}
+  #dossier{scroll-margin-top:8px;}
+}
+.d-head{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.d-head h2{font-family:Georgia,serif;font-size:21px;color:var(--text);}
+.d-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:760px){.d-cols{grid-template-columns:1fr;}}
+.box h3{font-size:11px;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);margin:14px 0 8px;}
+#d-info{display:grid;gap:6px;}
+#d-info div{display:flex;justify-content:space-between;gap:10px;font-size:13px;border-bottom:1px solid var(--border);padding-bottom:5px;}
+#d-info span{color:var(--muted);}
+#d-info b{font-weight:600;text-align:right;word-break:break-all;}
+ul.plain{list-style:none;display:grid;gap:6px;font-size:13px;}
+ul.plain li.old{opacity:0.6;}
+#d-check li.yes{color:var(--accent);font-weight:600;}
+#d-check li.no{color:var(--red);font-weight:600;}
+#d-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:6px;}
+#d-actions .chk{flex-basis:100%;}
+#notify{margin-top:10px;font-size:13px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+#d-history{list-style:none;display:grid;gap:8px;max-height:320px;overflow-y:auto;}
+#d-history li{border-left:2px solid var(--border);padding-left:10px;font-size:12.5px;}
+#d-history li.cmt{border-left-color:var(--gold);}
+.cmt-add{display:flex;gap:8px;margin-top:10px;}
+.cmt-add textarea{min-height:40px;}
+</style>
+</head>
+<body>
+<header>
+  <img src="assets/logo_lions.png" alt="Lions Clubs International" class="emblem">
+  <div>
+    <div class="logo">Lions <em>YCE Application Vault</em></div>
+    <div class="header-sub">one secure place for each application file — review, sign and validate without e-mail attachments</div>
+  </div>
+  <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Switch light / dark theme" aria-label="Switch light / dark theme">☀️</button>
+</header>
+<main>
+  <div id="msg" class="msg info" hidden></div>
+
+  <div class="section" id="cfg-missing" hidden>
+    <div class="sec-head"><span class="sec-title">Vault not configured yet</span></div>
+    <div class="sec-body"><p class="hint">This deployment has no secure vault connected. The administrator must create the Supabase project and fill in
+      <code>SUPABASE_URL</code> and <code>SUPABASE_ANON_KEY</code> in <code>districts_data.js</code> — see <code>docs/VAULT_SETUP.md</code>.</p></div>
+  </div>
+
+  <div class="section" id="login" hidden>
+    <div class="sec-head"><span class="sec-title">Sign in</span><span class="sec-note">no password — we e-mail you a one-time link</span></div>
+    <div class="sec-body"><div class="grid">
+      <div class="fld g3"><label class="flbl" for="l-email">Your e-mail address</label>
+        <input type="email" id="l-email" autocomplete="email" placeholder="name@example.com" onkeydown="if(event.key==='Enter')sendLink()"></div>
+      <div class="fld g2" style="justify-content:flex-end"><button class="btn" id="l-btn" onclick="sendLink()">Send me a sign-in link</button></div>
+      <p class="hint g6">Candidates: use the address you will keep during the whole selection. Club presidents and coordinators: use the address the
+        candidate or the national team gave for you — you will then see only the files that concern you.</p>
+    </div></div>
+  </div>
+
+  <div id="app" hidden>
+    <div class="userbar">Signed in as <b id="me"></b> <span class="role" id="me-roles"></span><span class="sp"></span>
+      <button class="btn2" onclick="signOut()">Sign out</button></div>
+
+    <div class="section" id="create" hidden>
+      <div class="sec-head"><span class="sec-title">Start my application</span><span class="sec-note">one file per candidate and season</span></div>
+      <div class="sec-body"><div class="grid">
+        <div class="fld g3"><label class="flbl" for="n-name">Candidate first and last name</label><input id="n-name" autocomplete="name"></div>
+        <div class="fld g3"><label class="flbl" for="n-season">Season</label><select id="n-season"></select></div>
+        <div class="fld g3"><label class="flbl" for="n-district">District</label><select id="n-district"></select></div>
+        <div class="fld g3"><label class="flbl" for="n-club">Sponsoring Lions club</label><input id="n-club"></div>
+        <div class="fld g3"><label class="flbl" for="n-president">Club president e-mail</label><input type="email" id="n-president" placeholder="needed to send the file"></div>
+        <div class="fld g3"><label class="flbl" for="n-parent">Parent / guardian e-mail</label><input type="email" id="n-parent" placeholder="gets read access"></div>
+        <div class="fld g6"><label class="flbl" for="n-camp">Preferred camp (optional)</label><input id="n-camp" list="camp-list" placeholder="Country — camp name"></div>
+        <div class="g6 notice">
+          <b>Data protection.</b> The data controller is <b>Lions Multiple District <span class="md-lbl">112</span></b>.
+          Your application file is stored in a secure vault hosted in the European Union. Only you, your parent or guardian, your club
+          president, your district coordinator and the national YCE team can open it, and every access is recorded.
+          It is kept <b>for 2 years after the end of the season</b>, because the reciprocity commitment means your family hosts a young
+          person the following year; it is then deleted automatically (90 days after a refusal). To access, correct or delete your data,
+          contact your district coordinator.
+        </div>
+        <label class="chk g6"><input type="checkbox" id="n-consent"> I have read this notice and I agree. If I am under 18, my parent or legal guardian agrees too.</label>
+        <div class="g6"><button class="btn" onclick="createDossier()">Create my application file</button></div>
+      </div></div>
+    </div>
+
+    <div class="section" id="dossier" hidden>
+      <div class="sec-head d-head"><h2 id="d-title"></h2><span id="d-status" class="st"></span><span class="sec-note" id="d-meta"></span>
+        <button class="btn2" style="margin-left:auto" onclick="closeDossier()">✕ Close</button></div>
+      <div class="sec-body">
+        <div class="d-cols">
+          <div class="box">
+            <h3>Details</h3>
+            <div id="d-info"></div>
+            <div id="d-edit" class="grid" hidden>
+              <div class="fld g3"><label class="flbl" for="e-name">Candidate name</label><input id="e-name"></div>
+              <div class="fld g3"><label class="flbl" for="e-district">District</label><select id="e-district"></select></div>
+              <div class="fld g3"><label class="flbl" for="e-club">Club</label><input id="e-club"></div>
+              <div class="fld g3"><label class="flbl" for="e-president">Club president e-mail</label><input type="email" id="e-president"></div>
+              <div class="fld g3"><label class="flbl" for="e-parent">Parent / guardian e-mail</label><input type="email" id="e-parent"></div>
+              <div class="fld g3"><label class="flbl" for="e-camp">Preferred camp</label><input id="e-camp" list="camp-list"></div>
+              <div class="g6"><button class="btn2" onclick="saveEdit()">Save details</button></div>
+            </div>
+            <h3>Documents in the current version</h3>
+            <ul class="plain" id="d-check"></ul>
+            <h3>Signatures</h3>
+            <ul class="plain" id="d-sigs"></ul>
+          </div>
+          <div class="box">
+            <h3>Files</h3>
+            <ul class="plain" id="d-files"></ul>
+            <div id="d-upload" style="margin-top:10px">
+              <label class="filebtn">⬆ Upload the ZIP from the application form<input type="file" accept=".zip,application/zip" onchange="uploadZip(this)"></label>
+              <span class="sub" id="up-status"></span>
+              <p class="hint" style="margin-top:6px">Generate it with the <a href="yce_form_filler.html" style="color:var(--blue)">application form</a>, then upload it here. A new upload becomes the current version; earlier versions stay in the history.</p>
+            </div>
+            <h3>What you can do now</h3>
+            <div id="d-actions"></div>
+            <div id="notify" hidden></div>
+          </div>
+        </div>
+        <h3 class="box" style="font-size:11px;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);margin:18px 0 8px">History</h3>
+        <ul id="d-history"></ul>
+        <div class="cmt-add"><textarea id="c-body" placeholder="Add a comment visible to everyone working on this file"></textarea><button class="btn2" onclick="addComment()">Comment</button></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-head"><span class="sec-title">Application files</span><span class="sec-note" id="count"></span></div>
+      <div class="sec-body">
+        <div class="toolbar">
+          <select id="f-status" onchange="renderList()" aria-label="Filter by step">
+            <option value="">All steps</option>
+            <option value="todo">Waiting for me</option>
+            <option value="draft">Draft</option>
+            <option value="submitted">Awaiting club president</option>
+            <option value="club_signed">Awaiting district coordinator</option>
+            <option value="district_validated">Awaiting national YCE team</option>
+            <option value="national_validated">Ready to send to host country</option>
+            <option value="sent_host">Sent to host country</option>
+            <option value="accepted">Accepted</option>
+            <option value="refused">Refused</option>
+            <option value="archived">Archived</option>
+          </select>
+        </div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Candidate</th><th>District · club</th><th>Season</th><th>Step</th><th>Updated</th></tr></thead>
+          <tbody id="list"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <div class="section" id="purge" hidden>
+      <div class="sec-head"><span class="sec-title">Retention</span><span class="sec-note">2 years after the end of the season · 90 days after a refusal</span></div>
+      <div class="sec-body"><p class="hint" id="purge-info"></p>
+        <button class="btn2 danger" id="purge-btn" onclick="runPurge()" hidden style="margin-top:8px">Delete expired files now</button></div>
+    </div>
+
+    <div class="section" id="admin" hidden>
+      <div class="sec-head"><span class="sec-title">Team</span><span class="sec-note">district coordinators, national YCE team and administrators — update at each season</span></div>
+      <div class="sec-body">
+        <div class="table-wrap"><table>
+          <thead><tr><th>E-mail</th><th>Name</th><th>Role</th><th></th></tr></thead>
+          <tbody id="staff-list"></tbody>
+        </table></div>
+        <div class="grid" style="margin-top:12px">
+          <div class="fld g2"><label class="flbl" for="s-email">E-mail</label><input type="email" id="s-email"></div>
+          <div class="fld g2"><label class="flbl" for="s-name">Name</label><input id="s-name"></div>
+          <div class="fld"><label class="flbl" for="s-role">Role</label><select id="s-role">
+            <option value="district">District coordinator</option><option value="national">National YCE team</option><option value="admin">Administrator</option></select></div>
+          <div class="fld"><label class="flbl" for="s-district">District</label><select id="s-district"></select></div>
+          <div class="g6"><button class="btn2" onclick="staffAdd()">Add to the team</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <datalist id="camp-list"></datalist>
+</main>
+<script src="js/theme.js"></script>
+<script src="camps_data.js"></script>
+<script src="districts_data.js"></script>
+<script>document.querySelectorAll('.md-lbl').forEach(function(e){if(typeof MD!=='undefined')e.textContent=MD;});</script>
+<script src="js/xlsx.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="js/vault-api.js"></script>
+<script src="js/vault.js"></script>
+</body>
+</html>
