@@ -76,6 +76,11 @@ renderCountryList();
 renderStateList();
 renderTable();
 document.querySelector('th[data-c="continent"]').classList.add('asc');
+// sur mobile, les accordéons Country / State démarrent repliés pour raccourcir le tiroir
+if(matchMedia('(max-width:900px)').matches){
+  document.getElementById('sec-country').classList.add('closed');
+  document.getElementById('state-section').classList.add('closed');
+}
 
 // scroll-reveal — après le rendu, pour mesurer la vraie hauteur des blocs.
 // Un bloc plus haut que l'écran (la liste mobile en cartes) n'atteint jamais

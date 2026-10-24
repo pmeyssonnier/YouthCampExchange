@@ -110,15 +110,19 @@
           <div class="pills" id="cont-pills"></div>
         </div>
         <hr class="div">
-        <div class="filter-section">
-          <div class="filter-label">🗺️ Country</div>
-          <input class="srch" id="c-srch" placeholder="Search country…" oninput="renderCountryList()">
-          <div class="multi-list" id="c-list"></div>
+        <div class="filter-section" id="sec-country">
+          <div class="filter-label acc" onclick="toggleAcc('sec-country')">🗺️ Country <span class="acc-sel" id="sel-country"></span><span class="acc-ar">▾</span></div>
+          <div class="acc-body">
+            <input class="srch" id="c-srch" placeholder="Search country…" oninput="renderCountryList()">
+            <div class="multi-list" id="c-list"></div>
+          </div>
         </div>
         <hr class="div">
         <div class="filter-section" id="state-section" style="display:none">
-          <div class="filter-label">📍 State / Province</div>
-          <div class="multi-list" id="s-list"></div>
+          <div class="filter-label acc" onclick="toggleAcc('state-section')">📍 State / Province <span class="acc-sel" id="sel-state"></span><span class="acc-ar">▾</span></div>
+          <div class="acc-body">
+            <div class="multi-list" id="s-list"></div>
+          </div>
         </div>
         <hr class="div" id="state-hr" style="display:none">
         <div class="filter-section">

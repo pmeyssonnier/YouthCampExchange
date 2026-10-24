@@ -38,6 +38,7 @@ function renderStateList(){
   const states=Object.keys(counts).sort();
   if(!states.length){section.style.display='none';hr.style.display='none';selStates.clear();return;}
   section.style.display='';hr.style.display='';
+  const ss=document.getElementById('sel-state');if(ss)ss.textContent=selStates.size?'· '+selStates.size+' selected':'';
   document.getElementById('s-list').innerHTML=states.map(s=>
     `<div class="mitem ${selStates.has(s)?'on':''}" onclick="toggleState('${escQ(s)}')">
       <div class="chk ${selStates.has(s)?'on':''}">✓</div>
@@ -181,6 +182,7 @@ function renderCountryList(){
   if(selSeasons.size>0)base=base.filter(c=>selSeasons.has(c.season));
   const counts={};base.forEach(c=>counts[c.country]=(counts[c.country]||0)+1);
   const countries=Object.keys(counts).sort().filter(c=>c.toLowerCase().includes(srch));
+  const sc=document.getElementById('sel-country');if(sc)sc.textContent=selCountries.size?'· '+selCountries.size+' selected':'';
   const el=document.getElementById('c-list');
   if(!countries.length){el.innerHTML=`<div class="mitem" style="color:var(--muted)">No countries found</div>`;return;}
   el.innerHTML=countries.map(c=>
@@ -191,6 +193,8 @@ function renderCountryList(){
 }
 
 function toggleCountry(c){if(selCountries.has(c))selCountries.delete(c);else selCountries.add(c);renderCountryList();renderStateList();applyFilters();}
+
+function toggleAcc(id){document.getElementById(id).classList.toggle('closed');}
 
 function setPeriodType(t){
   periodType=t;
