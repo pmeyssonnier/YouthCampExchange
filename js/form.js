@@ -132,7 +132,7 @@ async function init(){
   document.querySelectorAll(".yr").forEach(function(s){s.textContent=YEAR;});
   document.title=document.title.replace(/20\d\d/,YEAR);
   const bs=document.getElementById("build");
-  if(bs&&typeof BUILD!=="undefined")bs.textContent=BUILD;
+  if(bs&&typeof BUILD!=="undefined")bs.textContent="(build "+BUILD.replace(/^v/,"")+")";
   if(!SIGN_MODE)restoreDraft(); // les écrans de signature partent toujours du dossier chargé, jamais d'un brouillon local
   const params=new URLSearchParams(location.search);
   if(SIGN_MODE){

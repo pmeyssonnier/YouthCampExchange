@@ -10,6 +10,10 @@ le site, les formulaires et les messages de commit sont en anglais.
   du projet qui relit et fusionne : le site (GitHub Pages) ne change qu'à la fusion.
 - Une PR = un sujet. Titre court en anglais ; description qui explique le besoin, ce qui change
   pour les utilisateurs et comment c'est testé.
+- Chaque PR augmente le numéro de version dans `js/version.js` (`MAJEUR.MINEUR.CORRECTIF` :
+  correctif = correction, mineur = nouveauté, majeur = changement qui oblige à refaire quelque chose)
+  et ajoute en tête de `CHANGELOG.md` une entrée en anglais pour cette version. Le test `version`
+  vérifie que les deux concordent.
 - Une PR déjà fusionnée est terminée : la modification suivante repart de `main` dans une nouvelle PR.
 - Les commits automatiques sur `main` restent normaux : régénération par le robot
   (`Rebuild generated files [skip ci]`) et sauvegardes faites depuis les pages d'administration.
