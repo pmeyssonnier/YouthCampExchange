@@ -42,7 +42,7 @@ create table public.staff (
   id         bigint generated always as identity primary key,
   email      text not null check (email = lower(email)),
   role       public.staff_role not null,
-  district   text check (district ~ '^[A-Z]$'),
+  district   text check (district ~ '^[A-Z][A-Z0-9]{0,3}$'),
   full_name  text,
   created_at timestamptz not null default now(),
   check ((role = 'district') = (district is not null))
@@ -83,7 +83,7 @@ create table public.dossiers (
   candidate_birth_date date not null check (candidate_birth_date between '1980-01-01' and '2100-01-01'),
   parent_email       text check (parent_email = lower(parent_email)),
   president_email    text check (president_email = lower(president_email)),
-  district           text not null check (district ~ '^[A-Z]$'),
+  district           text not null check (district ~ '^[A-Z][A-Z0-9]{0,3}$'),
   club               text,
   camp_choice        text,
   status             public.dossier_status not null default 'draft',

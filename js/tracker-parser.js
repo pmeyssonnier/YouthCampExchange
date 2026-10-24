@@ -76,7 +76,7 @@ async function parseForm(fname,buf){
   const g=function(r){return getCell(xml,sst,r);};
   const fam=g("F16"),fir=g("S16");
   if(!fam&&!fir)throw new Error("no candidate name in F16/S16");
-  const dist=(/^[A-Z]$/i.test(g("AF1"))?g("AF1").toUpperCase():"?");
+  const dist=(/^[A-Z][A-Z0-9]{0,3}$/i.test(g("AF1"))?g("AF1").toUpperCase():"?");
   // signatures = images ancrées sur les lignes 127/129/131 (0-indexé 126/128/130)
   const de=entries.find(function(e){return e.name==="xl/drawings/drawing1.xml";});
   const dx=de?new TextDecoder().decode(de.data):"";
@@ -102,7 +102,7 @@ async function parseForm(fname,buf){
     status:prev.status||"Received",notes:prev.notes||"",
     updated:new Date().toISOString().slice(0,10)
   };
-  log("✔ "+fname+" → "+fam+" "+fir+" (District 112"+dist+", "+pct+"% fields, sigs "+(ROWS[key].sigA?"A":"–")+(ROWS[key].sigP?"P":"–")+(ROWS[key].sigC?"C":"–")+")","ok");
+  log("✔ "+fname+" → "+fam+" "+fir+" (District "+MD+" "+dist+", "+pct+"% fields, sigs "+(ROWS[key].sigA?"A":"–")+(ROWS[key].sigP?"P":"–")+(ROWS[key].sigC?"C":"–")+")","ok");
 }
 function findRowByName(str){
   const t=norm(str);

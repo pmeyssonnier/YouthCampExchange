@@ -57,7 +57,7 @@ async function commitCardClick(){
   const safe=function(x){return x.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^A-Za-z0-9_-]+/g,"_");};
   try{
     const cb=await buildCommitmentDoc(fam,fir);
-    const cn="Commitment_to_Reciprocity_2026_112"+currentDistrict+"_"+safe(fam)+(fir?"_"+safe(fir):"")+".docx";
+    const cn="Commitment_to_Reciprocity_"+YEAR+"_"+MD+currentDistrict+"_"+safe(fam)+(fir?"_"+safe(fir):"")+".docx";
     const ca=document.createElement("a");
     ca.href=URL.createObjectURL(cb);ca.download=cn;
     document.body.appendChild(ca);ca.click();ca.remove();
