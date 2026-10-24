@@ -1,7 +1,7 @@
 # Code map — Lions YCE
 
 > **Generated file — do not edit by hand.** Rebuilt by `python3 tools/build_codemap.py` (run automatically on every push to `main`).
-> Commit `0508c0c`, 2026-10-24 23:21 UTC. Interactive version: [`code_map.html`](code_map.html).
+> Commit `2b54288`, 2026-10-24 23:31 UTC. Interactive version: [`code_map.html`](code_map.html).
 
 ## Pages
 
@@ -73,7 +73,7 @@
 | `js/zip.js` | 83 | 4.3 KB | bounded ZIP reading (limits against booby-trapped archives) — shared |
 | `js/tracker-storage.js` | 14 | 0.6 KB | rows + localStorage persistence |
 | `js/tracker-parser.js` | 146 | 8.3 KB | file ingestion: zip, xlsx forms, commitment, attachments |
-| `js/tracker-export.js` | 29 | 1.8 KB | CSV export for Excel |
+| `js/tracker-export.js` | 31 | 2.0 KB | CSV export for Excel |
 | `js/tracker-ui.js` | 69 | 5.6 KB | table, filters, sorting, stats — runs render() |
 
 **`js/zip.js`** — `zipDirectory` (validated central directory, no decompression), `zipNames` (file names of an archive without decompressing), `inflateRaw` (native inflate), `unzip` (parse a zip into [{name,data}] within ZIP_LIMITS)
@@ -110,7 +110,7 @@
 | `camps_data.js` | 92.6 KB | season data: SEASON + YEAR + RAW camps — common to every deployment |
 | `districts_data.js` | 5.3 KB | per-deployment data: SITE_REPO + DISTRICTS coordinators |
 | `js/version.js` | 0.5 KB | site version number (VERSION), shown on every page — bumped by each pull request |
-| `CHANGELOG.md` | 7.3 KB | what changed in each version |
+| `CHANGELOG.md` | 7.6 KB | what changed in each version |
 | `yce_form_filler.html` | 12.1 KB | filler HTML shell + styles |
 | `yce_tracker.html` | 8.8 KB | tracker HTML shell + styles |
 | `yce_admin.html` | 22.6 KB | administration HTML shell: tabs Site & season / Camps / Documents |
