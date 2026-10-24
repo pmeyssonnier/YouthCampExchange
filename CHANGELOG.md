@@ -5,6 +5,11 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.5.1 — 2026-10-24
+
+- After an update, pages no longer mix the new page with old scripts kept by the browser (which could show, for example, empty "National team" lists in the administration with the header still at the previous version). Every page now loads its scripts and stylesheets with the version number in their address (`js/admin.js?v=1.5.1`), so a new version is picked up at once.
+- `tools/stamp_version.py` writes these numbers; the `version` test checks them.
+
 ## 1.5.0 — 2026-10-24
 
 - Administration, Site & season tab: the **National Commission** and the **Outgoing Secretaries** shown in "The Team" are managed like the districts — list with an Edit button per member, add, remove, ▲ ▼ to change the display order.

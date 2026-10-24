@@ -135,6 +135,7 @@ documents/                            official documents, replaced from the admi
 tools/
   build_assets.py                     regenerates js/assets.js and camps.json
   build_codemap.py                    regenerates docs/codemap-data.js and docs/CODE_MAP.md
+  stamp_version.py                    stamps ?v=VERSION on every page's scripts and stylesheets (cache busting)
   scraper/                            Lions Camp Scraper.ipynb (camps from the LCI directory) + enriched_lions_camps.py (details from lions-yce-belgium.be)
 .github/workflows/
   tests.yml                           runs the tests on every push and pull request
@@ -149,7 +150,7 @@ A code map (modules, business functions, sizes, dependencies) is in [`docs/CODE_
 ## Contributing
 
 - Every change goes through a **pull request to `main`**, one subject per pull request; the site only changes when it is merged. The rules are in [`CLAUDE.md`](CLAUDE.md).
-- Every pull request raises the version in `js/version.js` (`MAJOR.MINOR.PATCH`: patch for a fix, minor for a new feature, major for a change that requires users to redo something) and adds its entry at the top of [`CHANGELOG.md`](CHANGELOG.md).
+- Every pull request raises the version in `js/version.js` (`MAJOR.MINOR.PATCH`: patch for a fix, minor for a new feature, major for a change that requires users to redo something) and adds its entry at the top of [`CHANGELOG.md`](CHANGELOG.md), then runs `python3 tools/stamp_version.py` so every page loads its scripts and stylesheets as `file.js?v=VERSION` — browsers then never mix a new page with old cached scripts.
 - **Tests**: `cd tests && npm ci && npx playwright install chromium && npm test` — XSS escaping with booby-trapped data, ZIP bombs, admin token handling, atomic commits, ID document rules, vault access rules on a real PostgreSQL, version consistency, and every page loading without script error or CSP violation. The `Tests` action runs them on every pull request, which must be green.
 - Visible changes are checked on a phone width (390 px).
 - The repository is public: never commit a real application file, filled form, scan or photo of a young person — tests use made-up data.
