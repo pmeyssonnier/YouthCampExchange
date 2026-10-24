@@ -16,6 +16,7 @@ html[data-theme="light"] .xopt.on,html[data-theme="light"] .gen-btn{color:#fff;}
 html[data-theme="light"] input::placeholder{color:#9fb2c6;}
 .progress{margin-left:auto;text-align:right;}
 .prog-num{font-family:monospace;font-size:20px;color:var(--gold);}
+@media(max-width:700px){.prog-num{font-size:16px;}.prog-lbl{font-size:8.5px;letter-spacing:0.3px;}}
 .prog-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;}
 main{max-width:980px;margin:0 auto;padding:20px 16px 80px;}
 .intro{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--blue);border-radius:8px;padding:14px 18px;margin-bottom:20px;font-size:13px;color:var(--muted);line-height:1.6;}
@@ -87,8 +88,8 @@ input.tel-bad{border-color:var(--red) !important;}
 <header>
   <img src="assets/logo_lions.png" alt="Lions Clubs International" class="emblem">
   <div>
-    <div class="logo">Lions <em>YCE Application Form Filler</em></div>
-    <div class="header-sub">Youth Camp &amp; Exchange <span class="yr">2026</span> — MD 112 Belgium (districts <span id="dist-letters">A · B · C · D</span>) · <span class="app-ver"></span> <span title="build" id="build" style="opacity:.6"></span></div>
+    <div class="logo">Lions <em>YCE Application Form Filler</em> <span class="app-ver ver"></span></div>
+    <div class="header-sub">Youth Camp &amp; Exchange <span class="yr">2026</span> — MD 112 Belgium (districts <span id="dist-letters">A · B · C · D</span>) · <span title="build" id="build" style="opacity:.6"></span></div>
   </div>
   <div class="progress"><div class="prog-num" id="p-count">0</div><div class="prog-lbl">fields completed</div></div>
   <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Switch light / dark theme" aria-label="Switch light / dark theme">☀️</button>
