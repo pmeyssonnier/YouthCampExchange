@@ -104,6 +104,31 @@ const lastLog = pg => pg.evaluate(() => document.querySelector('#log div').textC
   await ctx.close();
 }
 
+// ---- page admin : la copie en cache du site ne doit jamais être réécrite sur GitHub ----
+{
+  const st = makeRepo();
+  // GitHub a déjà une version plus récente que celle servie (en cache) par le site
+  st.files['districts_data.js'] = st.files['districts_data.js']
+    .replace(/const GALLERY = \[[\s\S]*?\];/, 'const GALLERY = [{"src":"assets/gallery/new1.jpg","caption":"New"}];')
+    .replace(/(\n  A: \{name: )"[^"]*"/, '$1"Fresh Name"');
+  st.files['camps_data.js'] = st.files['camps_data.js'].replace(/const SEASON = "[^"]*";/, 'const SEASON = "2031–2032";');
+  const { pg, ctx, errs } = await openPage('yce_admin.html', st);
+  const f = await pg.evaluate(() => ({ gal: GAL.map(g => g.src), a: document.getElementById('d-A-name').value,
+    season: document.getElementById('in-season').value, log: document.getElementById('log').textContent }));
+  ok(f.gal.length === 1 && f.gal[0] === 'assets/gallery/new1.jpg', 'admin: gallery reloaded from GitHub on connect: ' + f.gal);
+  ok(f.a === 'Fresh Name', 'admin: coordinators reloaded from GitHub: ' + f.a);
+  ok(f.season === '2031–2032', 'admin: season reloaded from GitHub: ' + f.season);
+  ok(/loaded from GitHub/.test(f.log), 'admin: user told the data is current');
+  await pg.evaluate(() => { document.getElementById('d-B-name').value = 'Changed B'; });
+  await pg.evaluate(() => saveData()); await pg.waitForTimeout(1500);
+  const D = new Function(st.files['districts_data.js'] + ';return {G:GALLERY,D:DISTRICTS};')();
+  ok(D.G.length === 1 && D.G[0].src.endsWith('new1.jpg') && D.D.A.name === 'Fresh Name' && D.D.B.name === 'Changed B',
+    'admin: saving keeps GitHub data and only applies the edit');
+  ok(/2031–2032/.test(st.files['camps_data.js']), 'admin: season not reverted by the save');
+  ok(!errs.length, 'admin (stale cache): no page error ' + errs.join(' | '));
+  await ctx.close();
+}
+
 // ---- gestionnaire de camps : camps + archive dans UN commit ----
 {
   const st = makeRepo();
