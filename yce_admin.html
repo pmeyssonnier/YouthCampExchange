@@ -25,8 +25,11 @@ input:focus{border-color:var(--gold);}
 .btn:disabled{opacity:0.5;cursor:wait;}
 .btn2{background:transparent;border:1px solid var(--border);border-radius:8px;padding:9px 16px;color:var(--muted);cursor:pointer;font-size:12px;font-family:inherit;}
 .btn2:hover{border-color:var(--blue);color:var(--blue);}
-.intro{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--blue);border-radius:8px;padding:14px 18px;margin-bottom:20px;font-size:12.5px;color:var(--muted);line-height:1.65;}
-.intro b{color:var(--text);}
+.help-dlg{margin:auto;max-width:560px;width:calc(100% - 32px);background:var(--surface);color:var(--muted);border:1px solid var(--border);border-left:3px solid var(--blue);border-radius:10px;padding:18px 20px;font-size:13px;line-height:1.65;box-shadow:0 10px 40px rgba(0,0,0,0.5);}
+.help-dlg::backdrop{background:rgba(5,10,20,0.7);}
+.help-dlg b{color:var(--text);}
+.help-head{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.help-head .sec-title{flex:1;}
 #log{font-size:12px;line-height:1.7;max-height:180px;overflow-y:auto;font-family:monospace;}
 #log .ok{color:var(--accent);}#log .err{color:var(--red);}#log .info{color:var(--muted);}
 .dist-row{display:contents;}
@@ -107,15 +110,19 @@ tr:hover td{background:var(--hover);}
     <div class="header-sub">Youth Camp &amp; Exchange — MD 112 Belgium · edits are committed to GitHub, the site republishes itself · <span class="app-ver"></span></div>
   </div>
   <span class="badge" id="who" style="margin-left:auto;display:none"></span>
+  <button class="theme-btn" id="help-btn" onclick="document.getElementById('help-dlg').showModal()" title="How this page works" aria-label="How this page works" aria-haspopup="dialog">?</button>
   <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Switch light / dark theme" aria-label="Switch light / dark theme">☀️</button>
 </header>
 <main>
-  <div class="intro">
-    <b>How it works.</b> This page edits the repository directly through the GitHub API — there is no separate server.
+  <!-- aide « How it works » : affichée à part avec le bouton ? de l'en-tête, pour laisser la place aux outils -->
+  <dialog id="help-dlg" class="help-dlg" aria-labelledby="help-title" onclick="if(event.target===this)this.close()">
+    <div class="help-head"><span class="sec-title" id="help-title">How it works</span>
+      <button class="btn2" onclick="document.getElementById('help-dlg').close()" aria-label="Close">✕</button></div>
+    <p>This page edits the repository directly through the GitHub API — there is no separate server.
     You need a GitHub account with write access to the repository and a
-    <b>fine-grained personal access token</b> (GitHub → Settings → Developer settings → Fine-grained tokens: this repository only, permission <b>Contents: Read and write</b>).
-    Connect once below: the three tabs share the same token. After each save, a GitHub Action rebuilds the embedded templates and <code>camps.json</code>, then GitHub Pages republishes the site (2–3 minutes).
-  </div>
+    <b>fine-grained personal access token</b> (GitHub → Settings → Developer settings → Fine-grained tokens: this repository only, permission <b>Contents: Read and write</b>).</p>
+    <p style="margin-top:8px">Connect once: the three tabs share the same token. After each save, a GitHub Action rebuilds the embedded templates and <code>camps.json</code>, then GitHub Pages republishes the site (2–3 minutes).</p>
+  </dialog>
 
   <div class="section">
     <div class="sec-head"><span class="sec-title">Administrator access</span><span class="sec-note">one token for the whole page, kept encrypted in this browser — the Camps tab can be browsed and backed up without it</span></div>

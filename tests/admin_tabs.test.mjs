@@ -29,6 +29,18 @@ await pg.click('#tab-site');
 t.ok(await vis('#in-season') && await vis('#gal-list') && !(await vis('#p-af')), 'connected: Site tab shows season, coordinators, gallery');
 t.ok(await pg.evaluate(() => typeof saveData === 'function' && typeof saveSite === 'function'), 'both save functions on the same page');
 
+// aide « How it works » : cachée, ouverte par le bouton ? de l'en-tête, refermée par ✕ ou Échap
+await pg.goto(B + 'yce_admin.html'); await pg.waitForTimeout(400);
+t.ok(!(await vis('#help-dlg')) && !(await pg.$('.intro')), 'help text hidden by default');
+await pg.click('#help-btn');
+t.ok(await vis('#help-dlg') && /fine-grained personal access token/.test(await pg.textContent('#help-dlg')), 'help button opens the explanation');
+await pg.keyboard.press('Escape');
+t.ok(!(await vis('#help-dlg')), 'Escape closes it');
+await pg.click('#access-hint a:has-text("Which token?")');
+t.ok(await vis('#help-dlg'), 'first-connection hint opens the same help');
+await pg.click('#help-dlg button[aria-label="Close"]');
+t.ok(!(await vis('#help-dlg')), 'close button closes it');
+
 // menu des outils
 const menu = async url => { await pg.goto(B + url); await pg.waitForTimeout(300);
   return pg.$$eval('nav.toolnav a', a => a.map(x => (x.classList.contains('on') ? '*' : '') + x.getAttribute('href'))); };
