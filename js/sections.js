@@ -69,6 +69,7 @@ const SECTIONS = [
  {title:"Attachments", note:"compulsory with the application", check:true, fields:[
    {photo:true,label:"Applicant's pass photo (JPG)",w:3},
    {payproof:true,label:"Proof of payment of the administrative fees",w:3},
+   {iddoc:true,label:"Passport scan — or Belgian ID card for Europe",w:3},
    {download:true,label:"Letter to your (still unknown) host family",w:3},
    {commitCard:true,label:"Commitment to Reciprocity (signed)",w:3},
  ]},

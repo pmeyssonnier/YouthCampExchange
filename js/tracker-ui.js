@@ -8,7 +8,7 @@ document.title=document.title.replace(/20\d\d/,YEAR);
 // msg contient des noms de fichiers et de candidats issus des dossiers reçus : toujours en texte
 function log(msg,cls){const l=document.getElementById("log");l.innerHTML='<div class="'+esc(cls||"")+'">'+esc(msg)+"</div>"+l.innerHTML;}
 // ---------------- rendering ----------------
-function isComplete(r){return r.pct===100&&r.sigA&&r.sigP&&r.sigC&&r.commit&&r.commitClub&&r.photo&&r.pay&&r.letter;}
+function isComplete(r){return r.pct===100&&r.sigA&&r.sigP&&r.sigC&&r.commit&&r.commitClub&&r.photo&&r.pay&&r.iddoc&&r.letter;}
 function setDist(d,btn){distFilter=d;document.querySelectorAll(".pill").forEach(function(p){p.classList.remove("on");});btn.classList.add("on");render();}
 function setSort(k){if(sortKey===k)sortDir=-sortDir;else{sortKey=k;sortDir=1;}render();}
 function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
@@ -39,7 +39,7 @@ function render(){
       +'<td class="sub">'+esc(r.email||"")+"<br>"+esc(r.mobile||"")+"</td>"
       +'<td title="'+prefTitle+'">'+esc(r.pref1||"—")+"</td>"
       +"<td>"+sig(r.sigA)+sig(r.sigP)+sig(r.sigC)+"</td>"
-      +"<td>"+att(r.commit,r.commitClub?"✎":"✔")+att(r.photo,"✔")+att(r.pay,"✔")+att(r.letter,"✔")+"</td>"
+      +"<td>"+att(r.commit,r.commitClub?"✎":"✔")+att(r.photo,"✔")+att(r.pay,"✔")+att(r.iddoc,"✔")+att(r.letter,"✔")+"</td>"
       +'<td><span class="pct '+pctCls+'">'+r.pct+"%</span>"+miss+"</td>"
       +'<td><select class="status-sel" onchange="ROWS[\''+r._k+'\'].status=this.value;save();render();">'
         +STATUSES.map(function(st){return '<option'+(st===r.status?" selected":"")+">"+st+"</option>";}).join("")+"</select></td>"

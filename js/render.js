@@ -63,6 +63,16 @@ function render(){
           +'</div><span class="hint">Bank transfer confirmation of the administrative fees — saved as its own file next to the Excel file.</span></div>';
         return;
       }
+      if(f.iddoc){
+        h+='<div class="fld w'+w+'"><label class="flbl">'+esc(f.label)+'</label>'
+          +'<div class="photobox" onclick="document.getElementById(\'id-file\').click()">'
+          +'<img id="id-img" style="display:none" alt="ID document">'
+          +'<span class="ph-hint" id="id-hint">🛂 Click to add the passport or ID card scan<br>(PDF, JPG or PNG — not kept in the browser)</span>'
+          +'<button type="button" class="sig-clear" id="id-clear" style="display:none" onclick="idClear(event)">✕ remove</button>'
+          +'<input type="file" id="id-file" accept="application/pdf,image/*" style="display:none" onchange="idPick(this)">'
+          +'</div><span class="hint">Saved as its own file in the downloaded dossier. For your privacy it is not kept in this browser: add it again if you reload the page.</span></div>';
+        return;
+      }
       if(f.commitCard){
         h+='<div class="fld w'+w+'"><label class="flbl">'+esc(f.label)+'</label>'
           +'<div class="dl-card pending" id="commit-card" onclick="commitCardClick()">…</div>'
@@ -193,6 +203,7 @@ function attChecklist(){
   el.innerHTML='<span style="color:var(--muted)">Checklist:</span>'
     +it(!!PHOTO.dataUrl,"Pass photo")
     +it(!!PAY.dataUrl,"Payment proof")
+    +it(!!IDDOC.dataUrl,"Passport / ID scan")
     +it(!!LETTER.dataUrl,"Host-family letter")
     +it(COMMIT.agreed,"Commitment signed");
 }
@@ -207,6 +218,7 @@ function upd(){
     sec.fields.forEach(function(f){
     if(f.photo){total++;if(PHOTO.dataUrl)n++;return;}
     if(f.payproof){total++;if(PAY.dataUrl)n++;return;}
+    if(f.iddoc){total++;if(IDDOC.dataUrl)n++;return;}
     if(f.download){total++;if(LETTER.dataUrl)n++;return;}
     if(f.sig){if(!SIGS[f.sig])return;total++;if(SIGS[f.sig].ink)n++;return;}
     if(f.xgroup){total++;if(XSTATE[f.xgroup])n++;}

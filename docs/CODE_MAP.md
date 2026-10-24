@@ -1,7 +1,7 @@
 # Code map — Lions YCE
 
 > **Generated file — do not edit by hand.** Rebuilt by `python3 tools/build_codemap.py` (run automatically on every push to `main`).
-> Commit `39aef08`, 2026-10-24 16:54 UTC. Interactive version: [`code_map.html`](code_map.html).
+> Commit `41adbb2`, 2026-10-24 17:04 UTC. Interactive version: [`code_map.html`](code_map.html).
 
 ## Pages
 
@@ -36,14 +36,14 @@
 | `js/xlsx.js` | 211 | 9.6 KB | ZIP writing + workbook cell read/write |
 | `js/docx.js` | 173 | 9.5 KB | Commitment: text, validation, signed Word generation |
 | `js/signatures.js` | 141 | 7.5 KB | signature pads + pasting signatures into the workbook |
-| `js/attachments.js` | 102 | 4.2 KB | pass photo & payment proof |
+| `js/attachments.js` | 115 | 5.1 KB | pass photo & payment proof |
 | `js/storage.js` | 74 | 3.5 KB | local draft persistence |
 | `js/email.js` | 49 | 3.4 KB | prefilled e-mails (club president, district coordinator) |
 | `js/club-signing.js` | 83 | 4.6 KB | ?sign=club remote counter-signing |
-| `js/sections.js` | 164 | 10.5 KB | declarative form definition (SECTIONS, camps list, mode flags) |
+| `js/sections.js` | 165 | 10.6 KB | declarative form definition (SECTIONS, camps list, mode flags) |
 | `js/country.js` | 87 | 4.0 KB | default country, dial codes, phone normalisation |
-| `js/render.js` | 223 | 12.2 KB | section/widget rendering, X-groups, counter |
-| `js/form.js` | 220 | 13.9 KB | orchestration: generate() and init() — loaded last |
+| `js/render.js` | 235 | 13.2 KB | section/widget rendering, X-groups, counter |
+| `js/form.js` | 221 | 14.1 KB | orchestration: generate() and init() — loaded last |
 
 **`js/zip.js`** — `zipDirectory` (validated central directory, no decompression), `zipNames` (file names of an archive without decompressing), `inflateRaw` (native inflate), `unzip` (parse a zip into [{name,data}] within ZIP_LIMITS)
 
@@ -53,7 +53,7 @@
 
 **`js/signatures.js`** — `sigInit` (canvas pads + auto date), `sigClear` (clear a pad), `sigUpload` (signature from an image), `sigsFromWorkbook`, `dataUrlToBytes` (dataURL → bytes), `addSignatures` (anchor inked pads in the workbook)
 
-**`js/attachments.js`** — `photoPick` (photo upload + downscale 800px), `photoShow` (preview), `photoClear` (remove), `payPick` (proof upload (PDF as-is, images 1600px)), `payShow` (preview), `payClear` (remove), `letterPick`, `letterShow`, `letterClear`
+**`js/attachments.js`** — `photoPick` (photo upload + downscale 800px), `photoShow` (preview), `photoClear` (remove), `readDoc`, `docShow`, `payPick` (proof upload (PDF as-is, images 1600px)), `payShow` (preview), `payClear` (remove), `idPick`, `idShow`, `idClear`, `letterPick`, `letterShow`, `letterClear`
 
 **`js/storage.js`** — `saveDraft` (persist everything (debounced)), `restoreDraft` (restore everything), `clearForm` (wipe + reload)
 
@@ -73,7 +73,7 @@
 |---|---:|---:|---|
 | `js/zip.js` | 83 | 4.3 KB | bounded ZIP reading (limits against booby-trapped archives) — shared |
 | `js/tracker-storage.js` | 14 | 0.6 KB | rows + localStorage persistence |
-| `js/tracker-parser.js` | 144 | 7.8 KB | file ingestion: zip, xlsx forms, commitment, attachments |
+| `js/tracker-parser.js` | 145 | 8.0 KB | file ingestion: zip, xlsx forms, commitment, attachments |
 | `js/tracker-export.js` | 29 | 1.7 KB | CSV export for Excel |
 | `js/tracker-ui.js` | 66 | 5.1 KB | table, filters, sorting, stats — runs render() |
 
@@ -156,7 +156,7 @@
 | `js/render.js` | `js/country.js` | upd |
 | `js/docx.js` | `js/render.js` | COMMIT, COMMIT_TEXT, commitCardClick, commitTextReset, commitTextUpload, commitToggle |
 | `js/signatures.js` | `js/render.js` | SIGS, sigClear, sigUpload |
-| `js/attachments.js` | `js/render.js` | LETTER, PAY, PHOTO, letterClear, letterPick, payClear, payPick, photoClear, photoPick |
+| `js/attachments.js` | `js/render.js` | IDDOC, LETTER, PAY, PHOTO, idClear, idPick, letterClear, letterPick, payClear, payPick, photoClear, photoPick |
 | `js/storage.js` | `js/render.js` | saveDraft, saveTimer |
 | `js/sections.js` | `js/render.js` | CAMPS, IS_ADMIN, SECTIONS, SIGN_CLUB, SIGN_DISTRICT |
 | `js/form.js` | `js/render.js` | signSummary |
@@ -165,7 +165,7 @@
 | `js/xlsx.js` | `js/form.js` | b64ToBuf, buildZip, collectValues, currentDistrict, setCell, setStatus, syncFromTemplate, templateBuf |
 | `js/docx.js` | `js/form.js` | COMMIT, buildCommitmentDoc, commitShow |
 | `js/signatures.js` | `js/form.js` | FILE_SIGS, SIGS, addSignatures, dataUrlToBytes, sigInit |
-| `js/attachments.js` | `js/form.js` | LETTER, PAY, PHOTO |
+| `js/attachments.js` | `js/form.js` | IDDOC, LETTER, PAY, PHOTO |
 | `js/storage.js` | `js/form.js` | DRAFT_INFO, restoreDraft |
 | `js/email.js` | `js/form.js` | MAIL_INFO |
 | `js/club-signing.js` | `js/form.js` | COMMIT_FILE, SIGN_EXTRAS, signCommitmentFile |

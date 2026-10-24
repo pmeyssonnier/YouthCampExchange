@@ -1,4 +1,4 @@
-// attachments.js — photo d'identité et preuve de paiement
+// attachments.js — photo d'identité, preuve de paiement, pièce d'identité, lettre
 // Chargé par yce_form_filler.html ; scripts classiques partageant la portée globale.
 "use strict";
 // -------------------- photo d'identité --------------------
@@ -31,13 +31,13 @@ function photoShow(){
 }
 function photoClear(e){e.stopPropagation();PHOTO.dataUrl=null;PHOTO.w=PHOTO.h=0;photoShow();upd();}
 
-// -------------------- preuve de paiement des frais administratifs --------------------
-const PAY={dataUrl:null,name:null,ext:null};
-function payPick(inp){
+// -------------------- pièces PDF ou image (paiement, pièce d'identité) --------------------
+// PDF tel quel ; image réduite à 1600 px en JPEG
+function readDoc(inp,obj,showFn,label){
   const file=inp.files[0];if(!file)return;
   const finish=function(dataUrl,ext){
-    PAY.dataUrl=dataUrl;PAY.name=file.name;PAY.ext=ext;
-    payShow();upd();
+    obj.dataUrl=dataUrl;obj.name=file.name;obj.ext=ext;
+    showFn();upd();
   };
   if(file.type==="application/pdf"){
     const r=new FileReader();
@@ -60,23 +60,36 @@ function payPick(inp){
     };
     r.readAsDataURL(file);
   }else{
-    setStatus("⚠ Payment proof: please provide a PDF or an image.",true);
+    setStatus("⚠ "+label+": please provide a PDF or an image.",true);
   }
   inp.value="";
 }
-function payShow(){
-  const im=document.getElementById("pay-img");if(!im)return;
-  const hint=document.getElementById("pay-hint"),clr=document.getElementById("pay-clear");
-  if(PAY.dataUrl){
-    if(PAY.ext==="jpg"){im.src=PAY.dataUrl;im.style.display="";hint.style.display="none";}
-    else{im.style.display="none";hint.style.display="";hint.innerHTML="📎 "+esc(PAY.name)+"<br>(PDF ready — click to replace)";}
+function docShow(id,obj,emptyHint){
+  const im=document.getElementById(id+"-img");if(!im)return;
+  const hint=document.getElementById(id+"-hint"),clr=document.getElementById(id+"-clear");
+  if(obj.dataUrl){
+    if(obj.ext==="jpg"){im.src=obj.dataUrl;im.style.display="";hint.style.display="none";}
+    else{im.style.display="none";hint.style.display="";hint.innerHTML="📎 "+esc(obj.name)+"<br>(PDF ready — click to replace)";}
     clr.style.display="";
   }else{
     im.style.display="none";clr.style.display="none";
-    hint.style.display="";hint.innerHTML="🧾 Click to add the payment proof<br>(PDF, JPG or PNG — downloaded with the file)";
+    hint.style.display="";hint.innerHTML=emptyHint;
   }
 }
+
+// -------------------- preuve de paiement des frais administratifs --------------------
+const PAY={dataUrl:null,name:null,ext:null};
+function payPick(inp){readDoc(inp,PAY,payShow,"Payment proof");}
+function payShow(){docShow("pay",PAY,"🧾 Click to add the payment proof<br>(PDF, JPG or PNG — downloaded with the file)");}
 function payClear(e){e.stopPropagation();PAY.dataUrl=null;PAY.name=null;PAY.ext=null;payShow();upd();}
+
+// -------------------- copie du passeport ou de la carte d'identité --------------------
+// Pièce sensible : jamais gardée dans le brouillon du navigateur (à rajouter après un rechargement),
+// jointe au dossier complet mais pas à la copie destinée au président de club.
+const IDDOC={dataUrl:null,name:null,ext:null};
+function idPick(inp){readDoc(inp,IDDOC,idShow,"ID document");}
+function idShow(){docShow("id",IDDOC,"🛂 Click to add the passport or ID card scan<br>(PDF, JPG or PNG — not kept in the browser)");}
+function idClear(e){e.stopPropagation();IDDOC.dataUrl=null;IDDOC.name=null;IDDOC.ext=null;idShow();upd();}
 
 // -------------------- lettre à la future famille d'accueil --------------------
 const LETTER={dataUrl:null,name:null,ext:null};
