@@ -1,7 +1,7 @@
 # Code map — Lions YCE
 
 > **Generated file — do not edit by hand.** Rebuilt by `python3 tools/build_codemap.py` (run automatically on every push to `main`).
-> Commit `5466914`, 2026-10-24 20:07 UTC. Interactive version: [`code_map.html`](code_map.html).
+> Commit `3dbddcc`, 2026-10-24 20:19 UTC. Interactive version: [`code_map.html`](code_map.html).
 
 ## Pages
 
@@ -42,7 +42,7 @@
 | `js/sections.js` | 165 | 10.6 KB | declarative form definition (SECTIONS, camps list, mode flags) |
 | `js/country.js` | 87 | 4.0 KB | default country, dial codes, phone normalisation |
 | `js/render.js` | 238 | 13.7 KB | section/widget rendering, X-groups, counter |
-| `js/form.js` | 227 | 14.9 KB | orchestration: generate() and init() — loaded last |
+| `js/form.js` | 231 | 15.2 KB | orchestration: generate() and init() — loaded last |
 
 **`js/zip.js`** — `zipDirectory` (validated central directory, no decompression), `zipNames` (file names of an archive without decompressing), `inflateRaw` (native inflate), `unzip` (parse a zip into [{name,data}] within ZIP_LIMITS)
 
@@ -64,7 +64,7 @@
 
 **`js/render.js`** — `esc` (escape HTML), `render` (render all sections & widgets), `depShow` (conditional 'specify' fields), `xsel` (X-group selection), `initLists` (country/camp datalists), `syncCamps` (filter camps by country), `ynClick` (Yes/No & pill buttons), `refreshYn` (sync button visuals), `updState` (State field visibility), `attChecklist`, `upd` (fields-completed counter)
 
-**`js/form.js`** — `signSummary`, `generate` (orchestrator: cells, signatures, downloads, e-mails), `init` (mode setup + startup)
+**`js/form.js`** — `signSummary`, `generate` (orchestrator: cells, signatures, downloads, e-mails), `adminOptions`, `init` (mode setup + startup)
 
 ## Tracker modules
 
@@ -110,10 +110,10 @@
 | `camps_data.js` | 92.6 KB | season data: SEASON + YEAR + RAW camps — common to every deployment |
 | `districts_data.js` | 3.8 KB | per-deployment data: SITE_REPO + DISTRICTS coordinators |
 | `js/version.js` | 0.5 KB | site version number (VERSION), shown on every page — bumped by each pull request |
-| `CHANGELOG.md` | 4.6 KB | what changed in each version |
-| `yce_form_filler.html` | 12.1 KB | filler HTML shell + styles |
+| `CHANGELOG.md` | 5.0 KB | what changed in each version |
+| `yce_form_filler.html` | 11.9 KB | filler HTML shell + styles |
 | `yce_tracker.html` | 8.7 KB | tracker HTML shell + styles |
-| `yce_admin.html` | 20.4 KB | administration HTML shell: tabs Site & season / Camps / Documents |
+| `yce_admin.html` | 20.6 KB | administration HTML shell: tabs Site & season / Camps / Documents |
 | `yce_camps.html` | 1.0 KB | old camp manager address — redirects to yce_admin.html#camps |
 | `js/admin-core.js` | 13.2 KB | shared admin plumbing (token, passphrase, GitHub API, connect hooks) |
 | `js/admin.js` | 15.7 KB | admin Site & Documents tabs: season, coordinators, home page, gallery, uploads |
