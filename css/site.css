@@ -111,7 +111,7 @@ hr.div{border:none;border-top:1px solid var(--border);margin:12px 0;}
 .srch:focus{border-color:var(--gold);}
 .srch::placeholder{color:var(--muted2);}
 .multi-list{background:var(--card);border:1px solid var(--border);border-radius:5px;max-height:130px;overflow-y:auto;}
-#c-list{max-height:280px;}   /* ~10 lignes pour la liste des pays */
+#c-list{max-height:295px;}   /* 10 lignes entières pour la liste des pays (29.2px/ligne + bordures) */
 .mitem{padding:5px 9px;cursor:pointer;display:flex;align-items:center;gap:7px;transition:background 0.1s;font-size:12px;}
 .mitem:hover{background:var(--hover);}
 .mitem.on{background:rgba(232,160,32,0.1);}
