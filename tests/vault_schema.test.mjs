@@ -1,36 +1,14 @@
 // Règles d'accès et circuit du coffre (supabase/vault_schema.sql) sur PostgreSQL 16 (PGlite),
 // avec les rôles et fonctions de Supabase reproduits : anon/authenticated, auth.jwt() (dont « aal »), storage.
-import { PGlite } from '@electric-sql/pglite';
-import fs from 'fs';
-import { ROOT, checker } from './helpers.mjs';
+import { makeVaultDb, setSession } from './vault_db.mjs';
+import { checker } from './helpers.mjs';
 
 const t = checker('vault schema');
 const ok = t.ok;
-const db = new PGlite();
-await db.exec(`
-  create role anon nologin; create role authenticated nologin;
-  create schema auth;
-  create function auth.jwt() returns jsonb language sql stable as $$
-    select coalesce(nullif(current_setting('request.jwt.claims', true), ''), '{}')::jsonb $$;
-  grant usage on schema auth to anon, authenticated;
-  create schema storage;
-  create table storage.buckets (id text primary key, name text, public boolean, file_size_limit bigint);
-  create table storage.objects (id uuid primary key default gen_random_uuid(), bucket_id text, name text);
-  alter table storage.objects enable row level security;
-  grant usage on schema storage to anon, authenticated;
-  grant select, insert, delete on storage.objects to anon, authenticated;
-  grant usage on schema public to anon, authenticated;
-  alter default privileges in schema public grant all on tables to anon, authenticated;
-  alter default privileges in schema public grant all on sequences to anon, authenticated;
-`);
-await db.exec(fs.readFileSync(ROOT + '/supabase/vault_schema.sql', 'utf8'));
+const db = await makeVaultDb();
 
 // session : email + niveau d'authentification (aal2 = double authentification vérifiée)
-async function as(email, aal = 'aal1') {
-  await db.exec('reset role');
-  if (email === null) { await db.exec(`set role anon; select set_config('request.jwt.claims','',false)`); return; }
-  await db.exec(`set role authenticated; select set_config('request.jwt.claims', '${JSON.stringify({ email, aal, role: 'authenticated' })}', false)`);
-}
+const as = (email, aal = 'aal1') => setSession(db, email, aal);
 const asStaff = e => as(e, 'aal2');
 const q = async (sql, p) => (await db.query(sql, p)).rows;
 const err = async (sql, p) => { try { await db.query(sql, p); return null; } catch (e) { return e.message; } };
@@ -116,6 +94,15 @@ await q(`select dossier_transition($1,'national_validated',null,$2)`, [DID, h('b
 await q(`select dossier_transition($1,'sent_host')`, [DID]);
 await q(`select dossier_transition($1,'accepted')`, [DID]);
 ok((await q(`select signer_role from signatures where dossier_id=$1 order by signed_at`, [DID])).map(r => r.signer_role).join() === 'president,district,national', 'signature chain recorded');
+// preuves d'identité relevées par la base : niveau d'authentification, méthodes de connexion, session, texte approuvé
+{
+  const sg = await q(`select signer_role, signer_email, aal, auth_methods, session_id, statement, doc_sha256 from signatures where dossier_id=$1 order by signed_at`, [DID]);
+  const pres = sg[0], dist = sg[1];
+  ok(pres.aal === 'aal1' && pres.auth_methods.some(m => m.method === 'otp') && /^sess-/.test(pres.session_id || ''), 'president signature: e-mail sign-in and session recorded');
+  ok(dist.aal === 'aal2' && dist.auth_methods.some(m => m.method === 'totp'), 'coordinator signature: two-step verification recorded');
+  ok(pres.statement.includes('pres@x.be') && pres.statement.includes('Jane Doe') && pres.statement.includes('club copy') && pres.statement.includes(pres.doc_sha256)
+    && dist.statement.includes('full file') && dist.statement.includes(dist.doc_sha256), 'each signature stores the exact statement approved: ' + pres.statement);
+}
 ok((await q(`select count(*)::int n from events where dossier_id=$1 and action='status'`, [DID]))[0].n === 6, 'every step in the audit log');
 await as('admin@x.be', 'aal1');
 ok((await err(`insert into staff (email,role,district) values ('x@x.be','district','C')`)) !== null, 'admin without MFA cannot change the team');
@@ -181,7 +168,7 @@ const [L] = await q(`insert into dossiers (season,candidate_name,candidate_birth
   values ('2026-2027','Late Passport',$1,'pres@x.be','A',now(),'v2') returning id`, [adultBirth]);
 const LATE = FULL.map(f => f.startsWith('ID_document') ? 'ID_document_TO_FOLLOW_2027_112A_Late_Passport.txt' : f);
 await upFull(L.id, h('5'), LATE); await upClub(L.id, h('6'), h('5'));
-ok((await q(`select id_pending($1) p`, [L.id]))[0].p === true, 'note "to follow" detected');
+await root(); ok((await q(`select id_pending($1) p`, [L.id]))[0].p === true, 'note "to follow" detected'); await as('late@x.be');
 await q(`select dossier_transition($1,'submitted')`, [L.id]);
 ok((await q(`select status from dossiers where id=$1`, [L.id]))[0].status === 'submitted', 'file can be sent with the passport to follow');
 await as('pres@x.be'); await q(`select dossier_transition($1,'club_signed',null,$2)`, [L.id, h('6')]);
@@ -194,7 +181,7 @@ await as('late@x.be');
 ok((await err(`insert into storage.objects (bucket_id,name) values ('dossiers',$1)`, [L.id + '/full/x.zip'])) !== null, 'candidate cannot replace the file after sending');
 await q(`insert into storage.objects (bucket_id,name) values ('dossiers',$1)`, [L.id + '/id/passport.pdf']);
 await q(`insert into dossier_files (dossier_id,kind,path,file_name,sha256,size_bytes,contents) values ($1,'id',$2,'ID_document_passport.pdf',$3,9,'{ID_document_passport.pdf}')`, [L.id, L.id + '/id/passport.pdf', h('7')]);
-ok((await q(`select id_pending($1) p`, [L.id]))[0].p === false, 'scan received later: no longer pending');
+await root(); ok((await q(`select id_pending($1) p`, [L.id]))[0].p === false, 'scan received later: no longer pending'); await as('late@x.be');
 await as('pres@x.be');
 ok((await q(`select kind from dossier_files where dossier_id=$1`, [L.id])).every(f => f.kind === 'club'), 'president never sees the passport scan');
 ok((await q(`select name from storage.objects where name like $1`, [L.id + '/id/%'])).length === 0, 'president cannot read the scan in storage');
@@ -224,6 +211,9 @@ const wrong = (await q(`select path from dossier_files where dossier_id=$1 and s
 await q(`delete from storage.objects where name=$1`, [wrong]); await q(`delete from dossier_files where path=$1`, [wrong]);
 ok(await counts() === '2/2', 'unsent, unsigned draft: the candidate can remove a wrong upload');
 await as('sig@x.be'); await q(`select dossier_transition($1,'submitted')`, [S.id]);
+// dernière connexion vieille de plus de 24 h : il faut se reconnecter avant de signer
+await setSession(db, 'pres@x.be', 'aal1', false, 25 * 3600);
+ok(/sign in again/.test(await err(`select dossier_transition($1,'club_signed',null,$2)`, [S.id, h('9')]) || ''), 'signing from a sign-in older than 24 hours is refused');
 await as('pres@x.be'); await q(`select dossier_transition($1,'club_signed',null,$2)`, [S.id, h('9')]);
 // au district : ni le coordinateur ni le candidat ne peuvent effacer la version signée
 await asStaff('coorda@x.be');

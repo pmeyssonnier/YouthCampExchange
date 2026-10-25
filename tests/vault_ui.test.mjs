@@ -2,32 +2,15 @@
 // (js/vault-api.js) est remplacée par une version qui exécute les mêmes opérations en SQL sur
 // PostgreSQL (PGlite) avec le vrai schéma — droits, double authentification (aal) comprises.
 import { chromium } from '@playwright/test';
-import { PGlite } from '@electric-sql/pglite';
 import fs from 'fs';
 import { ROOT, FIX, launchOpts, serve, checker } from './helpers.mjs';
+import { makeVaultDb, setSession } from './vault_db.mjs';
 
 const t = checker('vault UI');
 const ok = t.ok;
 
 // ---------- base ----------
-const db = new PGlite();
-await db.exec(`
-  create role anon nologin; create role authenticated nologin;
-  create schema auth;
-  create function auth.jwt() returns jsonb language sql stable as $$
-    select coalesce(nullif(current_setting('request.jwt.claims', true), ''), '{}')::jsonb $$;
-  grant usage on schema auth to anon, authenticated;
-  create schema storage;
-  create table storage.buckets (id text primary key, name text, public boolean, file_size_limit bigint);
-  create table storage.objects (id uuid primary key default gen_random_uuid(), bucket_id text, name text);
-  alter table storage.objects enable row level security;
-  grant usage on schema storage to anon, authenticated;
-  grant select, insert, delete on storage.objects to anon, authenticated;
-  grant usage on schema public to anon, authenticated;
-  alter default privileges in schema public grant all on tables to anon, authenticated;
-  alter default privileges in schema public grant all on sequences to anon, authenticated;
-`);
-await db.exec(fs.readFileSync(ROOT + '/supabase/vault_schema.sql', 'utf8'));
+const db = await makeVaultDb();
 await db.exec(`insert into staff (email, role, district, full_name) values
   ('admin@x.be','admin',null,'Admin'), ('nat@x.be','national',null,'National'),
   ('coorda@x.be','district','A','Coord A'), ('coordb@x.be','district','B','Coord B')`);
@@ -37,8 +20,7 @@ let chain = Promise.resolve();
 function runAs(email, aal, sql, params) {
   const job = chain.then(async () => {
     try {
-      await db.exec('reset role');
-      await db.exec(`set role authenticated; select set_config('request.jwt.claims', '${JSON.stringify({ email, aal })}', false)`);
+      await setSession(db, email || null, aal);
       return { rows: (await db.query(sql, params)).rows };
     } catch (e) { return { error: e.message }; }
     finally { await db.exec('reset role'); }
@@ -220,6 +202,8 @@ await pg.click('#d-actions .btn'); await settle();
 await pg.click('#d-actions button:has-text("Accepted")'); await settle();
 ok(/Accepted/.test(await pg.textContent('#d-status')), 'accepted by the host country');
 const roles = await pg.$$eval('#d-sigs li', l => l.map(x => x.textContent.split('—')[0].replace('✍', '').trim()));
+const ids = await pg.$$eval('#d-sigs li', l => l.map(x => x.textContent));
+ok(/identity: e-mail link$/.test(ids[0]) && /identity: e-mail link \+ two-step code$/.test(ids[2]), 'signatures show how the signer proved their identity');
 ok(roles.join('|') === 'Parent / guardian|Club president|District coordinator|National YCE team', 'full signature chain: ' + roles.join(' | '));
 
 // ===== administrateur =====

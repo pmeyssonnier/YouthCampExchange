@@ -275,8 +275,10 @@ function renderDossier(sigs, events, comments){
   // signatures
   $("d-sigs").innerHTML = sigs.length ? sigs.map(function(s){
     const role = { parent: "Parent / guardian", president: "Club president", district: "District coordinator", national: "National YCE team" }[s.signer_role] || s.signer_role;
-    return "<li>✍ <b>" + esc(role) + "</b> — " + esc(s.signer_email) + " · " + fmtDT(s.signed_at) +
-      " · version <code>" + s.doc_sha256.slice(0, 10) + "</code></li>";
+    // preuves relevées par la base au moment de signer : connexion par lien e-mail, double authentification
+    const how = (s.auth_methods || []).some(function(m){ return m.method === "totp"; }) || s.aal === "aal2" ? "e-mail link + two-step code" : "e-mail link";
+    return '<li title="' + esc(s.statement || "") + '">✍ <b>' + esc(role) + "</b> — " + esc(s.signer_email) + " · " + fmtDT(s.signed_at) +
+      " · version <code>" + s.doc_sha256.slice(0, 10) + "</code>" + ' <span class="sub">· identity: ' + how + "</span></li>";
   }).join("") : '<li class="sub">No signature yet.</li>';
 
   // actions possibles à cette étape

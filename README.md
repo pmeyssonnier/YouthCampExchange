@@ -71,7 +71,8 @@ District/status/search filters, sortable columns, per-candidate status (`Receive
 - the club president only sees an automatically **redacted copy** (no ID scan, religion or health section)
 - coordinators, national team and administrators must use **two-factor sign-in** (authenticator app)
 - files are kept **2 years after the season** (the family hosts the following year), 90 days after a refusal, then purged
-- all access rules live in the database (row-level security, `supabase/vault_schema.sql`)
+- all access rules live in the database (row-level security, `supabase/vault_schema.sql`); identity is the account's **confirmed** e-mail address, internal functions cannot be called through the API, and every signature records how the signer proved their identity (e-mail link, two-step code, session) and the exact statement approved
+- `supabase/security_check.sql`, run in the Supabase SQL editor, checks on the real project that nobody outside a file's candidate, parent, president, district coordinator and national team can read or change it (all rows must be `true`); the tests run the same file
 
 As long as `SUPABASE_URL` is empty in `districts_data.js`, the page says "Vault not configured yet" and the rest of the site works as before. Setup steps (in French): [`docs/VAULT_SETUP.md`](docs/VAULT_SETUP.md).
 
