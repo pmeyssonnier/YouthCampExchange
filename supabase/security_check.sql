@@ -35,8 +35,11 @@ begin
     perform set_config('role', 'anon', true);
     return;
   end if;
+  -- compte non confirmé : son jeton annonce l'adresse d'un autre, mais auth.users ne la lui a jamais
+  -- confirmée (une adresse n'existe qu'une fois dans auth.users : le compte garde la sienne)
   insert into auth.users (id, email, email_confirmed_at)
-    values (uid, email, case when confirmed then now() end) on conflict (id) do nothing;
+    values (uid, case when confirmed then email else 'unconfirmed.' || email end, case when confirmed then now() end)
+    on conflict (id) do nothing;
   perform set_config('request.jwt.claims', json_build_object('sub', uid, 'email', email, 'aal', aal, 'role', 'authenticated')::text, true);
   perform set_config('request.jwt.claim.sub', uid::text, true);
   perform set_config('role', 'authenticated', true);

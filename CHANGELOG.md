@@ -5,6 +5,10 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.8.1 — 2026-10-25
+
+- Vault security check (`supabase/security_check.sql`): runs on a real Supabase project. The "unconfirmed account" profiles no longer create a second account with an address that already exists, which Supabase refuses ("users_email_partial_key"). The test database now enforces the same one-address-one-account rule.
+
 ## 1.8.0 — 2026-10-25
 
 - Vault (not activated yet): the file view shows the district coordinator and the national team the club section of the application form — club, president, mobile, e-mail — read from the file actually uploaded, next to the club president who signs in the vault. When the two e-mails differ, it is flagged "to check"; nothing is blocked, the circuit stays based on trust between candidate, parent, club president and coordinator.
