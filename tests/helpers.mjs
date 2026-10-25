@@ -7,7 +7,7 @@ import { fileURLToPath } from 'url';
 export const ROOT = fileURLToPath(new URL('..', import.meta.url));
 export const FIX = fileURLToPath(new URL('./.fixtures', import.meta.url));
 const NM = fileURLToPath(new URL('./node_modules', import.meta.url));
-// copies locales des scripts chargés depuis les CDN par index.html (tests hors ligne)
+// copies des bibliothèques (node_modules) ; les pages chargent désormais les leurs depuis vendor/
 export const CDN = {
   d3: path.join(NM, 'd3/dist/d3.min.js'),
   topojson: path.join(NM, 'topojson-client/dist/topojson-client.min.js'),

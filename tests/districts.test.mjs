@@ -13,8 +13,6 @@ const data = fs.readFileSync(ROOT + '/districts_data.js', 'utf8')
   .replace(/^const PAYMENT = .*;$/m, 'const PAYMENT = ' + JSON.stringify({ amount: '€150', iban: 'BE71 0961 2345 6769', bic: 'GKCCBEBB', beneficiary: 'Test <b>Beneficiary</b>', communication: 'Name · District' }) + ';');
 const ctx = await br.newContext();
 await ctx.route('**/districts_data.js?v=*', r => r.fulfill({ body: data, contentType: 'text/javascript' }));
-await ctx.route('**cdnjs.cloudflare.com/**', r => r.fulfill({ path: /topojson/.test(r.request().url()) ? CDN.topojson : CDN.d3, contentType: 'text/javascript' }));
-await ctx.route('**unpkg.com/world-atlas**', r => r.fulfill({ path: CDN.atlas, contentType: 'application/json' }));
 await ctx.route('**fonts.googleapis.com/**', r => r.fulfill({ body: '', contentType: 'text/css' }));
 const pg = await ctx.newPage(); const errs = [];
 pg.on('pageerror', e => errs.push(e.message));

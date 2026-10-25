@@ -5,6 +5,13 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.7.4 — 2026-10-25
+
+- No more code or fonts loaded from other sites:
+  - the world map libraries (D3, TopoJSON) and its map data, and the vault's Supabase client, are now served by the site itself from `vendor/` (same pinned versions, licences in `vendor/licenses/`). Before, they came from three CDNs (cdnjs, unpkg, jsDelivr) without any integrity check: a compromised CDN could have run code on the home page — or in the vault, where it could read application files and sessions. The map data was even fetched as "latest 2.x".
+  - the home-page fonts are served from `vendor/fonts/` instead of Google Fonts, which received every visitor's IP address (a GDPR concern in the EU).
+  - the content security policy of the home page and the vault no longer allows any of these sites.
+
 ## 1.7.3 — 2026-10-24
 
 - Stricter limits when reading ZIP archives (application files, Excel and Word documents, camp directory):

@@ -3,16 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <!-- CSP : scripts et connexions limités aux seules sources utilisées par cette page (protège aussi les sessions et jetons stockés sur la même origine) -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-src 'none'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; connect-src 'self' https://unpkg.com">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-src 'none'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; script-src 'self' 'unsafe-inline'; connect-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lions YCE Belgium — Youth Camp & Exchange MD112</title>
 <meta name="description" content="Lions Youth Camp & Exchange Belgium MD112 — international youth exchanges and camps for young people aged 16–30. Explore 90+ camps in 36 countries.">
-<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/fonts.css?v=1.7.4">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <script>try{if(localStorage.getItem('yce-theme')==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
-<link rel="stylesheet" href="css/site.css?v=1.7.3">
+<!-- bibliothèques servies par le site lui-même (vendor/, versions figées) : aucun code tiers chargé depuis un CDN -->
+<script src="vendor/d3-7.8.5.min.js?v=1.7.4"></script>
+<script src="vendor/topojson-3.0.2.min.js?v=1.7.4"></script>
+<link rel="stylesheet" href="css/site.css?v=1.7.4">
 </head>
 <body>
 
@@ -363,13 +364,13 @@
 </div>
 <div class="tt" id="tt"><div class="tt-title" id="tt-t"></div><div class="tt-count" id="tt-c"></div><div class="tt-hint" id="tt-h"></div></div>
 
-<script src="js/version.js?v=1.7.3"></script>
-<script src="camps_data.js?v=1.7.3"></script>
-<script src="districts_data.js?v=1.7.3"></script>
-<script src="js/site-data.js?v=1.7.3"></script>
-<script src="js/site-explorer.js?v=1.7.3"></script>
-<script src="js/site-map.js?v=1.7.3"></script>
-<script src="js/site-modal.js?v=1.7.3"></script>
-<script src="js/site-ui.js?v=1.7.3"></script>
+<script src="js/version.js?v=1.7.4"></script>
+<script src="camps_data.js?v=1.7.4"></script>
+<script src="districts_data.js?v=1.7.4"></script>
+<script src="js/site-data.js?v=1.7.4"></script>
+<script src="js/site-explorer.js?v=1.7.4"></script>
+<script src="js/site-map.js?v=1.7.4"></script>
+<script src="js/site-modal.js?v=1.7.4"></script>
+<script src="js/site-ui.js?v=1.7.4"></script>
 </body>
 </html>
