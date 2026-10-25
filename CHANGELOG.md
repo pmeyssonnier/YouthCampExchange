@@ -5,6 +5,12 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.7.6 — 2026-10-25
+
+- Personal data of past seasons no longer stays in the browser forever:
+  - form filler: drafts of other seasons (full application, photo, passport scan, signatures) are erased. They were never read again once the season changed, so the 30-day expiry never applied to them.
+  - tracker: rows of seasons older than the previous one (candidates' names, dates of birth, e-mails, notes) are erased; the previous season is kept.
+
 ## 1.7.5 — 2026-10-25
 
 - The administration, vault, tracker and form filler pages no longer display inside a frame of another site (protection against "clickjacking", where a booby-trapped page lays invisible buttons over them to make someone sign, validate or save without knowing). GitHub Pages cannot send the usual header for this, so the page stays hidden until it has checked that it is not framed, and tries to open itself full-window otherwise.
