@@ -248,7 +248,9 @@ function renderDossier(sigs, events, comments){
     const rows = [["Candidate", d.candidate_email], ["Date of birth", d.candidate_birth_date ? fmtD(d.candidate_birth_date) + (isMinor(d.candidate_birth_date) ? " (under 18)" : "") : ""],
       ["District", (typeof MD !== "undefined" ? MD : "") + d.district],
       ["Club", d.club], ["Club president", d.president_email], ["Parent / guardian", d.parent_email], ["Preferred camp", d.camp_choice]];
-    $("d-info").innerHTML = rows.map(function(r){ return "<div><span>" + r[0] + "</span><b>" + esc(r[1] || "—") + "</b></div>"; }).join("");
+    $("d-info").innerHTML = rows.map(function(r){ return "<div><span>" + r[0] + "</span><b>" + esc(r[1] || "—") + "</b></div>"; }).join("") +
+      '<div id="d-afclub" hidden></div>';
+    showAfClub(d);
   }
 
   // fichiers et checklist (sur le dossier complet ; le président ne voit que la copie club)
@@ -461,6 +463,37 @@ async function addComment(){
   if(!body) return;
   try{ await API.addComment(CUR.id, body); $("c-body").value = ""; openDossier(CUR.id); }
   catch(e){ msg("Could not add the comment: " + e.message, "err"); }
+}
+
+// ---------- club déclaré dans le formulaire de candidature ----------
+// Section V de l'application form (club, président, mobile, e-mail), lue dans le dossier complet
+// réellement déposé et montrée au coordinateur et au national à côté de l'adresse du président qui
+// signe dans le coffre : rien n'est bloqué, une différence d'e-mail est simplement signalée.
+const AF_CLUB_CELLS = [["club", "F67"], ["chair", "H68"], ["mobile", "AE68"], ["email", "E69"]];
+async function readAfClub(zipBuf){
+  const budget = zipBudget(); // partagé entre le ZIP et le formulaire .xlsx qu'il contient
+  const outer = await unzip(zipBuf, budget);
+  const af = outer.find(function(e){ return /\.xlsx$/i.test(e.name.split("/").pop()); });
+  if(!af) return null;
+  const entries = await unzip(af.data.buffer.slice(af.data.byteOffset, af.data.byteOffset + af.data.byteLength), budget);
+  const sheet = entries.find(function(e){ return e.name === "xl/worksheets/sheet1.xml"; });
+  if(!sheet) return null;
+  const xml = new TextDecoder().decode(sheet.data), sst = parseShared(entries), out = {};
+  AF_CLUB_CELLS.forEach(function(c){ out[c[0]] = getCellValue(xml, sst, c[1]); });
+  return out;
+}
+async function showAfClub(d){
+  const doc = latestFile("zip"), box = $("d-afclub");
+  if(!doc || !box || !(isStaff("district", d.district) || isStaff("national"))) return;
+  try{
+    const c = await readAfClub(await API.fileBytes(doc));
+    if(!c || CUR !== d) return;
+    const differs = c.email && d.president_email && c.email.toLowerCase() !== d.president_email;
+    box.innerHTML = "<span>Application form (club)</span><b>" + esc([c.club, c.chair, c.mobile, c.email].filter(Boolean).join(" · ") || "—") + "</b>" +
+      (differs ? ' <span class="sub" style="color:var(--orange)">⚠ e-mail differs from the club president who signs here — to check</span>'
+        : c.email && d.president_email ? ' <span class="sub">✔ same e-mail as the club president who signs here</span>' : "");
+    box.hidden = false;
+  }catch(e){ /* formulaire illisible : la ligne reste masquée */ }
 }
 
 // ---------- administration des intervenants ----------

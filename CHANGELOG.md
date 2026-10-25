@@ -5,6 +5,10 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.8.0 — 2026-10-25
+
+- Vault (not activated yet): the file view shows the district coordinator and the national team the club section of the application form — club, president, mobile, e-mail — read from the file actually uploaded, next to the club president who signs in the vault. When the two e-mails differ, it is flagged "to check"; nothing is blocked, the circuit stays based on trust between candidate, parent, club president and coordinator.
+
 ## 1.7.7 — 2026-10-25
 
 - Vault (not activated yet), access between districts and identity of signers, checked on a real PostgreSQL:
