@@ -103,6 +103,7 @@ js/
   site-modal.js                       site: camp detail modal + timeline
   site-ui.js                          site: theme, mobile nav, scroll-reveal, gallery — loaded last
   assets.js                           GENERATED — embedded templates (base64) + build stamp
+  noframe.js                          sensitive pages stay hidden when framed by another site (clickjacking)
   zip.js                              bounded ZIP reading shared by every page: archive ≤ 100 MB, ≤ 500 files, ≤ 60 MB per file and 150 MB in all once unpacked, compression ratio ≤ 200, no overlapping, duplicate, encrypted or disguised entries, one unpacking budget per dropped file and the Office files inside it
   xlsx.js                             ZIP writing + workbook cell read/write
   docx.js                             Commitment: text, validation, signed Word generation
