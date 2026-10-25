@@ -69,7 +69,9 @@ function makeVaultApi(sb){
     },
     async mfaEnroll(){ // supprime une inscription restée inachevée, puis en crée une (QR code à scanner)
       const st = await this.mfaStatus();
-      for(const p of st.pending) await x(sb.auth.mfa.unenroll({ factorId: p.id }));
+      for(const p of st.pending){ // déjà supprimée ailleurs (autre onglet) : rien à faire
+        try{ await x(sb.auth.mfa.unenroll({ factorId: p.id })); }catch(e){ if(!/not found/i.test(e.message)) throw e; }
+      }
       const d = await x(sb.auth.mfa.enroll({ factorType: "totp", issuer: "Lions YCE", friendlyName: "Lions YCE " + Date.now() }));
       return { factorId: d.id, qr: d.totp.qr_code, secret: d.totp.secret };
     },

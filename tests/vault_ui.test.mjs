@@ -37,7 +37,7 @@ function makeVaultApi(){
   const run=(sql,p)=>window.__sql(me(),aal(),sql,p||[]).then(function(r){if(r.error)throw new Error(r.error);return r.rows;});
   return {
     session: async()=> me()?{user:{email:me()}}:null,
-    onAuth(){},
+    onAuth(cb){queueMicrotask(()=>{if(me())cb({user:{email:me()}});});}, // comme Supabase : annonce la session au démarrage
     sendLink: async(e,r)=>{window.__LINK={e:e,r:r};},
     signOut: async()=>{localStorage.removeItem('fake-me');},
     myRoles: ()=>run('select * from my_roles()'),
@@ -172,6 +172,7 @@ await login('coorda@x.be', '?d=' + DID);
 ok(await pg.isVisible('#mfa'), 'coordinator asked for two-step verification');
 ok(!(await pg.isVisible('#work')), 'work hidden until verified');
 ok(await pg.isVisible('#mfa-setup') && /^data:image\/svg/.test(await pg.getAttribute('#mfa-qr', 'src')), 'first time: QR code to enrol');
+ok((await pg.evaluate(() => window.__ENROLLED)) === 1, 'session started once: a single enrolment (no "Factor not found")');
 await pg.fill('#mfa-code', '000000'); await pg.click('#mfa .btn'); await settle();
 ok(/Wrong or expired code/.test(await msgText()) && !(await pg.isVisible('#work')), 'wrong code refused');
 await pg.fill('#mfa-code', '123456'); await pg.click('#mfa .btn'); await pg.waitForTimeout(900);
