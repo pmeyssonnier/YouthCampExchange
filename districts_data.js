@@ -9,8 +9,8 @@ const SITE_REPO = "pmeyssonnier/YouthCampExchange";
 // Coffre des dossiers (yce_vault.html) — projet Supabase de CE déploiement (voir docs/VAULT_SETUP.md).
 // La clé "anon" est publique par conception : la protection vient des règles d'accès de la base.
 // Vides = coffre désactivé.
-const SUPABASE_URL = "";
-const SUPABASE_ANON_KEY = "";
+const SUPABASE_URL = "https://uqhwimgeenlufatvhgbm.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVxaHdpbWdlZW5sdWZhdHZoZ2JtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5MjM3NTcsImV4cCI6MjEwODQ5OTc1N30.Maieqg-5jUzEvN77rLGUrSVBgY5P3X9nmxyvl9Op3Ds";
 
 // Multiple District et pays de CE déploiement — écrits dans le formulaire à l'ouverture
 // (le fichier de référence est neutre : aucune référence au MD ni au pays).
