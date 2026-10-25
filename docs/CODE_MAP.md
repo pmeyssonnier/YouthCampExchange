@@ -1,7 +1,7 @@
 # Code map — Lions YCE
 
 > **Generated file — do not edit by hand.** Rebuilt by `python3 tools/build_codemap.py` (run automatically on every push to `main`).
-> Commit `23b61df`, 2026-10-24 23:54 UTC. Interactive version: [`code_map.html`](code_map.html).
+> Commit `5efcc81`, 2026-10-25 00:16 UTC. Interactive version: [`code_map.html`](code_map.html).
 
 ## Pages
 
@@ -18,7 +18,7 @@
 
 | File | Role |
 |---|---|
-| index.html (376 ln, 27.0 KB) | HTML shell: nav · hero · program · explorer · Brussels · apply · testimonials · team · footer |
+| index.html (377 ln, 26.8 KB) | HTML shell: nav · hero · program · explorer · Brussels · apply · testimonials · team · footer |
 | css/site.css (450 ln, 36.4 KB) | site + explorer + map + modal styles, light/dark, responsive |
 | js/site-data.js (97 ln, 5.4 KB) | date helpers, CAMPS enrichment, season stats, HTML escaping (esc / jsArg / safeUrl / cleanHtml) |
 | js/site-explorer.js (265 ln, 15.1 KB) | directory: getFiltered/getSorted/renderTable + all filters, tabs |
@@ -110,7 +110,7 @@
 | `camps_data.js` | 92.6 KB | season data: SEASON + YEAR + RAW camps — common to every deployment |
 | `districts_data.js` | 5.3 KB | per-deployment data: SITE_REPO + DISTRICTS coordinators |
 | `js/version.js` | 0.5 KB | site version number (VERSION), shown on every page — bumped by each pull request |
-| `CHANGELOG.md` | 9.4 KB | what changed in each version |
+| `CHANGELOG.md` | 10.1 KB | what changed in each version |
 | `yce_form_filler.html` | 12.1 KB | filler HTML shell + styles |
 | `yce_tracker.html` | 8.8 KB | tracker HTML shell + styles |
 | `yce_admin.html` | 22.6 KB | administration HTML shell: tabs Site & season / Camps / Documents |
@@ -121,7 +121,7 @@
 | `js/admin-tabs.js` | 1.2 KB | admin tab switching (#site, #camps, #docs) |
 | `js/toolnav.js` | 1.3 KB | tool menu under the header of every tool page |
 | `css/tools.css` | 3.8 KB | styles shared by the tool pages |
-| `yce_vault.html` | 19.3 KB | application vault HTML shell (Supabase) |
+| `yce_vault.html` | 19.4 KB | application vault HTML shell (Supabase) |
 | `js/vault-api.js` | 5.2 KB | vault: the only layer talking to Supabase |
 | `js/vault.js` | 29.7 KB | vault UI: sign-in, dashboard, file, signatures, team, retention |
 | `supabase/vault_schema.sql` | 26.6 KB | vault database: tables, row-level security, workflow, retention |
