@@ -1,7 +1,7 @@
 # Code map — Lions YCE
 
 > **Generated file — do not edit by hand.** Rebuilt by `python3 tools/build_codemap.py` (run automatically on every push to `main`).
-> Commit `4609277`, 2026-10-25 00:44 UTC. Interactive version: [`code_map.html`](code_map.html).
+> Commit `bc35c89`, 2026-10-25 09:03 UTC. Interactive version: [`code_map.html`](code_map.html).
 
 ## Pages
 
@@ -36,7 +36,7 @@
 | `js/docx.js` | 174 | 9.5 KB | Commitment: text, validation, signed Word generation |
 | `js/signatures.js` | 141 | 7.5 KB | signature pads + pasting signatures into the workbook |
 | `js/attachments.js` | 147 | 7.0 KB | pass photo & payment proof |
-| `js/storage.js` | 75 | 3.6 KB | local draft persistence |
+| `js/storage.js` | 82 | 3.9 KB | local draft persistence |
 | `js/email.js` | 49 | 3.4 KB | prefilled e-mails (club president, district coordinator) |
 | `js/club-signing.js` | 84 | 4.7 KB | ?sign=club remote counter-signing |
 | `js/sections.js` | 165 | 10.6 KB | declarative form definition (SECTIONS, camps list, mode flags) |
@@ -71,7 +71,7 @@
 | Module | Lines | Size | Role |
 |---|---:|---:|---|
 | `js/zip.js` | 126 | 7.5 KB | bounded ZIP reading (limits against booby-trapped archives) — shared |
-| `js/tracker-storage.js` | 14 | 0.6 KB | rows + localStorage persistence |
+| `js/tracker-storage.js` | 22 | 1.0 KB | rows + localStorage persistence |
 | `js/tracker-parser.js` | 149 | 8.6 KB | file ingestion: zip, xlsx forms, commitment, attachments |
 | `js/tracker-export.js` | 31 | 2.0 KB | CSV export for Excel |
 | `js/tracker-ui.js` | 69 | 5.6 KB | table, filters, sorting, stats — runs render() |
@@ -110,7 +110,7 @@
 | `camps_data.js` | 92.6 KB | season data: SEASON + YEAR + RAW camps — common to every deployment |
 | `districts_data.js` | 5.3 KB | per-deployment data: SITE_REPO + DISTRICTS coordinators |
 | `js/version.js` | 0.5 KB | site version number (VERSION), shown on every page — bumped by each pull request |
-| `CHANGELOG.md` | 10.6 KB | what changed in each version |
+| `CHANGELOG.md` | 11.0 KB | what changed in each version |
 | `yce_form_filler.html` | 12.2 KB | filler HTML shell + styles |
 | `yce_tracker.html` | 8.9 KB | tracker HTML shell + styles |
 | `yce_admin.html` | 22.7 KB | administration HTML shell: tabs Site & season / Camps / Documents |
