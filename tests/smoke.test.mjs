@@ -1,6 +1,7 @@
-// Chaque page se charge sans erreur de script ni violation de la politique de sécurité (CSP).
+// Chaque page se charge sans erreur de script ni violation de la politique de sécurité (CSP),
+// et sans aucune requête vers un autre site : bibliothèques, polices et carte sont servies par le site.
 import { chromium } from '@playwright/test';
-import { CDN, launchOpts, serve, checker } from './helpers.mjs';
+import { launchOpts, serve, checker } from './helpers.mjs';
 
 const t = checker('smoke');
 const srv = await serve(8877);
@@ -9,14 +10,10 @@ const PAGES = ['index.html', 'yce_form_filler.html', 'yce_form_filler.html?sign=
   'yce_tracker.html', 'yce_admin.html', 'yce_camps.html', 'yce_vault.html', 'docs/code_map.html'];
 for (const p of PAGES) {
   const pg = await br.newPage();
-  const errs = [], csp = [];
+  const errs = [], csp = [], third = [];
   pg.on('pageerror', e => errs.push(e.message));
   pg.on('console', m => { if (/Content Security Policy/i.test(m.text())) csp.push(m.text()); });
-  await pg.route('**cdnjs.cloudflare.com/ajax/libs/d3/**', r => r.fulfill({ path: CDN.d3, contentType: 'text/javascript' }));
-  await pg.route('**cdnjs.cloudflare.com/ajax/libs/topojson/**', r => r.fulfill({ path: CDN.topojson, contentType: 'text/javascript' }));
-  await pg.route('**unpkg.com/world-atlas**', r => r.fulfill({ path: CDN.atlas, contentType: 'application/json' }));
-  await pg.route('**fonts.googleapis.com/**', r => r.fulfill({ body: '', contentType: 'text/css' }));
-  await pg.route('**cdn.jsdelivr.net/**', r => r.fulfill({ body: '', contentType: 'text/javascript' }));
+  pg.on('request', r => { const u = new URL(r.url()); if (/^https?:$/.test(u.protocol) && u.hostname !== 'localhost') third.push(u.hostname); });
   await pg.goto('http://localhost:8877/' + p, { waitUntil: 'load' });
   await pg.waitForTimeout(800);
   if (p === 'index.html') {
@@ -28,6 +25,7 @@ for (const p of PAGES) {
   if (p === 'yce_vault.html') t.ok(await pg.isVisible('#cfg-missing'), 'vault: "not configured" while SUPABASE_URL is empty');
   t.ok(!errs.length, p + ': no script error ' + errs.join(' | '));
   t.ok(!csp.length, p + ': no CSP violation ' + csp.slice(0, 2).join(' | '));
+  t.ok(!third.length, p + ': no request to another site ' + [...new Set(third)].join(', '));
   await pg.close();
 }
 await br.close(); srv.close();

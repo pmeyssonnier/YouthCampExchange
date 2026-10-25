@@ -50,9 +50,6 @@ const errs = [], csp = [];
 pg.on('pageerror', e => errs.push(e.message));
 pg.on('console', m => { if (/Content Security Policy/i.test(m.text())) csp.push(m.text()); });
 pg.on('dialog', d => { errs.push('DIALOG ' + d.message()); d.dismiss(); });
-await pg.route('**cdnjs.cloudflare.com/ajax/libs/d3/**', r => r.fulfill({ path: CDN.d3, contentType: 'text/javascript' }));
-await pg.route('**cdnjs.cloudflare.com/ajax/libs/topojson/**', r => r.fulfill({ path: CDN.topojson, contentType: 'text/javascript' }));
-await pg.route('**unpkg.com/world-atlas**', r => r.fulfill({ path: CDN.atlas, contentType: 'application/json' }));
 await pg.route('**fonts.googleapis.com/**', r => r.fulfill({ body: '', contentType: 'text/css' }));
 
 await pg.goto('http://localhost:8872/index.html', { waitUntil: 'load' });

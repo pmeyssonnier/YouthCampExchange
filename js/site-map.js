@@ -32,7 +32,7 @@ function initMap(){
   mapSvg.append('rect').attr('width',w).attr('height',h).attr('fill','#0a1525');
   mapSvg.append('path').datum(d3.geoGraticule()()).attr('d',d3.geoPath().projection(mapProjection)).attr('fill','none').attr('stroke','#1a3050').attr('stroke-width',0.4);
   mapG=mapSvg.append('g');
-  fetch('https://unpkg.com/world-atlas@2/countries-110m.json').then(r=>r.json()).then(world=>{
+  fetch('vendor/world-atlas-2.0.2-countries-110m.json').then(r=>r.json()).then(world=>{
     mapG.append('path').datum(topojson.feature(world,world.objects.land)).attr('d',d3.geoPath().projection(mapProjection)).attr('fill','#0e2040');
     mapG.selectAll('.country').data(topojson.feature(world,world.objects.countries).features).join('path')
       .attr('class','country').attr('d',d3.geoPath().projection(mapProjection)).attr('fill','#112840').attr('stroke','#1e3a5a').attr('stroke-width',0.3);

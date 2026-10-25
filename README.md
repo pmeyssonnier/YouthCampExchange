@@ -81,6 +81,7 @@ As long as `SUPABASE_URL` is empty in `districts_data.js`, the page says "Vault 
 index.html                            public site HTML shell (loads css/site.css + the js/site-* modules)
 css/site.css                          public site styles (nav, hero, explorer, filter drawer, map, modal, light/dark)
 css/tools.css                         styles shared by the tool pages (theme colours, header, tool menu, sections)
+css/fonts.css                         home-page fonts (served from vendor/fonts/)
 camps_data.js                         season camp data (SEASON + YEAR + RAW array) — common to every deployment
 districts_data.js                     per-deployment data: MD number, country, coordinators, home-page texts (SITE), national team (TEAM), fee & bank details (PAYMENT), photo gallery (GALLERY), SITE_REPO, Supabase settings
 camps.json                            GENERATED — plain-JSON export of the camp data ({season, camps})
@@ -141,6 +142,7 @@ tools/
   tests.yml                           runs the tests on every push and pull request
   rebuild.yml                         regenerates the generated files after each change on main
 assets/                               logos, favicon, gallery photos
+vendor/                               third-party libraries, map data and fonts served by the site itself (pinned versions + licences)
 ```
 
 All pages are plain-JavaScript **classic scripts sharing the global scope**, loaded in dependency order by their HTML shells; every module is directly editable in the repository. The generated files (`js/assets.js`, `camps.json`, `docs/codemap-data.js`, `docs/CODE_MAP.md`) are never edited by hand: `python3 tools/build_assets.py` and `python3 tools/build_codemap.py` recompute them, and the `Rebuild generated files` action does it after every change on `main`.
@@ -187,7 +189,7 @@ with the full change history in git.
 
 ## Technical notes
 
-- **Zero dependencies at runtime** for the filler and tracker: zip read/write is implemented in plain JavaScript (uncompressed embedded templates + the browser's native `CompressionStream`/`DecompressionStream`); the Excel/Word files are edited at the XML level, which preserves their formatting and formulas exactly. The public site uses D3/TopoJSON from CDN for the world map; the vault uses the Supabase client from CDN.
+- **Zero dependencies at runtime** for the filler and tracker: zip read/write is implemented in plain JavaScript (uncompressed embedded templates + the browser's native `CompressionStream`/`DecompressionStream`); the Excel/Word files are edited at the XML level, which preserves their formatting and formulas exactly. The public site uses D3/TopoJSON and the world-atlas map data, the vault the Supabase client: all are served from `vendor/` (pinned versions, licences in `vendor/licenses/`), and the home-page fonts from `vendor/fonts/` — no page loads anything from another site, which the smoke test checks.
 - Values are written as cells (`inlineStr`/numeric), X-choices as `X` marks, signatures and photo as anchored images; `fullCalcOnLoad` makes Excel refresh the computed cells on open.
 - **Security**: every page carries a Content-Security-Policy limiting scripts and network destinations to what it uses; camp and configuration data are always escaped before display; archives are read within size/count/ratio limits; the admin token is encrypted with PBKDF2 (600 000 iterations).
 - **Version**: the site version (`js/version.js`) is shown on every page; the filler header also shows the build stamp (`build YYYY.MM.DD-commit`) to spot stale browser caches.
