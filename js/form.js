@@ -113,17 +113,17 @@ async function generate(){
     document.body.appendChild(a);a.click();a.remove();
     setTimeout(function(){URL.revokeObjectURL(a.href);},5000);
     setStatus("✔ Dossier generated: "+zipName+" — "+files.length+" file(s): "+files.map(function(f){return f.name;}).join(", "),false);
-    if(!SIGN_MODE){ // les e-mails pré-rédigés ne concernent que le candidat, pas les écrans de signature
-      MAIL_INFO.fam=fam;MAIL_INFO.fir=fir;
-      MAIL_INFO.files=[zipName];
-      MAIL_INFO.contents=files.map(function(f){return f.name;});
-      document.getElementById("mail-btn").style.display="";
-      document.getElementById("coord-btn").style.display="";
+    if(!SIGN_MODE){ // étape suivante du candidat : déposer ce ZIP dans le coffre (pas d'envoi par e-mail)
+      setStatus("✔ Dossier generated: "+zipName+" — "+files.length+" file(s). Next step: upload this ZIP from your Downloads folder to the application vault with the 🔐 button.",false);
+      document.getElementById("vault-btn").style.display="";
     }
   }catch(e){
     console.error(e);setStatus("⚠ Error: "+e.message,true);
   }finally{btn.disabled=false;}
 }
+
+// coffre des dossiers : le candidat y dépose le ZIP, qui circule ensuite parent → club → district → national
+function openVault(){window.open("yce_vault.html","_blank","noopener");}
 
 // mode admin : affiche / replie "Other template" et "Country" dans la barre du bas
 function adminOptions(){

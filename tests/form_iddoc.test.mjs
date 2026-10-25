@@ -27,6 +27,11 @@ await pg.click('#btn-gen');
 const d = await dl; const buf = fs.readFileSync(await d.path());
 const names = await pg.evaluate(b64 => { const b = Uint8Array.from(atob(b64), c => c.charCodeAt(0)); return zipNames(b.buffer); }, buf.toString('base64'));
 t.ok(names.some(n => /^ID_document_\d{4}_\d+[A-Z]_Doe_Jane\.pdf$/.test(n)), 'dossier ZIP contains ID_document_…pdf: ' + names.join(', '));
+// étape suivante : déposer le ZIP dans le coffre (plus d'e-mail avec le dossier en pièce jointe)
+t.ok(await pg.isVisible('#vault-btn') && !(await pg.$('#mail-btn')) && !(await pg.$('#coord-btn')), 'after generating: vault button, no e-mail buttons');
+t.ok(/Next step: upload this ZIP .* application vault/.test(await pg.textContent('#status')), 'status tells to upload the ZIP to the vault');
+const [vp] = await Promise.all([pg.context().waitForEvent('page'), pg.click('#vault-btn')]);
+t.ok(/\/yce_vault\.html$/.test(vp.url()), 'vault button opens the vault in a new tab: ' + vp.url()); await vp.close();
 
 // brouillon : jamais la pièce d'identité
 await pg.waitForTimeout(500);

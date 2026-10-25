@@ -2,7 +2,7 @@
 
 Web platform of the **Lions Clubs International Youth Camp & Exchange (YCE) programme for MD 112 Belgium** (districts A · B · C · D). The YCE programme has two major parts: international exchanges (typically 4–6 weeks, hosted by families with sponsor and host clubs) and international camps (1–2 weeks, run by the hosting Lions clubs).
 
-Everything is served as **static pages** from GitHub Pages: no server of our own, no account needed to apply. All processing happens in the visitor's browser and personal data never leaves it — files are generated locally and exchanged by e-mail. The only exception is the optional **application vault** (Supabase, hosted in the EU), disabled until it is configured.
+Everything is served as **static pages** from GitHub Pages: no server of our own, no account needed to apply. All processing happens in the visitor's browser and personal data never leaves it — files are generated locally. The only exception is the **application vault** (Supabase, hosted in the EU), where candidates upload their ZIP and every approval takes place.
 
 Current version: see [`CHANGELOG.md`](CHANGELOG.md) — the number is also shown in the site footer and in the header of every tool page.
 
@@ -12,7 +12,7 @@ Current version: see [`CHANGELOG.md`](CHANGELOG.md) — the number is also shown
 |---|---|---|
 | `index.html` | Candidates & families | Public site: programme presentation, **camp explorer** (filterable table + interactive world map of the season's camps), how to apply, district contacts, photo gallery, document downloads |
 | `yce_form_filler.html?district=A` (district code) | Candidates | **Online application form**: fills the official Excel *Application & Indemnity Form* |
-| `yce_form_filler.html?sign=club` | Club presidents | **Remote counter-signing** of a candidate's application received by e-mail |
+| `yce_form_filler.html?sign=club` | Club presidents | Handwritten counter-signing of a candidate's ZIP (optional with the vault) |
 | `yce_form_filler.html?sign=district` | District coordinators | Counter-signing of the district boxes |
 | `yce_form_filler.html?admin` | District coordinators | Unlocks the admin tools (see below) |
 | `yce_tracker.html` | District coordinators | **Applications tracker**: drop the received files, get a live status table + CSV export |
@@ -31,19 +31,19 @@ Opened from the site with `?district=<code>` (a letter, or up to 4 letters/digit
 
 **Identity document**: a **passport** scan is required when one of the camp choices is outside Europe (the United Kingdom also counts as passport-only); otherwise the **identity card** is enough. When the passport is being renewed, the candidate ticks *scan will follow* and sends it later.
 
-**Generating the file** inserts every answer into the genuine `.xlsx` (formatting, logos and formulas fully preserved — age, signature names and footer are recomputed by Excel) and downloads the complete application file as **one ZIP archive** — a single attachment to e-mail around — `Dossier_YCE_2026_112X_Name_Firstname.zip` containing:
+**Generating the file** inserts every answer into the genuine `.xlsx` (formatting, logos and formulas fully preserved — age, signature names and footer are recomputed by Excel) and downloads the complete application file as **one ZIP archive** — the single file the candidate uploads to the vault — `Dossier_YCE_2026_112X_Name_Firstname.zip` containing:
 
 - `Application_form_2026_112X_….xlsx` — the official form, with the applicant & parent signatures pasted as images on their signature rows
 - `Commitment_to_Reciprocity_2026_112X_….docx` — the reciprocity contract, read and validated in-form, generated with the candidate's name, date and signatures (an invisible slot is kept for the club chairman)
 - `Pass_photo_…`, `Payment_proof_…`, `Letter_to_Host_Family_…` and `ID_document_…` — the uploaded attachments (photo, payment proof, completed "Dear Host Family" letter, passport or ID card scan), renamed consistently; when the scan will follow, an `ID_document_TO_FOLLOW_….txt` note takes its place
 
-Entries are saved automatically in the browser (survive a refresh; erased after 30 days without change, or at once with "Clear form"). The ID scan is never kept in the browser. Two buttons then open prefilled e-mails: **to the club president** (with the signing instructions below) and **to the district coordinator** (final submission).
+Entries are saved automatically in the browser (survive a refresh; erased after 30 days without change, or at once with "Clear form"). The ID scan is never kept in the browser. A button then opens the **application vault** (`yce_vault.html`), where the candidate uploads that ZIP: it goes from there to the parent (minors), the club president, the district coordinator and the national team — no file is sent by e-mail.
 
 ### Signature workflow
 
 1. **Applicant & parent/guardian** sign on screen (finger, mouse, or an uploaded image of the signature); the matching date fills in automatically.
-2. **Club chairman** — either in person on the candidate's device (admin mode), or remotely: they open *Sign it online* (`?sign=club`) — a **minimal signing screen** (candidate summary + signature box, the full form one click away) — load the candidate's **ZIP** received by e-mail, sign and download the counter-signed ZIP to send back. The signature lands on the form's club row and in the Commitment's club column.
-3. The candidate e-mails the **counter-signed ZIP** to the district YCE coordinator, who can drop it into the tracker and counter-sign the district boxes the same way with `?sign=district` (linked from the tracker; the Commitment passes through untouched — the district does not sign it).
+2. The candidate uploads the ZIP to the **vault**; the parent (minors), the **club president** (redacted club copy), the **district coordinator** and the national team approve it there in turn, each approval tied to the SHA-256 of the exact ZIP.
+3. Handwritten counter-signatures remain possible: in person on the candidate's device (admin mode), or with the minimal signing screens `?sign=club` and `?sign=district` (load the ZIP, sign, download the counter-signed ZIP and upload it to the vault).
 
 ### Admin mode (`?admin`)
 
@@ -112,7 +112,6 @@ js/
   signatures.js                       signature pads + pasting signatures into the workbook
   attachments.js                      pass photo, payment proof, passport / ID card scan
   storage.js                          local draft persistence (30-day expiry)
-  email.js                            prefilled e-mails (club president, district coordinator)
   club-signing.js                     ?sign=club / ?sign=district remote counter-signing mode
   sections.js                         declarative form definition (SECTIONS, camps list, mode flags)
   country.js                          default country, dial codes, phone normalisation
