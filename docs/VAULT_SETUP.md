@@ -127,6 +127,48 @@ La clé **anon** est publique par conception : c'est la base qui protège les do
 règles d'accès installées à l'étape 2.
 **Ne copiez jamais la clé `service_role`** dans le site : elle contourne toutes les protections.
 
+## 4 bis. E-mails automatiques à chaque étape (recommandé)
+
+Sans cette étape, la page propose à chaque intervenant d'écrire lui-même l'e-mail à la personne suivante.
+Avec elle, le coffre prévient automatiquement :
+
+- le parent quand le candidat envoie le dossier (moins de 18 ans) ;
+- le président de club quand le dossier lui parvient ;
+- le ou les coordinateurs du district (table `staff`) après la signature du club ;
+- l'équipe nationale après le district ;
+- le candidat en cas de renvoi, d'envoi au pays d'accueil et de réponse de celui-ci.
+
+L'e-mail ne contient que le nom du candidat, l'étape et le lien vers le dossier : aucune pièce jointe.
+L'envoi est noté dans l'historique du dossier (« Automatic e-mail sent to … »).
+
+1. **Brevo** : utilisez le compte créé pour les liens de connexion (étape 3), avec l'adresse d'expédition vérifiée.
+   Menu **SMTP & API** → **API Keys** → **Generate a new API key**, puis copiez la clé (`xkeysib-…`).
+2. **Créer la fonction** : Supabase → **Edge Functions** → **Deploy a new function** → **Via Editor**.
+   - Nom : `vault-notify`.
+   - Remplacez tout le contenu par celui de `supabase/functions/vault-notify/index.ts`, puis **Deploy function**.
+3. **Secrets** : **Edge Functions** → **Secrets**, ajoutez :
+
+   | Nom | Valeur |
+   |---|---|
+   | `BREVO_API_KEY` | la clé Brevo (`xkeysib-…`) |
+   | `SENDER_EMAIL` | l'adresse d'expédition vérifiée dans Brevo |
+   | `SENDER_NAME` | `Lions YCE MD 112` (facultatif) |
+   | `VAULT_URL` | `https://pmeyssonnier.github.io/YouthCampExchange/yce_vault.html` |
+   | `NOTIFY_SECRET` | une longue suite de caractères au hasard, par exemple tirée d'un gestionnaire de mots de passe |
+
+4. **Déclencheur** : **Database** → **Webhooks** → **Create a new hook** (activez les webhooks si demandé).
+   - Name : `vault_notify`. Table : `events`. Events : **Insert** uniquement.
+   - Type : **Supabase Edge Functions** → `vault-notify`, méthode `POST`, timeout `5000`.
+   - HTTP Headers : ajoutez `x-notify-secret` avec **la même valeur** que le secret `NOTIFY_SECRET`
+     (gardez l'en-tête `Authorization` proposé par Supabase).
+   - **Create webhook**.
+5. **Activer l'affichage** : passez `const VAULT_AUTO_EMAIL = true;` dans `districts_data.js` (par une PR).
+   La page dit alors « … will receive an e-mail from the vault » au lieu de proposer un e-mail à écrire.
+6. **Tester** : faites avancer un dossier de test. L'e-mail doit arriver, et l'historique indiquer
+   « Automatic e-mail sent to … ». Sinon : **Edge Functions** → `vault-notify` → **Logs**.
+
+Sans le bon en-tête `x-notify-secret`, la fonction refuse tout appel : personne d'autre ne peut l'utiliser pour envoyer des e-mails.
+
 ## 5. Offre et sauvegardes
 
 - **Offre gratuite** : suffisante en volume (environ 40 dossiers de 5 Mo par saison). Mais un projet

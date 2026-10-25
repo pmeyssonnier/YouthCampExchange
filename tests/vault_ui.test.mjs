@@ -310,6 +310,15 @@ ok((await pg.$$eval('#d-files li', l => l.map(x => x.textContent))).some(x => /p
 await pg.click('#d-actions .btn'); await settle();
 ok(/Sent to host country/.test(await pg.textContent('#d-status')), 'file sent to the host country once the scan is there');
 
+// ===== e-mails automatiques (fonction vault-notify installée) =====
+await pg.evaluate(() => { const at = new Date().toISOString(); renderDossier([], [{ at: at, actor_email: 'vault (automatic e-mail)', action: 'email', detail: { step: 'sent_host', to: 'candidate' } }], []); });
+ok(/Automatic e-mail sent to the candidate/.test(await pg.textContent('#d-history')), 'history shows the automatic e-mail');
+await pg.route('**/districts_data.js*', async r => r.fulfill({ contentType: 'text/javascript', body: dist.replace('const VAULT_AUTO_EMAIL = false;', 'const VAULT_AUTO_EMAIL = true;') }));
+await login('kid@x.be', '?d=' + DID);
+await pg.evaluate(() => offerNotify('submitted'));
+ok(/club president will receive an e-mail from the vault/.test(await pg.textContent('#notify')) && !/Write the e-mail/.test(await pg.textContent('#notify')), 'auto e-mail on: page says the vault sends it, no draft to write');
+await pg.unroute('**/districts_data.js*');
+
 // ===== mobile =====
 await pg.setViewportSize({ width: 390, height: 844 });
 await login('mum@x.be', '?d=' + DID);

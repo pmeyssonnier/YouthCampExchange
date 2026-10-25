@@ -11,6 +11,9 @@ const SITE_REPO = "pmeyssonnier/YouthCampExchange";
 // Vides = coffre désactivé.
 const SUPABASE_URL = "https://uqhwimgeenlufatvhgbm.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVxaHdpbWdlZW5sdWZhdHZoZ2JtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5MjM3NTcsImV4cCI6MjEwODQ5OTc1N30.Maieqg-5jUzEvN77rLGUrSVBgY5P3X9nmxyvl9Op3Ds";
+// true une fois la fonction vault-notify installée (docs/VAULT_SETUP.md) : le coffre prévient lui-même
+// la personne suivante par e-mail ; false : chacun écrit l'e-mail proposé par la page.
+const VAULT_AUTO_EMAIL = false;
 
 // Multiple District et pays de CE déploiement — écrits dans le formulaire à l'ouverture
 // (le fichier de référence est neutre : aucune référence au MD ni au pays).
