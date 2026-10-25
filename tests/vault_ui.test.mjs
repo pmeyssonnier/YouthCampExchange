@@ -129,6 +129,8 @@ ok((await pg.$$eval('#d-check li.yes', l => l.length)) === 6, 'checklist complet
 await pg.click('#d-actions .btn'); await settle();
 ok(/Awaiting parent/.test(await pg.textContent('#d-status')), 'file sent to the parent');
 ok(/mailto:mum%40x\.be/.test(await pg.innerHTML('#notify')), 'notify e-mail goes to the parent');
+ok(/Waiting for the parent \/ guardian.*mum@x\.be.*approve/.test(await pg.textContent('#d-next')), 'candidate sees who the file waits for: ' + await pg.textContent('#d-next'));
+ok(/Now let your parent \/ guardian know.*does not send/.test(await pg.textContent('#notify')), 'candidate told to notify the parent themself');
 
 // ===== copie club : contenu vérifié =====
 const clubPath = (await runAs('kid@x.be', 'aal1', "select path from dossier_files where dossier_id=$1 and kind='club' order by uploaded_at desc limit 1", [DID])).rows[0].path;
@@ -141,13 +143,15 @@ ok(!club.some(n => /ID_document|Pass_photo|Payment|Letter/.test(n)), 'club copy 
 
 // ===== le président ne voit rien avant l'approbation parentale =====
 await login('pres@x.be', '?d=' + DID);
-ok(/do not have access/.test(await msgText()), 'president cannot open a file awaiting the parent');
+ok(/not open to you \(yet\).*parent has approved.*pres@x\.be/.test(await msgText()), 'president cannot open a file awaiting the parent, and is told why');
+ok(await pg.isVisible('#welcome') && /No file is waiting for you yet/.test(await pg.textContent('#welcome')), 'president with no file: told that nothing is waiting yet');
 
 // ===== parent =====
 await login('mum@x.be', '?d=' + DID);
 ok(await pg.isVisible('#dossier'), 'parent opens the file from the e-mail link');
 ok(!(await pg.isVisible('#create')), 'parent does not see "Start my application"');
 ok(/Approve as parent/.test(await pg.textContent('#d-actions')), 'parent can approve');
+ok(/Your turn/.test(await pg.textContent('#d-next')), 'parent sees it is their turn');
 await pg.click('#d-actions .btn'); await settle();
 ok(/review the current version/.test(await msgText()), 'parent must tick "reviewed"');
 await pg.check('#a-reviewed'); await pg.click('#d-actions .btn'); await settle();

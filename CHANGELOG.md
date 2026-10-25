@@ -5,6 +5,12 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.11.0 — 2026-10-25
+
+- Vault, clearer steps: every file shows who it is waiting for and what they must do ("Waiting for the parent / guardian (address): sign in to the vault with this address and approve the file"), or "Your turn" when it is the reader's step. The list says who each file waits for.
+- A club president or parent who signs in before a file reaches them is told that nothing is waiting yet and why (under 18, the parent approves first), instead of only seeing "Start my application". Opening a file link too early explains the same.
+- The "let the next person know" box stands out and says the vault does not send that e-mail itself.
+
 ## 1.10.0 — 2026-10-25
 
 - Form filler: after generating the ZIP, the candidate gets a single **"Upload to the application vault"** button instead of the two prefilled e-mails (club president, district coordinator). Files now circulate only through the vault: parent, club president (redacted copy), district coordinator, national team. Passport scans and health data no longer travel as e-mail attachments. The handwritten signing screens (`?sign=club`, `?sign=district`) remain available.
