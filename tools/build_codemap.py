@@ -7,7 +7,7 @@ The visualisation docs/code_map.html reads the generated file.
 import json, os, re, subprocess, datetime
 
 FILLER = ["js/assets.js", "js/zip.js", "js/xlsx.js", "js/docx.js", "js/signatures.js",
-          "js/attachments.js", "js/storage.js", "js/email.js",
+          "js/attachments.js", "js/storage.js",
           "js/club-signing.js", "js/sections.js", "js/country.js",
           "js/render.js", "js/form.js"]
 TRACKER = ["js/zip.js", "js/tracker-storage.js", "js/tracker-parser.js",
@@ -25,7 +25,6 @@ ROLES = {
     "js/signatures.js": "signature pads + pasting signatures into the workbook",
     "js/attachments.js": "pass photo & payment proof",
     "js/storage.js": "local draft persistence",
-    "js/email.js": "prefilled e-mails (club president, district coordinator)",
     "js/club-signing.js": "?sign=club remote counter-signing",
     "js/sections.js": "declarative form definition (SECTIONS, camps list, mode flags)",
     "js/country.js": "default country, dial codes, phone normalisation",

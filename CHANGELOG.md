@@ -5,6 +5,10 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.10.0 — 2026-10-25
+
+- Form filler: after generating the ZIP, the candidate gets a single **"Upload to the application vault"** button instead of the two prefilled e-mails (club president, district coordinator). Files now circulate only through the vault: parent, club president (redacted copy), district coordinator, national team. Passport scans and health data no longer travel as e-mail attachments. The handwritten signing screens (`?sign=club`, `?sign=district`) remain available.
+
 ## 1.9.1 — 2026-10-25
 
 - Vault: fixed "Could not start two-step verification: Factor not found" at a coordinator's first sign-in. Coming back from the sign-in link, the page opened the session twice, and the two two-step enrolments removed each other. The session now opens once, and an enrolment already removed elsewhere is ignored.
