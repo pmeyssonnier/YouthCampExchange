@@ -178,6 +178,34 @@ await pg.fill('#mfa-code', '123456'); await pg.click('#mfa .btn'); await pg.wait
 ok(await pg.isVisible('#work') && !(await pg.isVisible('#mfa')), 'verified: work shown');
 ok(await pg.isVisible('#dossier'), 'deep link opens after verification');
 ok((await pg.$$eval('#d-files li', l => l.length)) >= 4, 'coordinator sees full files and club copies');
+await pg.waitForTimeout(600);
+ok(/Application form \(club\)/.test(await pg.textContent('#d-info')), 'coordinator sees the club section of the application form, read from the stored file');
+// lecture de la section V : valeurs du formulaire, et alerte quand l'e-mail diffère du président qui signe
+{
+  const r = await pg.evaluate(async () => {
+    const tpl = await (await fetch('documents/Application_form_2026_MD112.xlsx')).arrayBuffer();
+    const entries = await unzip(tpl);
+    const sh = entries.find(e => e.name === 'xl/worksheets/sheet1.xml');
+    let xml = new TextDecoder().decode(sh.data);
+    [['F67', 'LC Test Club'], ['H68', 'Pat President'], ['AE68', '+32 470 11 22 33'], ['E69', 'Other@Example.org']].forEach(c => { xml = setCell(xml, c[0], c[1]); });
+    sh.data = new TextEncoder().encode(xml);
+    const af = new Uint8Array(await (await buildZip(entries)).arrayBuffer());
+    const outer = await (await buildZip([{ name: 'Application_form_2027_112A_Doe_Jane.xlsx', data: af }], 'application/zip')).arrayBuffer();
+    return await readAfClub(outer);
+  });
+  ok(r && r.club === 'LC Test Club' && r.chair === 'Pat President' && r.mobile === '+32 470 11 22 33' && r.email === 'Other@Example.org', 'club section read from the application form: ' + JSON.stringify(r));
+  const shown = await pg.evaluate(async () => {
+    const real = API.fileBytes; const tpl = await (await fetch('documents/Application_form_2026_MD112.xlsx')).arrayBuffer();
+    const entries = await unzip(tpl); const sh = entries.find(e => e.name === 'xl/worksheets/sheet1.xml');
+    sh.data = new TextEncoder().encode(setCell(new TextDecoder().decode(sh.data), 'E69', 'someone.else@example.org'));
+    const af = new Uint8Array(await (await buildZip(entries)).arrayBuffer());
+    const outer = await (await buildZip([{ name: 'AF.xlsx', data: af }], 'application/zip')).arrayBuffer();
+    API.fileBytes = async () => outer;
+    await showAfClub(CUR); API.fileBytes = real;
+    return document.getElementById('d-afclub').textContent;
+  });
+  ok(/e-mail differs from the club president who signs here/.test(shown), 'a different e-mail in the application form is flagged, nothing blocked');
+}
 // fichier altéré dans le stockage après le dépôt : l'empreinte recalculée ne correspond plus, signature refusée
 {
   const fullPath = Object.keys(BLOBS).filter(p => /\/full\//.test(p)).sort((a, b) => a.split('/').pop() < b.split('/').pop() ? 1 : -1)[0];

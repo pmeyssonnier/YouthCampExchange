@@ -168,6 +168,10 @@ règles d'accès installées à l'étape 2.
 
 - la page propose d'écrire l'e-mail à la personne suivante, avec **un lien et jamais de pièce jointe** ;
 - l'historique garde la trace de qui a déposé, téléchargé, signé ou renvoyé, et quand ;
+- le coordinateur et le national voient, à côté de l'adresse du président qui signe dans le coffre,
+  la section V de l'application form (club, président, mobile, e-mail), lue dans le dossier déposé ;
+  si l'e-mail diffère, la fiche le signale « à vérifier » — rien n'est bloqué, le circuit reste fondé
+  sur la confiance entre candidat, parent, président et coordinateur ;
 - chaque signature est liée à l'empreinte du ZIP signé : si le dossier est remplacé, il faut signer à nouveau ;
   au moment de signer, le navigateur du signataire recalcule l'empreinte du fichier réellement stocké
   et refuse la signature si elle ne correspond pas ;
