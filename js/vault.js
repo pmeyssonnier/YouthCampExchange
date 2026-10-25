@@ -68,9 +68,11 @@ async function vaultInit(){
   if(typeof supabase === "undefined"){ msg("The secure vault library could not be loaded. Check your connection and reload.", "err"); return; }
   API = makeVaultApi(supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY));
   fillStaticLists();
+  // Supabase annonce aussi la session au démarrage : une seule ouverture (sinon deux inscriptions
+  // à la double authentification se suppriment l'une l'autre → « Factor not found »)
   API.onAuth(function(s){ if(s && !ME) startSession(s); });
   const s = await API.session();
-  if(s) startSession(s); else show("login", true);
+  if(s){ if(!ME) startSession(s); }else if(!ME) show("login", true);
 }
 
 function fillStaticLists(){

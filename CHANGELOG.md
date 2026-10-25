@@ -5,6 +5,10 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.9.1 — 2026-10-25
+
+- Vault: fixed "Could not start two-step verification: Factor not found" at a coordinator's first sign-in. Coming back from the sign-in link, the page opened the session twice, and the two two-step enrolments removed each other. The session now opens once, and an enrolment already removed elsewhere is ignored.
+
 ## 1.9.0 — 2026-10-25
 
 - Vault activated: the site is linked to the MD 112 Supabase project (EU, Frankfurt). `yce_vault.html` now shows the sign-in form instead of "Vault not configured yet". The project's 22 isolation checks (`supabase/security_check.sql`) all pass. Before candidates use it: custom SMTP for sign-in e-mails, and a real end-to-end test with fictitious data.
