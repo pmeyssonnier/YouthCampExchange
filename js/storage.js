@@ -26,6 +26,13 @@ function saveDraft(){
   }catch(e){}
 }
 function restoreDraft(){
+  // brouillons des autres saisons (clé yce_form_draft_<année>) : jamais relus, donc jamais expirés —
+  // ils resteraient indéfiniment sur un ordinateur partagé, scan de passeport compris
+  try{
+    Object.keys(localStorage).forEach(function(k){
+      if(/^yce_form_draft_\d{4}$/.test(k)&&k!==DRAFT_KEY)localStorage.removeItem(k);
+    });
+  }catch(e){}
   try{
     const d=JSON.parse(localStorage.getItem(DRAFT_KEY)||"null");
     if(!d)return;

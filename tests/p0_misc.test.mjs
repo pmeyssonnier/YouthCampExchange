@@ -69,6 +69,19 @@ ok(csv2[6] === ' +32 470 12 34 56' && csv2[7] === 'Jean-Pierre', 'spaced phone a
   await pg.evaluate(() => { delete ROWS['C_evil_x']; });
 }
 
+// données des saisons passées effacées du navigateur : tracker (au-delà de la saison précédente), brouillons du formulaire
+{
+  const Y = +(await pg.evaluate(() => YEAR));
+  await pg.evaluate(y => { localStorage.setItem('yce_tracker_' + (y - 3), '{"A_old_x":{"fam":"Old"}}'); localStorage.setItem('yce_tracker_' + (y - 1), '{}');
+    localStorage.setItem('yce_form_draft_' + (y - 1), '{"ts":1,"v":{"F16":"Old"}}'); localStorage.setItem('yce_form_draft_' + y + '_x', 'keep'); }, Y);
+  await pg.goto(B + 'yce_tracker.html'); await pg.waitForTimeout(400);
+  const k1 = await pg.evaluate(() => Object.keys(localStorage));
+  ok(!k1.includes('yce_tracker_' + (Y - 3)) && k1.includes('yce_tracker_' + (Y - 1)), 'tracker: rows older than the previous season erased, previous season kept');
+  await pg.goto(B + 'yce_form_filler.html'); await pg.waitForTimeout(800);
+  const k2 = await pg.evaluate(() => Object.keys(localStorage));
+  ok(!k2.includes('yce_form_draft_' + (Y - 1)) && k2.includes('yce_form_draft_' + Y + '_x'), 'form: drafts of other seasons erased');
+}
+
 // SEC-10 : dates du site et du gestionnaire de camps
 await pg.goto(B + 'index.html'); await pg.waitForTimeout(500);
 ok(await pg.evaluate(() => parseDate('31-02-2026') === null && parseDate('45-13-2026') === null && parseDate('29-02-2028') !== null && parseDate('28-02-2027') !== null), 'site rejects impossible dates, keeps leap day');
