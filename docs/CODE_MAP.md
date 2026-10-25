@@ -1,7 +1,7 @@
 # Code map — Lions YCE
 
 > **Generated file — do not edit by hand.** Rebuilt by `python3 tools/build_codemap.py` (run automatically on every push to `main`).
-> Commit `6b06a7b`, 2026-10-25 09:25 UTC. Interactive version: [`code_map.html`](code_map.html).
+> Commit `7b42f2a`, 2026-10-25 09:45 UTC. Interactive version: [`code_map.html`](code_map.html).
 
 ## Pages
 
@@ -93,7 +93,7 @@
 | `js/zip.js` | 126 | 7.5 KB | bounded ZIP reading (limits against booby-trapped archives) — shared |
 | `js/club-copy.js` | 49 | 2.8 KB | vault: reduced copy for the club president (AF without ID, religion, health + Commitment) |
 | `js/vault-api.js` | 89 | 5.2 KB | vault: the only layer talking to Supabase |
-| `js/vault.js` | 512 | 30.0 KB | vault UI: sign-in, dashboard, file, signatures, team, retention |
+| `js/vault.js` | 545 | 32.1 KB | vault UI: sign-in, dashboard, file, signatures, team, retention |
 
 **`js/zip.js`** — `zipBudget`, `zipCheckSize`, `zipDirectory` (validated central directory, no decompression), `zipNames` (file names of an archive without decompressing), `inflateRaw` (native inflate), `unzip` (parse a zip into [{name,data}] within ZIP_LIMITS)
 
@@ -101,7 +101,7 @@
 
 **`js/vault-api.js`** — `makeVaultApi`
 
-**`js/vault.js`** — `esc` (escape HTML), `show`, `msg`, `fmtDT`, `fmtD`, `isStaff`, `selfLink`, `sha256Hex`, `isMinor`, `validBirth`, `latestFile`, `idPending`, `applicationSeason`, `vaultInit`, `fillStaticLists`, `sendLink`, `startSession`, `mfaNeeded`, `mfaVerify`, `continueSession`, `signOut`, `myTurn`, `loadDashboard`, `renderList`, `createDossier`, `openDossier`, `closeDossier`, `canUpload`, `renderDossier`, `renderActions`, `saveEdit`, `uploadZip`, `uploadIdLater`, `downloadFile`, `signedDoc`, `act`, `offerNotify`, `copyLink`, `withdraw`, `addComment`, `loadStaff`, `staffAdd`, `staffDelete`, `loadPurge`, `runPurge`
+**`js/vault.js`** — `esc` (escape HTML), `show`, `msg`, `fmtDT`, `fmtD`, `isStaff`, `selfLink`, `sha256Hex`, `isMinor`, `validBirth`, `latestFile`, `idPending`, `applicationSeason`, `vaultInit`, `fillStaticLists`, `sendLink`, `startSession`, `mfaNeeded`, `mfaVerify`, `continueSession`, `signOut`, `myTurn`, `loadDashboard`, `renderList`, `createDossier`, `openDossier`, `closeDossier`, `canUpload`, `renderDossier`, `renderActions`, `saveEdit`, `uploadZip`, `uploadIdLater`, `downloadFile`, `signedDoc`, `act`, `offerNotify`, `copyLink`, `withdraw`, `addComment`, `readAfClub`, `showAfClub`, `loadStaff`, `staffAdd`, `staffDelete`, `loadPurge`, `runPurge`
 
 ## Data, tools and other files
 
@@ -110,7 +110,7 @@
 | `camps_data.js` | 92.6 KB | season data: SEASON + YEAR + RAW camps — common to every deployment |
 | `districts_data.js` | 5.3 KB | per-deployment data: SITE_REPO + DISTRICTS coordinators |
 | `js/version.js` | 0.5 KB | site version number (VERSION), shown on every page — bumped by each pull request |
-| `CHANGELOG.md` | 12.7 KB | what changed in each version |
+| `CHANGELOG.md` | 13.1 KB | what changed in each version |
 | `yce_form_filler.html` | 12.2 KB | filler HTML shell + styles |
 | `yce_tracker.html` | 8.9 KB | tracker HTML shell + styles |
 | `yce_admin.html` | 22.7 KB | administration HTML shell: tabs Site & season / Camps / Documents |
@@ -123,9 +123,9 @@
 | `css/tools.css` | 3.8 KB | styles shared by the tool pages |
 | `yce_vault.html` | 19.5 KB | application vault HTML shell (Supabase) |
 | `js/vault-api.js` | 5.2 KB | vault: the only layer talking to Supabase |
-| `js/vault.js` | 30.0 KB | vault UI: sign-in, dashboard, file, signatures, team, retention |
+| `js/vault.js` | 32.1 KB | vault UI: sign-in, dashboard, file, signatures, team, retention |
 | `supabase/vault_schema.sql` | 29.7 KB | vault database: tables, row-level security, workflow, retention |
-| `docs/VAULT_SETUP.md` | 10.7 KB | vault setup guide (Supabase project, SMTP, GDPR) |
+| `docs/VAULT_SETUP.md` | 11.1 KB | vault setup guide (Supabase project, SMTP, GDPR) |
 | `tools/build_assets.py` | 2.2 KB | regenerates js/assets.js |
 | `tools/build_codemap.py` | 13.7 KB | regenerates this visualisation's data and docs/CODE_MAP.md |
 | `tests/` | 4.0 KB | security & regression tests run by GitHub Actions (npm test) |
