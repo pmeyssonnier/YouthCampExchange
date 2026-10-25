@@ -5,6 +5,10 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.7.5 — 2026-10-25
+
+- The administration, vault, tracker and form filler pages no longer display inside a frame of another site (protection against "clickjacking", where a booby-trapped page lays invisible buttons over them to make someone sign, validate or save without knowing). GitHub Pages cannot send the usual header for this, so the page stays hidden until it has checked that it is not framed, and tries to open itself full-window otherwise.
+
 ## 1.7.4 — 2026-10-25
 
 - No more code or fonts loaded from other sites:
