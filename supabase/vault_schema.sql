@@ -50,9 +50,16 @@ create table public.staff (
 create unique index staff_unique on public.staff (email, role, coalesce(district, ''));
 
 -- ---------- helpers ----------
+-- adresse du compte connecté, seulement si elle a été CONFIRMÉE (lien de l'e-mail ouvert) :
+-- toute l'identité du coffre (candidat, parent, président, intervenants) repose sur cette adresse.
+-- Le jeton seul ne suffit pas : si l'inscription sans confirmation était activée par erreur, un
+-- compte créé avec l'adresse d'un président ou d'un coordinateur porterait cette adresse sans
+-- l'avoir prouvée. Lue dans auth.users (fonction « security definer ») : rien à configurer.
 create function public.my_email() returns text
-language sql stable as $$
-  select lower(coalesce(auth.jwt() ->> 'email', ''))
+language sql stable security definer set search_path = public, auth as $$
+  select coalesce((select lower(u.email) from auth.users u
+                    where u.id = auth.uid() and u.email_confirmed_at is not null
+                      and lower(u.email) = lower(auth.jwt() ->> 'email')), '')
 $$;
 
 -- session ouverte avec la double authentification (code TOTP vérifié)
@@ -94,6 +101,10 @@ create table public.dossiers (
   created_at         timestamptz not null default now(),
   updated_at         timestamptz not null default now(),
   unique (candidate_email, season),
+  -- adresses réelles uniquement : un compte non confirmé a une identité vide (my_email() = '')
+  check (candidate_email ~ '^[^@\s]+@[^@\s]+$'),
+  check (parent_email is null or parent_email ~ '^[^@\s]+@[^@\s]+$'),
+  check (president_email is null or president_email ~ '^[^@\s]+@[^@\s]+$'),
   -- personne ne s'approuve soi-même
   check (parent_email is distinct from candidate_email),
   check (president_email is distinct from candidate_email)
@@ -210,7 +221,14 @@ create table public.signatures (
   signer_email text not null,
   signer_role  text not null,
   doc_sha256   text not null,
-  signed_at    timestamptz not null default now()
+  signed_at    timestamptz not null default now(),
+  -- preuves de l'identité du signataire, relevées par la base dans sa session (jamais fournies par
+  -- l'interface) : niveau d'authentification (aal2 = double authentification), méthodes et heures de
+  -- connexion (amr : lien reçu par e-mail, code TOTP…), session, et texte exact de ce qui est approuvé
+  aal          text not null default 'aal1',
+  auth_methods jsonb not null default '[]',
+  session_id   text,
+  statement    text not null default ''
 );
 
 create table public.comments (
@@ -314,6 +332,8 @@ declare
   z    dossier_files;
   c    dossier_files;
   missing text[];
+  claims jsonb := auth.jwt();
+  last_auth bigint;
 begin
   select * into d from dossiers where id = did for update;
   if not found or not can_see_dossier(did) then
@@ -390,8 +410,19 @@ begin
     elsif doc_sha256 is null or doc_sha256 is distinct from z.sha256 then
       raise exception 'The signed document does not match the latest ZIP — reload the file';
     end if;
-    insert into signatures (dossier_id, step, signer_email, signer_role, doc_sha256)
-    values (did, target, me, who, doc_sha256);
+    -- signer, c'est avoir prouvé récemment le contrôle de sa boîte e-mail (et du code TOTP pour les
+    -- intervenants) : une session ouverte il y a plus de 24 h sur un appareil oublié ne suffit pas
+    select max((m ->> 'timestamp')::bigint) into last_auth
+      from jsonb_array_elements(case when jsonb_typeof(claims -> 'amr') = 'array' then claims -> 'amr' else '[]' end) m;
+    if last_auth is not null and last_auth < extract(epoch from now()) - 24 * 3600 then
+      raise exception 'To sign, sign in again with a new e-mail link: your last sign-in is more than 24 hours old';
+    end if;
+    insert into signatures (dossier_id, step, signer_email, signer_role, doc_sha256, aal, auth_methods, session_id, statement)
+    values (did, target, me, who, doc_sha256, coalesce(claims ->> 'aal', 'aal1'),
+            case when jsonb_typeof(claims -> 'amr') = 'array' then claims -> 'amr' else '[]' end, claims ->> 'session_id',
+            format('%s (%s) approves the application file of %s (season %s, district %s): %s, SHA-256 %s.',
+                   me, who, d.candidate_name, d.season, d.district,
+                   case when who = 'president' then 'club copy' else 'full file' end, doc_sha256));
   end if;
 
   update dossiers set
@@ -442,6 +473,13 @@ create function public.my_roles() returns table (role public.staff_role, distric
 language sql stable security definer set search_path = public as $$
   select role, district from staff where email = my_email()
 $$;
+
+-- ---------- fonctions internes : jamais appelables depuis l'API ----------
+-- Supabase expose toute fonction du schéma public (/rest/v1/rpc/…) et PostgreSQL donne le droit
+-- d'exécution à tous par défaut. Ces fonctions lisent les dossiers avec les droits du propriétaire,
+-- sans contrôle d'accès : réservées à dossier_transition() et aux autres fonctions du schéma.
+revoke execute on function public.latest_file(uuid, text), public.missing_documents(uuid), public.id_pending(uuid)
+  from public, anon, authenticated;
 
 -- ---------- droits & Row Level Security ----------
 alter table public.staff         enable row level security;

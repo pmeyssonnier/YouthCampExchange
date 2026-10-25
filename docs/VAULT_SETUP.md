@@ -58,6 +58,19 @@ depuis le panneau **Team** de la page, sans repasser par le SQL.
 Les présidents de club et les parents n'ont **pas** besoin d'être déclarés. Le candidat indique l'adresse de son
 président dans son dossier, et seul ce président voit ce dossier.
 
+### Contrôle de sécurité (obligatoire avant d'ouvrir le coffre)
+
+Toujours dans le SQL Editor, nouvelle requête : copiez-collez **tout** `supabase/security_check.sql`,
+puis **Run**. Le contrôle se met dans la peau de chaque profil : candidat, président et coordinateur
+d'un autre district, coordinateur sans double authentification, administrateur, visiteur anonyme,
+comptes non confirmés utilisant l'adresse d'un autre. Chaque profil tente de lire et de modifier un
+dossier du district C par toutes les voies : tables, fichiers stockés, fonctions de l'API.
+
+- Le résultat est un tableau dont **toutes les lignes doivent être `true`**. Une ligne `false` nomme
+  la fuite : ne pas ouvrir le coffre tant qu'elle n'est pas corrigée.
+- Rien n'est enregistré : le contrôle travaille dans une transaction annulée à la fin.
+- Relancez-le après toute modification du projet : politiques, stockage, mise à jour du schéma.
+
 ## 3. Connexion par lien magique
 
 Menu **Authentication** → **URL Configuration** :

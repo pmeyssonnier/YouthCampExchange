@@ -5,6 +5,14 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.7.7 — 2026-10-25
+
+- Vault (not activated yet), access between districts and identity of signers, checked on a real PostgreSQL:
+  - **leak fixed**: three internal functions could be called by anyone through the Supabase API, even without signing in, and one of them returned the stored path, file name and list of documents of any application file whose identifier was known (identifiers travel in e-mail links). They can no longer be called from outside.
+  - **identity**: a user's identity is now their account's *confirmed* e-mail address, read from Supabase's user table. Before, it was the address written in the session token, so if sign-up without confirmation had been switched on by mistake, an account created with a president's or coordinator's address could have read, commented, uploaded and sent back their files.
+  - **signatures**: each one now records, as observed by the database, how the signer proved their identity (e-mail link, two-step code for coordinators and the national team), the session, and the exact statement approved (who, as what, which file, which version). Signing requires a sign-in less than 24 hours old. The file view shows how each signer was identified.
+  - **`supabase/security_check.sql`**: a check to run in the Supabase SQL editor on the real project. It plays every profile (other district's candidate, president and coordinator, coordinator without two-step verification, administrator, anonymous visitor, unconfirmed accounts using someone else's address) against a district C file, through tables, storage and API functions, inside a transaction that is rolled back. All rows must be `true`; with the previous schema, 11 of its 22 checks failed.
+
 ## 1.7.6 — 2026-10-25
 
 - Personal data of past seasons no longer stays in the browser forever:
