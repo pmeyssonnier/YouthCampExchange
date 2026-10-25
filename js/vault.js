@@ -331,6 +331,7 @@ function renderDossier(sigs, events, comments){
     if(e.action === "status") t = "Status: " + (STATUS[e.detail.from] || {}).label + " → <b>" + (STATUS[e.detail.to] || {}).label + "</b>";
     else if(e.action === "upload") t = "Uploaded " + esc(e.detail.file);
     else if(e.action === "download") t = "Downloaded " + esc(e.detail.file);
+    else if(e.action === "email") t = "📧 Automatic e-mail sent to " + esc({ parent: "the parent / guardian", president: "the club president", district: "the district coordinator", national: "the national YCE team", candidate: "the candidate" }[e.detail.to] || e.detail.to);
     return { at: e.at, who: e.actor_email, html: t };
   }).concat(comments.map(function(c){ return { at: c.created_at, who: c.author_email, html: "💬 " + esc(c.body), cmt: true }; }));
   items.sort(function(a, b){ return a.at < b.at ? 1 : -1; });
@@ -476,6 +477,12 @@ function offerNotify(target){
   const body = "Hello,\n\nThe Lions YCE application file of " + d.candidate_name + " has moved to a new step: " +
     (STATUS[target] || {}).label + ".\n\nOpen it in the secure vault (sign in with your e-mail address):\n" + link +
     "\n\nThe file itself is not attached: it stays in the vault.\n";
+  if(typeof VAULT_AUTO_EMAIL !== "undefined" && VAULT_AUTO_EMAIL){ // le coffre prévient lui-même (fonction vault-notify)
+    $("notify").innerHTML = "📧 <b>" + esc(who ? who.charAt(0).toUpperCase() + who.slice(1) : "The next person") + " will receive an e-mail from the vault</b>" +
+      (to ? " (" + esc(to) + ")" : "") + " with the link to this file. " + '<button class="btn2" onclick="copyLink()">Copy the link</button>';
+    show("notify", true);
+    return;
+  }
   $("notify").innerHTML = "📧 <b>Now let " + esc(who || "the next person") + " know</b>" + (to ? " (" + esc(to) + ")" : "") + " — the vault does not send this e-mail for you: " +
     (to ? '<a class="btn2" href="mailto:' + encodeURIComponent(to) + "?subject=" + encodeURIComponent("Lions YCE — application of " + d.candidate_name) +
       "&body=" + encodeURIComponent(body) + '">Write the e-mail</a> ' : "") +
