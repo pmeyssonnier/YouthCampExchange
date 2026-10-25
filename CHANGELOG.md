@@ -5,6 +5,10 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.13.0 — 2026-10-25
+
+- Vault e-mails go through the MD's Gmail account instead of Brevo. The setup guide covers the Google app password, the Supabase SMTP settings for sign-in links (`smtp.gmail.com`, port 465) and the `vault-notify` secrets (`SMTP_USER`, `SMTP_PASS`). The function speaks SMTP itself over an encrypted connection on port 465, because Supabase blocks port 587 in its functions. It still needs no library.
+
 ## 1.12.0 — 2026-10-25
 
 - Vault, automatic e-mails (to be installed, see `docs/VAULT_SETUP.md` § 4 bis): a Supabase function, `supabase/functions/vault-notify`, e-mails the person who must act at each step. That is the parent, the club president, the district coordinators, the national team, or the candidate when a file is sent back or answered. The e-mail holds the candidate's name, the step and a link, never the file. It is sent through Brevo and recorded in the file history. The webhook secret protects the function from outside calls.

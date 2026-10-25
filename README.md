@@ -72,7 +72,7 @@ District/status/search filters, sortable columns, per-candidate status (`Receive
 - coordinators, national team and administrators must use **two-factor sign-in** (authenticator app)
 - files are kept **2 years after the season** (the family hosts the following year), 90 days after a refusal, then purged
 - all access rules live in the database (row-level security, `supabase/vault_schema.sql`); identity is the account's **confirmed** e-mail address, internal functions cannot be called through the API, and every signature records how the signer proved their identity (e-mail link, two-step code, session) and the exact statement approved
-- optional automatic e-mails at each step (`supabase/functions/vault-notify`, Brevo): the next person gets a link, never the file
+- optional automatic e-mails at each step (`supabase/functions/vault-notify`, sent from the MD's Gmail account): the next person gets a link, never the file
 - the file view shows coordinators the application form's club section (club, president, mobile, e-mail) read from the stored file, and flags when that e-mail differs from the club president who signs in the vault
 - `supabase/security_check.sql`, run in the Supabase SQL editor, checks on the real project that nobody outside a file's candidate, parent, president, district coordinator and national team can read or change it (all rows must be `true`); the tests run the same file
 
