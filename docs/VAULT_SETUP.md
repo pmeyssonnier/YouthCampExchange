@@ -86,10 +86,17 @@ Le service d'e-mail intégré à Supabase est réservé aux tests. Il n'envoie q
 l'équipe du projet Supabase, et seulement quelques messages par heure. Pour les candidats,
 il faut brancher un serveur d'envoi (SMTP) :
 
-1. Créez un compte gratuit chez un service d'envoi européen, par exemple **Brevo**
-   (300 e-mails par jour gratuits). Vérifiez l'adresse d'expédition, par exemple `yce@votre-domaine`.
-2. Supabase → **Authentication** → **Emails** → **SMTP Settings** → activez **Custom SMTP**
-   et recopiez l'hôte, le port, l'identifiant et le mot de passe fournis par le service.
+1. **Compte Gmail du MD** (gratuit, environ 500 e-mails par jour), par exemple `yce.md112@gmail.com`,
+   distinct des adresses personnelles pour faciliter la passation :
+   - Compte Google → **Sécurité** → activez la **validation en deux étapes** (obligatoire pour l'étape suivante) ;
+   - Compte Google → recherchez **Mots de passe des applications** → nom `Supabase YCE` → **Créer** ;
+   - notez le mot de passe de 16 lettres affiché (une seule fois) dans le gestionnaire de mots de passe du MD.
+     Il sert ici **et** pour les e-mails automatiques (§ 4 bis). Ne le donnez à personne d'autre.
+2. Supabase → **Authentication** → **Emails** → **SMTP Settings** → activez **Custom SMTP** :
+   - Sender email : l'adresse Gmail du MD ; Sender name : `Lions YCE MD 112` ;
+   - Host : `smtp.gmail.com` ; Port : `465` ;
+   - Username : l'adresse Gmail du MD ; Password : le mot de passe d'application (sans espaces) ;
+   - **Save**.
 3. Avec un SMTP personnalisé, Supabase limite d'abord l'envoi à 30 e-mails par heure. C'est suffisant pour
    le YCE, et ajustable dans **Authentication** → **Rate Limits**.
 4. Dans **Email Templates** → **Magic Link**, si votre offre permet de modifier les modèles, mettez un texte en anglais, par exemple :
@@ -139,10 +146,10 @@ Avec elle, le coffre prévient automatiquement :
 - le candidat en cas de renvoi, d'envoi au pays d'accueil et de réponse de celui-ci.
 
 L'e-mail ne contient que le nom du candidat, l'étape et le lien vers le dossier : aucune pièce jointe.
+Les e-mails partent du compte Gmail du MD (port 465 chiffré : Supabase bloque le port 587 dans ses fonctions).
 L'envoi est noté dans l'historique du dossier (« Automatic e-mail sent to … »).
 
-1. **Brevo** : utilisez le compte créé pour les liens de connexion (étape 3), avec l'adresse d'expédition vérifiée.
-   Menu **SMTP & API** → **API Keys** → **Generate a new API key**, puis copiez la clé (`xkeysib-…`).
+1. **Gmail** : utilisez le compte Gmail du MD et son mot de passe d'application (étape 3).
 2. **Créer la fonction** : Supabase → **Edge Functions** → **Deploy a new function** → **Via Editor**.
    - Nom : `vault-notify`.
    - Remplacez tout le contenu par celui de `supabase/functions/vault-notify/index.ts`, puis **Deploy function**.
@@ -150,8 +157,8 @@ L'envoi est noté dans l'historique du dossier (« Automatic e-mail sent to … 
 
    | Nom | Valeur |
    |---|---|
-   | `BREVO_API_KEY` | la clé Brevo (`xkeysib-…`) |
-   | `SENDER_EMAIL` | l'adresse d'expédition vérifiée dans Brevo |
+   | `SMTP_USER` | l'adresse Gmail du MD |
+   | `SMTP_PASS` | le mot de passe d'application Google (16 lettres) |
    | `SENDER_NAME` | `Lions YCE MD 112` (facultatif) |
    | `VAULT_URL` | `https://pmeyssonnier.github.io/YouthCampExchange/yce_vault.html` |
    | `NOTIFY_SECRET` | une longue suite de caractères au hasard, par exemple tirée d'un gestionnaire de mots de passe |
