@@ -15,6 +15,7 @@ export async function makeVaultDb() {
     create function auth.uid() returns uuid language sql stable as $$
       select nullif(auth.jwt() ->> 'sub', '')::uuid $$;
     create table auth.users (id uuid primary key, email text, email_confirmed_at timestamptz);
+    create unique index users_email_partial_key on auth.users (email); -- comme Supabase : une adresse = un compte
     grant usage on schema auth to anon, authenticated;
     create schema storage;
     create table storage.buckets (id text primary key, name text, public boolean, file_size_limit bigint);
@@ -31,7 +32,7 @@ export async function makeVaultDb() {
 }
 
 // identifiant de compte stable pour une adresse (comme l'uuid d'auth.users) ; « unconfirmed » :
-// compte créé avec cette adresse mais jamais confirmé (le lien de l'e-mail n'a pas été ouvert)
+// jeton qui annonce cette adresse pour un compte qui ne l'a jamais confirmée (une adresse = un compte)
 export function uidFor(email, unconfirmed = false) {
   const h = crypto.createHash('md5').update((unconfirmed ? 'u:' : '') + email).digest('hex');
   return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20, 32)}`;
@@ -43,7 +44,7 @@ export async function setSession(db, email, aal = 'aal1', unconfirmed = false, s
   await db.exec('reset role');
   if (email === null) { await db.exec(`set role anon; select set_config('request.jwt.claims','',false)`); return; }
   const id = uidFor(email, unconfirmed);
-  await db.query(`insert into auth.users (id, email, email_confirmed_at) values ($1, $2, ${unconfirmed ? 'null' : 'now()'}) on conflict (id) do nothing`, [id, email]);
+  await db.query(`insert into auth.users (id, email, email_confirmed_at) values ($1, $2, ${unconfirmed ? 'null' : 'now()'}) on conflict (id) do nothing`, [id, unconfirmed ? 'unconfirmed.' + email : email]);
   await db.exec(`set role authenticated; select set_config('request.jwt.claims', '${JSON.stringify({ sub: id, email, aal, role: 'authenticated', session_id: 'sess-' + id.slice(0, 8),
     amr: [{ method: 'otp', timestamp: Math.floor(Date.now() / 1000) - signedInAgo }].concat(aal === 'aal2' ? [{ method: 'totp', timestamp: Math.floor(Date.now() / 1000) - signedInAgo }] : []) })}', false)`);
 }
