@@ -1,7 +1,7 @@
 # Code map — Lions YCE
 
 > **Generated file — do not edit by hand.** Rebuilt by `python3 tools/build_codemap.py` (run automatically on every push to `main`).
-> Commit `04a0a0d`, 2026-10-25 11:04 UTC. Interactive version: [`code_map.html`](code_map.html).
+> Commit `ebd41ce`, 2026-10-25 11:22 UTC. Interactive version: [`code_map.html`](code_map.html).
 
 ## Pages
 
@@ -92,8 +92,8 @@
 |---|---:|---:|---|
 | `js/zip.js` | 126 | 7.5 KB | bounded ZIP reading (limits against booby-trapped archives) — shared |
 | `js/club-copy.js` | 49 | 2.8 KB | vault: reduced copy for the club president (AF without ID, religion, health + Commitment) |
-| `js/vault-api.js` | 89 | 5.2 KB | vault: the only layer talking to Supabase |
-| `js/vault.js` | 545 | 32.1 KB | vault UI: sign-in, dashboard, file, signatures, team, retention |
+| `js/vault-api.js` | 91 | 5.4 KB | vault: the only layer talking to Supabase |
+| `js/vault.js` | 547 | 32.3 KB | vault UI: sign-in, dashboard, file, signatures, team, retention |
 
 **`js/zip.js`** — `zipBudget`, `zipCheckSize`, `zipDirectory` (validated central directory, no decompression), `zipNames` (file names of an archive without decompressing), `inflateRaw` (native inflate), `unzip` (parse a zip into [{name,data}] within ZIP_LIMITS)
 
@@ -110,7 +110,7 @@
 | `camps_data.js` | 92.6 KB | season data: SEASON + YEAR + RAW camps — common to every deployment |
 | `districts_data.js` | 5.6 KB | per-deployment data: SITE_REPO + DISTRICTS coordinators |
 | `js/version.js` | 0.5 KB | site version number (VERSION), shown on every page — bumped by each pull request |
-| `CHANGELOG.md` | 13.8 KB | what changed in each version |
+| `CHANGELOG.md` | 14.2 KB | what changed in each version |
 | `yce_form_filler.html` | 12.2 KB | filler HTML shell + styles |
 | `yce_tracker.html` | 8.9 KB | tracker HTML shell + styles |
 | `yce_admin.html` | 22.7 KB | administration HTML shell: tabs Site & season / Camps / Documents |
@@ -122,8 +122,8 @@
 | `js/toolnav.js` | 1.3 KB | tool menu under the header of every tool page |
 | `css/tools.css` | 3.8 KB | styles shared by the tool pages |
 | `yce_vault.html` | 19.5 KB | application vault HTML shell (Supabase) |
-| `js/vault-api.js` | 5.2 KB | vault: the only layer talking to Supabase |
-| `js/vault.js` | 32.1 KB | vault UI: sign-in, dashboard, file, signatures, team, retention |
+| `js/vault-api.js` | 5.4 KB | vault: the only layer talking to Supabase |
+| `js/vault.js` | 32.3 KB | vault UI: sign-in, dashboard, file, signatures, team, retention |
 | `supabase/vault_schema.sql` | 29.7 KB | vault database: tables, row-level security, workflow, retention |
 | `docs/VAULT_SETUP.md` | 11.1 KB | vault setup guide (Supabase project, SMTP, GDPR) |
 | `tools/build_assets.py` | 2.2 KB | regenerates js/assets.js |
