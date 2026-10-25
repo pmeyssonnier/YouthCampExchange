@@ -73,8 +73,8 @@ function makeVaultApi(){
 }`;
 
 const dist = fs.readFileSync(ROOT + '/districts_data.js', 'utf8')
-  .replace('const SUPABASE_URL = "";', 'const SUPABASE_URL = "https://test.supabase.co";')
-  .replace('const SUPABASE_ANON_KEY = "";', 'const SUPABASE_ANON_KEY = "test-key";');
+  .replace(/const SUPABASE_URL = "[^"]*";/, 'const SUPABASE_URL = "https://test.supabase.co";')
+  .replace(/const SUPABASE_ANON_KEY = "[^"]*";/, 'const SUPABASE_ANON_KEY = "test-key";');
 const srv = await serve(8870, { '/js/vault-api.js': FAKE_API, '/districts_data.js': dist });
 const BASE = 'http://localhost:8870/yce_vault.html';
 const br = await chromium.launch(launchOpts);

@@ -5,6 +5,10 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.9.0 — 2026-10-25
+
+- Vault activated: the site is linked to the MD 112 Supabase project (EU, Frankfurt). `yce_vault.html` now shows the sign-in form instead of "Vault not configured yet". The project's 22 isolation checks (`supabase/security_check.sql`) all pass. Before candidates use it: custom SMTP for sign-in e-mails, and a real end-to-end test with fictitious data.
+
 ## 1.8.1 — 2026-10-25
 
 - Vault security check (`supabase/security_check.sql`): runs on a real Supabase project. The "unconfirmed account" profiles no longer create a second account with an address that already exists, which Supabase refuses ("users_email_partial_key"). The test database now enforces the same one-address-one-account rule.

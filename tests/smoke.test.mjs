@@ -1,11 +1,13 @@
 // Chaque page se charge sans erreur de script ni violation de la politique de sécurité (CSP),
 // et sans aucune requête vers un autre site : bibliothèques, polices et carte sont servies par le site.
 import { chromium } from '@playwright/test';
-import { launchOpts, serve, checker } from './helpers.mjs';
+import fs from 'fs';
+import { ROOT, launchOpts, serve, checker } from './helpers.mjs';
 
 const t = checker('smoke');
 // page d'un « autre site » (autre origine : 127.0.0.1 au lieu de localhost) qui encadre une page sensible
 const HOST = '<!doctype html><title>host</title><script>document.write(\'<iframe src="http://localhost:8877/\' + location.search.slice(3) + \'" width="800" height="600"></iframe>\')</script>';
+const SUPA = /const SUPABASE_URL = "https:/.test(fs.readFileSync(ROOT + '/districts_data.js', 'utf8'));
 const srv = await serve(8877, { '/frame_host.html': HOST });
 const br = await chromium.launch(launchOpts);
 const PAGES = ['index.html', 'yce_form_filler.html', 'yce_form_filler.html?sign=club', 'yce_form_filler.html?district=B',
@@ -24,7 +26,7 @@ for (const p of PAGES) {
     t.ok((await pg.$$eval('#tbody tr', r => r.length)) > 50, 'index: camp table rendered');
     t.ok((await pg.$$eval('.cont-bubble', b => b.length)) > 3, 'index: world map bubbles rendered');
   }
-  if (p === 'yce_vault.html') t.ok(await pg.isVisible('#cfg-missing'), 'vault: "not configured" while SUPABASE_URL is empty');
+  if (p === 'yce_vault.html') t.ok(await pg.isVisible(SUPA ? '#login' : '#cfg-missing'), SUPA ? 'vault: sign-in form shown (Supabase configured)' : 'vault: "not configured" while SUPABASE_URL is empty');
   t.ok(!errs.length, p + ': no script error ' + errs.join(' | '));
   t.ok(!csp.length, p + ': no CSP violation ' + csp.slice(0, 2).join(' | '));
   t.ok(!third.length, p + ': no request to another site ' + [...new Set(third)].join(', '));
