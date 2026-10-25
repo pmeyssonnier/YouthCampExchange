@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lions YCE — Application Vault</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
-<link rel="stylesheet" href="css/tools.css?v=1.10.0">
+<link rel="stylesheet" href="css/tools.css?v=1.11.0">
 <style id="noframe">html{display:none!important}</style>
-<script src="js/noframe.js?v=1.10.0"></script>
+<script src="js/noframe.js?v=1.11.0"></script>
 <meta name="robots" content="noindex">
 <script>try{if(localStorage.getItem('yce-theme')==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}</script>
 <style>
@@ -83,7 +83,10 @@ ul.plain li.old{opacity:0.6;}
 #d-check li.later{color:var(--orange);font-weight:600;}
 #d-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:6px;}
 #d-actions .chk{flex-basis:100%;}
-#notify{margin-top:10px;font-size:13px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+#notify{margin-top:10px;font-size:13px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;border:1px solid var(--gold);background:rgba(232,160,32,0.10);border-radius:8px;padding:10px 12px;}
+.next{border-left:3px solid var(--gold);background:rgba(232,160,32,0.08);border-radius:6px;padding:10px 12px;font-size:13px;line-height:1.5;margin-bottom:12px;}
+.next.mine{border-left-color:var(--accent);background:rgba(6,214,160,0.10);}
+#welcome ul{margin:6px 0 0 18px;padding:0;font-size:13px;line-height:1.6;}
 #d-history{list-style:none;display:grid;gap:8px;max-height:320px;overflow-y:auto;}
 #d-history li{border-left:2px solid var(--border);padding-left:10px;font-size:12.5px;}
 #d-history li.cmt{border-left-color:var(--gold);}
@@ -141,6 +144,7 @@ ul.plain li.old{opacity:0.6;}
     </div>
 
     <div id="work">
+    <div class="section" id="welcome" hidden><div class="sec-body" id="welcome-body"></div></div>
     <div class="section" id="create" hidden>
       <div class="sec-head"><span class="sec-title">Start my application</span><span class="sec-note">one file per candidate and season</span></div>
       <div class="sec-body"><div class="grid">
@@ -172,6 +176,7 @@ ul.plain li.old{opacity:0.6;}
       <div class="sec-head d-head"><h2 id="d-title"></h2><span id="d-status" class="st"></span><span class="sec-note" id="d-meta"></span>
         <button class="btn2" style="margin-left:auto" onclick="closeDossier()">✕ Close</button></div>
       <div class="sec-body">
+        <div id="d-next" class="next"></div>
         <div class="d-cols">
           <div class="box">
             <h3>Details</h3>
@@ -266,18 +271,18 @@ ul.plain li.old{opacity:0.6;}
   </div>
   <datalist id="camp-list"></datalist>
 </main>
-<script src="js/version.js?v=1.10.0"></script>
-<script src="js/toolnav.js?v=1.10.0"></script>
-<script src="js/theme.js?v=1.10.0"></script>
-<script src="camps_data.js?v=1.10.0"></script>
-<script src="districts_data.js?v=1.10.0"></script>
+<script src="js/version.js?v=1.11.0"></script>
+<script src="js/toolnav.js?v=1.11.0"></script>
+<script src="js/theme.js?v=1.11.0"></script>
+<script src="camps_data.js?v=1.11.0"></script>
+<script src="districts_data.js?v=1.11.0"></script>
 <script>document.querySelectorAll('.md-lbl').forEach(function(e){if(typeof MD!=='undefined')e.textContent=MD;});</script>
-<script src="js/zip.js?v=1.10.0"></script>
-<script src="js/xlsx.js?v=1.10.0"></script>
-<script src="js/club-copy.js?v=1.10.0"></script>
+<script src="js/zip.js?v=1.11.0"></script>
+<script src="js/xlsx.js?v=1.11.0"></script>
+<script src="js/club-copy.js?v=1.11.0"></script>
 <!-- client Supabase servi par le site (vendor/, version figée) : un CDN compromis ne peut pas lire les dossiers -->
-<script src="vendor/supabase-js-2.45.4.js?v=1.10.0"></script>
-<script src="js/vault-api.js?v=1.10.0"></script>
-<script src="js/vault.js?v=1.10.0"></script>
+<script src="vendor/supabase-js-2.45.4.js?v=1.11.0"></script>
+<script src="js/vault-api.js?v=1.11.0"></script>
+<script src="js/vault.js?v=1.11.0"></script>
 </body>
 </html>
