@@ -45,6 +45,65 @@
   {
    "continent": "Asia",
    "country": "India",
+   "camp_name": "Youth Culture",
+   "age_requirements": "18-22",
+   "fee": "1000 Rupees",
+   "camp_starts": "14-03-2026",
+   "camp_ends": "15-03-2026",
+   "family_stay_starts": "14-03-2026",
+   "family_stay_ends": "15-03-2026",
+   "detail": {
+    "location": "Coimbatore,Tamilnadu,India",
+    "description": "Multiple Leos & Leo Lions 1. Leadership Seminar 2. Fun Activities 3. DJ 4. Their Idea& Service Sharing Tribes 1. Childhood Cancer Awareness 2. Youth Diabetic Check 3. Youth Vision Screening 4. Mental Health Well Being 5. Peace Poster Contest & Essay Competition 6. Quest & Carrier Guidance",
+    "languages": [
+     "English"
+    ],
+    "yce_url": "https://www.lions-yce-belgium.be/destinations/youth-culture"
+   }
+  },
+  {
+   "continent": "Asia",
+   "country": "India",
+   "camp_name": "DISCOVER INDIA CAMP - YCE 2026",
+   "age_requirements": "14-22",
+   "fee": "400 USD / or Equiv to EURO",
+   "camp_starts": "17-07-2026",
+   "camp_ends": "09-08-2026",
+   "family_stay_starts": "17-07-2026",
+   "family_stay_ends": "26-07-2026",
+   "detail": {
+    "location": "Navi Mumbai, Maharashtra, India",
+    "description": "Educational visits, cultural tours and sightseeing: Vadodara (Statue of Unity, Champaner-Pavagadh UNESCO site), Jaipur (Amber Fort, Hawa Mahal, City Palace), Agra & Fatehpur Sikri (Taj Mahal, Agra Fort), Delhi (India Gate, Lotus Temple, Akshardham). Host Family Stay 17-26 July. External Camp 26 Jul–5 Aug. Team Camp in Navi Mumbai 5–9 Aug. Grand Finale 9 Aug with cultural programs, dance and music.",
+    "host_family_activities": "Full cultural immersion, family life experience, local sightseeing, community interaction, and exposure to Lions Club activities reflecting Indian hospitality, traditions, and community life.",
+    "languages": [
+     "English"
+    ],
+    "yce_url": "https://www.lions-yce-belgium.be/destinations/discover-india-camp----yce-2026"
+   }
+  },
+  {
+   "continent": "Asia",
+   "country": "India",
+   "camp_name": "Celebrate Northern Sanskriti 2026",
+   "age_requirements": "17-23",
+   "fee": "27000 INR",
+   "camp_starts": "12-01-2026",
+   "camp_ends": "21-01-2026",
+   "family_stay_starts": "07-01-2026",
+   "family_stay_ends": "12-01-2026",
+   "detail": {
+    "location": "Chandigarh",
+    "description": "Heritage & Cultural Discovery, Soft Skill Workshop, Adventure & Fun Activities and Intercultural Talent Exchange",
+    "languages": [
+     "English",
+     "Other"
+    ],
+    "yce_url": "https://www.lions-yce-belgium.be/destinations/celebrate-northern-sanskriti-2026"
+   }
+  },
+  {
+   "continent": "Asia",
+   "country": "India",
    "camp_name": "Lions Escapade Northeast Youth Camp & Exchange",
    "age_requirements": "18-27",
    "fee": "450 USD",
@@ -152,6 +211,27 @@
      "Japanese"
     ],
     "yce_url": "https://www.lions-yce-belgium.be/destinations/summer-camp-in-tohoku"
+   }
+  },
+  {
+   "continent": "Asia",
+   "country": "Sri Lanka",
+   "camp_name": "Leadership enhancement, cultural understanding and feel geographical differances of Ceylon",
+   "age_requirements": "15-26",
+   "fee": "350 EURO",
+   "camp_starts": "05-04-2026",
+   "camp_ends": "11-04-2026",
+   "family_stay_starts": "01-04-2026",
+   "family_stay_ends": "05-04-2026",
+   "detail": {
+    "location": "Colombo, Sri Lanka",
+    "description": "Adventure activities, white water rafting, confident jumping, sliding in natural pools, swimming. Visit waterfalls, Nuwara Eliya, Hakgala Garden. Victoria park and musical entertainment. Ridigama Park. Surfing in Weligama Beach. Galle fort.",
+    "host_family_activities": "Attached to cultural events and Sri Lankan New year, Visit Colombo city, beautiful beaches and Sri Lankan historical and important places near to hosting family. 18th April hosting clubs charter celebration with youth exchange team.",
+    "languages": [
+     "English"
+    ],
+    "website": "http://www.yec-srilanka-lion-leo-mcc.mystrikingly.com",
+    "yce_url": "https://www.lions-yce-belgium.be/destinations/leadership-enhancement-%2Ccultural-understanding-and-feel-geographical-differances-of-ceylon"
    }
   },
   {
@@ -1972,6 +2052,404 @@
     "contact_name": "Petra Wildemannn",
     "contact_email": "YouthExchangeSwitzerland@lionsmd102.ch",
     "contact_phone": "+41 76 322 57 16"
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "France",
+   "camp_name": "Discover France – Hauts-de-France Region & Paris",
+   "age_requirements": "18-21",
+   "fee": "300 EURO",
+   "camp_starts": "04-07-2027",
+   "camp_ends": "15-07-2027",
+   "family_stay_starts": "26-06-2027",
+   "family_stay_ends": "04-07-2027",
+   "detail": {
+    "location": "Saint-Omer, Hauts-de-France and Paris",
+    "description": "Paris landmarks; Hauts-de-France heritage and historic towns; coastal and countryside activities; cultural and artistic workshops; sports and international friendship.",
+    "languages": [
+     "English"
+    ],
+    "host_family_activities": "Homestay with a host family from 26 June to 4 July 2027."
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "France",
+   "district": "103 France",
+   "camp_name": "YEC Pays de Rance in Dinan",
+   "age_requirements": "18-22",
+   "fee": "230 EURO",
+   "camp_starts": "14-07-2027",
+   "camp_ends": "25-07-2027",
+   "family_stay_starts": "03-07-2027",
+   "family_stay_ends": "14-07-2027",
+   "detail": {
+    "location": "Dinan, Brittany, France",
+    "description": "Excursions, Brittany culture, sailing, beaches and sightseeing. Arrival/departure: Rennes railway station.",
+    "languages": [
+     "English"
+    ],
+    "participants": "14",
+    "contact_name": "Alain Gernolle (applications); Jérôme Lequertier (camp director)",
+    "contact_email": "yec.alain@gernolle.fr",
+    "contact_email_camp": "yec.dinan.103ouest@gmail.com"
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "France",
+   "district": "103 CS",
+   "camp_name": "Camp Lions René Cornillon – Annecy",
+   "age_requirements": "18-22",
+   "fee": "300 EURO",
+   "camp_starts": "04-07-2027",
+   "camp_ends": "26-07-2027",
+   "family_stay_starts": "04-07-2027",
+   "family_stay_ends": "12-07-2027",
+   "detail": {
+    "location": "Annecy, Auvergne-Rhône-Alpes, France",
+    "description": "French-speaking camp: family stay, bus tour, Chamonix and Mont Blanc, community service, Lake Annecy, Évian, cultural visits, swimming, hiking and gastronomy. Dates transposed from 2026 to 2027 (inferred correction). Flyer states family stay 4–12 July, overlapping the overall 4–26 July period; exact camp phase requires organizer confirmation.",
+    "languages": [
+     "French"
+    ],
+    "participants": "16",
+    "application_deadline": "31-05-2027",
+    "contact_name": "Marc Chiron",
+    "contact_email": "chironmarc@yahoo.fr",
+    "website": "https://camplionsfrancophonealpes.com",
+    "date_verification_required": true
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "Netherlands",
+   "district": "110 VCH",
+   "camp_name": "Lions Youth Exchange Netherlands 2027 – Camp 1",
+   "age_requirements": "17-21",
+   "fee": "150 EURO",
+   "camp_starts": "19-07-2027",
+   "camp_ends": "29-07-2027",
+   "family_stay_starts": "10-07-2027",
+   "family_stay_ends": "19-07-2027",
+   "detail": {
+    "location": "The Netherlands",
+    "description": "Dutch hospitality, international friendships, cultural visits and activities. Earlier homestay start 03-07-2027 for participants from outside Europe. WhatsApp video call part of acceptance.",
+    "languages": [
+     "English"
+    ],
+    "application_deadline": "15-03-2027",
+    "contact_name": "Angelo Besikçi",
+    "contact_email": "YEC110VCH@lions.nl",
+    "website": "https://www.lions.nl/nl/goede-doelen/jeugd/jeugduitwisseling/friendships.html",
+    "application_deadline_verification_required": true,
+    "application_deadline_note": "Year corrected from 2026 to 2027 by inference; organizer confirmation required."
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "Netherlands",
+   "district": "110 VCH",
+   "camp_name": "Lions Youth Exchange Netherlands 2027 – Camp 2",
+   "age_requirements": "17-21",
+   "fee": "150 EURO",
+   "camp_starts": "18-07-2027",
+   "camp_ends": "28-07-2027",
+   "family_stay_starts": "10-07-2027",
+   "family_stay_ends": "18-07-2027",
+   "detail": {
+    "location": "The Netherlands",
+    "description": "Dutch hospitality, international friendships, cultural visits and activities. Earlier homestay start 03-07-2027 for participants from outside Europe. WhatsApp video call part of acceptance.",
+    "languages": [
+     "English"
+    ],
+    "application_deadline": "15-03-2027",
+    "contact_name": "Angelo Besikçi",
+    "contact_email": "YEC110VCH@lions.nl",
+    "website": "https://www.lions.nl/nl/goede-doelen/jeugd/jeugduitwisseling/friendships.html",
+    "application_deadline_verification_required": true,
+    "application_deadline_note": "Year corrected from 2026 to 2027 by inference; organizer confirmation required."
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "Germany",
+   "district": "111-N",
+   "camp_name": "Int. Lions Youth Camp Two Seas 2027: The Rhythm of Two Seas",
+   "age_requirements": "17-21",
+   "fee": "100 EURO",
+   "camp_starts": "19-07-2027",
+   "camp_ends": "31-07-2027",
+   "family_stay_starts": "10-07-2027",
+   "family_stay_ends": "18-07-2027",
+   "detail": {
+    "location": "Germany",
+    "description": "Music, dance, culture and nature.",
+    "languages": [
+     "English"
+    ],
+    "contact_name": "Vera Tacke",
+    "contact_email": "r.bellaada@lions.de",
+    "application_deadline": "31-03-2027",
+    "website": "https://lions-youthexchange.de"
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "Germany",
+   "district": "111-NB",
+   "camp_name": "Int. Lions Youth Camp North Sea 2027: Connected by Friendship",
+   "age_requirements": "18-21",
+   "fee": "100 EURO",
+   "camp_starts": "06-08-2027",
+   "camp_ends": "15-08-2027",
+   "family_stay_starts": "29-07-2027",
+   "family_stay_ends": "05-08-2027",
+   "detail": {
+    "location": "Germany",
+    "description": "Discover the North Sea, explore the future and meet the world.",
+    "languages": [
+     "English"
+    ],
+    "contact_name": "Dr. Jan Boris Ingerowski",
+    "contact_email": "r.bellaada@lions.de",
+    "application_deadline": "31-03-2027",
+    "website": "https://lions-youthexchange.de"
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "Germany",
+   "district": "111-NW",
+   "camp_name": "Int. Lions Youth Camp: Peak Vibes 2027",
+   "age_requirements": "18-23",
+   "fee": "200 EURO",
+   "camp_starts": "12-07-2027",
+   "camp_ends": "21-07-2027",
+   "family_stay_starts": "01-07-2027",
+   "family_stay_ends": "11-07-2027",
+   "detail": {
+    "location": "Germany",
+    "description": "Adventure, international friendship and cultural exchange.",
+    "languages": [
+     "English"
+    ],
+    "contact_name": "Eva Kessens",
+    "contact_email": "r.bellaada@lions.de",
+    "application_deadline": "31-03-2027",
+    "website": "https://lions-youthexchange.de"
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "Germany",
+   "district": "111-ON",
+   "camp_name": "Int. Lions Youth Camp – Adventure 2027",
+   "age_requirements": "18-22",
+   "fee": "300 EURO",
+   "camp_starts": "05-07-2027",
+   "camp_ends": "17-07-2027",
+   "family_stay_starts": "27-06-2027",
+   "family_stay_ends": "04-07-2027",
+   "detail": {
+    "location": "Germany",
+    "description": "Vibrant Berlin, Baltic Sea and beyond.",
+    "languages": [
+     "English"
+    ],
+    "contact_name": "Arnim Rohwer",
+    "contact_email": "r.bellaada@lions.de",
+    "application_deadline": "31-03-2027",
+    "website": "https://lions-youthexchange.de"
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "Germany",
+   "district": "111-NH",
+   "camp_name": "Int. Lions Camp Lake Steinhude 2027",
+   "age_requirements": "15-17",
+   "fee": "100 EURO",
+   "camp_starts": "11-07-2027",
+   "camp_ends": "24-07-2027",
+   "family_stay_starts": "03-07-2027",
+   "family_stay_ends": "10-07-2027",
+   "detail": {
+    "location": "Germany",
+    "description": "Lake adventures, city exploring and international friendship.",
+    "languages": [
+     "English"
+    ],
+    "contact_name": "Christian Rathmann",
+    "contact_email": "r.bellaada@lions.de",
+    "application_deadline": "31-03-2027",
+    "website": "https://lions-youthexchange.de"
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "Germany",
+   "district": "111-WR",
+   "camp_name": "45th Int. Lions Youth Camp Metropole Ruhr 2027",
+   "age_requirements": "16-20",
+   "fee": "100 EURO",
+   "camp_starts": "18-07-2027",
+   "camp_ends": "25-07-2027",
+   "family_stay_starts": "08-07-2027",
+   "family_stay_ends": "17-07-2027",
+   "detail": {
+    "location": "Germany",
+    "description": "Get active, explore the unexpected and connect.",
+    "languages": [
+     "English"
+    ],
+    "contact_name": "Uwe Roth",
+    "contact_email": "r.bellaada@lions.de",
+    "application_deadline": "31-03-2027",
+    "website": "https://lions-youthexchange.de"
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "Germany",
+   "district": "111-OM",
+   "camp_name": "Int. Lions Youth Camp Thuringia 2027: Growing Together",
+   "age_requirements": "16-21",
+   "fee": "0 EURO",
+   "camp_starts": "08-08-2027",
+   "camp_ends": "14-08-2027",
+   "family_stay_starts": "30-07-2027",
+   "family_stay_ends": "07-08-2027",
+   "detail": {
+    "location": "Germany",
+    "description": "Discover nature, experience culture and meet the world.",
+    "languages": [
+     "English",
+     "German"
+    ],
+    "contact_name": "Susanne Weber-Ludwig",
+    "contact_email": "r.bellaada@lions.de",
+    "application_deadline": "31-03-2027",
+    "website": "https://lions-youthexchange.de"
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "Germany",
+   "district": "111-OS",
+   "camp_name": "Int. Lions Youth Camp Saxony 2027: Experience the Future Together",
+   "age_requirements": "18-23",
+   "fee": "175 EURO",
+   "camp_starts": "15-08-2027",
+   "camp_ends": "28-08-2027",
+   "family_stay_starts": "07-08-2027",
+   "family_stay_ends": "14-08-2027",
+   "detail": {
+    "location": "Germany",
+    "description": "Discover, shape and connect.",
+    "languages": [
+     "English",
+     "German"
+    ],
+    "contact_name": "Jens Wahren",
+    "contact_email": "r.bellaada@lions.de",
+    "application_deadline": "31-03-2027",
+    "website": "https://lions-youthexchange.de"
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "Germany",
+   "district": "111-MN",
+   "camp_name": "Int. Lions Camp Rhine Main 2027",
+   "age_requirements": "16-19",
+   "fee": "50 EURO",
+   "camp_starts": "27-06-2027",
+   "camp_ends": "10-07-2027",
+   "family_stay_starts": "19-06-2027",
+   "family_stay_ends": "26-06-2027",
+   "detail": {
+    "location": "Germany",
+    "description": "Discover Frankfurt, get active and make friends.",
+    "languages": [
+     "English",
+     "German"
+    ],
+    "contact_name": "Nezaket Polat",
+    "contact_email": "r.bellaada@lions.de",
+    "application_deadline": "31-03-2027",
+    "website": "https://lions-youthexchange.de"
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "Germany",
+   "district": "111-MS",
+   "camp_name": "Int. Lions Youth Camp Lions Connect 2027",
+   "age_requirements": "16-22",
+   "fee": "50 EURO",
+   "camp_starts": "20-06-2027",
+   "camp_ends": "26-06-2027",
+   "family_stay_starts": "12-06-2027",
+   "family_stay_ends": "19-06-2027",
+   "detail": {
+    "location": "Germany",
+    "description": "Discover Bergstrasse and Odenwald.",
+    "languages": [
+     "English",
+     "German"
+    ],
+    "contact_name": "Werner Abriß",
+    "contact_email": "r.bellaada@lions.de",
+    "application_deadline": "31-03-2027",
+    "website": "https://lions-youthexchange.de"
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "Germany",
+   "district": "111-BS",
+   "camp_name": "Int. Lions Youth Camp of South Bavaria 2027",
+   "age_requirements": "17-21",
+   "fee": "200 EURO",
+   "camp_starts": "02-08-2027",
+   "camp_ends": "14-08-2027",
+   "family_stay_starts": "24-07-2027",
+   "family_stay_ends": "01-08-2027",
+   "detail": {
+    "location": "Germany",
+    "description": "Experience Bavaria, discover Europe, shape the future.",
+    "languages": [
+     "English",
+     "German"
+    ],
+    "contact_name": "Hilmar Heithorst",
+    "contact_email": "r.bellaada@lions.de",
+    "application_deadline": "31-03-2027",
+    "website": "https://lions-youthexchange.de"
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "Germany",
+   "district": "111-SW",
+   "camp_name": "International Lions Youth Forum 2027 – Democracy 2040",
+   "age_requirements": "18-25",
+   "fee": "0 EURO",
+   "camp_starts": "31-07-2027",
+   "camp_ends": "14-08-2027",
+   "family_stay_starts": null,
+   "family_stay_ends": null,
+   "detail": {
+    "location": "Germany",
+    "description": "Democracy 2040 – Invent the future! Workshops on democracy, historic sites, outdoor activities and international friendship. Swimming ability required. No homestay.",
+    "languages": [
+     "English"
+    ],
+    "contact_name": "Stefan Lauble (forum manager)",
+    "contact_email": "r.bellaada@lions.de",
+    "application_deadline": "31-03-2027",
+    "website": "https://lions-youthexchange.de"
    }
   }
  ]
