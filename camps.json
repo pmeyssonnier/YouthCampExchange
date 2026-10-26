@@ -45,65 +45,6 @@
   {
    "continent": "Asia",
    "country": "India",
-   "camp_name": "Youth Culture",
-   "age_requirements": "18-22",
-   "fee": "1000 Rupees",
-   "camp_starts": "14-03-2026",
-   "camp_ends": "15-03-2026",
-   "family_stay_starts": "14-03-2026",
-   "family_stay_ends": "15-03-2026",
-   "detail": {
-    "location": "Coimbatore,Tamilnadu,India",
-    "description": "Multiple Leos & Leo Lions 1. Leadership Seminar 2. Fun Activities 3. DJ 4. Their Idea& Service Sharing Tribes 1. Childhood Cancer Awareness 2. Youth Diabetic Check 3. Youth Vision Screening 4. Mental Health Well Being 5. Peace Poster Contest & Essay Competition 6. Quest & Carrier Guidance",
-    "languages": [
-     "English"
-    ],
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/youth-culture"
-   }
-  },
-  {
-   "continent": "Asia",
-   "country": "India",
-   "camp_name": "DISCOVER INDIA CAMP - YCE 2026",
-   "age_requirements": "14-22",
-   "fee": "400 USD / or Equiv to EURO",
-   "camp_starts": "17-07-2026",
-   "camp_ends": "09-08-2026",
-   "family_stay_starts": "17-07-2026",
-   "family_stay_ends": "26-07-2026",
-   "detail": {
-    "location": "Navi Mumbai, Maharashtra, India",
-    "description": "Educational visits, cultural tours and sightseeing: Vadodara (Statue of Unity, Champaner-Pavagadh UNESCO site), Jaipur (Amber Fort, Hawa Mahal, City Palace), Agra & Fatehpur Sikri (Taj Mahal, Agra Fort), Delhi (India Gate, Lotus Temple, Akshardham). Host Family Stay 17-26 July. External Camp 26 Jul–5 Aug. Team Camp in Navi Mumbai 5–9 Aug. Grand Finale 9 Aug with cultural programs, dance and music.",
-    "host_family_activities": "Full cultural immersion, family life experience, local sightseeing, community interaction, and exposure to Lions Club activities reflecting Indian hospitality, traditions, and community life.",
-    "languages": [
-     "English"
-    ],
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/discover-india-camp----yce-2026"
-   }
-  },
-  {
-   "continent": "Asia",
-   "country": "India",
-   "camp_name": "Celebrate Northern Sanskriti 2026",
-   "age_requirements": "17-23",
-   "fee": "27000 INR",
-   "camp_starts": "12-01-2026",
-   "camp_ends": "21-01-2026",
-   "family_stay_starts": "07-01-2026",
-   "family_stay_ends": "12-01-2026",
-   "detail": {
-    "location": "Chandigarh",
-    "description": "Heritage & Cultural Discovery, Soft Skill Workshop, Adventure & Fun Activities and Intercultural Talent Exchange",
-    "languages": [
-     "English",
-     "Other"
-    ],
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/celebrate-northern-sanskriti-2026"
-   }
-  },
-  {
-   "continent": "Asia",
-   "country": "India",
    "camp_name": "Lions Escapade Northeast Youth Camp & Exchange",
    "age_requirements": "18-27",
    "fee": "450 USD",
@@ -211,27 +152,6 @@
      "Japanese"
     ],
     "yce_url": "https://www.lions-yce-belgium.be/destinations/summer-camp-in-tohoku"
-   }
-  },
-  {
-   "continent": "Asia",
-   "country": "Sri Lanka",
-   "camp_name": "Leadership enhancement, cultural understanding and feel geographical differances of Ceylon",
-   "age_requirements": "15-26",
-   "fee": "350 EURO",
-   "camp_starts": "05-04-2026",
-   "camp_ends": "11-04-2026",
-   "family_stay_starts": "01-04-2026",
-   "family_stay_ends": "05-04-2026",
-   "detail": {
-    "location": "Colombo, Sri Lanka",
-    "description": "Adventure activities, white water rafting, confident jumping, sliding in natural pools, swimming. Visit waterfalls, Nuwara Eliya, Hakgala Garden. Victoria park and musical entertainment. Ridigama Park. Surfing in Weligama Beach. Galle fort.",
-    "host_family_activities": "Attached to cultural events and Sri Lankan New year, Visit Colombo city, beautiful beaches and Sri Lankan historical and important places near to hosting family. 18th April hosting clubs charter celebration with youth exchange team.",
-    "languages": [
-     "English"
-    ],
-    "website": "http://www.yec-srilanka-lion-leo-mcc.mystrikingly.com",
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/leadership-enhancement-%2Ccultural-understanding-and-feel-geographical-differances-of-ceylon"
    }
   },
   {
