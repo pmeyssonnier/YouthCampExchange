@@ -120,6 +120,32 @@ ok(r.mdy[0] === null && r.mdy[1] === '15-07-2027' && r.mdy[2] === null, 'directo
   ok(!/Fjord|Desert/.test(rv.body) && rv.n === 1 && /Brand New Andes Camp/.test(rv.body), 'directory import: archived camps (exact and close names) left out, new camp offered: ' + rv.body);
   ok(/2 archived \(left out/.test(rv.note), 'directory import: note counts the archived camps left out: ' + rv.note);
 }
+// import du répertoire : un nouveau camp propose d'archiver l'ancien camp équivalent (case non cochée d'avance)
+{
+  const rp = await pg.evaluate(() => {
+    const keepC = CAMPS_W, keepA = ARCH;
+    CAMPS_W = [
+      { country: 'Peru', camp_name: 'Andes Discovery', camp_starts: '05-07-2026', detail: { location: 'Cusco', contact_email: 'yce@lions-peru.example' } },
+      { country: 'Peru', camp_name: 'Pacific Coast Camp', camp_starts: '10-07-2026', detail: { location: 'Lima' } },
+      { country: 'Iceland', camp_name: 'Northern Lights', camp_starts: '01-07-2026', detail: {} },
+      { country: 'Chile', camp_name: 'Atacama Stars', camp_starts: '01-07-2026', detail: {} },
+      { country: 'Chile', camp_name: 'Patagonia Trek', camp_starts: '15-07-2026', detail: {} }];
+    ARCH = [];
+    const t = (name, country, extra) => Object.assign({ name: name, country: country, cs: '03-07-2027', ce: '15-07-2027', langs: [] }, extra || {});
+    buildReview('directory.xlsx', [t('Inca Trail Youth Camp', 'Peru', { cemail: 'YCE@lions-peru.example' }), t('Volcano Camp', 'Iceland'), t('Easter Island Camp', 'Chile')]);
+    const rows = [...document.querySelectorAll('#rev-body .rev-row')].map(r => ({ text: r.textContent, rep: !!r.querySelector('.rev-rep'), checked: !!(r.querySelector('.rev-rep input') || {}).checked }));
+    document.getElementById('rva-0').checked = true; // l'admin archive l'ancien camp péruvien, pas l'islandais
+    applyReview();
+    const out = { rows: rows, active: CAMPS_W.map(c => c.camp_name), arch: ARCH.map(c => c.camp_name + '|' + (c.archived_on ? 'dated' : '')) };
+    CAMPS_W = keepC; ARCH = keepA; render(); return out;
+  });
+  ok(rp.rows[0].rep && /may replace Andes Discovery \(2025-2026, same contact\)/.test(rp.rows[0].text), 'new Peru camp may replace the old one with the same contact: ' + rp.rows[0].text);
+  ok(rp.rows[1].rep && /Northern Lights.*only earlier camp in Iceland/.test(rp.rows[1].text), 'only earlier camp of the country proposed');
+  ok(!rp.rows[2].rep, 'two unrelated earlier camps in Chile: nothing proposed');
+  ok(rp.rows.every(r => !r.checked), 'archiving is never pre-ticked');
+  ok(rp.arch.join() === 'Andes Discovery|dated' && !rp.active.includes('Andes Discovery') && rp.active.includes('Northern Lights') && rp.active.includes('Inca Trail Youth Camp'),
+    'only the ticked old camp is archived, new camps added: ' + JSON.stringify(rp));
+}
 ok(!errs.length, 'no page errors: ' + errs.join(' | '));
 console.log(`\n${pass} passed, ${fail} failed`);
 await br.close(); srv.close(); process.exit(fail ? 1 : 0);

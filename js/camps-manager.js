@@ -349,6 +349,29 @@ function matchCamp(list,t){
   }
   return best>=0&&bs>=0.72?{idx:best,how:"fuzzy "+bs.toFixed(2)}:null;
 }
+// nouveau camp du répertoire : ancien camp actif qu'il pourrait remplacer (même pays, saison précédente),
+// repéré par le même contact, un lieu ou un nom proche, ou parce que c'est le seul du pays.
+// Simple proposition : l'archivage reste une case à cocher.
+function replacesFor(t){
+  const ns=seasonOf({camp_starts:t.cs});if(!ns)return null;
+  const olds=[];
+  CAMPS_W.forEach(function(c,i){const s=seasonOf(c);if(simple(c.country)===simple(t.country)&&s&&s<ns)olds.push(i);});
+  let best=-1,bs=0,why="";
+  olds.forEach(function(i){
+    const c=CAMPS_W[i],d=c.detail||{};
+    let sc,w;
+    if(t.cemail&&d.contact_email&&simple(t.cemail)===simple(d.contact_email)){sc=2;w="same contact";}
+    else{
+      const l=t.location&&d.location?sim(stripNoise(d.location),stripNoise(t.location)):0;
+      const n=sim(stripNoise(c.camp_name),stripNoise(t.name));
+      sc=Math.max(l,n);w=l>=n?"similar location":"similar name";
+    }
+    if(sc>bs){bs=sc;best=i;why=w;}
+  });
+  if(best>=0&&bs>=0.5)return {camp:CAMPS_W[best],why:why};
+  if(olds.length===1)return {camp:CAMPS_W[olds[0]],why:"only earlier camp in "+t.country};
+  return null;
+}
 function buildReview(fname,items){
   const rev=[];let unchanged=0,archived=0;
   for(const t of items){
@@ -360,7 +383,7 @@ function buildReview(fname,items){
       const chg=changesFor(CAMPS_W[hit],t);
       if(!chg.length){unchanged++;continue;}
       rev.push({kind:"update",idx:hit,how:how,t:t,chg:chg,on:how==="exact"});
-    }else rev.push({kind:"new",t:t,on:true});
+    }else rev.push({kind:"new",t:t,on:true,rep:replacesFor(t)});
   }
   REVIEW=rev;
   document.getElementById("rev-note").textContent=fname+" — "
@@ -372,6 +395,8 @@ function buildReview(fname,items){
       :(r.how==="exact"?'<span class="rev-tag t-upd">UPDATE</span>':'<span class="rev-tag t-fuz">UPDATE? '+esc(r.how)+"</span>");
     const what=r.kind==="new"
       ?"<b>"+esc(r.t.country)+" — "+esc(r.t.name)+"</b><div class='chg'>camp "+esc(r.t.cs)+" → "+esc(r.t.ce||"?")+" · "+esc(r.t.ages||"")+" · "+esc(r.t.fee||"")+"</div>"
+        +(r.rep?'<label class="rev-rep"><input type="checkbox" id="rva-'+i+'"> may replace <b>'+esc(r.rep.camp.camp_name)+"</b> ("
+          +esc(seasonOf(r.rep.camp))+", "+esc(r.rep.why)+") — archive the old camp</label>":"")
       :"<b>"+esc(CAMPS_W[r.idx].camp_name)+"</b> ⇐ "+esc(r.t.name)
         +"<div class='chg'>"+r.chg.map(function(x){return esc(x.label)+": "+esc(String(x.old).slice(0,30)||"∅")+" → "+esc(String(Array.isArray(x.val)?x.val.join(", "):x.val).slice(0,40));}).join(" · ")+"</div>";
     return '<div class="rev-row"><input type="checkbox" id="rv-'+i+'"'+(r.on?" checked":"")+"> "+tag+'<div class="rev-what">'+what+"</div></div>";
@@ -382,7 +407,7 @@ function buildReview(fname,items){
 }
 function applyReview(){
   if(!REVIEW)return;
-  let up=0,nw=0;
+  let up=0,nw=0;const old=[];
   REVIEW.forEach(function(r,i){
     if(!document.getElementById("rv-"+i).checked)return;
     if(r.kind==="update"){
@@ -402,6 +427,8 @@ function applyReview(){
         .forEach(function(p){if(p[1])det[p[0]]=p[1];});
       const known={Denmark:"Europe",Hungary:"Europe",Malaysia:"Asia","Sri Lanka":"Asia",Mexico:"Middle America"};
       const ex=CAMPS_W.find(function(c){return c.country===t.country;});
+      const ra=document.getElementById("rva-"+i);
+      if(r.rep&&ra&&ra.checked&&old.indexOf(r.rep.camp)<0)old.push(r.rep.camp);
       CAMPS_W.push({continent:(ex&&ex.continent)||known[t.country]||"Europe",country:t.country,
         camp_name:t.name,age_requirements:t.ages||"",fee:t.fee,
         camp_starts:t.cs,camp_ends:t.ce,family_stay_starts:t.fs,family_stay_ends:t.fe,
@@ -409,8 +436,10 @@ function applyReview(){
       nw++;
     }
   });
+  // anciens camps remplacés : archivés comme avec le bouton 🗄 Archive (ils quittent le site public)
+  old.forEach(function(c){const k=CAMPS_W.indexOf(c);if(k<0)return;CAMPS_W.splice(k,1);c.archived_on=today();ARCH.push(c);});
   cancelReview();
-  log("Directory applied: "+up+" camp(s) updated, "+nw+" created. Review, then “Save to the site”.","ok");
+  log("Directory applied: "+up+" camp(s) updated, "+nw+" created"+(old.length?", "+old.length+" replaced camp(s) archived":"")+". Review, then “Save to the site”.","ok");
   markDirty();render();
 }
 function cancelReview(){REVIEW=null;document.getElementById("review").style.display="none";}
