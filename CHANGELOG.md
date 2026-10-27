@@ -5,6 +5,11 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.13.1 — 2026-10-26
+
+- Public site: camps archived or edited from the administration page show up at once. Before, phones could keep showing the old camp list from their cache (for example 116 camps after the list was cut to 101), because `camps_data.js` kept the same address when only the data changed. Every page now loads its scripts and data as `file.js?v=VERSION.fingerprint`, where the fingerprint is the first 8 hex digits of the file's SHA-256. The rebuild robot re-stamps the pages after every push, administration saves included, and the `version` test checks the fingerprints.
+- Camps tab, directory import: archived camps are no longer offered as "NEW" (pre-ticked) or listed in the review. They are recognised by the same name, or a close name in the same country, and only counted in the summary ("N archived (left out)"). To bring one back, use "Restore" in the Archived tab.
+
 ## 1.13.0 — 2026-10-25
 
 - Vault e-mails go through the MD's Gmail account instead of Brevo. The setup guide covers the Google app password, the Supabase SMTP settings for sign-in links (`smtp.gmail.com`, port 465) and the `vault-notify` secrets (`SMTP_USER`, `SMTP_PASS`). The function speaks SMTP itself over an encrypted connection on port 465, because Supabase blocks port 587 in its functions. It still needs no library.

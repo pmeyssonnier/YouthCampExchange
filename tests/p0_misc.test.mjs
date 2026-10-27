@@ -108,6 +108,18 @@ ok(/web address/.test(r.website), 'camp manager refuses javascript: website');
 ok(/e-mail is not valid/.test(r.email), 'camp manager refuses malformed e-mail');
 ok(/Camp updated/.test(r.valid), 'valid edit still accepted: ' + r.valid);
 ok(r.mdy[0] === null && r.mdy[1] === '15-07-2027' && r.mdy[2] === null, 'directory import drops impossible dates: ' + JSON.stringify(r.mdy));
+// import du répertoire : les camps archivés ne sont ni proposés ni affichés
+{
+  const rv = await pg.evaluate(() => {
+    const keep = ARCH; ARCH = [{ camp_name: 'Fjord Adventure Camp', country: 'Norway' }, { camp_name: 'Desert Stars', country: 'Jordan' }];
+    const t = (name, country) => ({ name: name, country: country, cs: '01-07-2027', ce: '10-07-2027', langs: [] });
+    buildReview('directory.xlsx', [t('Fjord Adventure Camp', 'Norway'), t('Lions Desert Stars Camp 2027', 'Jordan'), t('Brand New Andes Camp', 'Peru')]);
+    const out = { body: document.getElementById('rev-body').textContent, note: document.getElementById('rev-note').textContent, n: document.querySelectorAll('#rev-body input').length };
+    ARCH = keep; cancelReview(); return out;
+  });
+  ok(!/Fjord|Desert/.test(rv.body) && rv.n === 1 && /Brand New Andes Camp/.test(rv.body), 'directory import: archived camps (exact and close names) left out, new camp offered: ' + rv.body);
+  ok(/2 archived \(left out/.test(rv.note), 'directory import: note counts the archived camps left out: ' + rv.note);
+}
 ok(!errs.length, 'no page errors: ' + errs.join(' | '));
 console.log(`\n${pass} passed, ${fail} failed`);
 await br.close(); srv.close(); process.exit(fail ? 1 : 0);
