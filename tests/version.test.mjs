@@ -1,6 +1,7 @@
 // Le numéro de version est cohérent (js/version.js = première entrée de CHANGELOG.md) et visible sur chaque page.
 import { chromium } from '@playwright/test';
 import fs from 'fs';
+import crypto from 'crypto';
 import { CDN, launchOpts, serve, checker } from './helpers.mjs';
 
 const t = checker('version');
@@ -12,10 +13,13 @@ t.ok(top === v, 'CHANGELOG.md top entry (' + top + ') matches js/version.js (' +
 
 // Scripts et feuilles de style locaux portent ?v=VERSION (tools/stamp_version.py) : une nouvelle page
 // ne se mélange jamais avec d'anciens scripts restés dans le cache du navigateur.
+// L'empreinte du contenu suit la version : un fichier modifié (même des données enregistrées par
+// l'administration, sans nouvelle version) change d'adresse, donc n'est jamais servi depuis le cache.
+const stampOf = p => { try { return v + '.' + crypto.createHash('sha256').update(fs.readFileSync('../' + p)).digest('hex').slice(0, 8); } catch { return v; } };
 for (const f of fs.readdirSync('..').filter(f => f.endsWith('.html'))) {
   const refs = [...fs.readFileSync('../' + f, 'utf8').matchAll(/(?:src|href)="((?![a-z]+:|\/)[^"#]+?\.(?:js|css)(?:\?[^"]*)?)"/g)].map(m => m[1]);
-  const bad = refs.filter(r => !r.endsWith('?v=' + v));
-  t.ok(!bad.length, f + ': ' + refs.length + ' local scripts/styles stamped ?v=' + v + (bad.length ? ' — not stamped: ' + bad.join(', ') + ' (run python3 tools/stamp_version.py)' : ''));
+  const bad = refs.filter(r => { const [p, q] = r.split('?'); return q !== 'v=' + stampOf(p); });
+  t.ok(!bad.length, f + ': ' + refs.length + ' local scripts/styles stamped with v' + v + ' and their content fingerprint' + (bad.length ? ' — out of date: ' + bad.join(', ') + ' (run python3 tools/stamp_version.py)' : ''));
 }
 
 const srv = await serve(8879);

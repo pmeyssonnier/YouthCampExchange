@@ -337,21 +337,25 @@ function changesFor(c,t){ // champs à mettre à jour (une valeur vide du réper
   chk("det","contact_phone",t.cphone,"contact phone");
   return out;
 }
+// camp du répertoire retrouvé dans une liste : même nom, sinon nom proche dans le même pays
+function matchCamp(list,t){
+  const key=simple(t.name);
+  for(let i=0;i<list.length;i++)if(simple(list[i].camp_name)===key)return {idx:i,how:"exact"};
+  let best=-1,bs=0;
+  for(let i=0;i<list.length;i++){
+    if(simple(list[i].country)!==simple(t.country))continue;
+    const s=sim(stripNoise(list[i].camp_name),stripNoise(t.name));
+    if(s>bs){bs=s;best=i;}
+  }
+  return best>=0&&bs>=0.72?{idx:best,how:"fuzzy "+bs.toFixed(2)}:null;
+}
 function buildReview(fname,items){
-  const rev=[];let unchanged=0;
+  const rev=[];let unchanged=0,archived=0;
   for(const t of items){
-    let hit=-1,how="";
-    const key=simple(t.name);
-    for(let i=0;i<CAMPS_W.length;i++)if(simple(CAMPS_W[i].camp_name)===key){hit=i;how="exact";break;}
-    if(hit<0){
-      let best=-1,bs=0;
-      for(let i=0;i<CAMPS_W.length;i++){
-        if(simple(CAMPS_W[i].country)!==simple(t.country))continue;
-        const s=sim(stripNoise(CAMPS_W[i].camp_name),stripNoise(t.name));
-        if(s>bs){bs=s;best=i;}
-      }
-      if(best>=0&&bs>=0.72){hit=best;how="fuzzy "+bs.toFixed(2);}
-    }
+    const m=matchCamp(CAMPS_W,t);
+    const hit=m?m.idx:-1,how=m?m.how:"";
+    // camp archivé : ni proposé, ni affiché (« Restore » dans l'onglet Archived pour le reprendre)
+    if(hit<0&&matchCamp(ARCH,t)){archived++;continue;}
     if(hit>=0){
       const chg=changesFor(CAMPS_W[hit],t);
       if(!chg.length){unchanged++;continue;}
@@ -361,7 +365,8 @@ function buildReview(fname,items){
   REVIEW=rev;
   document.getElementById("rev-note").textContent=fname+" — "
     +rev.filter(function(r){return r.kind==="update";}).length+" update(s), "
-    +rev.filter(function(r){return r.kind==="new";}).length+" new camp(s), "+unchanged+" unchanged";
+    +rev.filter(function(r){return r.kind==="new";}).length+" new camp(s), "+unchanged+" unchanged"
+    +(archived?", "+archived+" archived (left out — restore them from the Archived tab if needed)":"");
   document.getElementById("rev-body").innerHTML=rev.length?rev.map(function(r,i){
     const tag=r.kind==="new"?'<span class="rev-tag t-new">NEW</span>'
       :(r.how==="exact"?'<span class="rev-tag t-upd">UPDATE</span>':'<span class="rev-tag t-fuz">UPDATE? '+esc(r.how)+"</span>");

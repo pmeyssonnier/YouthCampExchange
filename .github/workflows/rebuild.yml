@@ -1,6 +1,6 @@
 name: Rebuild generated files
-# Régénère js/assets.js (modèles embarqués + version de build), camps.json et
-# docs/codemap-data.js après chaque push sur main — y compris les commits faits
+# Régénère js/assets.js (modèles embarqués + version de build), camps.json,
+# docs/codemap-data.js et les empreintes ?v= des pages après chaque push sur main — y compris les commits faits
 # par la page d'administration (yce_admin.html) via l'API GitHub.
 on:
   push:
@@ -28,11 +28,14 @@ jobs:
         run: |
           python tools/build_assets.py
           python tools/build_codemap.py
+          # empreinte de contenu dans ?v= : les données enregistrées par l'administration
+          # (camps_data.js, districts_data.js) ne restent pas en cache dans les navigateurs
+          python tools/stamp_version.py
       - name: Commit if anything changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add js/assets.js camps.json docs/codemap-data.js docs/CODE_MAP.md
+          git add js/assets.js camps.json docs/codemap-data.js docs/CODE_MAP.md *.html
           git diff --cached --quiet && echo "Nothing to rebuild" && exit 0
           git commit -m "Rebuild generated files [skip ci]"
           git push
