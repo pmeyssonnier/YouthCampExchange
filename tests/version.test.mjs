@@ -18,7 +18,11 @@ t.ok(top === v, 'CHANGELOG.md top entry (' + top + ') matches js/version.js (' +
 const stampOf = p => { try { return v + '.' + crypto.createHash('sha256').update(fs.readFileSync('../' + p)).digest('hex').slice(0, 8); } catch { return v; } };
 for (const f of fs.readdirSync('..').filter(f => f.endsWith('.html'))) {
   const refs = [...fs.readFileSync('../' + f, 'utf8').matchAll(/(?:src|href)="((?![a-z]+:|\/)[^"#]+?\.(?:js|css)(?:\?[^"]*)?)"/g)].map(m => m[1]);
-  const bad = refs.filter(r => { const [p, q] = r.split('?'); return q !== 'v=' + stampOf(p); });
+  // js/assets.js est régénéré par la CI et par le robot (date et commit du build) : son empreinte change
+  // à chaque génération, le robot la tamponne après coup ; on vérifie seulement la forme
+  const GENERATED = ['js/assets.js'];
+  const bad = refs.filter(r => { const [p, q] = r.split('?');
+    return GENERATED.includes(p) ? !new RegExp('^v=' + v.replace(/\./g, '\\.') + '\\.[0-9a-f]{8}$').test(q || '') : q !== 'v=' + stampOf(p); });
   t.ok(!bad.length, f + ': ' + refs.length + ' local scripts/styles stamped with v' + v + ' and their content fingerprint' + (bad.length ? ' — out of date: ' + bad.join(', ') + ' (run python3 tools/stamp_version.py)' : ''));
 }
 
