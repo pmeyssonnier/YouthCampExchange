@@ -5,6 +5,13 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.15.0 — 2026-10-31
+
+- Camps tab: the camp sheet has a **✕ Delete** button to remove a camp for good (a duplicate or a mistake, after confirmation). Archiving stays for camps of past seasons.
+- Camps tab: the list is now sorted by **country name, A to Z**, no longer grouped by continent first.
+- Camps tab: new **continent filter** next to the search box.
+- Camps tab, Check duplicates: each camp of a pair has an **✏ Edit** button that opens its sheet (to compare, correct or delete it); the list refreshes when the sheet is closed. The Archive button there is gone.
+
 ## 1.14.1 — 2026-10-31
 
 - Camps tab, directory import: a camp that has been **renamed** is now recognised instead of being added a second time. Besides the name, the import compares the country, the camp start date, the place and the contact e-mail ("same dates and place", "same dates and contact"). Example: "Brussels Lions Youth Camp" and "Belgium Lions YCE Camp 2027" (same dates, same place in Limburg, same contact). Such matches are shown as `UPDATE?` and are never pre-ticked.
