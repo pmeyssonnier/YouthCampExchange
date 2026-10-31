@@ -337,18 +337,56 @@ function changesFor(c,t){ // champs à mettre à jour (une valeur vide du réper
   chk("det","contact_phone",t.cphone,"contact phone");
   return out;
 }
-// camp du répertoire retrouvé dans une liste : même nom, sinon nom proche dans le même pays
-function matchCamp(list,t){
-  const key=simple(t.name);
-  for(let i=0;i<list.length;i++)if(simple(list[i].camp_name)===key)return {idx:i,how:"exact"};
-  let best=-1,bs=0;
-  for(let i=0;i<list.length;i++){
-    if(simple(list[i].country)!==simple(t.country))continue;
-    const s=sim(stripNoise(list[i].camp_name),stripNoise(t.name));
-    if(s>bs){bs=s;best=i;}
-  }
-  return best>=0&&bs>=0.72?{idx:best,how:"fuzzy "+bs.toFixed(2)}:null;
+// Deux fiches décrivent-elles le même camp ? Les noms changent d'une année à l'autre (« Brussels Lions Youth Camp »
+// devient « Belgium Lions YCE Camp 2027 »), donc on recoupe aussi les dates, le lieu et le contact.
+// Renvoie une raison (texte) ou null. a, b : {name,country,start,loc,email}
+function factsOf(c){const d=c.detail||{};return {name:c.camp_name,country:c.country,start:c.camp_starts,loc:d.location,email:d.contact_email};}
+function factsOfT(t){return {name:t.name,country:t.country,start:t.cs,loc:t.location,email:t.cemail};}
+function alike(a,b){
+  if(simple(a.country)!==simple(b.country))return null;
+  if(simple(a.name)===simple(b.name))return "exact";
+  const nm=sim(stripNoise(a.name),stripNoise(b.name));
+  const lc=a.loc&&b.loc?sim(stripNoise(a.loc),stripNoise(b.loc)):0;
+  const sameStart=!!a.start&&a.start===b.start;
+  const sameMail=!!a.email&&simple(a.email)===simple(b.email);
+  if(sameStart&&lc>=0.7)return "same dates and place";
+  if(sameStart&&sameMail&&(lc>=0.4||nm>=0.4||!a.loc||!b.loc))return "same dates and contact";
+  if(nm>=0.72)return "close name "+nm.toFixed(2);
+  return null;
 }
+// camp du répertoire retrouvé dans une liste : même nom, sinon camp reconnu par ses dates, son lieu ou son contact
+function matchCamp(list,t){
+  const key=simple(t.name),ft=factsOfT(t);
+  for(let i=0;i<list.length;i++)if(simple(list[i].camp_name)===key)return {idx:i,how:"exact"};
+  let best=-1,bw="",bs=-1;
+  const rank={"same dates and place":3,"same dates and contact":2};
+  for(let i=0;i<list.length;i++){
+    const w=alike(factsOf(list[i]),ft);if(!w)continue;
+    const sc=rank[w]||1;
+    if(sc>bs){bs=sc;best=i;bw=w;}
+  }
+  return best>=0?{idx:best,how:bw}:null;
+}
+// doublons possibles dans la liste des camps actifs (après un import, ou une saisie à la main)
+function findDuplicates(){
+  const out=[];
+  for(let i=0;i<CAMPS_W.length;i++)for(let j=i+1;j<CAMPS_W.length;j++){
+    const w=alike(factsOf(CAMPS_W[i]),factsOf(CAMPS_W[j]));
+    if(w)out.push({a:CAMPS_W[i],b:CAMPS_W[j],why:w});
+  }
+  return out;
+}
+function showDuplicates(){
+  const d=findDuplicates(),box=document.getElementById("dups");
+  document.getElementById("dups-note").textContent=d.length?d.length+" pair(s) to check":"";
+  document.getElementById("dups-body").innerHTML=d.length?d.map(function(x){
+    const row=function(c){return "<b>"+esc(c.camp_name)+"</b> <span class='sub'>"+esc(c.camp_starts||"—")+" · "+esc((c.detail||{}).location||"—")
+      +" · "+esc((c.detail||{}).contact_email||"—")+'</span> <button class="btn2" onclick="archiveDup('+CAMPS_W.indexOf(c)+')">🗄 Archive</button>';};
+    return '<div class="rev-row"><div class="rev-what">'+row(x.a)+"<br>"+row(x.b)+'<div class="chg">'+esc(x.why)+"</div></div></div>";
+  }).join(""):'<span class="hint">No duplicate found among the active camps.</span>';
+  box.style.display="";
+}
+function archiveDup(i){archiveCamp(i);showDuplicates();}
 // nouveau camp du répertoire : ancien camp actif qu'il pourrait remplacer (même pays, saison précédente),
 // repéré par le même contact, un lieu ou un nom proche, ou parce que c'est le seul du pays.
 // Simple proposition : l'archivage reste une case à cocher.

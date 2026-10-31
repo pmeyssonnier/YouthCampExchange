@@ -5,6 +5,11 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.14.1 — 2026-10-31
+
+- Camps tab, directory import: a camp that has been **renamed** is now recognised instead of being added a second time. Besides the name, the import compares the country, the camp start date, the place and the contact e-mail ("same dates and place", "same dates and contact"). Example: "Brussels Lions Youth Camp" and "Belgium Lions YCE Camp 2027" (same dates, same place in Limburg, same contact). Such matches are shown as `UPDATE?` and are never pre-ticked.
+- Camps tab: new **🔎 Check duplicates** button lists the pairs of active camps that look like the same camp, with an Archive button on each, to clean up duplicates already created by an earlier import.
+
 ## 1.14.0 — 2026-10-27
 
 - Camps tab, directory import: a **new** camp for a later season can suggest the earlier camp it may replace, in the same country, with the same contact, a close location or a close name, or because it is the country's only earlier camp. For example: "may replace Vision (2025-2026, only earlier camp in Bangladesh) — archive the old camp". The box is never pre-ticked. When ticked, the old camp is archived along with the import and leaves the public site at the next save. Old camps without an announced successor stay active, as before.

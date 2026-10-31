@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lions YCE — Administration — MD 112 Belgium</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
-<link rel="stylesheet" href="css/tools.css?v=1.14.0.174f3c35">
+<link rel="stylesheet" href="css/tools.css?v=1.14.1.174f3c35">
 <style id="noframe">html{display:none!important}</style>
-<script src="js/noframe.js?v=1.14.0.85617a56"></script>
+<script src="js/noframe.js?v=1.14.1.85617a56"></script>
 <meta name="robots" content="noindex">
 <script>try{if(localStorage.getItem('yce-theme')==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}</script>
 <style>
@@ -258,6 +258,12 @@ tr:hover td{background:var(--hover);}
     <div class="sec-body plain" id="rev-body"></div>
   </div>
 
+  <div id="dups" class="section" style="display:none">
+    <div class="sec-head"><span class="sec-title">Possible duplicates</span><span class="sec-note" id="dups-note"></span>
+      <span style="margin-left:auto"><button class="btn2" onclick="document.getElementById('dups').style.display='none'">Close</button></span></div>
+    <div class="sec-body plain" id="dups-body"></div>
+  </div>
+
   <div id="edit-box">
     <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:10px;">
       <b style="font-family:Georgia,serif;color:var(--gold);font-size:16px" id="edit-title">Edit camp</b>
@@ -272,6 +278,7 @@ tr:hover td{background:var(--hover);}
       <button class="pill on" id="tab-active" onclick="setView('active')">Active camps</button>
       <button class="pill" id="tab-archived" onclick="setView('archived')">Archived</button>
       <input class="srch" id="q" placeholder="Search camp, country…" oninput="render()">
+      <button class="btn2" onclick="showDuplicates()" title="Find camps listed twice under different names">🔎 Check duplicates</button>
       <span class="sec-note" id="count" style="margin-left:auto"></span>
     </div>
     <div class="sec-body plain table-wrap">
@@ -295,16 +302,16 @@ tr:hover td{background:var(--hover);}
     <div class="sec-body"><div class="fld w6" id="log"></div></div>
   </div>
 </main>
-<script src="js/version.js?v=1.14.0.04f1d034"></script>
-<script src="js/toolnav.js?v=1.14.0.540a0f90"></script>
-<script src="js/theme.js?v=1.14.0.8bd1d199"></script>
-<script src="camps_data.js?v=1.14.0.1b0a4c23"></script>
-<script src="districts_data.js?v=1.14.0.2a8555e4"></script>
-<script src="js/zip.js?v=1.14.0.912def0f"></script>
-<script src="js/xlsx.js?v=1.14.0.fae33a84"></script>
-<script src="js/admin-core.js?v=1.14.0.d83dfc63"></script>
-<script src="js/admin.js?v=1.14.0.6e37d59e"></script>
-<script src="js/camps-manager.js?v=1.14.0.a0eeba04"></script>
-<script src="js/admin-tabs.js?v=1.14.0.eb93884e"></script>
+<script src="js/version.js?v=1.14.1.c23d24fa"></script>
+<script src="js/toolnav.js?v=1.14.1.540a0f90"></script>
+<script src="js/theme.js?v=1.14.1.8bd1d199"></script>
+<script src="camps_data.js?v=1.14.1.1b0a4c23"></script>
+<script src="districts_data.js?v=1.14.1.2a8555e4"></script>
+<script src="js/zip.js?v=1.14.1.912def0f"></script>
+<script src="js/xlsx.js?v=1.14.1.fae33a84"></script>
+<script src="js/admin-core.js?v=1.14.1.d83dfc63"></script>
+<script src="js/admin.js?v=1.14.1.6e37d59e"></script>
+<script src="js/camps-manager.js?v=1.14.1.8b627e1b"></script>
+<script src="js/admin-tabs.js?v=1.14.1.eb93884e"></script>
 </body>
 </html>
