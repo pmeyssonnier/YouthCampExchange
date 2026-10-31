@@ -1,6 +1,6 @@
 {
- "updated": "2026-10-26",
- "count": 22,
+ "updated": "2026-10-31",
+ "count": 25,
  "archive": [
   {
    "continent": "Asia",
@@ -463,6 +463,73 @@
    },
    "_i": 21,
    "archived_on": "27-10-2026"
+  },
+  {
+   "continent": "Europe",
+   "country": "Austria",
+   "district": "L114-W",
+   "camp_name": "Lions Youth Camp Käsköpfle together - Austria's Wild West",
+   "age_requirements": "16-22",
+   "fee": "200 EURO",
+   "camp_starts": "18-07-2026",
+   "camp_ends": "01-08-2026",
+   "family_stay_starts": "11-07-2026",
+   "family_stay_ends": "18-07-2026",
+   "detail": {
+    "location": "Dornbirn, Austria",
+    "description": "Singing (choir and solo), making music, jamming, experience of singing on stage by microphone, workshops about understanding of other cultures, religions and other Lions topics, teambuilding, inclusion, sports, outdoor and indoor games, meeting with Austrian folk musicians, 'lumberjack games', and finally the great 'Final Concert for Peace'!",
+    "host_family_activities": "Knowledge of Austrian way of life in families, sightseeing, contacts with several Austrian Lions, Austrian culture.",
+    "languages": [
+     "English"
+    ],
+    "website": "http://www.lionscamp.at"
+   },
+   "_i": 14,
+   "archived_on": "31-10-2026"
+  },
+  {
+   "continent": "Europe",
+   "country": "Finland",
+   "camp_name": "Lions Youth Camp - Spirit of Karelia",
+   "age_requirements": "17-21",
+   "fee": "200 EURO",
+   "camp_starts": "25-07-2026",
+   "camp_ends": "02-08-2026",
+   "family_stay_starts": "18-07-2026",
+   "family_stay_ends": "25-07-2026",
+   "detail": {
+    "location": "Parikkala; Finland",
+    "description": "Our camp offers the best of Finland: beautiful lakes, green forests, traditional sauna, and a touch of mysterious local art. Join our adventure in Parikkala to create new friendships and memories that will last a lifetime.",
+    "languages": [
+     "English"
+    ],
+    "website": "https://youthcamps.lions.fi/camp-h/",
+    "yce_url": "https://www.lions-yce-belgium.be/destinations/lions-youth-camp---spirit-of-karelia"
+   },
+   "_i": 22,
+   "archived_on": "31-10-2026"
+  },
+  {
+   "continent": "Europe",
+   "country": "Italy",
+   "camp_name": "Lions Camp Campo Vesuvio 2026",
+   "age_requirements": "16-20",
+   "fee": "180 EURO",
+   "camp_starts": "13-07-2026",
+   "camp_ends": "26-07-2026",
+   "family_stay_starts": "05-07-2026",
+   "family_stay_ends": "13-07-2026",
+   "detail": {
+    "location": "Cava 'de Tirreni (SA), Italy",
+    "description": "Participants will have the opportunity to immerse themselves in the history and traditions of Southern Italy, discovering its beauty, warmth, and timeless charm. The program includes visits to some of the most significant historical sites as well as excursions from the slopes of Mount Vesuvius to the Amalfi Coast. Workshops in folk music, dance, and painting will bring the local culture to life, ending with a collective art exhibition open to the community. The Leo and Lions Clubs will join the project, sharing their values of service and solidarity. �Where the world meets, and creativity comes to life.�",
+    "languages": [
+     "English",
+     "Italian"
+    ],
+    "yce_url": "https://www.lions-yce-belgium.be/destinations/lions-camp-campo-vesuvio-2026"
+   },
+   "_i": 32,
+   "archived_on": "31-10-2026"
   }
  ]
 }
