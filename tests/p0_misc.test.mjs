@@ -168,9 +168,41 @@ ok(r.mdy[0] === null && r.mdy[1] === '15-07-2027' && r.mdy[2] === null, 'directo
     CAMPS_W = keepC; ARCH = keepA; render();
     return { rows: rows, d: d };
   });
-  ok(du.rows.length === 2 && /UPDATE\? same dates and place/.test(du.rows[0]) && /Brussels Lions Youth Camp/.test(du.rows[0]), 'renamed camp (same dates, place, contact) recognised, not offered as new: ' + du.rows[0]);
+  ok(du.rows.length === 2 && /UPDATE\? \d+ % · same dates and place/.test(du.rows[0]) && /Brussels Lions Youth Camp/.test(du.rows[0]), 'renamed camp (same dates, place, contact) recognised, not offered as new: ' + du.rows[0]);
   ok(/NEW/.test(du.rows[1]) && /Camp Lakes/.test(du.rows[1]), 'same country, same date, other place and same shared contact: still a new camp');
   ok(du.d.length === 1 && /Brussels.*Belgium Lions YCE/.test(du.d[0]), 'duplicate scan flags only the real pair: ' + du.d.join(' | '));
+}
+// gestionnaire de camps : suppression depuis la fiche, tri alphabétique des pays, filtre par continent, Edit dans les doublons
+{
+  const m = await pg.evaluate(() => {
+    const keepC = CAMPS_W, keepA = ARCH, arch0 = ARCH.length;
+    const c = (continent, country, name, start, mail) => ({ continent: continent, country: country, camp_name: name, camp_starts: start, detail: { location: 'X', contact_email: mail } });
+    CAMPS_W = [c('Europe', 'Zambia-like', 'Z camp', '01-07-2027', 'z@x.example'), c('Africa', 'Austria', 'A camp', '02-07-2027', 'a@x.example'),
+      c('Asia', 'Belgium', 'B camp', '03-07-2027', 'b@x.example'), c('Europe', 'Belgium', 'B camp 2027', '03-07-2027', 'b@x.example')];
+    SORT_K = 'country'; SORT_D = 1; CONT = ''; render();
+    const order = [...document.querySelectorAll('#tbody tr td:first-child')].map(x => x.textContent);
+    const sel = document.getElementById('cont'); sel.value = 'Europe'; sel.onchange ? setContinent('Europe') : 0;
+    const eu = [...document.querySelectorAll('#tbody tr td:first-child')].map(x => x.textContent);
+    setContinent(''); showDuplicates();
+    const dupsText = document.getElementById('dups-body').textContent; const hasEdit = document.querySelectorAll('#dups-body button').length, noArchive = !/Archive/.test(document.getElementById('dups-body').textContent);
+    const idx = CAMPS_W.findIndex(x => x.camp_name === 'B camp 2027');
+    document.querySelector('#dups-body button').click();
+    const delShown = document.getElementById('edit-del').style.display !== 'none', title = document.getElementById('edit-title').textContent;
+    const orig = window.confirm; window.confirm = () => true;
+    EDIT_I = idx; deleteEditing(); window.confirm = orig;
+    const left = CAMPS_W.map(x => x.camp_name), arch = ARCH.length - arch0, dupsLeft = document.getElementById('dups-body').textContent;
+    newCamp(); const delNew = document.getElementById('edit-del').style.display; closeEdit();
+    CAMPS_W = keepC; ARCH = keepA; render(); document.getElementById('dups').style.display = 'none';
+    return { dupsText, order, eu, hasEdit, noArchive, delShown, title, left, arch, dupsLeft, delNew };
+  });
+  ok(m.order.join() === 'Austria,Belgium,Belgium,Zambia-like', 'countries sorted A-Z whatever the continent: ' + m.order);
+  ok(m.eu.join() === 'Belgium,Zambia-like', 'continent filter keeps only that continent: ' + m.eu);
+  ok(/\d+ % similar/.test(m.dupsText), 'duplicate pairs show a similarity percentage: ' + m.dupsText);
+  ok(m.hasEdit === 2 && m.noArchive, 'duplicate list offers Edit, not Archive');
+  ok(m.delShown && /Edit/.test(m.title), 'Edit opens the camp sheet with a Delete button');
+  ok(!m.left.includes('B camp 2027') && m.left.length === 3 && m.arch === 0, 'Delete removes the camp for good (not archived): ' + m.left);
+  ok(/No duplicate found|pair/.test(m.dupsLeft), 'duplicate list refreshed after Delete');
+  ok(m.delNew === 'none', 'no Delete button on a new, unsaved camp');
 }
 ok(!errs.length, 'no page errors: ' + errs.join(' | '));
 console.log(`\n${pass} passed, ${fail} failed`);
