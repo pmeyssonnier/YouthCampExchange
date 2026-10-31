@@ -146,6 +146,32 @@ ok(r.mdy[0] === null && r.mdy[1] === '15-07-2027' && r.mdy[2] === null, 'directo
   ok(rp.arch.join() === 'Andes Discovery|dated' && !rp.active.includes('Andes Discovery') && rp.active.includes('Northern Lights') && rp.active.includes('Inca Trail Youth Camp'),
     'only the ticked old camp is archived, new camps added: ' + JSON.stringify(rp));
 }
+// import du répertoire : un camp renommé est reconnu par ses dates, son lieu et son contact ; doublons déjà présents repérés
+{
+  const du = await pg.evaluate(() => {
+    const keepC = CAMPS_W, keepA = ARCH;
+    const c = (country, name, start, loc, mail) => ({ country: country, camp_name: name, camp_starts: start, detail: { location: loc, contact_email: mail } });
+    CAMPS_W = [
+      c('Belgium', 'Brussels Lions Youth Camp', '17-07-2027', 'Limburg, Belgium', 'a@x.example'),
+      c('Germany', 'Camp North', '06-08-2027', 'Hamburg', 'de@x.example'),
+      c('Germany', 'Camp South', '02-08-2027', 'Munich', 'de@x.example'),
+      c('Italy', 'Camp Sea', '18-07-2027', 'Bari', 'it@x.example'),
+      c('Italy', 'Camp Mountain', '18-07-2027', 'Aosta', 'it@x.example')];
+    ARCH = [];
+    const t = (name, country, cs, loc, mail) => ({ name: name, country: country, cs: cs, ce: '30-07-2027', location: loc, cemail: mail, langs: [] });
+    buildReview('directory.xlsx', [t('Belgium Lions YCE Camp 2027', 'Belgium', '17-07-2027', 'Limburg, Belgium', 'A@x.example'),
+      t('Camp Lakes', 'Italy', '18-07-2027', 'Como', 'it@x.example')]);
+    const rows = [...document.querySelectorAll('#rev-body .rev-row')].map(r => r.textContent);
+    cancelReview();
+    CAMPS_W.push(c('Belgium', 'Belgium Lions YCE Camp 2027', '17-07-2027', 'Limburg, Belgium', 'a@x.example'));
+    const d = findDuplicates().map(x => x.a.camp_name + ' ~ ' + x.b.camp_name);
+    CAMPS_W = keepC; ARCH = keepA; render();
+    return { rows: rows, d: d };
+  });
+  ok(du.rows.length === 2 && /UPDATE\? same dates and place/.test(du.rows[0]) && /Brussels Lions Youth Camp/.test(du.rows[0]), 'renamed camp (same dates, place, contact) recognised, not offered as new: ' + du.rows[0]);
+  ok(/NEW/.test(du.rows[1]) && /Camp Lakes/.test(du.rows[1]), 'same country, same date, other place and same shared contact: still a new camp');
+  ok(du.d.length === 1 && /Brussels.*Belgium Lions YCE/.test(du.d[0]), 'duplicate scan flags only the real pair: ' + du.d.join(' | '));
+}
 ok(!errs.length, 'no page errors: ' + errs.join(' | '));
 console.log(`\n${pass} passed, ${fail} failed`);
 await br.close(); srv.close(); process.exit(fail ? 1 : 0);
