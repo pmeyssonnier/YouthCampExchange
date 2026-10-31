@@ -5,6 +5,10 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.15.1 — 2026-10-31
+
+- Camps tab: each pair in **Check duplicates** shows a **similarity percentage** (name 30 %, place 30 %, start date 25 %, contact e-mail 15 %), highest first. The directory import shows the same percentage on its `UPDATE?` matches.
+
 ## 1.15.0 — 2026-10-31
 
 - Camps tab: the camp sheet has a **✕ Delete** button to remove a camp for good (a duplicate or a mistake, after confirmation). Archiving stays for camps of past seasons.

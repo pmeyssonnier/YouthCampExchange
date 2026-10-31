@@ -368,6 +368,14 @@ function alike(a,b){
   if(nm>=0.72)return "close name "+nm.toFixed(2);
   return null;
 }
+// pourcentage de ressemblance entre deux fiches : nom 30 %, lieu 30 %, date de début 25 %, e-mail du contact 15 %
+function likeness(a,b){
+  const nm=sim(stripNoise(a.name),stripNoise(b.name));
+  const lc=a.loc&&b.loc?sim(stripNoise(a.loc),stripNoise(b.loc)):0;
+  const st=a.start&&a.start===b.start?1:0;
+  const ml=a.email&&simple(a.email)===simple(b.email)?1:0;
+  return Math.round(100*(0.30*nm+0.30*lc+0.25*st+0.15*ml));
+}
 // camp du répertoire retrouvé dans une liste : même nom, sinon camp reconnu par ses dates, son lieu ou son contact
 function matchCamp(list,t){
   const key=simple(t.name),ft=factsOfT(t);
@@ -386,9 +394,9 @@ function findDuplicates(){
   const out=[];
   for(let i=0;i<CAMPS_W.length;i++)for(let j=i+1;j<CAMPS_W.length;j++){
     const w=alike(factsOf(CAMPS_W[i]),factsOf(CAMPS_W[j]));
-    if(w)out.push({a:CAMPS_W[i],b:CAMPS_W[j],why:w});
+    if(w)out.push({a:CAMPS_W[i],b:CAMPS_W[j],why:w,pct:likeness(factsOf(CAMPS_W[i]),factsOf(CAMPS_W[j]))});
   }
-  return out;
+  return out.sort(function(x,y){return y.pct-x.pct;});
 }
 function showDuplicates(){
   const d=findDuplicates(),box=document.getElementById("dups");
@@ -396,7 +404,7 @@ function showDuplicates(){
   document.getElementById("dups-body").innerHTML=d.length?d.map(function(x){
     const row=function(c){return "<b>"+esc(c.camp_name)+"</b> <span class='sub'>"+esc(c.camp_starts||"—")+" · "+esc((c.detail||{}).location||"—")
       +" · "+esc((c.detail||{}).contact_email||"—")+'</span> <button class="btn2" onclick="openEdit('+CAMPS_W.indexOf(c)+')">✏ Edit</button>';};
-    return '<div class="rev-row"><div class="rev-what">'+row(x.a)+"<br>"+row(x.b)+'<div class="chg">'+esc(x.why)+"</div></div></div>";
+    return '<div class="rev-row"><div class="rev-what">'+row(x.a)+"<br>"+row(x.b)+'<div class="chg"><b>'+x.pct+' % similar</b> — '+esc(x.why)+"</div></div></div>";
   }).join(""):'<span class="hint">No duplicate found among the active camps.</span>';
   box.style.display="";
 }
@@ -433,7 +441,7 @@ function buildReview(fname,items){
     if(hit>=0){
       const chg=changesFor(CAMPS_W[hit],t);
       if(!chg.length){unchanged++;continue;}
-      rev.push({kind:"update",idx:hit,how:how,t:t,chg:chg,on:how==="exact"});
+      rev.push({kind:"update",idx:hit,how:how,t:t,chg:chg,on:how==="exact",pct:how==="exact"?100:likeness(factsOf(CAMPS_W[hit]),factsOfT(t))});
     }else rev.push({kind:"new",t:t,on:true,rep:replacesFor(t)});
   }
   REVIEW=rev;
@@ -443,7 +451,7 @@ function buildReview(fname,items){
     +(archived?", "+archived+" archived (left out — restore them from the Archived tab if needed)":"");
   document.getElementById("rev-body").innerHTML=rev.length?rev.map(function(r,i){
     const tag=r.kind==="new"?'<span class="rev-tag t-new">NEW</span>'
-      :(r.how==="exact"?'<span class="rev-tag t-upd">UPDATE</span>':'<span class="rev-tag t-fuz">UPDATE? '+esc(r.how)+"</span>");
+      :(r.how==="exact"?'<span class="rev-tag t-upd">UPDATE</span>':'<span class="rev-tag t-fuz">UPDATE? '+r.pct+" % · "+esc(r.how)+"</span>");
     const what=r.kind==="new"
       ?"<b>"+esc(r.t.country)+" — "+esc(r.t.name)+"</b><div class='chg'>camp "+esc(r.t.cs)+" → "+esc(r.t.ce||"?")+" · "+esc(r.t.ages||"")+" · "+esc(r.t.fee||"")+"</div>"
         +(r.rep?'<label class="rev-rep"><input type="checkbox" id="rva-'+i+'"> may replace <b>'+esc(r.rep.camp.camp_name)+"</b> ("
