@@ -84,6 +84,26 @@ ok(csv2[6] === ' +32 470 12 34 56' && csv2[7] === 'Jean-Pierre', 'spaced phone a
 
 // SEC-10 : dates du site et du gestionnaire de camps
 await pg.goto(B + 'index.html'); await pg.waitForTimeout(500);
+// carte publique : un point par camp dont les coordonnées sont connues (vue pays)
+{
+  const dots = await pg.evaluate(async () => {
+    const c0 = CAMPS.find(c => c.country === 'Belgium') || CAMPS[0];
+    const country = c0.country;
+    const withCoords = CAMPS.filter(c => c.country === country);
+    c0.detail = Object.assign({}, c0.detail, { lat: 50.93, lon: 5.33 });
+    withCoords.forEach(c => { if (c !== c0 && c.detail) { delete c.detail.lat; delete c.detail.lon; } });
+    switchTab('map', document.querySelector('.tab-btn[onclick*="map"]')); await new Promise(r => setTimeout(r, 900));
+    zoomContinent(c0.continent); await new Promise(r => setTimeout(r, 900));
+    zoomCountry(country); await new Promise(r => setTimeout(r, 1700));
+    const n1 = document.querySelectorAll('.camp-dot').length;
+    goBack(); await new Promise(r => setTimeout(r, 300));
+    const n2 = document.querySelectorAll('.camp-dot').length;
+    delete c0.detail.lat; delete c0.detail.lon;
+    return { n1, n2 };
+  });
+  ok(dots.n1 === 1, 'country view: one dot for the one camp with coordinates: ' + dots.n1);
+  ok(dots.n2 === 0, 'dots removed when leaving the country view: ' + dots.n2);
+}
 ok(await pg.evaluate(() => parseDate('31-02-2026') === null && parseDate('45-13-2026') === null && parseDate('29-02-2028') !== null && parseDate('28-02-2027') !== null), 'site rejects impossible dates, keeps leap day');
 await pg.goto(B + 'yce_admin.html#camps'); await pg.waitForTimeout(700);
 const r = await pg.evaluate(() => {
@@ -203,6 +223,32 @@ ok(r.mdy[0] === null && r.mdy[1] === '15-07-2027' && r.mdy[2] === null, 'directo
   ok(!m.left.includes('B camp 2027') && m.left.length === 3 && m.arch === 0, 'Delete removes the camp for good (not archived): ' + m.left);
   ok(/No duplicate found|pair/.test(m.dupsLeft), 'duplicate list refreshed after Delete');
   ok(m.delNew === 'none', 'no Delete button on a new, unsaved camp');
+}
+// coordonnées : import GeoJSON (EPSG:3857), rapprochement par pays + nom/lieu, rien d'autre n'est repris
+{
+  const g = await pg.evaluate(() => {
+    const keepC = CAMPS_W, keepA = ARCH;
+    const c = (country, name, loc) => ({ continent: 'Europe', country: country, camp_name: name, camp_starts: '01-07-2027', detail: { location: loc } });
+    CAMPS_W = [c('Austria', 'Lions Youth Camp Sound of Music', 'Linz'), c('Belgium', 'Brussels Lions Youth Camp', 'Limburg'), c('Spain', 'Totally Other Camp', 'Madrid')];
+    ARCH = [];
+    const m = (lon, lat) => { const R = 6378137; return [lon * Math.PI / 180 * R, Math.log(Math.tan(Math.PI / 4 + lat * Math.PI / 360)) * R]; };
+    const ft = (country, name, loc, lon, lat) => ({ type: 'Feature', properties: { Country: country, 'Official Camp Name': name, 'Camp Location': loc, 'Preferred YCE Email': 'secret@x.example', 'First Name': 'Private' }, geometry: { type: 'Point', coordinates: m(lon, lat) } });
+    const gj = { type: 'FeatureCollection', crs: { type: 'name', properties: { name: 'urn:ogc:def:crs:EPSG::3857' } },
+      features: [ft('Austria', 'Lionscamp "Sound of Music"', '4040 Linz', 14.2858, 48.3069), ft('Belgium', 'Brussels Lions Youth Camp', 'Limburg', 5.332, 50.9307), ft('Spain', 'Unrelated Beach', 'Cadiz', -6.3, 36.5), ft('Chile', 'Nowhere', 'X', -70, -33)] };
+    buildGeoReview('632.geojson', gj);
+    const rows = [...document.querySelectorAll('#rev-body .rev-row')].map(r => ({ t: r.textContent, on: r.querySelector('input').checked }));
+    const note = document.getElementById('rev-note').textContent;
+    applyReview();
+    const out = { rows: rows, note: note, coords: CAMPS_W.map(x => [x.detail.lat, x.detail.lon]), keys: Object.keys(CAMPS_W[0].detail), json: JSON.stringify(CAMPS_W) };
+    CAMPS_W = keepC; ARCH = keepA; render(); return out;
+  });
+  ok(g.rows.length === 2 && g.rows.every(r => r.on), 'geo import: two camps matched and pre-ticked, unrelated ones left out: ' + JSON.stringify(g.rows));
+  ok(g.coords[0][0] === 48.3069 && g.coords[0][1] === 14.2858 && g.coords[1][0] === 50.9307 && g.coords[1][1] === 5.332, 'EPSG:3857 converted to latitude / longitude: ' + JSON.stringify(g.coords));
+  ok(g.coords[2][0] === undefined, 'camp without a match gets no coordinates');
+  ok(!/secret@x|Private/.test(g.json + g.rows.map(r => r.t).join()), 'only coordinates are taken from the file (no e-mail, no name of a person)');
+  ok(g.keys.indexOf('lat') > g.keys.indexOf('location'), 'lat / lon stored in the camp detail');
+  const e = await pg.evaluate(() => { openEdit(0); document.getElementById('e-lat').value = '95'; document.getElementById('e-lon').value = '4'; document.getElementById('log').innerHTML = ''; saveEdit(); return document.getElementById('log').textContent; });
+  ok(/Coordinates: give both/.test(e), 'camp sheet refuses impossible coordinates: ' + e);
 }
 ok(!errs.length, 'no page errors: ' + errs.join(' | '));
 console.log(`\n${pass} passed, ${fail} failed`);

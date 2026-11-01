@@ -2,7 +2,7 @@
 // Chargé par index.html ; scripts classiques partageant la portée globale.
 // ── MAP ──────────────────────────────────────────────
 let mapInited=false,mapView='world',mapProjection,mapSvg,mapG;
-let currentContinent=null,currentContProj=null,currentCountry=null;
+let currentContinent=null,currentContProj=null,currentCountry=null,currentCountryProj=null;
 
 // camps visibles sur la carte : mêmes filtres que l'annuaire (saison, continent, pays, âge, période)
 function mapCamps(){return typeof getFiltered==='function'?getFiltered():CAMPS;}
@@ -71,7 +71,7 @@ function zoomContinent(cont){
   const newProj=d3.geoNaturalEarth1().scale(zoom?zoom.scale:w/6.5).center(zoom?zoom.center:[0,0]).translate([w/2,h/2]);
   currentContProj=newProj;
   mapG.selectAll('.country').transition().duration(650).attr('d',d3.geoPath().projection(newProj));
-  mapG.selectAll('.cont-bubble').remove();
+  mapG.selectAll('.cont-bubble').remove();clearCampDots();
   setTimeout(()=>renderCountryBubbles(cont,newProj),700);
 }
 
@@ -118,7 +118,7 @@ function zoomCountry(country){
   document.getElementById('tt').classList.remove('vis');
   const zoom=COUNTRY_ZOOM[country];const vb=mapSvg.attr('viewBox').split(' ');const w=+vb[2],h=+vb[3];
   const newProj=d3.geoNaturalEarth1().scale(zoom?zoom.scale:1000).center(zoom?zoom.center:COUNTRY_COORDS[country]||[0,0]).translate([w/2,h/2]);
-  const newPath=d3.geoPath().projection(newProj);
+  const newPath=d3.geoPath().projection(newProj);currentCountryProj=newProj;
   mapG.selectAll('.country').transition().duration(700).attr('d',newPath);
   mapG.selectAll('.ctry-bubble').transition().duration(400).attr('opacity',function(){
     const txt=d3.select(this).selectAll('text').nodes();
@@ -153,13 +153,28 @@ function showCountryCamps(country){
     </div>`;
   }).join('');
   document.getElementById('ctry-panel').classList.add('open');
+  if(mapView==='country'&&currentCountryProj)renderCampDots(country,currentCountryProj);
 }
+
+// un point par camp dont les coordonnées sont connues (detail.lat / detail.lon), dans la vue pays
+function renderCampDots(country,proj){
+  mapG.selectAll('.camp-dot').remove();
+  const tt=document.getElementById('tt'),ttT=document.getElementById('tt-t'),ttC=document.getElementById('tt-c'),ttH=document.getElementById('tt-h');
+  mapCamps().filter(c=>c.country===country&&c.detail&&isFinite(c.detail.lat)&&isFinite(c.detail.lon)&&c.detail.lat!==null&&c.detail.lon!==null).forEach(c=>{
+    const p=proj([+c.detail.lon,+c.detail.lat]);if(!p)return;
+    mapG.append('circle').attr('class','camp-dot').attr('cx',p[0]).attr('cy',p[1]).attr('r',6).attr('fill','#ffd166').attr('stroke','#0d1827').attr('stroke-width',1.5).attr('cursor','pointer')
+      .on('mousemove',ev=>{tt.classList.add('vis');tt.style.left=(ev.clientX+14)+'px';tt.style.top=(ev.clientY-10)+'px';ttT.textContent=titleCase(c.camp_name);ttC.textContent=(c.detail.location||country);ttH.textContent='Click for details';})
+      .on('mouseleave',()=>tt.classList.remove('vis'))
+      .on('click',()=>{tt.classList.remove('vis');showCampDetail(c._idx);});
+  });
+}
+function clearCampDots(){currentCountryProj=null;mapG.selectAll('.camp-dot').remove();}
 
 function closeCountryPanel(){document.getElementById('ctry-panel').classList.remove('open');}
 
 function goBack(){
   if(mapView==='country'){
-    closeCountryPanel();mapView='continent';currentCountry=null;
+    closeCountryPanel();clearCampDots();mapView='continent';currentCountry=null;
     document.getElementById('crumb-k').style.display='none';document.getElementById('back-btn').textContent='← World';
     document.getElementById('map-hint').textContent='Click a country bubble or name to see camps';
     const zoom=CONT_ZOOM[currentContinent];const vb=mapSvg.attr('viewBox').split(' ');const w=+vb[2],h=+vb[3];
@@ -173,7 +188,7 @@ function goBack(){
 function zoomContFromCrumb(){if(mapView==='country'){closeCountryPanel();goBack();}}
 
 function zoomWorld(){
-  closeCountryPanel();mapView='world';currentContinent=null;currentCountry=null;currentContProj=null;
+  closeCountryPanel();clearCampDots();mapView='world';currentContinent=null;currentCountry=null;currentContProj=null;
   document.getElementById('back-btn').style.display='none';
   document.getElementById('crumb-c').style.display='none';document.getElementById('crumb-k').style.display='none';
   document.getElementById('map-info').classList.remove('vis');document.getElementById('tt').classList.remove('vis');

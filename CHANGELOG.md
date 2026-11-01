@@ -5,6 +5,12 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.16.0 — 2026-11-01
+
+- **Map: one dot per camp.** In a country view, every camp that has coordinates gets a dot on the public map; a click opens the camp's details. Camps without coordinates stay in the list as before.
+- Camps tab: new **📍 Import coordinates (GeoJSON)** button for the Lions camps layer published on NextGIS (`lionscamps.nextgis.com`). The file is read in the browser; only latitude and longitude are kept (names and e-mails in the file are ignored). Camps are matched by country and name or place, shown with a percentage, and ticked in advance only when the match is above 90 % and unique. Works with EPSG:3857 (NextGIS) and plain longitude/latitude.
+- Camps tab: the camp sheet has **Latitude** and **Longitude** fields (checked: both or none, within -90..90 and -180..180).
+
 ## 1.15.1 — 2026-10-31
 
 - Camps tab: each pair in **Check duplicates** shows a **similarity percentage** (name 30 %, place 30 %, start date 25 %, contact e-mail 15 %), highest first. The directory import shows the same percentage on its `UPDATE?` matches.

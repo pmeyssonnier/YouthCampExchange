@@ -10,7 +10,7 @@ let SORT_K="country", SORT_D=1; // tri du tableau (clic sur les en-têtes)
 const TOP_KEYS=["continent","country","state","district","camp_name","age_requirements","fee",
   "camp_starts","camp_ends","family_stay_starts","family_stay_ends","detail"];
 const DET_KEYS=["location","description","host_family_activities","languages","website","yce_url",
-  "application_deadline","participants","contact_name","contact_email","contact_phone"];
+  "application_deadline","participants","contact_name","contact_email","contact_phone","lat","lon"];
 const CONTINENTS=["Africa","Asia","Europe","Middle America","North America","Oceania","South America"];
 
 function markDirty(){DIRTY=true;document.getElementById("dirty").style.display="";updSave();}
@@ -100,6 +100,8 @@ function openEdit(i){
     +fldHtml("e-family_stay_starts","Family stay start",c.family_stay_starts,"g1")
     +fldHtml("e-family_stay_ends","Family stay end",c.family_stay_ends,"g1")
     +fldHtml("e-location","Location",d.location,"g3")
+    +fldHtml("e-lat","Latitude (ex. 50.9307)",d.lat,"g1")
+    +fldHtml("e-lon","Longitude (ex. 5.332)",d.lon,"g1")
     +fldHtml("e-application_deadline","Application deadline",d.application_deadline,"g1")
     +fldHtml("e-participants","Capacity",d.participants,"g1")
     +fldHtml("e-languages","Languages (comma-separated)",(d.languages||[]).join(", "),"g1")
@@ -153,6 +155,10 @@ function saveEdit(){
   if(ages&&ages.length>=2&&+ages[0]>+ages[1]){log("Ages: the minimum is above the maximum.","err");return;}
   if(gv("e-website")&&!/^(https?:\/\/)?[a-z0-9-]+(\.[a-z0-9-]+)+(\/\S*)?$/i.test(gv("e-website"))){log("Website must be a web address (https://…).","err");return;}
   if(gv("e-contact_email")&&!/^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/.test(gv("e-contact_email"))){log("Contact e-mail is not valid.","err");return;}
+  const lat=gv("e-lat"),lon=gv("e-lon");
+  if(lat||lon){
+    if(!lat||!lon||!isFinite(+lat)||!isFinite(+lon)||Math.abs(+lat)>90||Math.abs(+lon)>180){log("Coordinates: give both latitude (-90 to 90) and longitude (-180 to 180) as numbers, e.g. 50.9307 and 5.332.","err");return;}
+  }
   const nc={};
   nc.continent=gv("e-continent")||"Europe";nc.country=ctry;
   if(gv("e-state"))nc.state=gv("e-state");
@@ -165,6 +171,7 @@ function saveEdit(){
    ["website","e-website"],["yce_url","e-yce_url"],["application_deadline","e-application_deadline"],
    ["participants","e-participants"],["contact_name","e-contact_name"],["contact_email","e-contact_email"],
    ["contact_phone","e-contact_phone"]].forEach(function(p){const v=gv(p[1]);if(v)d[p[0]]=v;});
+  if(lat&&lon){d.lat=Math.round(+lat*10000)/10000;d.lon=Math.round(+lon*10000)/10000;}
   const langs=gv("e-languages");
   if(langs)d.languages=langs.split(",").map(function(x){return x.trim();}).filter(Boolean);
   // ordre des clés identique aux fiches existantes
@@ -330,6 +337,78 @@ async function dirPick(inp){
   }catch(e){log("Directory import failed: "+esc(e.message),"err");}
   finally{inp.value="";}
 }
+// -------------------- coordonnées (carte NextGIS, GeoJSON) --------------------
+// Seules les coordonnées sont reprises : ni nom, ni e-mail, ni autre donnée personnelle de la couche.
+function mercToLonLat(x,y){ // EPSG:3857 -> [lon, lat]
+  const R=6378137;
+  return [x/R*180/Math.PI,(2*Math.atan(Math.exp(y/R))-Math.PI/2)*180/Math.PI];
+}
+function geoPick(inp){
+  const f=inp.files[0];if(!f)return;
+  if(f.size>5*1048576){log("Coordinates file too large (maximum 5 MB).","err");inp.value="";return;}
+  const r=new FileReader();
+  r.onload=function(){
+    try{buildGeoReview(f.name,JSON.parse(r.result));}
+    catch(e){log("Coordinates import failed: "+esc(e.message),"err");}
+    finally{inp.value="";}
+  };
+  r.readAsText(f);
+}
+function geoPoints(gj){
+  if(!gj||gj.type!=="FeatureCollection"||!Array.isArray(gj.features))throw new Error("not a GeoJSON FeatureCollection");
+  const merc=/3857|900913/.test(JSON.stringify(gj.crs||""));
+  const pts=[];
+  gj.features.slice(0,5000).forEach(function(ft){
+    const g=ft&&ft.geometry,p=(ft&&ft.properties)||{};
+    if(!g||g.type!=="Point"||!Array.isArray(g.coordinates))return;
+    let x=+g.coordinates[0],y=+g.coordinates[1];if(!isFinite(x)||!isFinite(y))return;
+    if(merc||Math.abs(x)>180||Math.abs(y)>90){const q=mercToLonLat(x,y);x=q[0];y=q[1];}
+    if(Math.abs(y)>90||Math.abs(x)>180)return;
+    const pick=function(part){for(const k in p)if(k.toLowerCase().indexOf(part)>=0&&p[k]!=null)return String(p[k]);return "";};
+    const country=String(p.Country||p.country||pick("country")),name=pick("camp name")||String(p.name||"");
+    if(!country||!name)return;
+    pts.push({country:country,name:name,loc:pick("location"),lat:Math.round(y*10000)/10000,lon:Math.round(x*10000)/10000});
+  });
+  return pts;
+}
+function buildGeoReview(fname,gj){
+  const pts=geoPoints(gj);
+  if(!pts.length)throw new Error("no camp with a country, a name and a point in this file");
+  const best={}; // camp -> meilleure source
+  CAMPS_W.forEach(function(c,i){
+    let b=null;
+    pts.forEach(function(q,qi){
+      if(simple(q.country)!==simple(c.country))return;
+      const d=c.detail||{};
+      const qa=stripNoise(q.name).replace(/^lionscamp/,""),ca=stripNoise(c.camp_name).replace(/^lionscamp/,"");
+      let nm=simple(q.name)===simple(c.camp_name)?1:sim(qa,ca);
+      if(qa.length>=6&&ca.length>=6&&(qa.indexOf(ca)>=0||ca.indexOf(qa)>=0))nm=Math.max(nm,0.9); // un nom contenu dans l'autre
+      const lc=q.loc&&d.location?sim(stripNoise(q.loc),stripNoise(d.location)):0;
+      const sc=Math.max(nm,lc);
+      if(sc>=0.7&&(!b||sc>b.sc))b={sc:sc,q:q,qi:qi};
+    });
+    if(b)best[i]=b;
+  });
+  const used={};Object.keys(best).forEach(function(i){used[best[i].qi]=(used[best[i].qi]||0)+1;});
+  const rev=[];let same=0;
+  Object.keys(best).map(Number).sort(function(a,b){return best[b].sc-best[a].sc;}).forEach(function(i){
+    const c=CAMPS_W[i],b=best[i],d=c.detail||{};
+    if(d.lat===b.q.lat&&d.lon===b.q.lon){same++;return;}
+    const had=d.lat!=null&&d.lon!=null;
+    rev.push({kind:"geo",idx:i,q:b.q,pct:Math.round(b.sc*100),had:had,on:b.sc>=0.9&&!had&&used[b.qi]===1});
+  });
+  REVIEW=rev;
+  document.getElementById("rev-note").textContent=fname+" — "+pts.length+" point(s) read, "+rev.length+" camp(s) can get coordinates, "
+    +same+" already up to date, "+(CAMPS_W.length-rev.length-same)+" without a match";
+  document.getElementById("rev-body").innerHTML=rev.length?rev.map(function(r,i){
+    return '<div class="rev-row"><input type="checkbox" id="rv-'+i+'"'+(r.on?" checked":"")+'> <span class="rev-tag '+(r.pct>=90?"t-upd":"t-fuz")+'">📍 '+r.pct+" %</span>"
+      +'<div class="rev-what"><b>'+esc(CAMPS_W[r.idx].camp_name)+"</b> ⇐ "+esc(r.q.name)
+      +"<div class='chg'>"+r.q.lat+", "+r.q.lon+(r.had?" (replaces the coordinates already saved)":"")+"</div></div></div>";
+  }).join(""):'<span class="hint">No camp to place from this file.</span>';
+  document.getElementById("review").style.display="";
+  document.getElementById("review").scrollIntoView({behavior:"smooth",block:"start"});
+  log("Coordinates file read: "+pts.length+" point(s). Tick the camps to place, then Apply.","ok");
+}
 function changesFor(c,t){ // champs à mettre à jour (une valeur vide du répertoire n'écrase jamais)
   const det=c.detail||{};
   const out=[];
@@ -466,10 +545,14 @@ function buildReview(fname,items){
 }
 function applyReview(){
   if(!REVIEW)return;
-  let up=0,nw=0;const old=[];
+  let up=0,nw=0,gp=0;const old=[];
   REVIEW.forEach(function(r,i){
     if(!document.getElementById("rv-"+i).checked)return;
-    if(r.kind==="update"){
+    if(r.kind==="geo"){
+      const c=CAMPS_W[r.idx];c.detail=c.detail||{};c.detail.lat=r.q.lat;c.detail.lon=r.q.lon;
+      const det={};DET_KEYS.forEach(function(k){if(k in c.detail)det[k]=c.detail[k];});c.detail=det;
+      gp++;
+    }else if(r.kind==="update"){
       const c=CAMPS_W[r.idx];
       r.chg.forEach(function(x){
         if(x.scope==="top")c[x.field]=x.val;
@@ -498,6 +581,7 @@ function applyReview(){
   // anciens camps remplacés : archivés comme avec le bouton 🗄 Archive (ils quittent le site public)
   old.forEach(function(c){const k=CAMPS_W.indexOf(c);if(k<0)return;CAMPS_W.splice(k,1);c.archived_on=today();ARCH.push(c);});
   cancelReview();
+  if(gp&&!up&&!nw){log("Coordinates applied to "+gp+" camp(s). Review, then “Save to the site”.","ok");markDirty();render();return;}
   log("Directory applied: "+up+" camp(s) updated, "+nw+" created"+(old.length?", "+old.length+" replaced camp(s) archived":"")+". Review, then “Save to the site”.","ok");
   markDirty();render();
 }

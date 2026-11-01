@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lions YCE — Administration — MD 112 Belgium</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
-<link rel="stylesheet" href="css/tools.css?v=1.15.1.174f3c35">
+<link rel="stylesheet" href="css/tools.css?v=1.16.0.174f3c35">
 <style id="noframe">html{display:none!important}</style>
-<script src="js/noframe.js?v=1.15.1.85617a56"></script>
+<script src="js/noframe.js?v=1.16.0.85617a56"></script>
 <meta name="robots" content="noindex">
 <script>try{if(localStorage.getItem('yce-theme')==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}</script>
 <style>
@@ -243,6 +243,7 @@ tr:hover td{background:var(--hover);}
   <div data-tab="camps">
   <div class="toolbar">
     <label class="filebtn">📥 Import YCE directory (.xlsx)<input type="file" accept=".xlsx" onchange="dirPick(this)"></label>
+    <label class="filebtn">📍 Import coordinates (GeoJSON)<input type="file" accept=".json,.geojson" onchange="geoPick(this)"></label>
     <label class="filebtn">⬆ Import JSON backup<input type="file" accept=".json" onchange="jsonPick(this)"></label>
     <button class="btn2" onclick="exportJson()">⬇ Export JSON backup</button>
     <button class="btn2" onclick="newCamp()">➕ New camp</button>
@@ -306,16 +307,16 @@ tr:hover td{background:var(--hover);}
     <div class="sec-body"><div class="fld w6" id="log"></div></div>
   </div>
 </main>
-<script src="js/version.js?v=1.15.1.bf58268a"></script>
-<script src="js/toolnav.js?v=1.15.1.540a0f90"></script>
-<script src="js/theme.js?v=1.15.1.8bd1d199"></script>
-<script src="camps_data.js?v=1.15.1.1b0a4c23"></script>
-<script src="districts_data.js?v=1.15.1.2a8555e4"></script>
-<script src="js/zip.js?v=1.15.1.912def0f"></script>
-<script src="js/xlsx.js?v=1.15.1.fae33a84"></script>
-<script src="js/admin-core.js?v=1.15.1.d83dfc63"></script>
-<script src="js/admin.js?v=1.15.1.6e37d59e"></script>
-<script src="js/camps-manager.js?v=1.15.1.00e24bfe"></script>
-<script src="js/admin-tabs.js?v=1.15.1.eb93884e"></script>
+<script src="js/version.js?v=1.16.0.6a466cc2"></script>
+<script src="js/toolnav.js?v=1.16.0.540a0f90"></script>
+<script src="js/theme.js?v=1.16.0.8bd1d199"></script>
+<script src="camps_data.js?v=1.16.0.1b0a4c23"></script>
+<script src="districts_data.js?v=1.16.0.2a8555e4"></script>
+<script src="js/zip.js?v=1.16.0.912def0f"></script>
+<script src="js/xlsx.js?v=1.16.0.fae33a84"></script>
+<script src="js/admin-core.js?v=1.16.0.d83dfc63"></script>
+<script src="js/admin.js?v=1.16.0.6e37d59e"></script>
+<script src="js/camps-manager.js?v=1.16.0.73cd8cd2"></script>
+<script src="js/admin-tabs.js?v=1.16.0.eb93884e"></script>
 </body>
 </html>
