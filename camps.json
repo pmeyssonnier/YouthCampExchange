@@ -2570,6 +2570,48 @@
     "contact_email": "md4lions-yep-applications@googlegroups.com",
     "contact_phone": "1-650-296-2870"
    }
+  },
+  {
+   "continent": "Europe",
+   "country": "Norway",
+   "camp_name": "Lions Camp Imagine Peace",
+   "age_requirements": "18-22",
+   "fee": "200 EURO",
+   "camp_starts": "12-07-2027",
+   "camp_ends": "25-07-2027",
+   "family_stay_starts": "07-07-2027",
+   "family_stay_ends": "12-07-2027",
+   "detail": {
+    "location": "Fredrikstad, Norway",
+    "description": "Peace. Culture. Environment. Nobel Peace Center & Utøya visit, Canoeing on lake Vannsjø, Fredrikstad Old Town & Oscarsborg, Final Show & cultural exchange",
+    "languages": [
+     "English"
+    ],
+    "application_deadline": "15-03-2027",
+    "participants": "30-45",
+    "contact_email": "stefan.trygve@soos.no"
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "Norway",
+   "camp_name": "Lions Camp Hardangervidda",
+   "age_requirements": "18-23",
+   "fee": "No camp fee",
+   "camp_starts": "12-07-2027",
+   "camp_ends": "24-07-2027",
+   "family_stay_starts": null,
+   "family_stay_ends": null,
+   "detail": {
+    "location": "Hardangervidda, Norway",
+    "description": "Adventure. Wilderness. Friendship. Camp stay without Internet connection. Hiking in a vast national park, Camping under the open sky, In the footsteps of polar explorers, Sightseeing & local culture",
+    "languages": [
+     "English"
+    ],
+    "application_deadline": "15-03-2027",
+    "participants": "22",
+    "contact_email": "director.camphardangervidda@gmail.com"
+   }
   }
  ]
 }

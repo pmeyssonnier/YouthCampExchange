@@ -5,6 +5,10 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.16.1 — 2026-11-05
+
+- **Two new Norwegian camps for 2027** added to the camp list: *Lions Camp Imagine Peace* (family stay 07–12 July, camp 12–25 July, 18–22 years, 200 EURO) and *Lions Camp Hardangervidda* (12–24 July, 18–23 years, no camp fee, no Internet). No Norwegian camp existed in 2026 or in the archive, so nothing is duplicated.
+
 ## 1.16.0 — 2026-11-01
 
 - **Map: one dot per camp.** In a country view, every camp that has coordinates gets a dot on the public map; a click opens the camp's details. Camps without coordinates stay in the list as before.
