@@ -61,6 +61,28 @@ function safeUrl(u){
   try{const x=new URL(s);return /^https?:$/.test(x.protocol)?x.href:null;}catch(e){return null;}
 }
 function safeMail(m){const s=String(m==null?'':m).trim();return /^[^\s@<>"'()]+@[^\s@<>"'()]+\.[^\s@<>"'()]+$/.test(s)?s:null;}
+// Numéro de téléphone : espacé selon le pays (indicatif international) + lien WhatsApp.
+// Seuls les numéros avec indicatif (+CC… ou 00CC…) sont traités : sans indicatif, le pays est inconnu
+// et le numéro reste tel qu'écrit, sans lien. Renvoie {text, wa} (wa = chiffres pour wa.me, ou null).
+const PHONE_CC=[1,7,20,27,30,31,32,33,34,36,39,40,41,43,44,45,46,47,48,49,51,52,53,54,55,56,57,58,60,61,62,63,64,65,66,81,82,84,86,90,91,92,93,94,95,98,
+  212,213,216,218,351,352,353,354,355,356,357,358,359,370,371,372,373,374,375,376,377,378,380,381,382,383,385,386,387,389,420,421,423,852,886,961,962,966,971,972,974];
+const PHONE_GRP={1:[3,3,4],31:[1,4,4],32:[3,2,2,2],33:[1,2,2,2,2],34:[3,3,3],39:[3,3,4],41:[2,3,2,2],44:[4,6],45:[2,2,2,2],52:[3,3,4],55:[2,5,4],
+  81:[2,4,4],90:[3,3,2,2],91:[5,5],94:[2,3,4],358:[2,3,4],421:[3,3,3]};
+function phoneInfo(raw){
+  const r=String(raw==null?'':raw).trim();
+  let d=r.replace(/\(0\)/g,'').replace(/[^\d+]/g,'');
+  if(d.indexOf('00')===0)d='+'+d.slice(2);
+  if(d.charAt(0)!=='+'||!/^\+\d{8,15}$/.test(d))return{text:r,wa:null};
+  d=d.slice(1);
+  let cc=null;
+  for(let n=1;n<=3&&!cc;n++){const c=+d.slice(0,n);if(d.slice(0,n).charAt(0)!=='0'&&PHONE_CC.indexOf(c)>=0)cc=String(c);}
+  if(!cc)return{text:'+'+d,wa:d};
+  const nat=d.slice(cc.length);
+  let g=PHONE_GRP[cc];
+  if(!g||g.reduce(function(a,b){return a+b;},0)!==nat.length){g=[];let left=nat.length;while(left>4){g.push(3);left-=3;}if(left)g.push(left);}
+  const parts=[];let pos=0;g.forEach(function(n){parts.push(nat.substr(pos,n));pos+=n;});
+  return{text:'+'+cc+' '+parts.join(' '),wa:d};
+}
 // HTML de personnalisation (SITE.*) : quelques balises de mise en forme, sans attributs ;
 // liens limités à http(s)/mailto/tel/#ancre ; tout le reste devient du texte ou disparaît
 const CLEAN_TAGS={STRONG:1,B:1,EM:1,I:1,U:1,BR:1,SPAN:1,SMALL:1,P:1,UL:1,OL:1,LI:1,A:1};

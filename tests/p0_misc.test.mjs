@@ -250,6 +250,22 @@ ok(r.mdy[0] === null && r.mdy[1] === '15-07-2027' && r.mdy[2] === null, 'directo
   const e = await pg.evaluate(() => { openEdit(0); document.getElementById('e-lat').value = '95'; document.getElementById('e-lon').value = '4'; document.getElementById('log').innerHTML = ''; saveEdit(); return document.getElementById('log').textContent; });
   ok(/Coordinates: give both/.test(e), 'camp sheet refuses impossible coordinates: ' + e);
 }
+
+// numéros de téléphone : espacement par pays + lien WhatsApp (page publique)
+{
+  await pg.goto(B + 'index.html'); await pg.waitForTimeout(500);
+  const ph = await pg.evaluate(() => ['+524921243877', '+32475782593', '00393357049046', '+1  262-224-5517', '+91-9706067767', '519-955-4669', '+33 6 12 34 56 78', 'x<b>']
+    .map(n => phoneInfo(n)));
+  ok(ph[0].text === '+52 492 124 3877' && ph[0].wa === '524921243877', 'phone: Mexico formatted +52 492 124 3877: ' + JSON.stringify(ph[0]));
+  ok(ph[1].text === '+32 475 78 25 93', 'phone: Belgium formatted: ' + ph[1].text);
+  ok(ph[2].text === '+39 335 704 9046' && ph[2].wa === '393357049046', 'phone: 00 prefix understood: ' + JSON.stringify(ph[2]));
+  ok(ph[3].text === '+1 262 224 5517' && ph[4].text === '+91 97060 67767', 'phone: US and India formatted: ' + ph[3].text + ' / ' + ph[4].text);
+  ok(ph[5].text === '519-955-4669' && ph[5].wa === null, 'phone: no country code -> left as typed, no WhatsApp link');
+  ok(ph[6].text === '+33 6 12 34 56 78', 'phone: France formatted: ' + ph[6].text);
+  ok(ph[7].wa === null, 'phone: junk gets no link');
+  const html = await pg.evaluate(() => { const i = CAMPS.findIndex(c => /Mexico: History/.test(c.camp_name)); showCampDetail(i); return document.getElementById('md-body').innerHTML; });
+  ok(/<a class="ms-link ms-wa" href="https:\/\/wa\.me\/524921243877" target="_blank" rel="noopener noreferrer"[^>]*>\+52 492 124 3877<\/a>/.test(html), 'camp sheet: phone is a WhatsApp link');
+}
 ok(!errs.length, 'no page errors: ' + errs.join(' | '));
 console.log(`\n${pass} passed, ${fail} failed`);
 await br.close(); srv.close(); process.exit(fail ? 1 : 0);
