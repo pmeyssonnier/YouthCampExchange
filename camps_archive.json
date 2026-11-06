@@ -1,6 +1,6 @@
 {
- "updated": "2026-10-31",
- "count": 25,
+ "updated": "2026-11-06",
+ "count": 28,
  "archive": [
   {
    "continent": "Asia",
@@ -530,6 +530,81 @@
    },
    "_i": 32,
    "archived_on": "31-10-2026"
+  },
+  {
+   "continent": "South America",
+   "country": "Brazil",
+   "camp_name": "18 th Brazil Lions Travel Youth Camphini Bueno",
+   "age_requirements": "17-20",
+   "fee": "325 EURO",
+   "camp_starts": "17-07-2026",
+   "camp_ends": "24-07-2026",
+   "family_stay_starts": "04-07-2026",
+   "family_stay_ends": "17-06-2027",
+   "detail": {
+    "location": "SÃO JOSÉ DOS CAMPOS and RIO DE JANEIRO",
+    "description": "Cultural activities, Round Tables, Bring Storms, Speaches about important themes as Peace, Respecting others cultures, Education, Choosing Professions , Brazil history, , Amazon, Leadership.Travel to Rio de Janeiro.",
+    "host_family_activities": "Living in family, making contact to relatives and friends, Visiting City and around cultural sites and Sport acitivities sites.",
+    "languages": [
+     "English"
+    ],
+    "application_deadline": "31-03-2026",
+    "participants": "12",
+    "contact_name": "Benjamin Bueno",
+    "contact_email": "lionbenbueno@yahoo.com",
+    "contact_phone": "+5512981566010"
+   },
+   "_i": 100,
+   "archived_on": "06-11-2026"
+  },
+  {
+   "continent": "South America",
+   "country": "Brazil",
+   "camp_name": "Benjamin Augusto Baracchini Bueno",
+   "age_requirements": "16-19",
+   "fee": "325 EURO",
+   "camp_starts": "17-07-2026",
+   "camp_ends": "24-07-2026",
+   "family_stay_starts": "04-07-2026",
+   "family_stay_ends": "17-07-2026",
+   "detail": {
+    "location": "SÃO JOSÉ DOS CAMPOS",
+    "description": "Living together , group integration, countries presentation, round tables, bring storms , sports facilities, trekings, talent show, visiting historical and tourists sites, beaches time.",
+    "host_family_activities": "Exchanging culture, way of living, introducing family members and friends. Visting town tourist and culture sites, sports facilities, Trips around.",
+    "languages": [
+     "English"
+    ],
+    "application_deadline": "01-07-2026",
+    "participants": "12",
+    "contact_name": "Benjamin Bueno",
+    "contact_email": "lionbenbueno@yahoo.com",
+    "contact_phone": "+5512981566010"
+   },
+   "_i": 100,
+   "archived_on": "06-11-2026"
+  },
+  {
+   "continent": "South America",
+   "country": "Brazil",
+   "camp_name": "Lions Camp South Brazil",
+   "age_requirements": "17-21",
+   "fee": "490 EURO",
+   "camp_starts": "18-07-2026",
+   "camp_ends": "26-07-2026",
+   "family_stay_starts": "04-07-2026",
+   "family_stay_ends": "18-07-2026",
+   "detail": {
+    "location": "Torres, RS, Brazil",
+    "description": "Recreational, sports, cultural, sightseeing and, mainly, volunteer activities within the global causes of Lions International.",
+    "host_family_activities": "At the family's discretion according to Host Family Advisor guidelines.",
+    "languages": [
+     "English",
+     "Portuguese"
+    ],
+    "yce_url": "https://www.lions-yce-belgium.be/destinations/lions-camp-south-brazil"
+   },
+   "_i": 65,
+   "archived_on": "06-11-2026"
   }
  ]
 }
