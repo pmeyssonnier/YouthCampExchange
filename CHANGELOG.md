@@ -5,6 +5,15 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.18.0 — 2026-11-06
+
+- **Phone numbers on the camp sheet:** numbers with a country code are spaced by country (`+524921243877` → `+52 492 124 3877`) and are underlined links that open a WhatsApp chat. Numbers written without a country code stay as typed, without a link.
+
+## 1.17.0 — 2026-11-06
+
+- **Mobile: same look on Android and iOS.** Buttons and fields of the tool pages (administration, form filler, tracker, vault) are now at least 44 px high, text fields use 16 px so iOS no longer zooms in when you tap them, drop-downs show the same arrow everywhere, and the safe areas of notched phones are respected.
+- **Administration on a phone:** the camp edit card shows Apply / Cancel / Delete as three equal buttons under the title, the Camps toolbar is a two-column grid with *Save to the site* on the full width, and the three tabs fit the screen without sideways scrolling.
+
 ## 1.16.1 — 2026-11-05
 
 - **Two new Norwegian camps for 2027** added to the camp list: *Lions Camp Imagine Peace* (family stay 07–12 July, camp 12–25 July, 18–22 years, 200 EURO) and *Lions Camp Hardangervidda* (12–24 July, 18–23 years, no camp fee, no Internet). No Norwegian camp existed in 2026 or in the archive, so nothing is duplicated.

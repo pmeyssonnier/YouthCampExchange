@@ -73,7 +73,7 @@ function showCampDetail(idx){
       <div class="ms-title">📬 Contact</div>
       ${det.contact_name?`<div class="ms-row"><span class="ms-lbl">Name</span><span class="ms-val">${esc(det.contact_name)}</span></div>`:''}
       ${det.contact_email?`<div class="ms-row"><span class="ms-lbl">Email</span>${mail?`<a class="ms-link" href="mailto:${esc(mail)}">${esc(mail)}</a>`:`<span class="ms-val">${esc(det.contact_email)}</span>`}</div>`:''}
-      ${det.contact_phone?`<div class="ms-row"><span class="ms-lbl">Phone</span><span class="ms-val">${esc(det.contact_phone)}</span></div>`:''}
+      ${det.contact_phone?(()=>{const ph=phoneInfo(det.contact_phone);return `<div class="ms-row"><span class="ms-lbl">Phone</span>${ph.wa?`<a class="ms-link ms-wa" href="https://wa.me/${esc(ph.wa)}" target="_blank" rel="noopener noreferrer" title="Open in WhatsApp">${esc(ph.text)}</a>`:`<span class="ms-val">${esc(ph.text)}</span>`}</div>`;})():''}
       ${det.application_deadline?`<div class="ms-row"><span class="ms-lbl">Deadline</span><span class="ms-val orange">${fmtDate(det.application_deadline)}</span></div>`:''}
     </div>`:'';
 
