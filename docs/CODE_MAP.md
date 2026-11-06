@@ -1,7 +1,7 @@
 # Code map — Lions YCE
 
 > **Generated file — do not edit by hand.** Rebuilt by `python3 tools/build_codemap.py` (run automatically on every push to `main`).
-> Commit `235804c`, 2026-11-06 08:50 UTC. Interactive version: [`code_map.html`](code_map.html).
+> Commit `f79cfd5`, 2026-11-06 08:53 UTC. Interactive version: [`code_map.html`](code_map.html).
 
 ## Pages
 
@@ -107,17 +107,17 @@
 | `camps_data.js` | 96.5 KB | season data: SEASON + YEAR + RAW camps — common to every deployment |
 | `districts_data.js` | 5.8 KB | per-deployment data: SITE_REPO + DISTRICTS coordinators |
 | `js/version.js` | 0.5 KB | site version number (VERSION), shown on every page — bumped by each pull request |
-| `CHANGELOG.md` | 20.5 KB | what changed in each version |
+| `CHANGELOG.md` | 21.1 KB | what changed in each version |
 | `yce_form_filler.html` | 12.1 KB | filler HTML shell + styles |
 | `yce_tracker.html` | 9.0 KB | tracker HTML shell + styles |
-| `yce_admin.html` | 24.2 KB | administration HTML shell: tabs Site & season / Camps / Documents |
+| `yce_admin.html` | 24.1 KB | administration HTML shell: tabs Site & season / Camps / Documents |
 | `yce_camps.html` | 1.0 KB | old camp manager address — redirects to yce_admin.html#camps |
 | `js/admin-core.js` | 13.2 KB | shared admin plumbing (token, passphrase, GitHub API, connect hooks) |
 | `js/admin.js` | 22.9 KB | admin Site & Documents tabs: season, coordinators, home page, gallery, uploads |
 | `js/camps-manager.js` | 37.0 KB | admin Camps tab: directory import, editing, backups, archive |
 | `js/admin-tabs.js` | 1.2 KB | admin tab switching (#site, #camps, #docs) |
 | `js/toolnav.js` | 1.3 KB | tool menu under the header of every tool page |
-| `css/tools.css` | 3.8 KB | styles shared by the tool pages |
+| `css/tools.css` | 6.2 KB | styles shared by the tool pages |
 | `yce_vault.html` | 20.1 KB | application vault HTML shell (Supabase) |
 | `js/vault-api.js` | 5.4 KB | vault: the only layer talking to Supabase |
 | `js/vault.js` | 35.7 KB | vault UI: sign-in, dashboard, file, signatures, team, retention |

@@ -53,3 +53,33 @@ html[data-theme="light"] header{background:linear-gradient(135deg,#ffffff 0%,#e7
 .sec-note{font-size:11px;color:var(--muted);}
 label.flbl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);}
 .badge{display:inline-block;background:rgba(6,214,160,0.12);color:var(--accent);border-radius:10px;padding:2px 10px;font-size:11px;}
+
+/* boutons et champs communs : même présentation sur ordinateur, Android et iOS */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
+button,select{-webkit-appearance:none;appearance:none;}
+body select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%238aa5c2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:12px 8px;padding-right:34px;}
+.head-actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.edit-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
+@media(max-width:700px){
+  /* zones tactiles d'au moins 44 px ; boutons d'une rangée d'actions de même largeur */
+  body .btn,body .btn2,body .tb-btn,body .filebtn{min-height:44px;display:inline-flex;align-items:center;justify-content:center;
+    text-align:center;font-size:14px;line-height:1.2;padding:10px 14px;touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
+  body .head-actions{margin-left:0;width:100%;flex-wrap:nowrap;}
+  body .head-actions>*{flex:1 1 0;min-width:0;padding-left:8px;padding-right:8px;}
+  .edit-head{align-items:flex-start;}
+  .edit-head>b{flex:1 1 100%;}
+  /* 16 px : iOS n'agrandit plus la page quand on touche un champ */
+  input,select,textarea{font-size:16px!important;min-height:44px;}
+  input[type=checkbox],input[type=radio]{min-height:0;width:auto;}
+  /* barres d'outils : grille de 2 colonnes, boutons de même largeur ; enregistrer sur toute la largeur */
+  body .toolbar{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:stretch;}
+  body .toolbar .sp{display:none;}
+  body .toolbar .dirty,body .toolbar #save-site{grid-column:1/-1;}
+  body .toolbar>.btn2,body .toolbar>.filebtn,body .toolbar>.btn{width:100%;}
+  /* onglets : tous visibles sans défilement */
+  body .tabs .tab{flex:1 1 0;min-width:0;padding:12px 4px;font-size:13px;white-space:normal;line-height:1.2;text-align:center;}
+  /* rangée de filtres */
+  .sec-head .pill{min-height:44px;padding:8px 14px;font-size:13px;}
+  main{padding-bottom:calc(60px + env(safe-area-inset-bottom));}
+  header{padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right));}
+}
