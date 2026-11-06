@@ -1,6 +1,6 @@
 {
  "updated": "2026-11-06",
- "count": 28,
+ "count": 34,
  "archive": [
   {
    "continent": "Asia",
@@ -604,6 +604,148 @@
     "yce_url": "https://www.lions-yce-belgium.be/destinations/lions-camp-south-brazil"
    },
    "_i": 65,
+   "archived_on": "06-11-2026"
+  },
+  {
+   "continent": "Asia",
+   "country": "India",
+   "camp_name": "Namaste India3.0",
+   "age_requirements": "16-22",
+   "fee": "550 USD",
+   "camp_starts": "27-12-2026",
+   "camp_ends": "10-01-2027",
+   "family_stay_starts": "20-12-2026",
+   "family_stay_ends": null,
+   "detail": {
+    "location": "Bhopal (MP)",
+    "description": "Tour to various heritage places such as Agra (the Taj Mahal-one of the seven wonders of the world), Fatehpur Sikri, Jaipur- The Pink City, Udaipur- the Venice of the East, Jawai- the Leopard Safari, Bhimbetica, Sanchi Stupa with Light and Sound Show, Factory visit, Meditation, Geeta Gyan. Activities including Team building,Problem Solving,Communication Skills, Personality Development and Hands- on service projects etc.",
+    "host_family_activities": "Cultural Exchange",
+    "languages": [
+     "English"
+    ],
+    "application_deadline": "31-10-2026",
+    "participants": "30",
+    "contact_name": "Shalini Bhargava",
+    "contact_email": "ycenamasteindia@gmail.com",
+    "contact_phone": "9425149710"
+   },
+   "_i": 101,
+   "archived_on": "06-11-2026"
+  },
+  {
+   "continent": "Europe",
+   "country": "Turkey",
+   "camp_name": "19.LIONS ISTANBUL FASHION & CULTURE CAMP",
+   "age_requirements": "for boys: 17-21; for girls: 17-23",
+   "fee": "450 EURO",
+   "camp_starts": "16-07-2026",
+   "camp_ends": "26-07-2026",
+   "family_stay_starts": "05-07-2026",
+   "family_stay_ends": "16-07-2026",
+   "detail": {
+    "location": "Istanbul",
+    "description": "Are you ready for more than just an ordinary camp? Our camp combines the peace of nature with the comfort of modern luxury to create an unforgettable summer experience!. Sightseeing in ?stanbul, visit historical places, participate in a professionel fashion show with top models,camp games,cinema night,sport activities,pool partys,bowling,presentation of the countries, photography & marbling workshop, optional tours, swimming at the Bosphorus,very good organised Talent Show with over 250 participants. optional tours, meeting with Leo & Lions members, funny night parties, night life in ?stanbul. Camp place is a 4 star luxury hotel with big swimming pool,comfortable beds, air conditioning, and private bathrooms.",
+    "host_family_activities": "Activities with host families",
+    "languages": [
+     "English"
+    ],
+    "yce_url": "https://www.lions-yce-belgium.be/destinations/19.lions-istanbul-fashion-%26-culture-camp"
+   },
+   "_i": 44,
+   "archived_on": "06-11-2026"
+  },
+  {
+   "continent": "Europe",
+   "country": "Turkey",
+   "camp_name": "26.LIONS ISTANBUL DANCING AT BOSPHORUS CAMP",
+   "age_requirements": "for boys: 17-21; for girls: 17-23",
+   "fee": "450 EURO",
+   "camp_starts": "16-07-2026",
+   "camp_ends": "26-07-2026",
+   "family_stay_starts": "05-07-2026",
+   "family_stay_ends": "16-07-2026",
+   "detail": {
+    "location": "Istanbul",
+    "description": "Are you ready for more than just an ordinary camp? Our camp combines the peace of nature with the comfort of modern luxury to create an unforgettable summer experience!. Sightseeing in ?stanbul, visit historical places & museums, camp games, cinema night, dancing workshops, sport activities, pool partys, bowling, presentation of the countries, seaside tours photography & marbling workshop, optional tours, swimming at the Bosphorus very good organised Talent Show with over 250 participants. Optional tours, meeting with Leo & Lions members, funny night parties, night life in ?stanbul. Camp place is a 4 star luxury hotel with big swimming pool,comfortable beds, air conditioning, and private bathrooms.",
+    "host_family_activities": "Activities with host families",
+    "languages": [
+     "English"
+    ],
+    "yce_url": "https://www.lions-yce-belgium.be/destinations/26.lions-istanbul-dancing-at-bosphorus-camp"
+   },
+   "_i": 46,
+   "archived_on": "06-11-2026"
+  },
+  {
+   "continent": "Europe",
+   "country": "Belgium",
+   "district": "MD112",
+   "camp_name": "Brussels Lions Youth Camp",
+   "age_requirements": "17-21",
+   "fee": "300 EURO",
+   "camp_starts": "17-07-2027",
+   "camp_ends": "31-07-2027",
+   "family_stay_starts": "10-07-2027",
+   "family_stay_ends": "17-07-2027",
+   "detail": {
+    "location": "Limburg, Belgium",
+    "description": "A perfect mix of culture (Cities of Antwerp, Ghent...) , history (EU parliament, Flanders Fields...) and sports (Kayak, team building...)",
+    "host_family_activities": "Stay with a Belgian family and discover how they live, think and interact. Visit the local area.",
+    "languages": [
+     "English"
+    ],
+    "website": "https://yce.lions.be",
+    "yce_url": "https://yce.lions.be/",
+    "application_deadline": "31-03-2027",
+    "participants": "35",
+    "contact_name": "Stijn Renier",
+    "contact_email": "stijn.renier@renier.be",
+    "contact_phone": "+32475782593"
+   },
+   "_i": 15,
+   "archived_on": "06-11-2026"
+  },
+  {
+   "continent": "Europe",
+   "country": "Italy",
+   "camp_name": "CAMPO VALTELLINA",
+   "age_requirements": "16-21",
+   "fee": "150 EURO",
+   "camp_starts": "28-06-2026",
+   "camp_ends": "12-07-2026",
+   "family_stay_starts": "21-06-2026",
+   "family_stay_ends": "28-06-2026",
+   "detail": {
+    "location": "Tirano (SO) e Milano, Italy",
+    "description": "Camp Valtellina will be located in northern Italy, in Tirano and in Milan. The program includes hiking on wonderful landscape, walks in the woods and excursions in unspoiled nature of the Alps mountains; cultural visits and typical places in Milan; meetings and service with Lions Clubs.",
+    "languages": [
+     "English"
+    ],
+    "yce_url": "https://www.lions-yce-belgium.be/destinations/campo-valtellina"
+   },
+   "_i": 28,
+   "archived_on": "06-11-2026"
+  },
+  {
+   "continent": "Europe",
+   "country": "Italy",
+   "camp_name": "Campo Amicizia E Cesarotti",
+   "age_requirements": "16-19",
+   "fee": "350 EURO",
+   "camp_starts": "20-07-2026",
+   "camp_ends": "01-08-2026",
+   "family_stay_starts": "10-07-2026",
+   "family_stay_ends": "20-07-2026",
+   "detail": {
+    "location": "Roma (Lazio) Amelia (Umbria)",
+    "description": "Cultural, adventure sports and service Leo Lions",
+    "host_family_activities": "At the discretion of the family. Local custode and habits, family family life and leisure.",
+    "languages": [
+     "English"
+    ],
+    "yce_url": "https://www.lions-yce-belgium.be/destinations/campo-amicizia-e-cesarotti"
+   },
+   "_i": 33,
    "archived_on": "06-11-2026"
   }
  ]
