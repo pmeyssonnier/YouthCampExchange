@@ -9,24 +9,41 @@ const CONT_COLORS={'Africa':'b-Africa','Asia':'b-Asia','Europe':'b-Europe','Nort
 let selStates=new Set();
 let selSeasons=new Set();
 
-function initSeasonPills(){
+// Nombres des puces : chaque filtre compte les camps qui passent TOUS les autres filtres (pas le sien),
+// donc un choix de saison ou d'âge met à jour les continents, les pays et les États.
+// skip : lettres des filtres ignorés — s saison, c continent, k pays, t État. L'âge et la période comptent toujours.
+function campMatches(c,skip){
+  if(skip.indexOf('s')<0&&selSeasons.size>0&&!selSeasons.has(c.season))return false;
+  if(skip.indexOf('c')<0&&selContinents.size>0&&!selContinents.has(c.continent))return false;
+  if(skip.indexOf('k')<0&&selCountries.size>0&&!selCountries.has(c.country))return false;
+  if(skip.indexOf('t')<0&&selStates.size>0&&c.state&&!selStates.has(c.state))return false;
+  if(filterAge!==null&&(filterAge<c.age_min||filterAge>c.age_max))return false;
+  if(periodRange){const{start,end}=periodRange;if(!c.arrival||!c.departure||c.departure<start||c.arrival>end)return false;}
+  return true;
+}
+function facetCounts(key,skip){
+  const counts={};CAMPS.forEach(c=>{if(c[key]&&campMatches(c,skip))counts[c[key]]=(counts[c[key]]||0)+1;});
+  return counts;
+}
+function renderSeasonPills(){
   const el=document.getElementById('seas-pills');if(!el)return;
-  const counts={};CAMPS.forEach(c=>{if(c.season)counts[c.season]=(counts[c.season]||0)+1;});
-  el.innerHTML=Object.keys(counts).sort().map(s=>
-    `<div class="pill" data-ss="${esc(s)}" onclick="toggleSeason(${jsArg(s)})">${esc(s)} <span style="opacity:0.6">${counts[s]}</span></div>`
+  const counts=facetCounts('season','s'),all={};CAMPS.forEach(c=>{if(c.season)all[c.season]=1;});
+  el.innerHTML=Object.keys(all).sort().map(s=>
+    `<div class="pill${selSeasons.has(s)?' on':''}${counts[s]?'':' zero'}" data-ss="${esc(s)}" onclick="toggleSeason(${jsArg(s)})">${esc(s)} <span style="opacity:0.6">${counts[s]||0}</span></div>`
   ).join('');
 }
+function initSeasonPills(){renderSeasonPills();}
+function refreshFacets(){renderStateList();renderSeasonPills();renderContinentPills();renderCountryList();}
 function toggleSeason(s){
   if(selSeasons.has(s))selSeasons.delete(s);else selSeasons.add(s);
-  document.querySelectorAll('.pill[data-ss]').forEach(p=>p.classList.toggle('on',selSeasons.has(p.dataset.ss)));
-  renderCountryList();renderStateList();applyFilters();
+  applyFilters();
 }
 
 function renderStateList(){
   const stateCtries=['United States','Canada'];
-  const base=selCountries.size>0
+  const base=(selCountries.size>0
     ?CAMPS.filter(c=>selCountries.has(c.country)&&stateCtries.includes(c.country))
-    :CAMPS.filter(c=>stateCtries.includes(c.country));
+    :CAMPS.filter(c=>stateCtries.includes(c.country))).filter(c=>campMatches(c,'ckt'));
   const hasCtx=selCountries.size>0
     ?[...selCountries].some(c=>stateCtries.includes(c))
     :selContinents.size===0||[...selContinents].some(c=>c==='North America');
@@ -49,20 +66,10 @@ function renderStateList(){
 
 function toggleState(s){
   if(selStates.has(s))selStates.delete(s);else selStates.add(s);
-  renderStateList();applyFilters();
+  applyFilters();
 }
 
-function getFiltered(){
-  return CAMPS.filter(c=>{
-    if(selSeasons.size>0&&!selSeasons.has(c.season))return false;
-    if(selContinents.size>0&&!selContinents.has(c.continent))return false;
-    if(selCountries.size>0&&!selCountries.has(c.country))return false;
-    if(selStates.size>0&&c.state&&!selStates.has(c.state))return false;
-    if(filterAge!==null&&(filterAge<c.age_min||filterAge>c.age_max))return false;
-    if(periodRange){const{start,end}=periodRange;if(!c.arrival||!c.departure||c.departure<start||c.arrival>end)return false;}
-    return true;
-  });
-}
+function getFiltered(){return CAMPS.filter(c=>campMatches(c,''));}
 
 function getSorted(arr){
   return[...arr].sort((a,b)=>{
@@ -165,23 +172,23 @@ function closeFilters(){
 }
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeFilters();});
 
-function initContinentPills(){
-  const counts={};CAMPS.forEach(c=>counts[c.continent]=(counts[c.continent]||0)+1);
-  document.getElementById('cont-pills').innerHTML=CONT_ORDER.filter(ct=>counts[ct]).map(ct=>
-    `<div class="pill" data-ct="${esc(ct)}" onclick="toggleContinent(${jsArg(ct)})">${esc(ct)} <span style="opacity:0.6">${counts[ct]}</span></div>`
+function renderContinentPills(){
+  const el=document.getElementById('cont-pills');if(!el)return;
+  const counts=facetCounts('continent','ckt'),all={};CAMPS.forEach(c=>{all[c.continent]=1;});
+  el.innerHTML=CONT_ORDER.filter(ct=>all[ct]).map(ct=>
+    `<div class="pill${selContinents.has(ct)?' on':''}${counts[ct]?'':' zero'}" data-ct="${esc(ct)}" onclick="toggleContinent(${jsArg(ct)})">${esc(ct)} <span style="opacity:0.6">${counts[ct]||0}</span></div>`
   ).join('');
 }
+function initContinentPills(){renderContinentPills();}
 
 function toggleContinent(ct){
   if(selContinents.has(ct))selContinents.delete(ct);else selContinents.add(ct);
-  document.querySelectorAll('.pill[data-ct]').forEach(p=>p.classList.toggle('on',selContinents.has(p.dataset.ct)));
-  selCountries.clear();renderCountryList();renderStateList();applyFilters();
+  selCountries.clear();applyFilters();
 }
 
 function renderCountryList(){
   const srch=document.getElementById('c-srch').value.toLowerCase();
-  let base=selContinents.size>0?CAMPS.filter(c=>selContinents.has(c.continent)):CAMPS;
-  if(selSeasons.size>0)base=base.filter(c=>selSeasons.has(c.season));
+  const base=CAMPS.filter(c=>campMatches(c,'kt'));
   const counts={};base.forEach(c=>counts[c.country]=(counts[c.country]||0)+1);
   const countries=Object.keys(counts).sort().filter(c=>c.toLowerCase().includes(srch));
   const sc=document.getElementById('sel-country');if(sc)sc.textContent=selCountries.size?'· '+selCountries.size+' selected':'';
@@ -194,7 +201,7 @@ function renderCountryList(){
   ).join('');
 }
 
-function toggleCountry(c){if(selCountries.has(c))selCountries.delete(c);else selCountries.add(c);renderCountryList();renderStateList();applyFilters();}
+function toggleCountry(c){if(selCountries.has(c))selCountries.delete(c);else selCountries.add(c);applyFilters();}
 
 function toggleAcc(id){document.getElementById(id).classList.toggle('closed');}
 
@@ -238,6 +245,7 @@ function applyFilters(){
   const ageEl=document.getElementById('age-in');filterAge=ageEl.value?+ageEl.value:null;
   if(periodType!=='none'){const sel=document.getElementById('p-sel');const opts=sel._opts;if(opts&&opts.length){const o=opts[+sel.value];periodRange=o?{start:o.start,end:o.end}:null;}}
   else periodRange=null;
+  refreshFacets();
   renderTable();
 }
 
@@ -245,7 +253,7 @@ function resetFilters(){
   selContinents.clear();selCountries.clear();selStates.clear();selSeasons.clear();filterAge=null;periodType='none';periodRange=null;
   document.getElementById('age-in').value='';document.getElementById('c-srch').value='';
   document.querySelectorAll('.pill').forEach(p=>p.classList.remove('on'));
-  setPeriodType('none');renderCountryList();renderStateList();renderTable();
+  setPeriodType('none');refreshFacets();renderTable();
 }
 
 function switchTab(id,btn){

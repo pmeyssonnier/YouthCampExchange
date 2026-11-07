@@ -1,7 +1,7 @@
 # Code map — Lions YCE
 
 > **Generated file — do not edit by hand.** Rebuilt by `python3 tools/build_codemap.py` (run automatically on every push to `main`).
-> Commit `6a0feda`, 2026-11-06 18:43 UTC. Interactive version: [`code_map.html`](code_map.html).
+> Commit `c54a76e`, 2026-11-07 16:31 UTC. Interactive version: [`code_map.html`](code_map.html).
 
 ## Pages
 
@@ -19,9 +19,9 @@
 | File | Role |
 |---|---|
 | index.html (377 ln, 26.9 KB) | HTML shell: nav · hero · program · explorer · Brussels · apply · testimonials · team · footer |
-| css/site.css (451 ln, 36.5 KB) | site + explorer + map + modal styles, light/dark, responsive |
+| css/site.css (452 ln, 36.5 KB) | site + explorer + map + modal styles, light/dark, responsive |
 | js/site-data.js (119 ln, 7.0 KB) | date helpers, CAMPS enrichment, season stats, HTML escaping (esc / jsArg / safeUrl / cleanHtml) |
-| js/site-explorer.js (265 ln, 15.1 KB) | directory: getFiltered/getSorted/renderTable + all filters, tabs |
+| js/site-explorer.js (273 ln, 15.6 KB) | directory: getFiltered/getSorted/renderTable + all filters, tabs |
 | js/site-map.js (210 ln, 19.5 KB) | world map (D3): initMap/renderWorldBubbles/zoomContinent/zoomCountry/showCountryCamps |
 | js/site-modal.js (125 ln, 8.3 KB) | camp detail modal: showCampDetail/buildTimeline |
 | js/site-ui.js (120 ln, 7.4 KB) | theme toggle, mobile nav, scroll-reveal, Belgium teaser — runs init |
@@ -107,7 +107,7 @@
 | `camps_data.js` | 91.2 KB | season data: SEASON + YEAR + RAW camps — common to every deployment |
 | `districts_data.js` | 5.8 KB | per-deployment data: SITE_REPO + DISTRICTS coordinators |
 | `js/version.js` | 0.5 KB | site version number (VERSION), shown on every page — bumped by each pull request |
-| `CHANGELOG.md` | 21.3 KB | what changed in each version |
+| `CHANGELOG.md` | 21.8 KB | what changed in each version |
 | `yce_form_filler.html` | 12.1 KB | filler HTML shell + styles |
 | `yce_tracker.html` | 9.0 KB | tracker HTML shell + styles |
 | `yce_admin.html` | 24.1 KB | administration HTML shell: tabs Site & season / Camps / Documents |

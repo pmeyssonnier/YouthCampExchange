@@ -106,6 +106,7 @@ hr.div{border:none;border-top:1px solid var(--border);margin:12px 0;}
 .pills{display:flex;flex-wrap:wrap;gap:5px;}
 .pill{padding:3px 9px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:11px;transition:all 0.15s;font-family:'IBM Plex Sans',sans-serif;}
 .pill:hover{border-color:var(--gold);color:var(--gold);}
+.pill.zero:not(.on){opacity:.45;}
 .pill.on{background:var(--gold);border-color:var(--gold);color:var(--on-gold);font-weight:600;}
 .srch{width:100%;background:var(--card);border:1px solid var(--border);border-radius:5px;padding:6px 10px;color:var(--text);font-size:12px;font-family:'IBM Plex Sans',sans-serif;outline:none;margin-bottom:5px;}
 .srch:focus{border-color:var(--gold);}
