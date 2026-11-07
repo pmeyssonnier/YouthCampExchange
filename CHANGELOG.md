@@ -5,6 +5,11 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.21.0 — 2026-11-08
+
+- **♿ Inclusion tag on the camp sheet.** Camps flagged as inclusion / special camps show a "♿ Inclusion" tag next to the country in their sheet. The flag now covers camps for young people with disabilities *and* other special-needs camps: the Hannover 2027 camp for young people with Type 1 diabetes is flagged. The filter is renamed *Inclusion camps*, and in the administration the edit card field is *♿ Inclusion / special camp (disability, special needs)* (Yes/No).
+- **Second family stay.** A camp can have a second host-family period (two new optional fields in the edit card). The camp sheet shows a *Second Family Stay* section **only** for those camps, the timeline lists it, and arrival/departure take it into account. Filled in for Poland, Serbia, Netherlands (Camp 2), Mexico (Verano del 27), Sri Lanka and Wisconsin; the earlier notes about a second stay are removed from their *Host family activities*.
+
 ## 1.20.0 — 2026-11-08
 
 - **Filter for camps for people with disabilities.** The public camp list has a new *Inclusion* filter: one tap on "♿ Camps for people with disabilities" keeps only those camps (with a count that follows the other filters, a chip in the active-filters bar, and it is cleared by *Reset all filters*). Three camps are flagged for now: Freewheeling Sicilia, Campo Toscana Giovani con disabilità and Campo Emilia Knights of light (a camp for visually impaired young people). Coordinators set it in the camp edit card (new field *Camp for people with disabilities*, Yes/No).

@@ -449,3 +449,4 @@ html[data-theme="light"] #tab-map,html[data-theme="light"] .tt{
   .modal-body{padding:12px 12px 18px;gap:9px;}
   .foot-bottom{flex-direction:column;gap:6px;}
 }
+.incl-tag{background:rgba(232,168,32,0.12);color:var(--gold);border-color:rgba(232,168,32,0.35);font-size:11px;font-weight:600;}

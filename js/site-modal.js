@@ -5,9 +5,11 @@ function buildTimeline(c,campDays){
   const events=[];
   if(c.fs)events.push({date:c.fs,key:'fs',dot:'orange',lbl:'🏠 Family stay begins'});
   if(c.fe)events.push({date:c.fe,key:'fe',dot:'green',lbl:'🏠 Family stay ends'});
+  if(c.fs2)events.push({date:c.fs2,key:'fs2',dot:'orange',lbl:'🏠 Second family stay begins'});
+  if(c.fe2)events.push({date:c.fe2,key:'fe2',dot:'green',lbl:'🏠 Second family stay ends'});
   if(c.cs)events.push({date:c.cs,key:'cs',dot:'blue',lbl:'🏕 Camp starts',extra:campDays?` <span style="color:var(--muted);font-size:10px">(${campDays} days)</span>`:''});
   if(c.ce)events.push({date:c.ce,key:'ce',dot:'blue',lbl:'🏕 Camp ends'});
-  const keyOrder={fs:0,fe:1,cs:2,ce:3};
+  const keyOrder={fs:0,fe:1,fs2:2,fe2:3,cs:4,ce:5};
   events.sort((a,b)=>(a.date-b.date)||(keyOrder[a.key]-keyOrder[b.key]));
   if(!events.length)return'<div style="color:var(--muted);font-size:11px">No date information</div>';
   events[0].arrival=true;events[events.length-1].departure=true;
@@ -29,7 +31,7 @@ function showCampDetail(idx){
   const det=c.detail||null;
   document.getElementById('md-continent').textContent=c.continent;
   document.getElementById('md-title').textContent=titleCase(c.camp_name);
-  document.getElementById('md-country').innerHTML=`🗺️ &nbsp;${esc(c.country)}${c.state?' <span style="color:var(--muted);font-size:11px">— '+esc(c.state)+'</span>':''}`;
+  document.getElementById('md-country').innerHTML=`🗺️ &nbsp;${esc(c.country)}${c.state?' <span style="color:var(--muted);font-size:11px">— '+esc(c.state)+'</span>':''}${c.inclusive?' &nbsp;<span class="ms-tag incl-tag" title="Camp designed for young people with disabilities or special needs">♿ Inclusion</span>':''}`;
   const encLoc=det&&det.location?encodeURIComponent(det.location):'';
 
   const secLocation=det&&det.location?`
@@ -106,6 +108,11 @@ function showCampDetail(idx){
       ${c.fs?`<div class="ms-row"><span class="ms-lbl">Start</span><span class="ms-val">${fmtFull(c.fs)}</span></div><div class="ms-row"><span class="ms-lbl">End</span><span class="ms-val">${fmtFull(c.fe)}</span></div>`
       :'<div style="color:var(--muted);font-size:11px;font-style:italic">No family stay information</div>'}
     </div>
+    ${c.fs2?`<div class="modal-section full">
+      <div class="ms-title">🏠 Second Family Stay</div>
+      <div class="ms-row"><span class="ms-lbl">Start</span><span class="ms-val">${fmtFull(c.fs2)}</span></div>
+      <div class="ms-row"><span class="ms-lbl">End</span><span class="ms-val">${fmtFull(c.fe2)}</span></div>
+    </div>`:''}
     <div class="modal-section full" style="background:rgba(255,183,77,0.06);border-color:rgba(255,183,77,0.25);">
       <div class="ms-title" style="color:var(--orange)">✈ Total Presence in Country</div>
       <div class="ms-row"><span class="ms-lbl">Arrival</span><span class="ms-val orange">${fmtFull(c.arrival)}</span></div>

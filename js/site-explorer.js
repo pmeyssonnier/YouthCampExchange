@@ -38,7 +38,7 @@ function initSeasonPills(){renderSeasonPills();}
 function renderInclusivePill(){
   const el=document.getElementById('incl-pills');if(!el)return;
   const n=CAMPS.filter(c=>c.inclusive&&campMatches(c,'i')).length;
-  el.innerHTML=`<div class="pill${filterInclusive?' on':''}${n?'':' zero'}" onclick="toggleInclusive()">♿ Camps for people with disabilities <span style="opacity:0.6">${n}</span></div>`;
+  el.innerHTML=`<div class="pill${filterInclusive?' on':''}${n?'':' zero'}" onclick="toggleInclusive()">♿ Inclusion camps <span style="opacity:0.6">${n}</span></div>`;
 }
 function toggleInclusive(){filterInclusive=!filterInclusive;applyFilters();}
 function refreshFacets(){renderInclusivePill();renderStateList();renderSeasonPills();renderContinentPills();renderCountryList();}
@@ -157,7 +157,7 @@ function renderFilterChips(){
   selContinents.forEach(c=>parts.push([`🌍 <b>${esc(c)}</b>`,()=>toggleContinent(c)]));
   selCountries.forEach(c=>parts.push([`🗺️ <b>${esc(c)}</b>`,()=>toggleCountry(c)]));
   selStates.forEach(s=>parts.push([`📍 <b>${esc(s)}</b>`,()=>toggleState(s)]));
-  if(filterInclusive)parts.push([`♿ <b>Disabilities</b>`,()=>toggleInclusive()]);
+  if(filterInclusive)parts.push([`♿ <b>Inclusion</b>`,()=>toggleInclusive()]);
   if(filterAge!==null)parts.push([`👤 <b>${filterAge} y</b>`,()=>{document.getElementById('age-in').value='';applyFilters();}]);
   if(periodType!=='none'&&periodRange){
     const sel=document.getElementById('p-sel');
