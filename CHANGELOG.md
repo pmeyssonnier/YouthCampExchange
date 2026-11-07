@@ -5,6 +5,10 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.19.0 — 2026-11-08
+
+- **Camp flyer link.** Each camp sheet can now carry a link to the camp's flyer: a *Flyer* line ("View the camp flyer ↗") in the **Links** block opens the original image on lionscamp.at in a new tab. Coordinators set it in the camp edit card (new field *Camp flyer (link to the image)*; it must be an https address). The 78 camps that have a flyer on the lionscamp.at camp list are filled in; Hauts-de-France, Netherlands Camp 1 and Lake Steinhude have none yet. The images are not copied into the repository: only the link is stored.
+
 ## 1.18.2 — 2026-11-08
 
 - **New camp for 2027: Lions Youth Camp Sweden 2027 – Forest, Water & Adventure** (Vetlanda and surroundings; family stay 17–24 July, camp 24 July – 7 August 2027; 17–21 years; 150 EURO; 25 participants). The 2026 Swedish camp (Sollefteå) is a different edition and stays in the list until it is archived.
