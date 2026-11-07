@@ -100,6 +100,7 @@ document.querySelectorAll('.nav-links a').forEach(a=>a.addEventListener('click',
 // ── INIT ─────────────────────────────────────────────
 initContinentPills();
 initSeasonPills();
+renderInclusivePill();
 renderCountryList();
 renderStateList();
 renderTable();

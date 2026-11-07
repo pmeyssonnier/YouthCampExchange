@@ -8,6 +8,7 @@ const CONT_COLORS={'Africa':'b-Africa','Asia':'b-Asia','Europe':'b-Europe','Nort
 
 let selStates=new Set();
 let selSeasons=new Set();
+let filterInclusive=false; // seulement les camps pour personnes en situation de handicap (champ inclusive)
 
 // Nombres des puces : chaque filtre compte les camps qui passent TOUS les autres filtres (pas le sien),
 // donc un choix de saison ou d'âge met à jour les continents, les pays et les États.
@@ -17,6 +18,7 @@ function campMatches(c,skip){
   if(skip.indexOf('c')<0&&selContinents.size>0&&!selContinents.has(c.continent))return false;
   if(skip.indexOf('k')<0&&selCountries.size>0&&!selCountries.has(c.country))return false;
   if(skip.indexOf('t')<0&&selStates.size>0&&c.state&&!selStates.has(c.state))return false;
+  if(skip.indexOf('i')<0&&filterInclusive&&!c.inclusive)return false;
   if(filterAge!==null&&(filterAge<c.age_min||filterAge>c.age_max))return false;
   if(periodRange){const{start,end}=periodRange;if(!c.arrival||!c.departure||c.departure<start||c.arrival>end)return false;}
   return true;
@@ -33,7 +35,13 @@ function renderSeasonPills(){
   ).join('');
 }
 function initSeasonPills(){renderSeasonPills();}
-function refreshFacets(){renderStateList();renderSeasonPills();renderContinentPills();renderCountryList();}
+function renderInclusivePill(){
+  const el=document.getElementById('incl-pills');if(!el)return;
+  const n=CAMPS.filter(c=>c.inclusive&&campMatches(c,'i')).length;
+  el.innerHTML=`<div class="pill${filterInclusive?' on':''}${n?'':' zero'}" onclick="toggleInclusive()">♿ Camps for people with disabilities <span style="opacity:0.6">${n}</span></div>`;
+}
+function toggleInclusive(){filterInclusive=!filterInclusive;applyFilters();}
+function refreshFacets(){renderInclusivePill();renderStateList();renderSeasonPills();renderContinentPills();renderCountryList();}
 function toggleSeason(s){
   if(selSeasons.has(s))selSeasons.delete(s);else selSeasons.add(s);
   applyFilters();
@@ -149,6 +157,7 @@ function renderFilterChips(){
   selContinents.forEach(c=>parts.push([`🌍 <b>${esc(c)}</b>`,()=>toggleContinent(c)]));
   selCountries.forEach(c=>parts.push([`🗺️ <b>${esc(c)}</b>`,()=>toggleCountry(c)]));
   selStates.forEach(s=>parts.push([`📍 <b>${esc(s)}</b>`,()=>toggleState(s)]));
+  if(filterInclusive)parts.push([`♿ <b>Disabilities</b>`,()=>toggleInclusive()]);
   if(filterAge!==null)parts.push([`👤 <b>${filterAge} y</b>`,()=>{document.getElementById('age-in').value='';applyFilters();}]);
   if(periodType!=='none'&&periodRange){
     const sel=document.getElementById('p-sel');
@@ -250,7 +259,7 @@ function applyFilters(){
 }
 
 function resetFilters(){
-  selContinents.clear();selCountries.clear();selStates.clear();selSeasons.clear();filterAge=null;periodType='none';periodRange=null;
+  selContinents.clear();selCountries.clear();selStates.clear();selSeasons.clear();filterInclusive=false;filterAge=null;periodType='none';periodRange=null;
   document.getElementById('age-in').value='';document.getElementById('c-srch').value='';
   document.querySelectorAll('.pill').forEach(p=>p.classList.remove('on'));
   setPeriodType('none');refreshFacets();renderTable();

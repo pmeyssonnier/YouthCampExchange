@@ -5,6 +5,10 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.20.0 — 2026-11-08
+
+- **Filter for camps for people with disabilities.** The public camp list has a new *Inclusion* filter: one tap on "♿ Camps for people with disabilities" keeps only those camps (with a count that follows the other filters, a chip in the active-filters bar, and it is cleared by *Reset all filters*). Two camps are flagged for now: Freewheeling Sicilia and Campo Toscana Giovani con disabilità. Coordinators set it in the camp edit card (new field *Camp for people with disabilities*, Yes/No).
+
 ## 1.19.0 — 2026-11-08
 
 - **Camp flyer link.** Each camp sheet can now carry a link to the camp's flyer: a *Flyer* line ("View the camp flyer ↗") in the **Links** block opens the original image on lionscamp.at in a new tab. Coordinators set it in the camp edit card (new field *Camp flyer (link to the image)*; it must be an https address). The 78 camps that have a flyer on the lionscamp.at camp list are filled in; Hauts-de-France, Netherlands Camp 1 and Lake Steinhude have none yet. The images are not copied into the repository: only the link is stored.
