@@ -2,47 +2,6 @@
  "season": "2026–2027",
  "camps": [
   {
-   "continent": "Africa",
-   "country": "Namibia",
-   "camp_name": "Service Without Borders: The Spirit of Ubuntu",
-   "age_requirements": "18-24",
-   "fee": "500 EURO",
-   "camp_starts": "30-04-2026",
-   "camp_ends": "08-05-2026",
-   "family_stay_starts": null,
-   "family_stay_ends": null,
-   "detail": {
-    "location": "Erongo, Namibia",
-    "description": "Service & Humanitarian Activities, Environmental Activities, Leadership & Development, Cultural & Social Exchange, Creative & Reflection Sessions, Adventure & Team Building, Closing Highlights.",
-    "languages": [
-     "English",
-     "Deutsch"
-    ],
-    "yce_url": "https://www.lions-yce-belgium.be"
-   }
-  },
-  {
-   "continent": "Asia",
-   "country": "Bangladesh",
-   "camp_name": "Vision",
-   "age_requirements": "18-30",
-   "fee": "2000",
-   "camp_starts": "24-12-2025",
-   "camp_ends": "27-12-2025",
-   "family_stay_starts": "23-12-2025",
-   "family_stay_ends": "28-12-2025",
-   "detail": {
-    "location": "Rural Development Academy, Bogura, Bangladesh.",
-    "description": "Camp Openings Ceremony, Parade, inaugural Session, Cultural Competition, Training, Telent Show, Sports, Cultural Session, Award Ceremony, Camp Fire.",
-    "host_family_activities": "Training, Sports, inaugural Session, Cultural Session, Award Ceremony.",
-    "languages": [
-     "English",
-     "Other"
-    ],
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/vision"
-   }
-  },
-  {
    "continent": "Asia",
    "country": "India",
    "camp_name": "Lions Escapade Northeast Youth Camp & Exchange",
@@ -76,7 +35,7 @@
    "camp_starts": "27-12-2026",
    "camp_ends": "10-01-2027",
    "family_stay_starts": "20-12-2026",
-   "family_stay_ends": null,
+   "family_stay_ends": "26-12-2026",
    "detail": {
     "location": "Bhopal (MP)",
     "description": "Tour to various heritage places such as Agra (the Taj Mahal-one of the seven wonders of the world), Fatehpur Sikri, Jaipur- The Pink City, Udaipur- the Venice of the East, Jawai- the Leopard Safari, Bhimbetica, Sanchi Stupa with Light and Sound Show, Factory visit, Meditation, Geeta Gyan. Activities including Team building,Problem Solving,Communication Skills, Personality Development and Hands- on service projects etc.",
@@ -90,110 +49,6 @@
     "contact_name": "Shalini Bhargava",
     "contact_email": "ycenamasteindia@gmail.com",
     "contact_phone": "9425149710"
-   }
-  },
-  {
-   "continent": "Asia",
-   "country": "Indonesia",
-   "camp_name": "Lions North Sumatera Youth Camp",
-   "age_requirements": "17-22",
-   "fee": "700 EURO",
-   "camp_starts": "24-07-2026",
-   "camp_ends": "02-08-2026",
-   "family_stay_starts": "18-07-2026",
-   "family_stay_ends": "23-07-2026",
-   "detail": {
-    "location": "Medan, North Sumatera, Indonesia",
-    "description": "In North Sumatera Youth Camp, you will dive into the world of hospitality with hands-on workshops, then venture into the wild to trek, camp, and encounter orangutans in their natural jungle habitat. Unwind with mindfulness at a stunning temple in Berastagi, and take in the breathtaking beauty of Lake Toba, the world�s largest volcanic lake. Experience authentic Batak culture in Tuk Tuk village, and embrace eco-adventures like foraging, cooking traditional dishes, and crafting local delights. For more information, please check the introduction: https://drive.google.com/file/d/1MaXIDsez6GYmrzUjHo-FNgR4KOWo7lgZ For registration, please contact Lion Joshua Bryan Candra, joshuabryan.candra@gmail.com , +62895334888378",
-    "host_family_activities": "Welcome to Jakarta, the vibrant capital of Indonesia! Your host family welcomes you and will host you for the 7 days 6 nights in Jakarta and around. Activities will be coordinated with the Youth committee to ensure that you have an amazing and memorable time in Indonesia!",
-    "languages": [
-     "English"
-    ],
-    "website": "https://drive.google.com/file/d/1MaXIDsez6GYmrzUjHo-FNgR4KOWo7lgZ",
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/lions-north-sumatera-youth-camp"
-   }
-  },
-  {
-   "continent": "Asia",
-   "country": "Japan",
-   "camp_name": "Tokyo Disneyland and Culture Camp",
-   "age_requirements": "17-23",
-   "fee": "60000 JPY",
-   "camp_starts": "02-08-2026",
-   "camp_ends": "06-08-2026",
-   "family_stay_starts": "19-07-2026",
-   "family_stay_ends": "26-07-2026",
-   "detail": {
-    "location": "Tokyo, JAPAN",
-    "description": "In addition to touring Tokyo's tourist spots, such as Tokyo Disneyland, famous shrines and temples, and famous areas of Tokyo, we are also planning activities that will give all participants a great sense of accomplishment.",
-    "host_family_activities": "Activities during the stay with the host family vary depending on the club, but past examples include the following: a welcome party at the host club, visiting a local school, participating in a festival and dancing the Bon Odori dance, a fireworks festival, swimming in the sea, mountain climbing and hiking, making Japanese soba noodles, experiencing Japanese calligraphy \"SYODOU\", visiting a Japanese castle, etc.",
-    "languages": [
-     "English",
-     "Japanese"
-    ],
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/tokyo-disneyland-and-culture-camp"
-   }
-  },
-  {
-   "continent": "Asia",
-   "country": "Japan",
-   "camp_name": "Summer camp in TOHOKU",
-   "age_requirements": "16-20",
-   "fee": "0 YEN",
-   "camp_starts": "28-07-2026",
-   "camp_ends": "30-07-2026",
-   "family_stay_starts": "24-07-2026",
-   "family_stay_ends": "07-08-2026",
-   "detail": {
-    "location": "FUKUSHIMA",
-    "description": "Japanese culture experience learning, interaction with local students, etc.",
-    "languages": [
-     "English",
-     "Japanese"
-    ],
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/summer-camp-in-tohoku"
-   }
-  },
-  {
-   "continent": "Asia",
-   "country": "Taiwan",
-   "camp_name": "Taipei International Lions Youth Camp",
-   "age_requirements": "16-22",
-   "fee": "400 USD",
-   "camp_starts": "07-08-2026",
-   "camp_ends": "13-08-2026",
-   "family_stay_starts": "03-08-2026",
-   "family_stay_ends": "06-08-2026",
-   "detail": {
-    "location": "Taipei City",
-    "description": "The participants will visit various cities and cultural sites across The Palace Museum, including Ceramic Museums, Tourist Taiwanese Landmarks. They will attend a Taiwanese traditional Night market, AII activities will include opportunities for and social gatherings to facilitate cultural exchange and friendship.",
-    "host_family_activities": "In the Host Families to Live the Taiwanese cultural experience for first 4 days, The host family will welcome the youth as one of their own, in every host family life and social events. the last 4days in host family in continue to exploring local attractions together.",
-    "languages": [
-     "English",
-     "Chinese",
-     "Other"
-    ],
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/taipei-international-lions-youth-camp"
-   }
-  },
-  {
-   "continent": "Asia",
-   "country": "Taiwan",
-   "camp_name": "300B2 YCE LIONS CAMP",
-   "age_requirements": "16-22",
-   "fee": "400 NTW",
-   "camp_starts": "16-08-2026",
-   "camp_ends": "22-08-2026",
-   "family_stay_starts": "01-08-2026",
-   "family_stay_ends": "15-08-2026",
-   "detail": {
-    "location": "Taiwan",
-    "description": "Introduction to Taiwan culture, sightseeing the beautiful landmarks of Taiwan and other interesting activities.",
-    "languages": [
-     "English",
-     "Chinese"
-    ],
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/300b2-yce-lions-camp"
    }
   },
   {
@@ -219,96 +74,6 @@
     "contact_name": "Andrea Schatke",
     "contact_email": "as@the-marketing-factory.at",
     "contact_phone": "+436648212000"
-   }
-  },
-  {
-   "continent": "Europe",
-   "country": "Bulgaria",
-   "camp_name": "Meet Nature and History in a Different Way",
-   "age_requirements": "15-17",
-   "fee": "300 EURO",
-   "camp_starts": "03-08-2026",
-   "camp_ends": "14-08-2026",
-   "family_stay_starts": "09-08-2026",
-   "family_stay_ends": "14-08-2026",
-   "detail": {
-    "location": "Mezek, Svilengrad, Bulgaria",
-    "description": "Nature walks Discovery of Bulgaria",
-    "languages": [
-     "English"
-    ],
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/meet-nature-and-history-in-a-different-way"
-   }
-  },
-  {
-   "continent": "Europe",
-   "country": "Croatia",
-   "district": "L126",
-   "camp_name": "Discovering Croatia - Istria",
-   "age_requirements": "17-21",
-   "fee": "400 EURO",
-   "camp_starts": "18-07-2026",
-   "camp_ends": "01-08-2026",
-   "family_stay_starts": "11-07-2026",
-   "family_stay_ends": "18-07-2026",
-   "detail": {
-    "location": "Istria, Croatia",
-    "description": "Discovering cultural, natural and historical places in Istria. Participate in swimming, sports, social & cultural activities, meet young people, Leos and Lions, country presentations, excursions, sightseeing...",
-    "languages": [
-     "English"
-    ]
-   }
-  },
-  {
-   "continent": "Europe",
-   "country": "Czech rep. and Slovakia",
-   "camp_name": "Lions International Youth Camp Two Countries, One Adventure",
-   "age_requirements": "18-22",
-   "fee": "250 EURO",
-   "camp_starts": "11-07-2026",
-   "camp_ends": "25-07-2026",
-   "family_stay_starts": "04-07-2026",
-   "family_stay_ends": "11-07-2026",
-   "detail": {
-    "location": "Banska Bystrica Slovakia, Opava Czech rep., Prague Czech rep.",
-    "description": "The camp will take place in three amazing locations � a cozy mountain cottage in Slovakia, a beautiful site in the north of the Czech Republic, and the lively, unforgettable city of Prague. Activities include: hiking, rafting, outdoor adventures, city sightseeing and a lot of other activities.",
-    "host_family_activities": "The host family will welcome the youth as one of their own, including them in everyday family life and social events, in addition to exploring local attractions together. You will stay in Czech republic or in Slovakia.",
-    "languages": [
-     "English"
-    ],
-    "website": "https://sites.google.com/view/lions-camp-2countries-2026/home",
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/lions-international-youth-camp-two-countries%2C-one-adventure"
-   }
-  },
-  {
-   "continent": "Europe",
-   "country": "Estonia",
-   "camp_name": "29th ESTONIAN LIONS YOUTH CAMP EESTI VAGI",
-   "age_requirements": "17-21",
-   "fee": "250 EURO",
-   "camp_starts": "16-07-2026",
-   "camp_ends": "24-07-2026",
-   "family_stay_starts": "08-07-2026",
-   "family_stay_ends": "16-07-2026"
-  },
-  {
-   "continent": "Europe",
-   "country": "Ireland",
-   "camp_name": "Discover Ireland Youth Camp 2026",
-   "age_requirements": "16-21",
-   "fee": "200 EURO",
-   "camp_starts": "20-06-2026",
-   "camp_ends": "04-07-2026",
-   "family_stay_starts": null,
-   "family_stay_ends": null,
-   "detail": {
-    "location": "Waterford & Dublin, Ireland",
-    "description": "Walking. cycling, art, social media, drama, Irish sports, team building, swimming, cooking, educational visits, community activation projects, visits to different areas of the south east of Ireland and Dublin.",
-    "languages": [
-     "English"
-    ],
-    "website": "http://www.lionsclubs.ie",
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/discover-ireland-youth-camp-2026"
    }
   },
   {
@@ -354,11 +119,12 @@
      "English"
     ],
     "yce_url": "https://www.lions-yce-belgium.be/destinations/campo-emilia--knights-of-light",
-    "application_deadline": "03-07-2027",
     "participants": "25",
     "contact_name": "Barbara De Giacomi",
     "contact_email": "barbara@studiocogeas.com",
-    "contact_phone": "00393357049046"
+    "contact_phone": "00393357049046",
+    "application_deadline_verification_required": true,
+    "application_deadline_note": "Previous value 03-07-2027 removed: it falls one week before the camp (08-07-2027) and is not printed on the flyer. Organizer confirmation required."
    }
   },
   {
@@ -437,65 +203,6 @@
   },
   {
    "continent": "Europe",
-   "country": "Poland",
-   "camp_name": "LIONS INTERNATIONAL WATERSPORTS CAMP POLAND 2026",
-   "age_requirements": "18-24",
-   "fee": "200 EURO",
-   "camp_starts": "26-07-2026",
-   "camp_ends": "02-08-2026",
-   "family_stay_starts": "18-07-2026",
-   "family_stay_ends": "26-07-2026",
-   "detail": {
-    "location": "WIELEN, WIELKOPOLSKA",
-    "description": "SAILING, KAYAKING, WINDSURFING, PADDLE DESKS, INTEGRATION WORKSHOPS, EVENINGS BY THE CAMPFIRE, LOCAL ATTRACTIONS, KARAOKE EVENING, MEETING YOUTH FROM DIFFERENT CULTURES AND COUNTRIES, COUNTRY AND FLAG PRESENTATION AND MANY OTHER ACTIVITIES",
-    "host_family_activities": "VISITING POLISH CITIES ,ENJOYING POLISH CULTURE, FOOD , NATURE.",
-    "languages": [
-     "English"
-    ],
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/lions-international-watersports-camp-poland-2026"
-   }
-  },
-  {
-   "continent": "Europe",
-   "country": "Romania",
-   "camp_name": "DISCOVER TRANSYLVANIA-LIONS INTERNATIONAL CAMP",
-   "age_requirements": "18-24",
-   "fee": "250 EURO",
-   "camp_starts": "29-07-2026",
-   "camp_ends": "05-08-2026",
-   "family_stay_starts": "23-07-2026",
-   "family_stay_ends": "29-07-2026",
-   "detail": {
-    "location": "Cluj, Oradea, Vultureni, Beli?, Transylvania, Romania",
-    "description": "The Program will include visits to important tourists attraction in Transylvania county, Romania, like: Cluj, Oradea and Jibou cities, Dracula (Bran) castle, lakes and waterfalls in Apuseni Mountains, Nymphaea aquapark, etc. There will many fun and personal development activities prepared by the Leo-Lions including countries presentantions and service activities.",
-    "host_family_activities": "The host families are located in Cluj and around.",
-    "languages": [
-     "English"
-    ],
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/discover-transylvania-lions-international-camp"
-   }
-  },
-  {
-   "continent": "Europe",
-   "country": "Serbia",
-   "camp_name": "Danube",
-   "age_requirements": "17-22",
-   "fee": "250 EUR",
-   "camp_starts": "02-07-2026",
-   "camp_ends": "09-07-2026",
-   "family_stay_starts": "28-06-2026",
-   "family_stay_ends": "02-07-2026",
-   "detail": {
-    "description": "Sightseeing, hiking, barbecue, workshops, culture exchange",
-    "host_family_activities": "Sightseeing, hiking, swimming ..",
-    "languages": [
-     "English"
-    ],
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/danube"
-   }
-  },
-  {
-   "continent": "Europe",
    "country": "Slovakia",
    "camp_name": "Lions International Youth Camp Two Countries, One Adventure",
    "age_requirements": "18-22",
@@ -518,26 +225,6 @@
     "contact_name": "Tomas Renco",
     "contact_email": "youthexchanged122@gmail.com",
     "contact_phone": "+ 421911989763"
-   }
-  },
-  {
-   "continent": "Europe",
-   "country": "Slovenia",
-   "camp_name": "Lions youth exchange camp Catch the rainbow",
-   "age_requirements": "18-24",
-   "fee": "250 EURO",
-   "camp_starts": "17-07-2026",
-   "camp_ends": "27-07-2026",
-   "family_stay_starts": "03-07-2026",
-   "family_stay_ends": "10-07-2026",
-   "detail": {
-    "location": "Slovenia",
-    "description": "\"sports activities (hiking, rafting, swimming) cultural activities (getting to know Slovenian history and heritage and cuisine - we will cook traditional food) going around the country and getting to know Slovenian \"\"pearls\"\" socialising and \"\"having the time of your life\"\" ***please send your application to incoming.youth.exchange@lions.si \"",
-    "languages": [
-     "English"
-    ],
-    "website": "https://www.facebook.com/lionsyouthexchangeslovenia",
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/lions-youth-exchange-camp-catch-the-rainbow"
    }
   },
   {
@@ -565,25 +252,6 @@
     "contact_name": "Gemma Rodríguez Cortes",
     "contact_email": "yce.md116spain.lci@gmail.com",
     "contact_phone": "+34649915077"
-   }
-  },
-  {
-   "continent": "Europe",
-   "country": "Sweden",
-   "camp_name": "Lions Camp Environment and Sustainability",
-   "age_requirements": "17-22",
-   "fee": "0 SEK",
-   "camp_starts": "25-07-2026",
-   "camp_ends": "08-08-2026",
-   "family_stay_starts": "18-07-2026",
-   "family_stay_ends": "25-07-2026",
-   "detail": {
-    "location": "Northern parts of Sweden-Sollefte� with surroundings",
-    "description": "Sustainable development and environmental protection, nature adventures, culture experiences, local history, forest, water and wind power.",
-    "languages": [
-     "English"
-    ],
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/lions-camp-environment-and-sustainability"
    }
   },
   {
@@ -662,128 +330,6 @@
    }
   },
   {
-   "continent": "Europe",
-   "country": "United Kingdom",
-   "camp_name": "The 56th International Youth Centre",
-   "age_requirements": "18-21",
-   "fee": "250 GBP",
-   "camp_starts": "10-08-2026",
-   "camp_ends": "20-08-2026",
-   "family_stay_starts": "05-08-2026",
-   "family_stay_ends": "10-08-2026",
-   "detail": {
-    "location": "Loughborough, United Kingdom",
-    "description": "Loughborough is home to one of England's greatest folk heroes, Robin Hood. The camp has the theme 'Loughborough Legends', exploring the area's history, culture and natural beauty.",
-    "languages": [
-     "English"
-    ],
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/the-56th-international-youth-centre-"
-   }
-  },
-  {
-   "continent": "Europe",
-   "country": "United Kingdom",
-   "camp_name": "Loughborough Legends",
-   "age_requirements": "18-21",
-   "fee": "250 GBP",
-   "camp_starts": "10-08-2026",
-   "camp_ends": "20-08-2026",
-   "family_stay_starts": "05-08-2026",
-   "family_stay_ends": "10-08-2026",
-   "detail": {
-    "location": "Loughborough Uiversity, Loughborough, England",
-    "description": "Sport, cultural visits, team building",
-    "languages": [
-     "English"
-    ],
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/loughborough-legends"
-   }
-  },
-  {
-   "continent": "North America",
-   "country": "Canada",
-   "state": "Alberta",
-   "camp_name": "Woodcreek Lions Mountain Adventure",
-   "age_requirements": "16-18",
-   "fee": "600 USD",
-   "camp_starts": "26-07-2026",
-   "camp_ends": "01-08-2026",
-   "family_stay_starts": "12-07-2026",
-   "family_stay_ends": "26-07-2026",
-   "detail": {
-    "location": "Waterton, Alberta, Canada",
-    "description": "We are a premier Lions Youth Exchange camp that embraces the spirit of camaraderie, cultural exchange, and personal growth while empowering youth. As a gateway to the vast beauty of Canada's landscapes, Woodcreek Lions Mountain Adventure Camp offers an unparalleled opportunity for youth from around the world to gather, learn, and create lasting memories. A selection of activities from the following: Head Smashed In Buffalo Jump UNESCO World Heritage Site, horseback riding, river rafting, Waterton lake paddling, Bears Hump, Lundbreck Falls, Red Rock Canyon, Parks Canada environment focused service project, Blakiston Falls, Wall Lake, Bertha Lake.",
-    "host_family_activities": "Your host family will treat you as a member of the family, expecting your engagement in typical daily routines and family meals. �You will participate in social activities, possibly service projects and visit cultural places of interest. You are expected to familiarize yourself with the customs, expectations and basic language of the host country prior to your visit and have a desire to learn more.",
-    "languages": [
-     "English"
-    ],
-    "website": "https://www.woodcreeklc.com/2025-camp.html",
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/woodcreek-lions-mountain-adventure"
-   }
-  },
-  {
-   "continent": "North America",
-   "country": "Canada",
-   "state": "Alberta",
-   "camp_name": "Lions Leadership Camp",
-   "age_requirements": "15-18",
-   "fee": "600 USD",
-   "camp_starts": "26-07-2026",
-   "camp_ends": "31-07-2026",
-   "family_stay_starts": "12-07-2026",
-   "family_stay_ends": "26-07-2026",
-   "detail": {
-    "location": "Kananaskis, Alberta, Canada",
-    "description": "The Lions Leadership Camp held in Alberta Rocky Mountains, Canada, is dedicated to instilling skills and attitudes of leadership and community service into youth of the world. We believe that by creating an international community of young leaders at this camp, we have great potential to inspire changes around the world through the future work of these young people.",
-    "host_family_activities": "Your host family will treat you as a member of the family, expecting your engagement in typical daily routines and family meals. You will participate in social activities, possibly service projects and visit cultural places of interest. You are expected to familiarize yourself with the customs, expectations and basic language of the host country prior to your visit and have a desire to learn more.",
-    "languages": [
-     "English"
-    ],
-    "website": "https://lionsleadershipcamp.ca/",
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/lions-leadership-camp"
-   }
-  },
-  {
-   "continent": "North America",
-   "country": "Canada",
-   "state": "Ontario",
-   "camp_name": "Lion Bill Evers Friendship Youth Exchange Camp",
-   "age_requirements": "16-20",
-   "fee": "200 CAD",
-   "camp_starts": "14-07-2026",
-   "camp_ends": "23-07-2026",
-   "family_stay_starts": "25-06-2026",
-   "family_stay_ends": "14-07-2026",
-   "detail": {
-    "location": "Springvale,ON Canada",
-    "description": "Jet Boats on Niagara River, Hornblower at Niagara Falls, Zip Line, Tree Top Trekking, Toronto. Dragon Boats, Cooking, Games Days, Meeting Lions Clubs",
-    "languages": [
-     "English"
-    ],
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/lion-bill-evers-friendship-youth-exchange-camp"
-   }
-  },
-  {
-   "continent": "North America",
-   "country": "Canada",
-   "state": "Saskatchewan",
-   "camp_name": "Saskatchewan, Canada Lions Camp 2026",
-   "age_requirements": "14-18",
-   "fee": "400 USD",
-   "camp_starts": "12-07-2026",
-   "camp_ends": "18-07-2026",
-   "family_stay_starts": "05-07-2026",
-   "family_stay_ends": "12-07-2026",
-   "detail": {
-    "location": "Lloydminster, Saskatchewan; Canada",
-    "description": "Cultural Activities Adventure Hiking Outdoor Activities Swimming Sports Arts",
-    "languages": [
-     "English"
-    ],
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/saskatchewan%2C-canada-lions-camp-2026"
-   }
-  },
-  {
    "continent": "North America",
    "country": "Canada",
    "state": "Ontario",
@@ -822,7 +368,7 @@
    "detail": {
     "location": "Campbellsport, WI, USA",
     "description": "Country Presentations, Day Trip which includes a visit to the Lions Eye Bank, Wisconsin State Capitol, State Street Shopping excursion and Marshall Lions and LEOS picnic, Native American Presentation, Water Activities, \"UnOlympic\" Games, Club Vista \"Disco\" Night, Traditional USA Meals, Country Chats, Crafts, Water & Land Sports, Talent Show, Lots of FREE TIME to share with the other youths.",
-    "host_family_activities": "We do require a virtual meeting as part of our application process. Youth must demonstrate good English speaking skills, agree to comply with the Youth Exchange program rules about NO Drinking, NO Dating(Romance), NO Drugs, NO Driving and say NO to being Disrespectful.\r\nHost family experience will vary.  We allow our families to match with youths that fit their lifestyle. Wisconsin has a diverse culture and natural resources that varies from small city life to remote locations with much scenic beauty.  You will enjoy all that Wisconsin has to offer no matter where you stay or visit.",
+    "host_family_activities": "We do require a virtual meeting as part of our application process. Youth must demonstrate good English speaking skills, agree to comply with the Youth Exchange program rules about NO Drinking, NO Dating(Romance), NO Drugs, NO Driving and say NO to being Disrespectful.\r\nHost family experience will vary.  We allow our families to match with youths that fit their lifestyle. Wisconsin has a diverse culture and natural resources that varies from small city life to remote locations with much scenic beauty.  You will enjoy all that Wisconsin has to offer no matter where you stay or visit. Second host family stay: 22–29 August 2027 (after the camp).",
     "languages": [
      "English"
     ],
@@ -833,91 +379,6 @@
     "contact_name": "Ray Tweedale",
     "contact_email": "tweedale@charter.net",
     "contact_phone": "+1  262-224-5517"
-   }
-  },
-  {
-   "continent": "North America",
-   "country": "United States",
-   "state": "Massachusetts",
-   "camp_name": "MD33 Massachusetts Lions",
-   "age_requirements": "15-18",
-   "fee": "800 USD",
-   "camp_starts": "25-07-2026",
-   "camp_ends": "01-08-2026",
-   "family_stay_starts": "16-07-2026",
-   "family_stay_ends": "25-07-2026",
-   "detail": {
-    "location": "Boston, Massachusetts",
-    "description": "Visit the Boston area and Massachusetts.",
-    "host_family_activities": "Will be discussed with families later.",
-    "languages": [
-     "English"
-    ],
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/md33-massachusetts-lions"
-   }
-  },
-  {
-   "continent": "North America",
-   "country": "United States",
-   "state": "Washington",
-   "camp_name": "Lions Camp Camano",
-   "age_requirements": "16-20",
-   "fee": "550 USD",
-   "camp_starts": "02-07-2026",
-   "camp_ends": "11-07-2026",
-   "family_stay_starts": "18-06-2026",
-   "family_stay_ends": "02-07-2026",
-   "detail": {
-    "location": "Leavenworth and Camano Island, Washington State USA",
-    "description": "We'll start our adventures in Leavenworth WA, ar a beautiful cabin in the mountains for four days. Experience a traditional 4th of July celebration in Wenatchee WA. Then for the next six days we'll be on Camano Island. We plan to do some whale watching, visit Mt.Baker and Whidbey Island. There sites are incredible and you will not be disappointed taking in the beautiful views of the Pacific Northwest.",
-    "languages": [
-     "English"
-    ],
-    "website": "http://www.md19lionsyouthexchange.org",
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/lions-camp-camano"
-   }
-  },
-  {
-   "continent": "North America",
-   "country": "United States",
-   "state": "Texas",
-   "camp_name": "Midland, Texas Family Stay Mini-camp",
-   "age_requirements": "17-18",
-   "fee": "0 USD",
-   "camp_starts": "27-06-2026",
-   "camp_ends": "18-07-2026",
-   "family_stay_starts": "27-06-2026",
-   "family_stay_ends": "18-07-2026",
-   "detail": {
-    "location": "Midland, Texas, USA",
-    "description": "Cultural and sports activities and trips to cities in Texas.",
-    "host_family_activities": "Attending cultural and sports events, trips to Dallas/Fort Worth, San Antonio, Odessa, Lubbock, Abilene and San Angelo, and playing sports.",
-    "languages": [
-     "English"
-    ],
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/midland%2C-texas-family-stay-mini-camp"
-   }
-  },
-  {
-   "continent": "North America",
-   "country": "United States",
-   "state": "Iowa",
-   "camp_name": "Iowa Lions International Youth Exchange Camp",
-   "age_requirements": "16-18",
-   "fee": "100 USD",
-   "camp_starts": "19-07-2026",
-   "camp_ends": "25-07-2026",
-   "family_stay_starts": "27-06-2026",
-   "family_stay_ends": "19-07-2026",
-   "detail": {
-    "location": "Earlham, Iowa",
-    "description": "Camp Activities Will Include: Learning about Iowa our history and Iowa Lions. They will see historical sites around Iowa, a bison farm, alpaca farm, a county fair, our State Capital, an Amusement Park, one of our shopping malls, frisbee golf, zipline, horseback riding, and many more activities. Students are required to present country flags, a talk about their countries, families and home life and participate in our camp talent show.",
-    "host_family_activities": "This is dependent on the family, where they live and their culture. We have families that live in rural areas and surrounded by farm land, we have families that live in small towns and bigger cities. They will teach you about Iowa and our way of life where we live here in Iowa.",
-    "languages": [
-     "English"
-    ],
-    "website": "http://www.ilyec.com",
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/iowa-lions-international-youth-exchange-camp"
    }
   },
   {
@@ -949,7 +410,7 @@
    "country": "Brazil",
    "camp_name": "Friendship beyond Borders Camp",
    "age_requirements": "16-19",
-   "fee": "480 EURO",
+   "fee": "450 EURO",
    "camp_starts": "17-07-2027",
    "camp_ends": "31-07-2027",
    "family_stay_starts": "03-07-2027",
@@ -1080,7 +541,7 @@
     "languages": [
      "English"
     ],
-    "application_deadline": "20-10-2027",
+    "application_deadline": "20-10-2026",
     "participants": "20",
     "contact_name": "Sanjeev Gupta",
     "contact_email": "ycepmd321@gmail.com",
@@ -1201,30 +662,6 @@
    }
   },
   {
-   "continent": "Asia",
-   "country": "Malaysia",
-   "camp_name": "Malaysia Lions International Youth Camp 2026 - Dive Into Malaysia: From Ocean to Leadership",
-   "age_requirements": "15-22",
-   "fee": "500 USD",
-   "camp_starts": "23-09-2026",
-   "camp_ends": "27-09-2026",
-   "family_stay_starts": null,
-   "family_stay_ends": null,
-   "detail": {
-    "location": "Tioman Island, Pahang, Malaysia",
-    "description": "Youth leadership development, marine conservation and environmental education, Discovery Dive experience, Marine Park snorkeling, beach cleaning and marine debris awareness, team-building activities, cultural exchange, international friendship activities, leadership workshops, community service, youth discussions, closing ceremony and action planning for participants to continue serving their communities.",
-    "languages": [
-     "English",
-     "Chinese"
-    ],
-    "application_deadline": "25-08-2026",
-    "participants": "10",
-    "contact_name": "Agnes Lee Sze Yah",
-    "contact_email": "yce308b3@gmail.com",
-    "contact_phone": "+60197190178"
-   }
-  },
-  {
    "continent": "Middle America",
    "country": "Mexico",
    "camp_name": "VERANO DEL 27",
@@ -1245,7 +682,8 @@
     "participants": "20",
     "contact_name": "Francisco Jose Gomez y Martinez",
     "contact_email": "fcogomezm@prodigy.net.mx",
-    "contact_phone": "+52 55 19355596"
+    "contact_phone": "+52 55 19355596",
+    "host_family_activities": "Second host family stay: 1–8 August 2027 (after the camp)."
    }
   },
   {
@@ -1261,7 +699,7 @@
    "detail": {
     "location": "Moratuwa",
     "description": "1 White water rafting and water activates in Kithulgala\r\n2 Adventure activities Rangiri aqua\r\n3Tooth Temple and Visit, Ceylon tea factory and Plantation Visit\r\n4 Nuwara Eliya, water activities, Garden Visit, Red Post office Visit and Night New Year festival activities  \r\n5 Ella and 9 Arch bridge visit\r\n6 Elephants and Wild Life \r\n7 Weligama Surfing and beach activities\r\n8 Galle fort and return to Colombo",
-    "host_family_activities": "1st Family Stay plan by individual family according their hosting area. Mainly Sri Lankan New Year and Cultural events. Understanding Culture of Sri Lankan Culture, food, Food preparation.  \r\n2nd Family Stay incoming youth and youth exchange team can plan as a small group or individual( Parents approval and YEC approval need) can plan visit preference in beautiful Ceylon .",
+    "host_family_activities": "1st Family Stay plan by individual family according their hosting area. Mainly Sri Lankan New Year and Cultural events. Understanding Culture of Sri Lankan Culture, food, Food preparation.  \r\n2nd Family Stay incoming youth and youth exchange team can plan as a small group or individual( Parents approval and YEC approval need) can plan visit preference in beautiful Ceylon . Second host family stay: 21–25 April 2027 (after the camp).",
     "languages": [
      "English"
     ],
@@ -1367,25 +805,21 @@
   {
    "continent": "Europe",
    "country": "France",
-   "district": "103 CS",
-   "camp_name": "Camp Lions René Cornillon – Annecy",
+   "district": "103 CE",
+   "camp_name": "Lions Camp Roger Dilon – Bourgogne / Franche-Comté",
    "age_requirements": "18-22",
    "fee": "200 EURO",
-   "camp_starts": "03-07-2027",
+   "camp_starts": "11-07-2027",
    "camp_ends": "24-07-2027",
    "family_stay_starts": "03-07-2027",
    "family_stay_ends": "11-07-2027",
    "detail": {
-    "location": "Bourgogne (Dijon), Franche Comté (Besançon), France",
-    "description": "French-speaking camp: family stay, bus tour, Chamonix and Mont Blanc, community service, Lake Annecy, Évian, cultural visits, swimming, hiking and gastronomy. Dates transposed from 2026 to 2027 (inferred correction). Flyer states family stay 3–11 July, overlapping the overall 3–24 July period; exact camp phase requires organizer confirmation.",
+    "location": "Burgundy (Dijon), Franche-Comté (Besançon), France",
+    "description": "Lions Youth Exchange France – Roger Dilon 2027, District 103 CE. Historic cities and UNESCO sites, Burgundy food and wine culture, Comté cheese and regional specialties, Jura mountains and nature. Host family 3–11 July, camp 11–24 July 2027.",
     "languages": [
+     "English",
      "French"
-    ],
-    "website": "https://camplionsfrancophonealpes.com",
-    "application_deadline": "31-05-2027",
-    "participants": "16",
-    "contact_name": "Marc Chiron",
-    "contact_email": "chironmarc@yahoo.fr"
+    ]
    }
   },
   {
@@ -1418,14 +852,14 @@
    "country": "Netherlands",
    "district": "110 VCH",
    "camp_name": "Lions Youth Exchange Netherlands 2027 – Camp 2",
-   "age_requirements": "17-21",
+   "age_requirements": "17-20",
    "fee": "150 EURO",
    "camp_starts": "18-07-2027",
    "camp_ends": "28-07-2027",
-   "family_stay_starts": "10-07-2027",
+   "family_stay_starts": "03-07-2027",
    "family_stay_ends": "18-07-2027",
    "detail": {
-    "location": "The Netherlands",
+    "location": "Almere, The Netherlands",
     "description": "Dutch hospitality, international friendships, cultural visits and activities. Earlier homestay start 03-07-2027 for participants from outside Europe. WhatsApp video call part of acceptance.",
     "languages": [
      "English"
@@ -1435,7 +869,8 @@
     "contact_email": "YEC110VCH@lions.nl",
     "website": "https://www.lions.nl/nl/goede-doelen/jeugd/jeugduitwisseling/friendships.html",
     "application_deadline_verification_required": true,
-    "application_deadline_note": "Year corrected from 2026 to 2027 by inference; organizer confirmation required."
+    "application_deadline_note": "Year corrected from 2026 to 2027 by inference; organizer confirmation required.",
+    "host_family_activities": "Flyer \"Lekker Dutch\": family stay 1 on 3–10 July, family stay 2 on 10–18 July 2027, camp 18–28 July 2027 (25 participants)."
    }
   },
   {
@@ -1491,10 +926,10 @@
    "camp_name": "Int. Lions Youth Camp: Peak Vibes 2027",
    "age_requirements": "18-23",
    "fee": "200 EURO",
-   "camp_starts": "12-07-2027",
+   "camp_starts": "11-07-2027",
    "camp_ends": "21-07-2027",
    "family_stay_starts": "01-07-2027",
-   "family_stay_ends": "11-07-2027",
+   "family_stay_ends": "10-07-2027",
    "detail": {
     "location": "Germany",
     "description": "Adventure, international friendship and cultural exchange.",
@@ -1680,7 +1115,7 @@
    "age_requirements": "17-21",
    "fee": "200 EURO",
    "camp_starts": "02-08-2027",
-   "camp_ends": "14-08-2027",
+   "camp_ends": "15-08-2027",
    "family_stay_starts": "24-07-2027",
    "family_stay_ends": "01-08-2027",
    "detail": {
@@ -2114,6 +1549,309 @@
      "English"
     ],
     "participants": "25"
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "Austria",
+   "camp_name": "Sound of Music 2027",
+   "age_requirements": "16-22",
+   "fee": null,
+   "camp_starts": "17-07-2027",
+   "camp_ends": "31-07-2027",
+   "family_stay_starts": "10-07-2027",
+   "family_stay_ends": "17-07-2027",
+   "detail": {
+    "description": "Discover Austria – Discover the World. The only Lions camp worldwide with music as a universal language: make music together, discover different cultures, experience Austrian nature and hospitality.",
+    "languages": [
+     "English"
+    ]
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "United Kingdom",
+   "camp_name": "MD105 Youth Camp – England 2027",
+   "age_requirements": "18-21",
+   "fee": null,
+   "camp_starts": "09-08-2027",
+   "camp_ends": "19-08-2027",
+   "family_stay_starts": "02-08-2027",
+   "family_stay_ends": "09-08-2027",
+   "detail": {
+    "location": "Edge Hill University, Ormskirk, Lancashire, England",
+    "description": "Travel, Culture, Friendship. Sightseeing, service projects and international exchange. Good command of English required. Family stay: 7 days before camp (dates derived: 02-08 to 09-08).",
+    "languages": [
+     "English"
+    ],
+    "application_deadline": "31-03-2027"
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "Bulgaria",
+   "camp_name": "Lions Beyond the Waves",
+   "age_requirements": "15-18",
+   "fee": "400 EURO",
+   "camp_starts": null,
+   "camp_ends": null,
+   "family_stay_starts": null,
+   "family_stay_ends": null,
+   "detail": {
+    "location": "Burgas and the Black Sea coast (Sozopol, Nessebar, Atanasovsko Lake), Bulgaria",
+    "description": "International youth camp, August 2027 (exact dates not on the flyer), 6 days / 5 nights. Nature, culture, seaside towns, international friendship and meaningful volunteering. Stay: hotel in Burgas and the region, meals included. Airport: Sofia (SOF). Pocket money and valid health/accident insurance required. No host family stay.",
+    "languages": [
+     "English"
+    ],
+    "participants": "10"
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "Estonia",
+   "camp_name": "30th Estonian Lions Youth Camp – Eesti Vägi",
+   "age_requirements": "17-21",
+   "fee": "250 EURO (transport & excursion fee)",
+   "camp_starts": "15-07-2027",
+   "camp_ends": "23-07-2027",
+   "family_stay_starts": "07-07-2027",
+   "family_stay_ends": "15-07-2027",
+   "detail": {
+    "location": "Estonia",
+    "description": "Opening & closing ceremonies, Estonian night, country presentations, excursions & sightseeing, service activities, fun parties, canoeing. Arrival/departure: Tallinn Airport (TLL), departure on 23 July after 13:00. Health and liability insurance required.",
+    "languages": [
+     "English"
+    ],
+    "application_deadline": "15-03-2027"
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "France",
+   "camp_name": "Périgord Noir 2027",
+   "age_requirements": "18-22",
+   "fee": "250 EURO",
+   "camp_starts": "03-08-2027",
+   "camp_ends": "13-08-2027",
+   "family_stay_starts": "23-07-2027",
+   "family_stay_ends": "03-08-2027",
+   "detail": {
+    "location": "Dordogne, Bordeaux & the Atlantic coast, France",
+    "description": "Sharing, History, Gastronomy. Discover Dordogne, Bordeaux and the Atlantic coast.",
+    "languages": [
+     "English",
+     "French"
+    ],
+    "participants": "14"
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "France",
+   "district": "103 CS",
+   "camp_name": "René Cornillon Summer Camp 2027",
+   "age_requirements": "18-22",
+   "fee": "300 EURO",
+   "camp_starts": "04-07-2027",
+   "camp_ends": "26-07-2027",
+   "family_stay_starts": "04-07-2027",
+   "family_stay_ends": "12-07-2027",
+   "detail": {
+    "location": "Annecy & Lake Annecy, Chamonix & Mont Blanc (Auvergne-Rhône-Alpes), France",
+    "description": "French-speaking camp: family stay, bus tour, Chamonix and Mont Blanc, community service, Lake Annecy, Évian, cultural visits, swimming, hiking and gastronomy.",
+    "languages": [
+     "French"
+    ],
+    "application_deadline": "31-05-2027",
+    "participants": "16",
+    "website": "https://camplionsfrancophonealpes.com",
+    "contact_name": "Marc Chiron",
+    "contact_email": "chironmarc@yahoo.fr"
+   }
+  },
+  {
+   "continent": "Asia",
+   "country": "India",
+   "camp_name": "Discovery of India",
+   "age_requirements": "15-22",
+   "fee": "400 USD",
+   "camp_starts": "26-07-2027",
+   "camp_ends": "08-08-2027",
+   "family_stay_starts": "17-07-2027",
+   "family_stay_ends": "26-07-2027",
+   "detail": {
+    "location": "Navi Mumbai & Raigad (family stay); Jaipur, Fatehpur Sikri, Gwalior, Agra, Mathura, Delhi (tour), India (Lions District 3231 A4)",
+    "description": "One country · many cultures · endless friendships. Programme: host family stay 17–26 July (Navi Mumbai, Raigad), India tour 26 July–5 August (Jaipur, Fatehpur Sikri, Gwalior, Agra, Mathura, Delhi), residential camp & grand finale 5–8 August 2027.",
+    "languages": [
+     "English"
+    ]
+   }
+  },
+  {
+   "continent": "Asia",
+   "country": "India",
+   "camp_name": "India 2027 Cultural Heritage Camp",
+   "age_requirements": "18-22",
+   "fee": "400 EURO",
+   "camp_starts": "01-08-2027",
+   "camp_ends": "12-08-2027",
+   "family_stay_starts": "23-07-2027",
+   "family_stay_ends": "01-08-2027",
+   "detail": {
+    "location": "Mumbai & Delhi, India (Lions District 3231-A2)",
+    "description": "Discover India, connect with the world: Mumbai & Delhi, Taj Mahal, Indian culture, traditional games & cuisine, host family life and community service.",
+    "languages": [
+     "English"
+    ]
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "Italy",
+   "camp_name": "Strade della Storia",
+   "age_requirements": "16-21",
+   "fee": null,
+   "camp_starts": "11-07-2027",
+   "camp_ends": "25-07-2027",
+   "family_stay_starts": "03-07-2027",
+   "family_stay_ends": "11-07-2027",
+   "detail": {
+    "location": "From Florence to Bari: Florence, Pisa, Siena, Rome, Naples, Pompeii, Bari, Alberobello, Gravina, Matera, Taranto, Italy",
+    "description": "Italy summer camp 2027. History, culture, friendship, discovery.",
+    "languages": [
+     "English"
+    ]
+   }
+  },
+  {
+   "continent": "Asia",
+   "country": "Japan",
+   "camp_name": "Experience the Heart of Japan (MD334)",
+   "age_requirements": null,
+   "fee": null,
+   "camp_starts": "20-07-2027",
+   "camp_ends": "24-07-2027",
+   "family_stay_starts": "24-07-2027",
+   "family_stay_ends": "01-08-2027",
+   "detail": {
+    "location": "Japan (MD334)",
+    "description": "Culture, discovery, international friendship. Arrival and hotel stay 19 July; youth camp 20–24 July (4 nights); family stay 24 July–1 August (9 nights); departure 2 August 2027.",
+    "languages": [
+     "English"
+    ]
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "Poland",
+   "camp_name": "Watersports Camp Poland 2027",
+   "age_requirements": "18-23",
+   "fee": "250 EURO",
+   "camp_starts": "25-07-2027",
+   "camp_ends": "01-08-2027",
+   "family_stay_starts": "17-07-2027",
+   "family_stay_ends": "25-07-2027",
+   "detail": {
+    "location": "Wieleń, Lake Wieleń, Poland",
+    "description": "Sailing, kayaking, windsurfing, SUP, cultural evenings, international friendships. Two host family stays: 17–25 July (before camp) and 1–8 August 2027 (after camp). Arrival/departure depends on host family location.",
+    "host_family_activities": "Second host family stay: 1–8 August 2027.",
+    "languages": [
+     "English"
+    ]
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "Romania",
+   "camp_name": "Discover Transylvania 2.0",
+   "age_requirements": "18-25",
+   "fee": "300 EURO",
+   "camp_starts": "28-07-2027",
+   "camp_ends": "04-08-2027",
+   "family_stay_starts": "21-07-2027",
+   "family_stay_ends": "28-07-2027",
+   "detail": {
+    "location": "Cluj-Napoca and Transylvania, Romania",
+    "description": "Museums & culture, social and volunteering events with Leos, exploring the cities and nightlife, village and castle trips, Romanian traditional workshops, hiking & sports, Leo service day, closing gala. Arrival 18–21 July, departure 4 August; Avram Iancu International Airport, Cluj-Napoca.",
+    "languages": [
+     "English"
+    ],
+    "participants": "20"
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "Serbia",
+   "camp_name": "Camp Danube 2027",
+   "age_requirements": "17-22",
+   "fee": "250 EURO",
+   "camp_starts": "02-07-2027",
+   "camp_ends": "09-07-2027",
+   "family_stay_starts": "28-06-2027",
+   "family_stay_ends": "02-07-2027",
+   "detail": {
+    "location": "Novi Sad & Belgrade, Serbia",
+    "description": "Culture, Serbian cuisine, sport & workshops, friendship. Arrival 28 June, departure 13 July; Belgrade Nikola Tesla Airport (BEG).",
+    "host_family_activities": "Second host family stay: 9–13 July 2027.",
+    "languages": [
+     "English"
+    ],
+    "participants": "15"
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "Slovenia",
+   "camp_name": "Catch the Rainbow 2027",
+   "age_requirements": "18-24",
+   "fee": "250 EURO",
+   "camp_starts": "16-07-2027",
+   "camp_ends": "26-07-2027",
+   "family_stay_starts": "09-07-2027",
+   "family_stay_ends": "16-07-2027",
+   "detail": {
+    "location": "Slovenia",
+    "description": "Discover · Connect · Explore: Slovenian towns, history, culture and cuisine; hiking, rafting, swimming, beach volleyball, team games; international evening with traditional cooking, dance and music. Transportation & insurance included in the fee; other costs covered by Lions Slovenia.",
+    "languages": [
+     "English"
+    ]
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "Turkey",
+   "camp_name": "Black Sea & Ordu – Ankara & Ordu 2027",
+   "age_requirements": "17-21",
+   "fee": "300 EURO",
+   "camp_starts": "12-07-2027",
+   "camp_ends": "23-07-2027",
+   "family_stay_starts": "04-07-2027",
+   "family_stay_ends": "11-07-2027",
+   "detail": {
+    "location": "Ankara & Ordu (Black Sea), Türkiye",
+    "description": "Culture & city tours, swimming & canoeing, cycling & trekking, Boztepe cable car, island boat trips, waterfalls & highland adventures, cooking & chocolate workshops, music, friendship & farewell party. Arrival 4 July and departure 23 July at Ankara Esenboğa (ESB).",
+    "languages": [
+     "English"
+    ],
+    "participants": "8"
+   }
+  },
+  {
+   "continent": "Europe",
+   "country": "Germany",
+   "camp_name": "Hannover 2027 – Youth Camp for young people with Type 1 diabetes",
+   "age_requirements": "15-18",
+   "fee": null,
+   "camp_starts": "24-07-2027",
+   "camp_ends": "05-08-2027",
+   "family_stay_starts": null,
+   "family_stay_ends": null,
+   "detail": {
+    "location": "Hannover, Lower Saxony, Germany",
+    "description": "International youth camp for young people with Type 1 diabetes. Sports, culture, friendship: canoeing and team sports, workshops and intercultural exchange, Type 1 diabetes support and shared experiences; special highlight: 3 days in Berlin. No homestay.",
+    "languages": [
+     "English"
+    ]
    }
   }
  ]
