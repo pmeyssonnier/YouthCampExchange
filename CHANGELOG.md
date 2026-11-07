@@ -5,6 +5,10 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.18.2 — 2026-11-08
+
+- **New camp for 2027: Lions Youth Camp Sweden 2027 – Forest, Water & Adventure** (Vetlanda and surroundings; family stay 17–24 July, camp 24 July – 7 August 2027; 17–21 years; 150 EURO; 25 participants). The 2026 Swedish camp (Sollefteå) is a different edition and stays in the list until it is archived.
+
 ## 1.18.1 — 2026-11-07
 
 - **Filter counts follow the other filters.** On the public site, the number on each chip now counts the camps that pass all the *other* filters: choosing a season recounts the continents, the countries and the states; choosing a continent or an age recounts the seasons; and so on. Before, the continent counts always showed every season together (e.g. Asia 16 while the 2026-2027 season had fewer). Chips that would give no camp are dimmed, not removed.

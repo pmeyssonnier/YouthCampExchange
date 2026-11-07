@@ -2096,6 +2096,25 @@
     "participants": "22",
     "contact_email": "director.camphardangervidda@gmail.com"
    }
+  },
+  {
+   "continent": "Europe",
+   "country": "Sweden",
+   "camp_name": "Lions Youth Camp Sweden 2027 – Forest, Water & Adventure",
+   "age_requirements": "17-21",
+   "fee": "150 EURO",
+   "camp_starts": "24-07-2027",
+   "camp_ends": "07-08-2027",
+   "family_stay_starts": "17-07-2027",
+   "family_stay_ends": "24-07-2027",
+   "detail": {
+    "location": "Vetlanda and surroundings, Sweden",
+    "description": "Nature, friendship and cultural exchange. Sustainable development and environmental protection, nature adventures and water activities, cultural experiences and local history.",
+    "languages": [
+     "English"
+    ],
+    "participants": "25"
+   }
   }
  ]
 }
