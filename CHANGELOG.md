@@ -7,7 +7,8 @@ The version is shown on every page (site footer, tool headers).
 
 ## 1.20.0 — 2026-11-08
 
-- **Filter for camps for people with disabilities.** The public camp list has a new *Inclusion* filter: one tap on "♿ Camps for people with disabilities" keeps only those camps (with a count that follows the other filters, a chip in the active-filters bar, and it is cleared by *Reset all filters*). Two camps are flagged for now: Freewheeling Sicilia and Campo Toscana Giovani con disabilità. Coordinators set it in the camp edit card (new field *Camp for people with disabilities*, Yes/No).
+- **Filter for camps for people with disabilities.** The public camp list has a new *Inclusion* filter: one tap on "♿ Camps for people with disabilities" keeps only those camps (with a count that follows the other filters, a chip in the active-filters bar, and it is cleared by *Reset all filters*). Three camps are flagged for now: Freewheeling Sicilia, Campo Toscana Giovani con disabilità and Campo Emilia Knights of light (a camp for visually impaired young people). Coordinators set it in the camp edit card (new field *Camp for people with disabilities*, Yes/No).
+- **Several contact e-mails on a camp.** The *Contact e-mail* field of the edit card accepts several addresses separated by a semicolon (each one is checked); the public camp sheet shows each as its own link. Freewheeling Sicilia now lists both its addresses.
 
 ## 1.19.0 — 2026-11-08
 
