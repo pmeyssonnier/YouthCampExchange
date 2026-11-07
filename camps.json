@@ -109,6 +109,7 @@
    "continent": "Europe",
    "country": "Italy",
    "camp_name": "Campo Emilia Knights of light",
+   "inclusive": true,
    "age_requirements": "17-22",
    "fee": "150 EURO",
    "camp_starts": "08-07-2027",
@@ -117,7 +118,7 @@
    "family_stay_ends": "08-07-2027",
    "detail": {
     "location": "Bologna",
-    "description": "Lions activity and trip around Bologna and Emilia Romagna.",
+    "description": "Lions activity and trip around Bologna and Emilia Romagna. Camp for visually impaired young people.",
     "host_family_activities": "Visite sul territorio e conoscenza della cultura italiana",
     "languages": [
      "English"
@@ -160,6 +161,7 @@
    "continent": "Europe",
    "country": "Italy",
    "camp_name": "FREEWHEELING SICILIA",
+   "inclusive": true,
    "age_requirements": "18-30",
    "fee": "0 EURO",
    "camp_starts": "10-07-2027",
@@ -178,7 +180,7 @@
     "application_deadline": "01-03-2027",
     "participants": "9 + 9 accompanying persons",
     "contact_name": "Daniela Macaluso",
-    "contact_email": "avvocatodanielamacaluso@gmail.com",
+    "contact_email": "avvocatodanielamacaluso@gmail.com; campogiovanifreewheeling@gmail.com",
     "contact_phone": "+393384954400"
    }
   },
@@ -1370,6 +1372,7 @@
    "continent": "Europe",
    "country": "Italy",
    "camp_name": "Lions Youth Camp - Campo Toscana Giovani con disabilità 2027",
+   "inclusive": true,
    "age_requirements": "18-30",
    "fee": "0 EURO",
    "camp_starts": "31-07-2027",
