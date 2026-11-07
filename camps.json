@@ -1532,6 +1532,7 @@
   {
    "continent": "North America",
    "country": "United States",
+   "state": "California",
    "camp_name": "Traveling Camp Oakdale/SF",
    "age_requirements": "18-22",
    "fee": "600 USD",
@@ -1541,8 +1542,8 @@
    "family_stay_ends": "18-07-2027",
    "detail": {
     "location": "Oakdale ,CA & San Francisco,CA",
-    "description": "Experience natural beauty of Yosimite National Park\r\nLeadership Training, Team Building Activities, Personal Development  and opportunity to engage with Omega leos and California lions.\r\nCultural exchange presentation. Lionistic sctivities including service activities to local communities.\r\nExplore world class San Francisco and surrounding area. Golden Gate Bridge, Pier 39 and Fisherman's Wharf, Lombard Street, Palace of Fine Arts, Union Square, San Francisco Chinatown, San Francisco downtown, Ocean Beach, Golden Gate parketc. Experience riding in self navigating car or taxi. Experience diversity and beauty of California!\r\nWe are MD4 Youth Protection Policy Compliant.",
-    "host_family_activities": "Some students will be hosted in Southern CA area\r\nSome students will be hosted in Central CA area\r\nSome students will be hosted in Northern CA area\r\nThere will be shared activities for each areas.",
+    "description": "Experience natural beauty of Yosimite National Park\nLeadership Training, Team Building Activities, Personal Development  and opportunity to engage with Omega leos and California lions.\nCultural exchange presentation. Lionistic sctivities including service activities to local communities.\nExplore world class San Francisco and surrounding area. Golden Gate Bridge, Pier 39 and Fisherman's Wharf, Lombard Street, Palace of Fine Arts, Union Square, San Francisco Chinatown, San Francisco downtown, Ocean Beach, Golden Gate parketc. Experience riding in self navigating car or taxi. Experience diversity and beauty of California!\nWe are MD4 Youth Protection Policy Compliant.",
+    "host_family_activities": "Some students will be hosted in Southern CA area\nSome students will be hosted in Central CA area\nSome students will be hosted in Northern CA area\nThere will be shared activities for each areas.",
     "languages": [
      "English"
     ],
