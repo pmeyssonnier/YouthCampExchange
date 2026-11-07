@@ -378,10 +378,12 @@
    "camp_ends": "22-08-2027",
    "family_stay_starts": "30-07-2027",
    "family_stay_ends": "15-08-2027",
+   "family_stay2_starts": "22-08-2027",
+   "family_stay2_ends": "29-08-2027",
    "detail": {
     "location": "Campbellsport, WI, USA",
     "description": "Country Presentations, Day Trip which includes a visit to the Lions Eye Bank, Wisconsin State Capitol, State Street Shopping excursion and Marshall Lions and LEOS picnic, Native American Presentation, Water Activities, \"UnOlympic\" Games, Club Vista \"Disco\" Night, Traditional USA Meals, Country Chats, Crafts, Water & Land Sports, Talent Show, Lots of FREE TIME to share with the other youths.",
-    "host_family_activities": "We do require a virtual meeting as part of our application process. Youth must demonstrate good English speaking skills, agree to comply with the Youth Exchange program rules about NO Drinking, NO Dating(Romance), NO Drugs, NO Driving and say NO to being Disrespectful.\r\nHost family experience will vary.  We allow our families to match with youths that fit their lifestyle. Wisconsin has a diverse culture and natural resources that varies from small city life to remote locations with much scenic beauty.  You will enjoy all that Wisconsin has to offer no matter where you stay or visit. Second host family stay: 22–29 August 2027 (after the camp).",
+    "host_family_activities": "We do require a virtual meeting as part of our application process. Youth must demonstrate good English speaking skills, agree to comply with the Youth Exchange program rules about NO Drinking, NO Dating(Romance), NO Drugs, NO Driving and say NO to being Disrespectful.\r\nHost family experience will vary.  We allow our families to match with youths that fit their lifestyle. Wisconsin has a diverse culture and natural resources that varies from small city life to remote locations with much scenic beauty.  You will enjoy all that Wisconsin has to offer no matter where you stay or visit.",
     "languages": [
      "English"
     ],
@@ -697,10 +699,11 @@
    "camp_ends": "31-07-2027",
    "family_stay_starts": "18-07-2027",
    "family_stay_ends": "24-07-2027",
+   "family_stay2_starts": "01-08-2027",
+   "family_stay2_ends": "08-08-2027",
    "detail": {
     "location": "CUERNAVACA MOR. MEXICO",
     "description": "Museuns, archaeological sites, caves, historic cities and principal cities of Mexico",
-    "host_family_activities": "Second host family stay: 1–8 August 2027 (after the camp).",
     "languages": [
      "English",
      "Spanish"
@@ -723,10 +726,12 @@
    "camp_ends": "20-04-2027",
    "family_stay_starts": "09-04-2027",
    "family_stay_ends": "14-04-2027",
+   "family_stay2_starts": "21-04-2027",
+   "family_stay2_ends": "25-04-2027",
    "detail": {
     "location": "Moratuwa",
     "description": "1 White water rafting and water activates in Kithulgala\r\n2 Adventure activities Rangiri aqua\r\n3Tooth Temple and Visit, Ceylon tea factory and Plantation Visit\r\n4 Nuwara Eliya, water activities, Garden Visit, Red Post office Visit and Night New Year festival activities  \r\n5 Ella and 9 Arch bridge visit\r\n6 Elephants and Wild Life \r\n7 Weligama Surfing and beach activities\r\n8 Galle fort and return to Colombo",
-    "host_family_activities": "1st Family Stay plan by individual family according their hosting area. Mainly Sri Lankan New Year and Cultural events. Understanding Culture of Sri Lankan Culture, food, Food preparation.  \r\n2nd Family Stay incoming youth and youth exchange team can plan as a small group or individual( Parents approval and YEC approval need) can plan visit preference in beautiful Ceylon . Second host family stay: 21–25 April 2027 (after the camp).",
+    "host_family_activities": "1st Family Stay plan by individual family according their hosting area. Mainly Sri Lankan New Year and Cultural events. Understanding Culture of Sri Lankan Culture, food, Food preparation.  \r\n2nd Family Stay incoming youth and youth exchange team can plan as a small group or individual( Parents approval and YEC approval need) can plan visit preference in beautiful Ceylon .",
     "languages": [
      "English"
     ],
@@ -889,11 +894,12 @@
    "camp_starts": "18-07-2027",
    "camp_ends": "28-07-2027",
    "family_stay_starts": "03-07-2027",
-   "family_stay_ends": "18-07-2027",
+   "family_stay_ends": "10-07-2027",
+   "family_stay2_starts": "10-07-2027",
+   "family_stay2_ends": "18-07-2027",
    "detail": {
     "location": "Almere, The Netherlands",
     "description": "Dutch hospitality, international friendships, cultural visits and activities. Earlier homestay start 03-07-2027 for participants from outside Europe. WhatsApp video call part of acceptance.",
-    "host_family_activities": "Flyer \"Lekker Dutch\": family stay 1 on 3–10 July, family stay 2 on 10–18 July 2027, camp 18–28 July 2027 (25 participants).",
     "languages": [
      "English"
     ],
@@ -1823,10 +1829,11 @@
    "camp_ends": "01-08-2027",
    "family_stay_starts": "17-07-2027",
    "family_stay_ends": "25-07-2027",
+   "family_stay2_starts": "01-08-2027",
+   "family_stay2_ends": "08-08-2027",
    "detail": {
     "location": "Wieleń, Lake Wieleń, Poland",
     "description": "Sailing, kayaking, windsurfing, SUP, cultural evenings, international friendships. Two host family stays: 17–25 July (before camp) and 1–8 August 2027 (after camp). Arrival/departure depends on host family location.",
-    "host_family_activities": "Second host family stay: 1–8 August 2027.",
     "languages": [
      "English"
     ],
@@ -1863,10 +1870,11 @@
    "camp_ends": "09-07-2027",
    "family_stay_starts": "28-06-2027",
    "family_stay_ends": "02-07-2027",
+   "family_stay2_starts": "09-07-2027",
+   "family_stay2_ends": "13-07-2027",
    "detail": {
     "location": "Novi Sad & Belgrade, Serbia",
     "description": "Culture, Serbian cuisine, sport & workshops, friendship. Arrival 28 June, departure 13 July; Belgrade Nikola Tesla Airport (BEG).",
-    "host_family_activities": "Second host family stay: 9–13 July 2027.",
     "languages": [
      "English"
     ],
@@ -1917,6 +1925,7 @@
    "continent": "Europe",
    "country": "Germany",
    "camp_name": "Hannover 2027 – Youth Camp for young people with Type 1 diabetes",
+   "inclusive": true,
    "age_requirements": "15-18",
    "fee": null,
    "camp_starts": "24-07-2027",
