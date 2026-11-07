@@ -45,25 +45,6 @@
   {
    "continent": "Asia",
    "country": "India",
-   "camp_name": "Youth Culture",
-   "age_requirements": "18-22",
-   "fee": "1000 Rupees",
-   "camp_starts": "14-03-2026",
-   "camp_ends": "15-03-2026",
-   "family_stay_starts": "14-03-2026",
-   "family_stay_ends": "15-03-2026",
-   "detail": {
-    "location": "Coimbatore,Tamilnadu,India",
-    "description": "Multiple Leos & Leo Lions 1. Leadership Seminar 2. Fun Activities 3. DJ 4. Their Idea& Service Sharing Tribes 1. Childhood Cancer Awareness 2. Youth Diabetic Check 3. Youth Vision Screening 4. Mental Health Well Being 5. Peace Poster Contest & Essay Competition 6. Quest & Carrier Guidance",
-    "languages": [
-     "English"
-    ],
-    "yce_url": "https://www.lions-yce-belgium.be/destinations/youth-culture"
-   }
-  },
-  {
-   "continent": "Asia",
-   "country": "India",
    "camp_name": "Lions Escapade Northeast Youth Camp & Exchange",
    "age_requirements": "18-27",
    "fee": "450 USD",
