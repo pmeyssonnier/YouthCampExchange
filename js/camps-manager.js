@@ -7,7 +7,7 @@ let ARCH=[];              // camps archivés (camps_archive.json)
 let CONT="",DIRTY=false, CONNECTED=false, VIEW="active", EDIT_I=-1, EDIT_NEW=false, REVIEW=null;
 let SORT_K="country", SORT_D=1; // tri du tableau (clic sur les en-têtes)
 
-const TOP_KEYS=["continent","country","state","district","camp_name","age_requirements","fee",
+const TOP_KEYS=["continent","country","state","district","camp_name","inclusive","age_requirements","fee",
   "camp_starts","camp_ends","family_stay_starts","family_stay_ends","detail"];
 const DET_KEYS=["location","description","host_family_activities","languages","website","yce_url","flyer_url",
   "application_deadline","participants","contact_name","contact_email","contact_phone","lat","lon"];
@@ -80,6 +80,7 @@ function render(){
 function fldHtml(id,label,val,span,tag){
   span=span||"g2";
   if(tag==="textarea")return '<div class="fld '+span+'"><label class="flbl">'+label+'</label><textarea id="'+id+'">'+esc(val||"")+"</textarea></div>";
+  if(tag==="yesno"){return '<div class="fld '+span+'"><label class="flbl">'+label+'</label><select id="'+id+'"><option>No</option><option'+(val?" selected":"")+">Yes</option></select></div>";}
   if(tag==="continent"){return '<div class="fld '+span+'"><label class="flbl">'+label+'</label><select id="'+id+'">'
     +CONTINENTS.map(function(x){return '<option'+(x===val?" selected":"")+">"+x+"</option>";}).join("")+"</select></div>";}
   return '<div class="fld '+span+'"><label class="flbl">'+label+'</label><input id="'+id+'" value="'+esc(val||"")+'"></div>';
@@ -105,13 +106,14 @@ function openEdit(i){
     +fldHtml("e-application_deadline","Application deadline",d.application_deadline,"g1")
     +fldHtml("e-participants","Capacity",d.participants,"g1")
     +fldHtml("e-languages","Languages (comma-separated)",(d.languages||[]).join(", "),"g1")
+    +fldHtml("e-inclusive","Camp for people with disabilities",c.inclusive,"g2","yesno")
     +fldHtml("e-description","Camp activities / description",d.description,"g6","textarea")
     +fldHtml("e-host_family_activities","Host family activities",d.host_family_activities,"g6","textarea")
     +fldHtml("e-website","Official website",d.website,"g2")
     +fldHtml("e-yce_url","lions-yce-belgium.be page",d.yce_url,"g2")
     +fldHtml("e-flyer_url","Camp flyer (link to the image)",d.flyer_url,"g2")
     +fldHtml("e-contact_name","Contact name",d.contact_name,"g2")
-    +fldHtml("e-contact_email","Contact e-mail",d.contact_email,"g2")
+    +fldHtml("e-contact_email","Contact e-mail (several: separate with ;)",d.contact_email,"g2")
     +fldHtml("e-contact_phone","Contact phone",d.contact_phone,"g2");
   document.getElementById("edit-del").style.display="";
   document.getElementById("edit-box").style.display="block";
@@ -156,7 +158,7 @@ function saveEdit(){
   if(ages&&ages.length>=2&&+ages[0]>+ages[1]){log("Ages: the minimum is above the maximum.","err");return;}
   if(gv("e-flyer_url")&&!/^https?:\/\/[a-z0-9-]+(\.[a-z0-9-]+)+(\/\S*)?$/i.test(gv("e-flyer_url"))){log("Flyer must be a web address (https://…).","err");return;}
   if(gv("e-website")&&!/^(https?:\/\/)?[a-z0-9-]+(\.[a-z0-9-]+)+(\/\S*)?$/i.test(gv("e-website"))){log("Website must be a web address (https://…).","err");return;}
-  if(gv("e-contact_email")&&!/^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/.test(gv("e-contact_email"))){log("Contact e-mail is not valid.","err");return;}
+  if(gv("e-contact_email")&&!gv("e-contact_email").split(/\s*[;,]\s*/).every(function(m){return /^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/.test(m);})){log("Contact e-mail is not valid (several addresses: separate them with a semicolon).","err");return;}
   const lat=gv("e-lat"),lon=gv("e-lon");
   if(lat||lon){
     if(!lat||!lon||!isFinite(+lat)||!isFinite(+lon)||Math.abs(+lat)>90||Math.abs(+lon)>180){log("Coordinates: give both latitude (-90 to 90) and longitude (-180 to 180) as numbers, e.g. 50.9307 and 5.332.","err");return;}
@@ -165,6 +167,7 @@ function saveEdit(){
   nc.continent=gv("e-continent")||"Europe";nc.country=ctry;
   if(gv("e-state"))nc.state=gv("e-state");
   if(c.district)nc.district=c.district;
+  if(gv("e-inclusive")==="Yes")nc.inclusive=true;
   nc.camp_name=name;nc.age_requirements=gv("e-age_requirements")||"";nc.fee=gv("e-fee");
   nc.camp_starts=gv("e-camp_starts");nc.camp_ends=gv("e-camp_ends");
   nc.family_stay_starts=gv("e-family_stay_starts");nc.family_stay_ends=gv("e-family_stay_ends");
