@@ -8,7 +8,8 @@ The version is shown on every page (site footer, tool headers).
 ## 1.21.0 — 2026-11-08
 
 - **♿ Inclusion tag on the camp sheet.** Camps flagged as inclusion / special camps show a "♿ Inclusion" tag next to the country in their sheet. The flag now covers camps for young people with disabilities *and* other special-needs camps: the Hannover 2027 camp for young people with Type 1 diabetes is flagged. The filter is renamed *Inclusion camps*, and in the administration the edit card field is *♿ Inclusion / special camp (disability, special needs)* (Yes/No).
-- **Second family stay.** A camp can have a second host-family period (two new optional fields in the edit card). The camp sheet shows a *Second Family Stay* section **only** for those camps, the timeline lists it, and arrival/departure take it into account. Filled in for Poland, Serbia, Netherlands (Camp 2), Mexico (Verano del 27), Sri Lanka and Wisconsin; the earlier notes about a second stay are removed from their *Host family activities*.
+- **Second family stay.** A camp can have a second host-family period (two new optional fields in the edit card). The camp sheet shows a *Second Family Stay* section **only** for those camps, arrival/departure take it into account. Filled in for Poland, Serbia, Netherlands (Camp 2), Mexico (Verano del 27), Sri Lanka and Wisconsin; the earlier notes about a second stay are removed from their *Host family activities*.
+- **Camp sheet: the *Complete Timeline* section is removed.** It repeated the dates already shown in the Camp Period, Family Stay and Total Presence blocks right below it.
 
 ## 1.20.0 — 2026-11-08
 

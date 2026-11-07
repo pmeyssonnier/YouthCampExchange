@@ -1,4 +1,4 @@
-// Deuxième séjour en famille d'accueil : section de la fiche seulement s'il existe, champs de l'administration, puce « Inclusion ».
+// Deuxième séjour en famille d'accueil : section de la fiche seulement s'il existe (plus de chronologie), champs de l'administration, puce « Inclusion ».
 import { chromium } from '@playwright/test';
 import fs from 'fs';
 import { launchOpts, serve, checker } from './helpers.mjs';
@@ -19,7 +19,7 @@ const i2 = RAW.findIndex(c => c.family_stay2_starts), i1 = RAW.findIndex(c => !c
 const withTwo = await sheet(i2), withOne = await sheet(i1);
 t.ok(/Second Family Stay/i.test(withTwo.b), 'second-stay section shown when the camp has one');
 t.ok(!/Second Family Stay/i.test(withOne.b), 'no second-stay section otherwise');
-t.ok(/Second family stay begins/i.test(withTwo.b), 'the timeline lists the second stay');
+t.ok(!/Complete Timeline/i.test(withTwo.b), 'the Complete Timeline section is gone');
 const c2 = await pg.evaluate(i => CAMPS[i].departure >= CAMPS[i].fe2 && CAMPS[i].departure >= CAMPS[i].ce, i2);
 t.ok(c2, 'departure takes the second stay into account');
 const iInc = RAW.findIndex(c => c.inclusive);

@@ -1,26 +1,6 @@
-// site-modal.js — fiche détaillée d'un camp : chronologie, sections, ouverture/fermeture
+// site-modal.js — fiche détaillée d'un camp : sections, ouverture/fermeture
 // Chargé par index.html ; scripts classiques partageant la portée globale.
 // ── MODAL ────────────────────────────────────────────
-function buildTimeline(c,campDays){
-  const events=[];
-  if(c.fs)events.push({date:c.fs,key:'fs',dot:'orange',lbl:'🏠 Family stay begins'});
-  if(c.fe)events.push({date:c.fe,key:'fe',dot:'green',lbl:'🏠 Family stay ends'});
-  if(c.fs2)events.push({date:c.fs2,key:'fs2',dot:'orange',lbl:'🏠 Second family stay begins'});
-  if(c.fe2)events.push({date:c.fe2,key:'fe2',dot:'green',lbl:'🏠 Second family stay ends'});
-  if(c.cs)events.push({date:c.cs,key:'cs',dot:'blue',lbl:'🏕 Camp starts',extra:campDays?` <span style="color:var(--muted);font-size:10px">(${campDays} days)</span>`:''});
-  if(c.ce)events.push({date:c.ce,key:'ce',dot:'blue',lbl:'🏕 Camp ends'});
-  const keyOrder={fs:0,fe:1,fs2:2,fe2:3,cs:4,ce:5};
-  events.sort((a,b)=>(a.date-b.date)||(keyOrder[a.key]-keyOrder[b.key]));
-  if(!events.length)return'<div style="color:var(--muted);font-size:11px">No date information</div>';
-  events[0].arrival=true;events[events.length-1].departure=true;
-  return events.map((ev,i)=>{
-    const isLast=i===events.length-1;let lbl=ev.lbl,dot=ev.dot;
-    if(ev.arrival){lbl=`✈ Arrival in country — ${ev.lbl}`;dot='orange';}
-    if(ev.departure){lbl=`✈ Departure from country — ${ev.lbl}`;dot='orange';}
-    return`<div class="tl-item"><div><div class="tl-dot tl-dot-${dot}"></div>${!isLast?'<div class="tl-line"></div>':''}</div><div><div class="tl-lbl">${lbl}</div><div class="tl-val">${fmtFull(ev.date)}${ev.extra||''}</div></div></div>`;
-  }).join('');
-}
-
 function showCampDetail(idx){
   const c=CAMPS[idx];if(!c)return;
   document.querySelectorAll('tr.clickable-row').forEach(r=>r.classList.remove('selected'));
@@ -93,10 +73,6 @@ function showCampDetail(idx){
       <div class="ms-row"><span class="ms-lbl">Amount</span><span class="ms-val big ${isFree?'free':''}">${isFree?'FREE':esc(c.fee||'—')}</span></div>
     </div>
     ${secLocation}${secDesc}${secHfa}${secLang}${secLinks}${secContact}${secNoDetail}
-    <div class="modal-section full">
-      <div class="ms-title">📅 Complete Timeline</div>
-      <div class="modal-timeline">${buildTimeline(c,campDays)}</div>
-    </div>
     <div class="modal-section">
       <div class="ms-title">🏕 Camp Period</div>
       <div class="ms-row"><span class="ms-lbl">Start</span><span class="ms-val blue">${fmtFull(c.cs)}</span></div>
