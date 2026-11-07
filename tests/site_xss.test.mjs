@@ -20,7 +20,7 @@ Object.assign(evil, {
 evil.detail = Object.assign({}, evil.detail || {}, {
   location: P('location'), description: P('desc') + S('desc-script'), host_family_activities: P('hfa'),
   languages: [P('lang')], website: 'javascript:window.__xss=(window.__xss||[]).concat("website")',
-  yce_url: 'javascript:alert(1)', contact_name: P('cname'), contact_email: `x@y.be"><img src=x onerror="window.__xss=['email']">`,
+  yce_url: 'javascript:alert(1)', flyer_url: 'javascript:window.__xss=(window.__xss||[]).concat("flyer")', contact_name: P('cname'), contact_email: `x@y.be"><img src=x onerror="window.__xss=['email']">`,
   contact_phone: P('phone'), participants: P('participants')
 });
 const goodWeb = JSON.parse(JSON.stringify(RAW.find(c => c.detail && c.detail.website === 'yce.lions.dk') || RAW[1]));

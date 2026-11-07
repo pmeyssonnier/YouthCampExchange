@@ -9,7 +9,7 @@ let SORT_K="country", SORT_D=1; // tri du tableau (clic sur les en-têtes)
 
 const TOP_KEYS=["continent","country","state","district","camp_name","age_requirements","fee",
   "camp_starts","camp_ends","family_stay_starts","family_stay_ends","detail"];
-const DET_KEYS=["location","description","host_family_activities","languages","website","yce_url",
+const DET_KEYS=["location","description","host_family_activities","languages","website","yce_url","flyer_url",
   "application_deadline","participants","contact_name","contact_email","contact_phone","lat","lon"];
 const CONTINENTS=["Africa","Asia","Europe","Middle America","North America","Oceania","South America"];
 
@@ -109,6 +109,7 @@ function openEdit(i){
     +fldHtml("e-host_family_activities","Host family activities",d.host_family_activities,"g6","textarea")
     +fldHtml("e-website","Official website",d.website,"g2")
     +fldHtml("e-yce_url","lions-yce-belgium.be page",d.yce_url,"g2")
+    +fldHtml("e-flyer_url","Camp flyer (link to the image)",d.flyer_url,"g2")
     +fldHtml("e-contact_name","Contact name",d.contact_name,"g2")
     +fldHtml("e-contact_email","Contact e-mail",d.contact_email,"g2")
     +fldHtml("e-contact_phone","Contact phone",d.contact_phone,"g2");
@@ -153,6 +154,7 @@ function saveEdit(){
   }
   const ages=(gv("e-age_requirements")||"").match(/\d+/g);
   if(ages&&ages.length>=2&&+ages[0]>+ages[1]){log("Ages: the minimum is above the maximum.","err");return;}
+  if(gv("e-flyer_url")&&!/^https?:\/\/[a-z0-9-]+(\.[a-z0-9-]+)+(\/\S*)?$/i.test(gv("e-flyer_url"))){log("Flyer must be a web address (https://…).","err");return;}
   if(gv("e-website")&&!/^(https?:\/\/)?[a-z0-9-]+(\.[a-z0-9-]+)+(\/\S*)?$/i.test(gv("e-website"))){log("Website must be a web address (https://…).","err");return;}
   if(gv("e-contact_email")&&!/^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/.test(gv("e-contact_email"))){log("Contact e-mail is not valid.","err");return;}
   const lat=gv("e-lat"),lon=gv("e-lon");
@@ -168,7 +170,7 @@ function saveEdit(){
   nc.family_stay_starts=gv("e-family_stay_starts");nc.family_stay_ends=gv("e-family_stay_ends");
   const d={};
   [["location","e-location"],["description","e-description"],["host_family_activities","e-host_family_activities"],
-   ["website","e-website"],["yce_url","e-yce_url"],["application_deadline","e-application_deadline"],
+   ["website","e-website"],["yce_url","e-yce_url"],["flyer_url","e-flyer_url"],["application_deadline","e-application_deadline"],
    ["participants","e-participants"],["contact_name","e-contact_name"],["contact_email","e-contact_email"],
    ["contact_phone","e-contact_phone"]].forEach(function(p){const v=gv(p[1]);if(v)d[p[0]]=v;});
   if(lat&&lon){d.lat=Math.round(+lat*10000)/10000;d.lon=Math.round(+lon*10000)/10000;}

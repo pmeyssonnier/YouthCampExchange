@@ -51,8 +51,8 @@ function showCampDetail(idx){
     </div>`:'';
 
   const hasLang=det&&det.languages&&det.languages.length;
-  const web=det?safeUrl(det.website):null,yce=det?safeUrl(det.yce_url):null,mail=det?safeMail(det.contact_email):null;
-  const hasLinks=!!(web||yce);
+  const web=det?safeUrl(det.website):null,yce=det?safeUrl(det.yce_url):null,flyer=det?safeUrl(det.flyer_url):null,mail=det?safeMail(det.contact_email):null;
+  const hasLinks=!!(web||yce||flyer);
   const hasContact=det&&(det.contact_email||det.contact_name||det.contact_phone||det.application_deadline);
 
   const secLang=hasLang?`
@@ -66,6 +66,7 @@ function showCampDetail(idx){
       <div class="ms-title">🔗 Links</div>
       ${web?`<div class="ms-row" style="margin-bottom:6px"><span class="ms-lbl">Website</span><a class="ms-link" href="${esc(web)}" target="_blank" rel="noopener">${esc(det.website.replace(/^https?:\/\//,''))}</a></div>`:''}
       ${yce?`<div class="ms-row"><span class="ms-lbl">YCE Page</span><a class="ms-link" href="${esc(yce)}" target="_blank" rel="noopener">lions-yce-belgium.be ↗</a></div>`:''}
+      ${flyer?`<div class="ms-row"${web||yce?' style="margin-top:6px"':''}><span class="ms-lbl">Flyer</span><a class="ms-link" href="${esc(flyer)}" target="_blank" rel="noopener">View the camp flyer ↗</a></div>`:''}
     </div>`:'';
 
   const secContact=hasContact?`
