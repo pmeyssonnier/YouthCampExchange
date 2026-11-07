@@ -18,10 +18,10 @@ await pg.waitForTimeout(600);
 const rows = () => pg.$$eval('#tbody tr', r => r.length);
 const all = await rows();
 t.ok(all === RAW.length, 'all camps listed before filtering: ' + all);
-t.ok(/Camps for people with disabilities/.test(await pg.textContent('#incl-pills')), 'filter pill is shown');
+t.ok(/Inclusion camps/.test(await pg.textContent('#incl-pills')), 'filter pill is shown');
 await pg.click('#incl-pills .pill');
 t.ok((await rows()) === flagged.length, 'only the inclusive camps remain: ' + (await rows()) + ' = ' + flagged.length);
-t.ok(/Disabilities/.test(await pg.textContent('#f-chips')), 'active filter shown as a chip');
+t.ok(/Inclusion/.test(await pg.textContent('#f-chips')), 'active filter shown as a chip');
 t.ok(await pg.$eval('#incl-pills .pill', e => e.classList.contains('on')), 'pill is on');
 // se combine avec un autre filtre : un pays sans camp inclusif donne 0 ligne
 await pg.evaluate(() => { selCountries.add('Norway'); applyFilters(); });

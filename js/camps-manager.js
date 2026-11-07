@@ -8,7 +8,7 @@ let CONT="",DIRTY=false, CONNECTED=false, VIEW="active", EDIT_I=-1, EDIT_NEW=fal
 let SORT_K="country", SORT_D=1; // tri du tableau (clic sur les en-têtes)
 
 const TOP_KEYS=["continent","country","state","district","camp_name","inclusive","age_requirements","fee",
-  "camp_starts","camp_ends","family_stay_starts","family_stay_ends","detail"];
+  "camp_starts","camp_ends","family_stay_starts","family_stay_ends","family_stay2_starts","family_stay2_ends","detail"];
 const DET_KEYS=["location","description","host_family_activities","languages","website","yce_url","flyer_url",
   "application_deadline","participants","contact_name","contact_email","contact_phone","lat","lon"];
 const CONTINENTS=["Africa","Asia","Europe","Middle America","North America","Oceania","South America"];
@@ -100,13 +100,15 @@ function openEdit(i){
     +fldHtml("e-camp_ends","Camp end",c.camp_ends,"g1")
     +fldHtml("e-family_stay_starts","Family stay start",c.family_stay_starts,"g1")
     +fldHtml("e-family_stay_ends","Family stay end",c.family_stay_ends,"g1")
+    +fldHtml("e-family_stay2_starts","2nd family stay start (if any)",c.family_stay2_starts,"g1")
+    +fldHtml("e-family_stay2_ends","2nd family stay end",c.family_stay2_ends,"g1")
     +fldHtml("e-location","Location",d.location,"g3")
     +fldHtml("e-lat","Latitude (ex. 50.9307)",d.lat,"g1")
     +fldHtml("e-lon","Longitude (ex. 5.332)",d.lon,"g1")
     +fldHtml("e-application_deadline","Application deadline",d.application_deadline,"g1")
     +fldHtml("e-participants","Capacity",d.participants,"g1")
     +fldHtml("e-languages","Languages (comma-separated)",(d.languages||[]).join(", "),"g1")
-    +fldHtml("e-inclusive","Camp for people with disabilities",c.inclusive,"g2","yesno")
+    +fldHtml("e-inclusive","♿ Inclusion / special camp (disability, special needs)",c.inclusive,"g2","yesno")
     +fldHtml("e-description","Camp activities / description",d.description,"g6","textarea")
     +fldHtml("e-host_family_activities","Host family activities",d.host_family_activities,"g6","textarea")
     +fldHtml("e-website","Official website",d.website,"g2")
@@ -146,11 +148,11 @@ function saveEdit(){
   const c=CAMPS_W[EDIT_I];
   const name=gv("e-camp_name"),ctry=gv("e-country");
   if(!name||!ctry){log("Camp name and country are required.","err");return;}
-  for(const f of ["e-camp_starts","e-camp_ends","e-family_stay_starts","e-family_stay_ends","e-application_deadline"]){
+  for(const f of ["e-camp_starts","e-camp_ends","e-family_stay_starts","e-family_stay_ends","e-family_stay2_starts","e-family_stay2_ends","e-application_deadline"]){
     const v=gv(f);
     if(v&&!validDmy(v)){log("Not a valid date (dd-mm-yyyy): "+f.slice(2).replace(/_/g," ")+" = "+esc(v),"err");return;}
   }
-  for(const p of [["e-camp_starts","e-camp_ends","Camp"],["e-family_stay_starts","e-family_stay_ends","Family stay"]]){
+  for(const p of [["e-camp_starts","e-camp_ends","Camp"],["e-family_stay_starts","e-family_stay_ends","Family stay"],["e-family_stay2_starts","e-family_stay2_ends","Second family stay"]]){
     const a=gv(p[0]),b=gv(p[1]);
     if(a&&b&&dmyKey(a)>dmyKey(b)){log(p[2]+": the start date is after the end date.","err");return;}
   }
@@ -171,6 +173,7 @@ function saveEdit(){
   nc.camp_name=name;nc.age_requirements=gv("e-age_requirements")||"";nc.fee=gv("e-fee");
   nc.camp_starts=gv("e-camp_starts");nc.camp_ends=gv("e-camp_ends");
   nc.family_stay_starts=gv("e-family_stay_starts");nc.family_stay_ends=gv("e-family_stay_ends");
+  if(gv("e-family_stay2_starts")||gv("e-family_stay2_ends")){nc.family_stay2_starts=gv("e-family_stay2_starts");nc.family_stay2_ends=gv("e-family_stay2_ends");}
   const d={};
   [["location","e-location"],["description","e-description"],["host_family_activities","e-host_family_activities"],
    ["website","e-website"],["yce_url","e-yce_url"],["flyer_url","e-flyer_url"],["application_deadline","e-application_deadline"],

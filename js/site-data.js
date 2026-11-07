@@ -40,13 +40,15 @@ function titleCase(s){
 const CAMPS=RAW.map((c,i)=>{
   const cs=parseDate(c.camp_starts),ce=parseDate(c.camp_ends);
   const fs=parseDate(c.family_stay_starts),fe=parseDate(c.family_stay_ends);
-  const arrival=fs&&cs?(fs<cs?fs:cs):(cs||fs);
-  const departure=fe&&ce?(fe>ce?fe:ce):(ce||fe);
+  const fs2=parseDate(c.family_stay2_starts),fe2=parseDate(c.family_stay2_ends); // deuxième séjour en famille (facultatif)
+  const starts=[fs,cs,fs2].filter(Boolean),ends=[fe,ce,fe2].filter(Boolean);
+  const arrival=starts.length?new Date(Math.min.apply(null,starts)):null;
+  const departure=ends.length?new Date(Math.max.apply(null,ends)):null;
   const age=parseAge(c.age_requirements);
   const feeNum=c.fee?(parseFloat(c.fee.replace(/[^0-9.]/g,''))||0):0;
   // saison YCE : septembre à août — un camp de juillet 2026 appartient à 2025-2026
   const season=cs?((cs.getMonth()+1>=9)?cs.getFullYear()+'-'+(cs.getFullYear()+1):(cs.getFullYear()-1)+'-'+cs.getFullYear()):'';
-  return{...c,_idx:i,cs,ce,fs,fe,arrival,departure,age_min:age.min,age_max:age.max,fee_num:feeNum,season};
+  return{...c,_idx:i,cs,ce,fs,fe,fs2,fe2,arrival,departure,age_min:age.min,age_max:age.max,fee_num:feeNum,season};
 });
 // ── échappement : toute donnée de camp ou de configuration insérée en HTML passe par ici ──
 // (les camps viennent en partie du répertoire international importé : contenu externe)

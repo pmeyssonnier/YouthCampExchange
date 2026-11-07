@@ -239,15 +239,6 @@ tr.clickable-row.selected td{background:rgba(79,195,247,0.07);border-left:2px so
 .ms-link:hover{text-decoration:underline;}
 .ms-wa{text-decoration:underline;font-size:12.5px;}
 .ms-no-detail{font-size:11px;color:var(--muted);font-style:italic;}
-.modal-timeline{display:flex;flex-direction:column;gap:7px;}
-.tl-item{display:flex;align-items:flex-start;gap:10px;}
-.tl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:3px;}
-.tl-dot-orange{background:var(--orange);}
-.tl-dot-blue{background:var(--blue);}
-.tl-dot-green{background:var(--accent);}
-.tl-line{width:1px;background:var(--border);height:12px;margin-left:4px;}
-.tl-lbl{font-size:9px;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted2);}
-.tl-val{font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--text);}
 
 /* ── BRUSSELS ── */
 .brx{display:grid;grid-template-columns:1.1fr 1fr;gap:44px;align-items:center;}
@@ -449,3 +440,4 @@ html[data-theme="light"] #tab-map,html[data-theme="light"] .tt{
   .modal-body{padding:12px 12px 18px;gap:9px;}
   .foot-bottom{flex-direction:column;gap:6px;}
 }
+.incl-tag{background:rgba(232,168,32,0.12);color:var(--gold);border-color:rgba(232,168,32,0.35);font-size:11px;font-weight:600;}
