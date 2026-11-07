@@ -5,6 +5,10 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.18.1 — 2026-11-07
+
+- **Filter counts follow the other filters.** On the public site, the number on each chip now counts the camps that pass all the *other* filters: choosing a season recounts the continents, the countries and the states; choosing a continent or an age recounts the seasons; and so on. Before, the continent counts always showed every season together (e.g. Asia 16 while the 2026-2027 season had fewer). Chips that would give no camp are dimmed, not removed.
+
 ## 1.18.0 — 2026-11-06
 
 - **Phone numbers on the camp sheet:** numbers with a country code are spaced by country (`+524921243877` → `+52 492 124 3877`) and are underlined links that open a WhatsApp chat. Numbers written without a country code stay as typed, without a link.

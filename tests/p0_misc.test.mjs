@@ -266,6 +266,38 @@ ok(r.mdy[0] === null && r.mdy[1] === '15-07-2027' && r.mdy[2] === null, 'directo
   const html = await pg.evaluate(() => { const i = CAMPS.findIndex(c => /Mexico: History/.test(c.camp_name)); showCampDetail(i); return document.getElementById('md-body').innerHTML; });
   ok(/<a class="ms-link ms-wa" href="https:\/\/wa\.me\/524921243877" target="_blank" rel="noopener noreferrer"[^>]*>\+52 492 124 3877<\/a>/.test(html), 'camp sheet: phone is a WhatsApp link');
 }
+
+// puces du filtre public : les nombres suivent les autres filtres (saison, continent, âge)
+{
+  await pg.goto(B + 'index.html'); await pg.waitForTimeout(500);
+  const f = await pg.evaluate(() => {
+    const pills = sel => Object.fromEntries([...document.querySelectorAll(sel)].map(p => [p.dataset.ct || p.dataset.ss, +p.querySelector('span').textContent]));
+    const sum = o => Object.values(o).reduce((a, b) => a + b, 0);
+    const seasons = Object.keys(pills('.pill[data-ss]'));
+    const out = { seasons, total: CAMPS.length, contAll: sum(pills('.pill[data-ct]')) };
+    toggleSeason(seasons[seasons.length - 1]);
+    const inS = CAMPS.filter(c => c.season === seasons[seasons.length - 1]).length;
+    out.inSeason = inS; out.contSeason = sum(pills('.pill[data-ct]'));
+    out.countrySeason = [...document.querySelectorAll('#c-list .mcount')].reduce((a, e) => a + +e.textContent, 0);
+    out.seasonPills = pills('.pill[data-ss]');
+    const ct = Object.keys(pills('.pill[data-ct]'))[0]; toggleContinent(ct);
+    out.otherSeasonCount = pills('.pill[data-ss]')[seasons[0]];
+    out.expectOther = CAMPS.filter(c => c.season === seasons[0] && c.continent === ct).length;
+    out.shown = getFiltered().length; out.expectShown = CAMPS.filter(c => c.season === seasons[seasons.length - 1] && c.continent === ct).length;
+    const ageEl = document.getElementById('age-in'); ageEl.value = '17'; applyFilters();
+    out.contAge = sum(pills('.pill[data-ct]')); out.expectAge = CAMPS.filter(c => c.season === seasons[seasons.length - 1] && 17 >= c.age_min && 17 <= c.age_max).length;
+    resetFilters();
+    out.afterReset = sum(pills('.pill[data-ct]'));
+    return out;
+  });
+  ok(f.contAll === f.total, 'filter chips: continent counts add up to all camps without a season: ' + f.contAll + '/' + f.total);
+  ok(f.contSeason === f.inSeason && f.countrySeason === f.inSeason, 'filter chips: choosing a season recounts continents and countries: ' + JSON.stringify([f.contSeason, f.countrySeason, f.inSeason]));
+  ok(f.seasonPills[f.seasons[f.seasons.length - 1]] === f.inSeason, 'filter chips: the chosen season keeps its own total');
+  ok(f.otherSeasonCount === f.expectOther, 'filter chips: season counts follow the continent: ' + f.otherSeasonCount + ' vs ' + f.expectOther);
+  ok(f.shown === f.expectShown, 'filter chips: list matches season + continent: ' + f.shown + ' vs ' + f.expectShown);
+  ok(f.contAge === f.expectAge, 'filter chips: age 17 recounts the continents: ' + f.contAge + ' vs ' + f.expectAge);
+  ok(f.afterReset === f.total, 'filter chips: reset restores all counts');
+}
 ok(!errs.length, 'no page errors: ' + errs.join(' | '));
 console.log(`\n${pass} passed, ${fail} failed`);
 await br.close(); srv.close(); process.exit(fail ? 1 : 0);
