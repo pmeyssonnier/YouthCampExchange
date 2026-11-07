@@ -113,7 +113,7 @@ function openEdit(i){
     +fldHtml("e-yce_url","lions-yce-belgium.be page",d.yce_url,"g2")
     +fldHtml("e-flyer_url","Camp flyer (link to the image)",d.flyer_url,"g2")
     +fldHtml("e-contact_name","Contact name",d.contact_name,"g2")
-    +fldHtml("e-contact_email","Contact e-mail",d.contact_email,"g2")
+    +fldHtml("e-contact_email","Contact e-mail (several: separate with ;)",d.contact_email,"g2")
     +fldHtml("e-contact_phone","Contact phone",d.contact_phone,"g2");
   document.getElementById("edit-del").style.display="";
   document.getElementById("edit-box").style.display="block";
@@ -158,7 +158,7 @@ function saveEdit(){
   if(ages&&ages.length>=2&&+ages[0]>+ages[1]){log("Ages: the minimum is above the maximum.","err");return;}
   if(gv("e-flyer_url")&&!/^https?:\/\/[a-z0-9-]+(\.[a-z0-9-]+)+(\/\S*)?$/i.test(gv("e-flyer_url"))){log("Flyer must be a web address (https://…).","err");return;}
   if(gv("e-website")&&!/^(https?:\/\/)?[a-z0-9-]+(\.[a-z0-9-]+)+(\/\S*)?$/i.test(gv("e-website"))){log("Website must be a web address (https://…).","err");return;}
-  if(gv("e-contact_email")&&!/^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/.test(gv("e-contact_email"))){log("Contact e-mail is not valid.","err");return;}
+  if(gv("e-contact_email")&&!gv("e-contact_email").split(/\s*[;,]\s*/).every(function(m){return /^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/.test(m);})){log("Contact e-mail is not valid (several addresses: separate them with a semicolon).","err");return;}
   const lat=gv("e-lat"),lon=gv("e-lon");
   if(lat||lon){
     if(!lat||!lon||!isFinite(+lat)||!isFinite(+lon)||Math.abs(+lat)>90||Math.abs(+lon)>180){log("Coordinates: give both latitude (-90 to 90) and longitude (-180 to 180) as numbers, e.g. 50.9307 and 5.332.","err");return;}
