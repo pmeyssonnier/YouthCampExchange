@@ -1,7 +1,7 @@
 # Code map — Lions YCE
 
 > **Generated file — do not edit by hand.** Rebuilt by `python3 tools/build_codemap.py` (run automatically on every push to `main`).
-> Commit `bd66702`, 2026-11-07 18:59 UTC. Interactive version: [`code_map.html`](code_map.html).
+> Commit `8df7ba6`, 2026-11-07 19:23 UTC. Interactive version: [`code_map.html`](code_map.html).
 
 ## Pages
 
@@ -104,7 +104,7 @@
 
 | File | Size | Role |
 |---|---:|---|
-| `camps_data.js` | 66.3 KB | season data: SEASON + YEAR + RAW camps — common to every deployment |
+| `camps_data.js` | 66.1 KB | season data: SEASON + YEAR + RAW camps — common to every deployment |
 | `districts_data.js` | 5.8 KB | per-deployment data: SITE_REPO + DISTRICTS coordinators |
 | `js/version.js` | 0.5 KB | site version number (VERSION), shown on every page — bumped by each pull request |
 | `CHANGELOG.md` | 22.1 KB | what changed in each version |

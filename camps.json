@@ -122,9 +122,7 @@
     "participants": "25",
     "contact_name": "Barbara De Giacomi",
     "contact_email": "barbara@studiocogeas.com",
-    "contact_phone": "00393357049046",
-    "application_deadline_verification_required": true,
-    "application_deadline_note": "Previous value 03-07-2027 removed: it falls one week before the camp (08-07-2027) and is not printed on the flyer. Organizer confirmation required."
+    "contact_phone": "+39 33 570 490 46"
    }
   },
   {
@@ -650,7 +648,7 @@
    "family_stay_ends": "11-07-2027",
    "detail": {
     "location": "Torino, Italy",
-    "description": "Cultural visits\r\nLions services activities\r\nSport activities",
+    "description": "Cultural visits\nLions services activities\nSport activities",
     "languages": [
      "English"
     ],
@@ -658,7 +656,7 @@
     "participants": "18",
     "contact_name": "Paola Forneris",
     "contact_email": "pforneris74@gmail.com",
-    "contact_phone": "00393351280205"
+    "contact_phone": "+39 3351280205"
    }
   },
   {
