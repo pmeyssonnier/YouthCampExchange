@@ -101,6 +101,7 @@ document.querySelectorAll('.nav-links a').forEach(a=>a.addEventListener('click',
 initContinentPills();
 initSeasonPills();
 renderInclusivePill();
+renderWinterPill();
 renderCountryList();
 renderStateList();
 renderTable();

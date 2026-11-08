@@ -15,7 +15,7 @@ function showCampDetail(idx){
   const det=c.detail||null;
   document.getElementById('md-continent').textContent=c.continent;
   document.getElementById('md-title').textContent=titleCase(c.camp_name);
-  document.getElementById('md-country').innerHTML=`🗺️ &nbsp;${esc(c.country)}${c.state?' <span style="color:var(--muted);font-size:11px">— '+esc(c.state)+'</span>':''}${c.inclusive?' &nbsp;<span class="ms-tag incl-tag" title="Camp designed for young people with disabilities or special needs">♿ Inclusion</span>':''}`;
+  document.getElementById('md-country').innerHTML=`🗺️ &nbsp;${esc(c.country)}${c.state?' <span style="color:var(--muted);font-size:11px">— '+esc(c.state)+'</span>':''}${c.inclusive?' &nbsp;<span class="ms-tag incl-tag" title="Camp designed for young people with disabilities or special needs">♿ Inclusion</span>':''}${c.winter?' &nbsp;<span class="ms-tag winter-tag" title="Winter camp">❄ Winter camp</span>':''}`;
   const encLoc=det&&det.location?encodeURIComponent(det.location):'';
 
   const secLocation=det&&det.location?`

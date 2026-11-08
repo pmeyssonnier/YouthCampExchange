@@ -7,7 +7,7 @@ let ARCH=[];              // camps archivés (camps_archive.json)
 let CONT="",DIRTY=false, CONNECTED=false, VIEW="active", EDIT_I=-1, EDIT_NEW=false, REVIEW=null;
 let SORT_K="country", SORT_D=1; // tri du tableau (clic sur les en-têtes)
 
-const TOP_KEYS=["continent","country","state","district","camp_name","inclusive","age_requirements","fee",
+const TOP_KEYS=["continent","country","state","district","camp_name","inclusive","winter","age_requirements","fee",
   "camp_starts","camp_ends","family_stay_starts","family_stay_ends","family_stay2_starts","family_stay2_ends","detail"];
 const DET_KEYS=["location","description","host_family_activities","languages","website","yce_url","flyer_url",
   "application_deadline","participants","contact_name","contact_email","contact_phone","lat","lon"];
@@ -109,6 +109,7 @@ function openEdit(i){
     +fldHtml("e-participants","Capacity",d.participants,"g1")
     +fldHtml("e-languages","Languages (comma-separated)",(d.languages||[]).join(", "),"g1")
     +fldHtml("e-inclusive","♿ Inclusion / special camp (disability, special needs)",c.inclusive,"g2","yesno")
+    +fldHtml("e-winter","❄ Winter camp",c.winter,"g2","yesno")
     +fldHtml("e-description","Camp activities / description",d.description,"g6","textarea")
     +fldHtml("e-host_family_activities","Host family activities",d.host_family_activities,"g6","textarea")
     +fldHtml("e-website","Official website",d.website,"g2")
@@ -170,6 +171,7 @@ function saveEdit(){
   if(gv("e-state"))nc.state=gv("e-state");
   if(c.district)nc.district=c.district;
   if(gv("e-inclusive")==="Yes")nc.inclusive=true;
+  if(gv("e-winter")==="Yes")nc.winter=true;
   nc.camp_name=name;nc.age_requirements=gv("e-age_requirements")||"";nc.fee=gv("e-fee");
   nc.camp_starts=gv("e-camp_starts");nc.camp_ends=gv("e-camp_ends");
   nc.family_stay_starts=gv("e-family_stay_starts");nc.family_stay_ends=gv("e-family_stay_ends");
