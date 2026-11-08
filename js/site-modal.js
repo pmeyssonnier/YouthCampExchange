@@ -37,7 +37,8 @@ function showCampDetail(idx){
     </div>`:'';
 
   const hasLang=det&&det.languages&&det.languages.length;
-  const web=det?safeUrl(det.website):null,yce=det?safeUrl(det.yce_url):null,flyer=det?safeUrl(det.flyer_url):null;
+  const web=det?safeUrl(det.website):null,yce=det&&c.country==='Belgium'?safeUrl(det.yce_url):null, // la ligne « YCE Page » n'est gardée que pour le camp belge
+      flyer=det?safeUrl(det.flyer_url):null;
   const hasLinks=!!(web||yce||flyer);
   // le contact (nom, e-mail, téléphone) est réservé au coordinateur Lions de la zone : jamais affiché sur la fiche publique
   const hasContact=!!(det&&det.application_deadline);
