@@ -38,6 +38,21 @@ t.ok(r.fmtDef && /numFmtId="16\d"/.test(r.newXf) && !/numFmtId="49"/.test(r.newX
 t.ok(r.baseXf && r.newXf.replace(/numFmtId="\d+"/, '').replace(/applyNumberFormat="\d"/, '') === r.baseXf.replace(/numFmtId="\d+"/, '').replace(/applyNumberFormat="\d"/, ''), 'the new style keeps the look of the original (font, fill, border, alignment)');
 t.ok(+r.nf === r.nfReal, 'numFmts count is consistent (' + r.nf + ')');
 t.ok(r.otherCells, 'no other cell of the sheet is touched');
+// date de référence de l'âge = 1er juillet de l'année de la saison (YEAR), pas celle du modèle 2026
+const yr = await pg.evaluate(async () => {
+  const entries = await unzip(templateBuf);
+  const xml = new TextDecoder().decode(entries.find(e => e.name === 'xl/worksheets/sheet1.xml').data);
+  const again = yearizeTemplate(xml);
+  // un modèle déjà de l'année YEAR reste tel quel
+  const same = yearizeTemplate(xml.replace(/(<c r="Q1"[^>]*><v>)\d{4}/, '$1' + YEAR));
+  return { year: YEAR, d61: (xml.match(/<c r="D61"[^>]*><v>(\d+)<\/v>/) || [])[1], ac17: (xml.match(/<c r="AC17"[^>]*>[\s\S]*?<t[^>]*>([^<]*)<\/t>/) || [])[1], q1: (xml.match(/<c r="Q1"[^>]*><v>(\d+)<\/v>/) || [])[1],
+    ui: ['f-Q9', 'f-AC9'].map(id => document.getElementById(id).value), idem: again === xml, keeps: same !== undefined && !/Age on 01\/07\/2026/.test(same) };
+});
+const ser = Math.round((Date.UTC(+yr.year, 6, 1) - Date.UTC(1899, 11, 30)) / 86400000);
+t.ok(+yr.d61 === ser, 'reference date D61 = 1 July ' + yr.year + ' (serial ' + yr.d61 + ')');
+t.ok(yr.ac17 === 'Age on 01/07/' + yr.year && +yr.q1 === +yr.year, 'label "' + yr.ac17 + '" and header year ' + yr.q1);
+t.ok(yr.ui[0] === yr.year + '-07-01' && yr.ui[1] === yr.year + '-08-31', 'the proposed dates start on the season year: ' + yr.ui.join(' / '));
+t.ok(yr.idem, 'applying it again changes nothing');
 t.ok(!errs.length, 'no page error' + (errs.length ? ': ' + errs[0] : ''));
 await br.close(); srv.close();
 process.exit(t.done() ? 1 : 0);

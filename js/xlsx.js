@@ -196,6 +196,20 @@ function setCellDate(xml,ref,serial,styleIdx){
   return xml.replace(new RegExp('<c r="'+ref+'"([^>]*?)(/>|>[\\s\\S]*?</c>)'),function(){return '<c r="'+ref+'" s="'+styleIdx+'"><v>'+serial+'</v></c>';});
 }
 
+// Le modèle embarqué est celui d'une année (« Application_form_2026_… ») ; la saison courante est YEAR (camps_data.js, ex. 2027 pour
+// la saison 2026-2027). S'il est d'une autre année, on met à YEAR : l'année d'en-tête (Q1), la date de référence de l'âge
+// (D61 = 1er juillet YEAR, utilisée par la cellule calculée « Age on 01/07/… ») et son libellé (AC17), et les dates proposées (Q9, AC9).
+function yearizeTemplate(xml){
+  const m=xml.match(/<c r="Q1"[^>]*><v>(\d{4})<\/v><\/c>/);
+  if(!m||m[1]===String(YEAR))return xml;
+  xml=setCell(xml,"Q1",String(YEAR),true);
+  xml=setCell(xml,"D61",String(dmyToSerial("01-07-"+YEAR)),true);
+  xml=setCell(xml,"AC17","Age on 01/07/"+YEAR);
+  xml=setCell(xml,"Q9","01-07-"+YEAR);
+  xml=setCell(xml,"AC9","31-08-"+YEAR);
+  return xml;
+}
+
 // Remplace le contenu d'une cellule dans sheet1.xml en conservant son style.
 // value vide => cellule vidée. numeric => valeur numérique native.
 function setCell(xml,ref,value,numeric){

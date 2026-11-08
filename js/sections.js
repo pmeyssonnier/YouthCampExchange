@@ -100,7 +100,7 @@ const SECTIONS = [
  ]},
  {title:"IV. Applicant's Family Data", note:"family contact information", fields:[
    {ref:"M57",label:"Parent / guardian signing this form",type:"text",w:3},
-   {ref:"AI57",label:"Lion?",type:"ynbtn",w:1},
+   {ref:"AI57",label:"Lion?",type:"ynbtn",w:2},
    {ref:"H62",label:"Contact address",type:"text",w:6},
    {ref:"K63",label:"Contact phone",type:"tel",w:3},
    {ref:"AD63",label:"Contact mobile",type:"tel",w:3},
