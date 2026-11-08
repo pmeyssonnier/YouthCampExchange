@@ -83,3 +83,11 @@ body select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3
   main{padding-bottom:calc(60px + env(safe-area-inset-bottom));}
   header{padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right));}
 }
+.seg{display:inline-flex;margin-bottom:6px;border:1px solid var(--border);border-radius:8px;overflow:hidden;align-self:flex-start;}
+.seg button{background:var(--card);color:var(--muted);border:none;padding:6px 14px;font-size:12px;font-family:inherit;cursor:pointer;}
+.seg button.on{background:var(--gold);color:var(--on-gold);font-weight:600;}
+.ann-prev{background:linear-gradient(90deg,#7a4a00,#a86a10);color:#ffe9c4;text-align:center;padding:8px 16px;font-size:12.5px;border-radius:6px;width:100%;}
+.ann-prev strong{color:#fff;}
+.ann-prev a{color:#fff;text-decoration:underline;}
+.ann-empty{opacity:.8;}
+textarea[hidden],.ann-prev[hidden]{display:none;}

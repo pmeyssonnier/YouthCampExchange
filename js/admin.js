@@ -364,3 +364,16 @@ ON_CONNECT.push(async function(){
   document.getElementById("in-year").addEventListener("input",updPaths);
   initAccess();
 })();
+
+// bandeau d'annonce : bascule Édition / Aperçu (l'aperçu passe par le même nettoyage que le site public)
+function annMode(m){
+  const ta=document.getElementById("in-announce"),pv=document.getElementById("ann-prev");
+  const prev=m==="prev";
+  if(prev){
+    const v=ta.value.trim();
+    pv.innerHTML=v?cleanHtml(v):'<em class="ann-empty">Empty: the site keeps its default text.</em>';
+  }
+  pv.hidden=!prev;ta.hidden=prev;
+  document.getElementById("ann-b-edit").classList.toggle("on",!prev);
+  document.getElementById("ann-b-prev").classList.toggle("on",prev);
+}

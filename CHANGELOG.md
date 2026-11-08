@@ -5,6 +5,10 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.27.0 — 2026-11-08
+
+- **Edit / Preview switch for the announcement banner.** In the administration (*Home page* section), two buttons *✏ Edit* and *👁 Preview* switch the banner field between the text you type and the banner as the public site will show it (the same cleaning of the HTML is applied: only bold, italic, links, lists… are kept). The text is not changed by switching, and *Save the data* saves what is in the field. An empty banner shows a note that the site keeps its default text. The HTML cleaning code now lives in `js/clean-html.js`, shared by the site and the administration.
+
 ## 1.26.1 — 2026-11-08
 
 - **The "YCE Page" address is removed everywhere.** The "lions-yce-belgium.be ↗" line is gone from the camp sheet (the *Website* line stays), and the `yce_url` field is deleted from the data (active camps and archive), from the camp edit card and from the camp data structure. Importing an old backup file ignores that field.

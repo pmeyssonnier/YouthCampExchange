@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lions YCE — Administration — MD 112 Belgium</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
-<link rel="stylesheet" href="css/tools.css?v=1.26.1.b77ae010">
+<link rel="stylesheet" href="css/tools.css?v=1.27.0.04dc00f9">
 <style id="noframe">html{display:none!important}</style>
-<script src="js/noframe.js?v=1.26.1.85617a56"></script>
+<script src="js/noframe.js?v=1.27.0.85617a56"></script>
 <meta name="robots" content="noindex">
 <script>try{if(localStorage.getItem('yce-theme')==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}</script>
 <style>
@@ -206,6 +206,8 @@ tr:hover td{background:var(--hover);}
     <div class="sec-head"><span class="sec-title">Home page</span><span class="sec-note">announcement banner &amp; photo gallery — texts in districts_data.js</span></div>
     <div class="sec-body">
       <div class="fld w6"><label class="flbl">Announcement banner (HTML allowed)</label>
+        <div class="seg" role="group" aria-label="Edit or preview the banner"><button type="button" id="ann-b-edit" class="on" onclick="annMode('edit')">✏ Edit</button><button type="button" id="ann-b-prev" onclick="annMode('prev')">👁 Preview</button></div>
+        <div id="ann-prev" class="ann-prev" hidden></div>
         <textarea id="in-announce" rows="2" style="background:var(--card);border:1px solid var(--border);border-radius:6px;padding:8px 11px;color:var(--text);font-size:13px;font-family:inherit;outline:none;width:100%;resize:vertical;"></textarea>
         <span class="hint">Shown at the very top of the public site. Saved with “Save the data”.</span></div>
       <div class="fld w6"><label class="flbl">Photo gallery (animated strip on the home page)</label>
@@ -307,16 +309,17 @@ tr:hover td{background:var(--hover);}
     <div class="sec-body"><div class="fld w6" id="log"></div></div>
   </div>
 </main>
-<script src="js/version.js?v=1.26.1.09b6ef50"></script>
-<script src="js/toolnav.js?v=1.26.1.540a0f90"></script>
-<script src="js/theme.js?v=1.26.1.8bd1d199"></script>
-<script src="camps_data.js?v=1.26.1.e770a734"></script>
-<script src="districts_data.js?v=1.26.1.07a9d7cc"></script>
-<script src="js/zip.js?v=1.26.1.912def0f"></script>
-<script src="js/xlsx.js?v=1.26.1.fae33a84"></script>
-<script src="js/admin-core.js?v=1.26.1.d83dfc63"></script>
-<script src="js/admin.js?v=1.26.1.6e37d59e"></script>
-<script src="js/camps-manager.js?v=1.26.1.9c838c66"></script>
-<script src="js/admin-tabs.js?v=1.26.1.eb93884e"></script>
+<script src="js/version.js?v=1.27.0.8fac04e9"></script>
+<script src="js/toolnav.js?v=1.27.0.540a0f90"></script>
+<script src="js/theme.js?v=1.27.0.8bd1d199"></script>
+<script src="camps_data.js?v=1.27.0.e770a734"></script>
+<script src="districts_data.js?v=1.27.0.07a9d7cc"></script>
+<script src="js/zip.js?v=1.27.0.912def0f"></script>
+<script src="js/xlsx.js?v=1.27.0.fae33a84"></script>
+<script src="js/admin-core.js?v=1.27.0.d83dfc63"></script>
+<script src="js/clean-html.js?v=1.27.0.814230e0"></script>
+<script src="js/admin.js?v=1.27.0.ad70efba"></script>
+<script src="js/camps-manager.js?v=1.27.0.9c838c66"></script>
+<script src="js/admin-tabs.js?v=1.27.0.eb93884e"></script>
 </body>
 </html>
