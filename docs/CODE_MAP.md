@@ -1,7 +1,7 @@
 # Code map — Lions YCE
 
 > **Generated file — do not edit by hand.** Rebuilt by `python3 tools/build_codemap.py` (run automatically on every push to `main`).
-> Commit `3957e90`, 2026-11-08 16:45 UTC. Interactive version: [`code_map.html`](code_map.html).
+> Commit `9300737`, 2026-11-08 17:18 UTC. Interactive version: [`code_map.html`](code_map.html).
 
 ## Pages
 
@@ -20,9 +20,9 @@
 |---|---|
 | index.html (386 ln, 27.7 KB) | HTML shell: nav · hero · program · explorer · Brussels · apply · testimonials · team · footer |
 | css/site.css (455 ln, 37.0 KB) | site + explorer + map + modal styles, light/dark, responsive |
-| js/site-data.js (128 ln, 8.9 KB) | date helpers, CAMPS enrichment, season stats, HTML escaping (esc / jsArg / safeUrl / cleanHtml) |
-| js/site-explorer.js (310 ln, 18.8 KB) | directory: getFiltered/getSorted/renderTable + all filters, tabs |
-| js/site-map.js (211 ln, 19.8 KB) | world map (D3): initMap/renderWorldBubbles/zoomContinent/zoomCountry/showCountryCamps |
+| js/site-data.js (154 ln, 10.4 KB) | date helpers, CAMPS enrichment, season stats, HTML escaping (esc / jsArg / safeUrl / cleanHtml) |
+| js/site-explorer.js (313 ln, 18.8 KB) | directory: getFiltered/getSorted/renderTable + all filters, tabs |
+| js/site-map.js (209 ln, 19.2 KB) | world map (D3): initMap/renderWorldBubbles/zoomContinent/zoomCountry/showCountryCamps |
 | js/site-modal.js (114 ln, 8.1 KB) | camp detail modal: showCampDetail/buildTimeline |
 | js/site-ui.js (122 ln, 7.4 KB) | theme toggle, mobile nav, scroll-reveal, Belgium teaser — runs init |
 
@@ -107,7 +107,7 @@
 | `camps_data.js` | 72.9 KB | season data: SEASON + YEAR + RAW camps — common to every deployment |
 | `districts_data.js` | 5.8 KB | per-deployment data: SITE_REPO + DISTRICTS coordinators |
 | `js/version.js` | 0.5 KB | site version number (VERSION), shown on every page — bumped by each pull request |
-| `CHANGELOG.md` | 27.3 KB | what changed in each version |
+| `CHANGELOG.md` | 28.3 KB | what changed in each version |
 | `yce_form_filler.html` | 12.1 KB | filler HTML shell + styles |
 | `yce_tracker.html` | 9.0 KB | tracker HTML shell + styles |
 | `yce_admin.html` | 24.1 KB | administration HTML shell: tabs Site & season / Camps / Documents |
