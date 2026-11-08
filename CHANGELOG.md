@@ -5,6 +5,13 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.25.0 — 2026-11-08
+
+- **Sort by continent** on the phone list (first choice of the sort selector; left out when all the camps shown are on the same continent, like *Country* for a single country).
+- **Camp cards: periods in date order.** The family stay, the second family stay and the camp are listed by start date (usually the family stay first, then the camp), on the phone cards and in the map's country panel.
+- **Season chip only when needed.** The "📅 2026-2027" chip on the cards, and the *Season* filter, now appear only when camps of more than one season are in the list (i.e. while camps of the previous season are still active).
+- **Price sort uses the price in euros.** "370 Euro Or 420 USD" now counts as 370 (before, the two numbers were glued into 370420 and the camp came first when sorting downwards). Free camps (0 or "No camp fee") sort as 0. Camps priced only in another currency (USD, CAD, CHF) are converted at an indicative rate, for the order only; camps without a price are always last, in either direction (as are camps without a date when sorting by date).
+
 ## 1.24.0 — 2026-11-08
 
 - **Sort the camp list on the phone.** On the right of the *Filters* button, a sort selector (Country, Name, Date, Price) with an ascending/descending button. It is hidden when the list has one camp or none, and the *Country* choice is left out when all the camps shown are from the same country (e.g. after filtering by a country). Camps without a camp date come last when sorting by date. Price sorts by the number, whatever the currency.
