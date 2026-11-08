@@ -97,6 +97,7 @@ function getSorted(arr){
       return a.camp_name.localeCompare(b.camp_name)*sortDir;
     }
     if(col==='country'){if(va!==vb)return va.localeCompare(vb)*sortDir;return a.camp_name.localeCompare(b.camp_name)*sortDir;}
+    if(col==='cs'){const ta=a.cs?a.cs.getTime():Infinity,tb=b.cs?b.cs.getTime():Infinity;return ta===tb?a.camp_name.localeCompare(b.camp_name):(ta<tb?-1:1)*sortDir;} // sans date : en dernier (tri croissant)
     if(col==='fee_num'){va=a.fee_num;vb=b.fee_num;}
     else if(va instanceof Date&&vb instanceof Date){va=va?va.getTime():0;vb=vb?vb.getTime():0;}
     else if(typeof va==='string'&&typeof vb==='string')return va.localeCompare(vb)*sortDir;
@@ -125,11 +126,12 @@ function renderTable(){
     const bc=CONT_COLORS[c.continent]||'b-Asia';
     const feeHtml=isFreeStr(c.fee)?'<span class="fee-v free">FREE</span>':`<span class="fee-v">${esc(c.fee||'—')}</span>`;
     const campPer=c.cs&&c.ce?`<span class="dt-accent">${fmtDate(c.camp_starts)}</span><br><span class="dt">${fmtDate(c.camp_ends)}</span>`:'—';
-    const famPer=c.fs?`<span class="dt-accent">${fmtDate(c.family_stay_starts)}</span><br><span class="dt">${fmtDate(c.family_stay_ends)}</span>`:'<span class="dt">—</span>';
+    const fam2Per=c.fs2?`<br><span class="dt-accent">${fmtDate(c.family_stay2_starts)}</span><br><span class="dt">${fmtDate(c.family_stay2_ends)}</span>`:''; // 2e séjour : seconde ligne seulement s'il existe
+    const famPer=(c.fs?`<span class="dt-accent">${fmtDate(c.family_stay_starts)}</span><br><span class="dt">${fmtDate(c.family_stay_ends)}</span>`:'<span class="dt">—</span>')+fam2Per;
     const presPer=c.arrival&&c.departure?`<span style="color:var(--orange)">${fmtDate2(c.arrival)}</span><br><span class="dt">${fmtDate2(c.departure)}</span>`:'—';
     return`<tr class="clickable-row" data-idx="${c._idx}" onclick="showCampDetail(${c._idx})">
       <td><span class="badge ${bc}">${esc(c.continent)}</span></td>
-      <td>${esc(c.country)}</td><td class="dt" style="font-size:10px;color:var(--blue)">${esc(c.state||'')}</td><td class="camp-nm">${esc(titleCase(c.camp_name))}</td>
+      <td>${flagged(c.country)}</td><td class="dt" style="font-size:10px;color:var(--blue)">${esc(c.state||'')}</td><td class="camp-nm">${esc(titleCase(c.camp_name))}${typeChips(c)?' '+typeChips(c):''}</td>
       <td>${esc(c.age_requirements)}</td><td>${feeHtml}</td>
       <td class="dt">${campPer}</td><td class="dt">${famPer}</td><td class="dt">${presPer}</td>
     </tr>`;
@@ -137,7 +139,23 @@ function renderTable(){
 }
 
 // liste mobile en cartes (≤900px) — le tableau est masqué par le CSS à cette largeur
+// tri de la liste mobile (à droite du bouton Filters) : pays, nom, date, prix.
+// Masqué pour 0 ou 1 camp ; sans « Country » quand les camps affichés sont tous du même pays.
+const M_SORTS=[['country','Country'],['camp_name','Name'],['cs','Date'],['fee_num','Price']];
+function renderMobileSort(filtered){
+  const wrap=document.getElementById('m-sort-wrap'),sel=document.getElementById('m-sort');if(!wrap||!sel)return;
+  if(filtered.length<2){wrap.hidden=true;return;}
+  wrap.hidden=false;
+  const oneCountry=new Set(filtered.map(c=>c.country)).size<2;
+  const opts=M_SORTS.filter(o=>!(o[0]==='country'&&oneCountry));
+  const cur=opts.some(o=>o[0]===sortCol)?sortCol:'';
+  sel.innerHTML=(cur?'':'<option value="" selected>Sort by…</option>')+opts.map(o=>`<option value="${o[0]}"${o[0]===cur?' selected':''}>${o[1]}</option>`).join('');
+  const d=document.getElementById('m-sortdir');if(d){d.textContent=sortDir===1?'↑':'↓';d.hidden=!cur;d.title=sortDir===1?'Ascending':'Descending';}
+}
+function mobileSort(v){if(!v)return;sortCol=v;sortDir=1;renderTable();}
+function mobileSortDir(){sortDir*=-1;renderTable();}
 function renderMobileCards(filtered){
+  renderMobileSort(filtered);
   const mc=document.getElementById('m-cards');if(!mc)return;
   if(!filtered.length){mc.innerHTML=`<div class="no-data">No camps match current filters</div>`;return;}
   const isFreeStr=f=>f&&(f.startsWith('0 ')||f==='0');
@@ -145,11 +163,12 @@ function renderMobileCards(filtered){
     const bc=CONT_COLORS[c.continent]||'b-Asia';
     const feeHtml=isFreeStr(c.fee)?'<span class="cc-chip cc-free">FREE</span>':(c.fee?`<span class="cc-chip cc-fee">${esc(c.fee)}</span>`:'');
     const seasHtml=c.season?`<span class="cc-chip cc-season">📅 ${esc(c.season)}</span>`:'';
-    const famHtml=c.fs?`<div class="cc-date-row"><span class="cc-date-lbl">🏠 Family Stay</span><span class="cc-date-val">${fmtDate2(c.fs)} → ${fmtDate2(c.fe)}</span></div>`:'';
+    const famHtml=(c.fs?`<div class="cc-date-row"><span class="cc-date-lbl">🏠 Family Stay</span><span class="cc-date-val">${fmtDate2(c.fs)} → ${fmtDate2(c.fe)}</span></div>`:'')
+      +(c.fs2?`<div class="cc-date-row"><span class="cc-date-lbl">🏠 2nd Family Stay</span><span class="cc-date-val">${fmtDate2(c.fs2)} → ${fmtDate2(c.fe2)}</span></div>`:''); // 2e séjour : ligne seulement s'il existe
     return`<div class="camp-card" onclick="showCampDetail(${c._idx})">
       <div class="mc-top"><div class="cc-name">${esc(titleCase(c.camp_name))}</div><span class="badge ${bc}">${esc(c.continent)}</span></div>
-      <div class="mc-ctry">${esc(c.country)}${c.state?' — '+esc(c.state):''}</div>
-      <div class="cc-row"><span class="cc-chip cc-age">👤 ${esc(c.age_requirements)}</span>${feeHtml}${seasHtml}</div>
+      <div class="mc-ctry">${flagged(c.country)}${c.state?' — '+esc(c.state):''}</div>
+      <div class="cc-row"><span class="cc-chip cc-age">👤 ${esc(c.age_requirements)}</span>${feeHtml}${seasHtml}${typeChips(c)}</div>
       <div class="cc-dates"><div class="cc-date-row"><span class="cc-date-lbl">🏕️ Camp</span><span class="cc-date-val">${fmtDate2(c.cs)} → ${fmtDate2(c.ce)}</span></div>${famHtml}</div>
     </div>`;
   }).join('');

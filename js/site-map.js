@@ -145,10 +145,11 @@ function showCountryCamps(country){
   document.getElementById('cp-body').innerHTML=!camps.length?'<div class="cp-empty">No camps found</div>':camps.map(c=>{
     const feeHtml=isFree(c.fee)?'<span class="cc-chip cc-free">FREE</span>':`<span class="cc-chip cc-fee">${esc(c.fee||'—')}</span>`;
     const presHtml=c.arrival&&c.departure?`<div class="cc-presence"><span class="cc-presence-lbl">✈ Arrival → Departure</span><span class="cc-presence-val">${fmtDate2(c.arrival)} → ${fmtDate2(c.departure)}</span></div>`:'';
-    const famHtml=c.fs?`<div class="cc-date-row"><span class="cc-date-lbl">🏠 Family Stay</span><span class="cc-date-val">${fmtDate2(c.fs)} → ${fmtDate2(c.fe)}</span></div>`:'';
+    const famHtml=(c.fs?`<div class="cc-date-row"><span class="cc-date-lbl">🏠 Family Stay</span><span class="cc-date-val">${fmtDate2(c.fs)} → ${fmtDate2(c.fe)}</span></div>`:'')
+      +(c.fs2?`<div class="cc-date-row"><span class="cc-date-lbl">🏠 2nd Family Stay</span><span class="cc-date-val">${fmtDate2(c.fs2)} → ${fmtDate2(c.fe2)}</span></div>`:''); // 2e séjour : ligne seulement s'il existe
     return`<div class="camp-card" onclick="showCampDetail(${c._idx})">
       <div class="cc-name">${esc(titleCase(c.camp_name))}</div>
-      <div class="cc-row"><span class="cc-chip cc-age">👤 ${esc(c.age_requirements)}</span>${feeHtml}${c.season?`<span class="cc-chip cc-season">📅 ${esc(c.season)}</span>`:''}</div>
+      <div class="cc-row"><span class="cc-chip cc-age">👤 ${esc(c.age_requirements)}</span>${feeHtml}${c.season?`<span class="cc-chip cc-season">📅 ${esc(c.season)}</span>`:''}${typeChips(c)}</div>
       <div class="cc-dates"><div class="cc-date-row"><span class="cc-date-lbl">🏕️ Camp</span><span class="cc-date-val">${fmtDate2(c.cs)} → ${fmtDate2(c.ce)}</span></div>${famHtml}${presHtml}</div>
     </div>`;
   }).join('');
