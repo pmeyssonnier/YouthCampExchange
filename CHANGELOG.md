@@ -5,6 +5,11 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.30.0 — 2026-11-08
+
+- Form filler: the passport / ID card scan and the host-family letter now stay attached after a page refresh. They are kept in this browser only (IndexedDB), for 30 days like the rest of the draft, and are erased by "Clear form" or when the draft expires. Previously the scan was deliberately never kept.
+- Form filler: the "Letter to Host Family" template can be downloaded again. When the file for the season (`Letter_to_Host_Family_<year>.docx`) has not been uploaded yet, the most recent one in `documents/` is offered instead of a dead link.
+
 ## 1.29.0 — 2026-11-09
 
 - **Form filler: the same frame around every question.** The choice questions (Lion? Yes/No, Knowledge of English Good/Fair/None, T-shirt size S–XXL, "Previously participated", sport, swim, smoke, vegetarian, vegan, LEO, the medical questions, "country of Europe") now look like the text fields: the label above, then a frame identical to the text fields (same background, border and corners) that holds the buttons. The old cards (label on the left, buttons on the right) were cut off on a phone. *Lion?* is now full width on a phone.

@@ -112,7 +112,7 @@ function idPick(inp){readDoc(inp,IDDOC,idShow,"ID document");}
 function idShow(){
   const r=idRequirement();
   docShow("id",IDDOC,"🛂 Click to add the "+(r==="passport"?"passport scan":r==="idcard"?"ID card or passport scan":"passport or ID card scan")
-    +"<br>(PDF, JPG or PNG — not kept in the browser)");
+    +"<br>(PDF, JPG or PNG — kept in this browser for 30 days)");
   const req=document.getElementById("id-req");
   if(req)req.innerHTML=r==="passport"?"<b>Passport required</b>: at least one of your choices is outside Europe"
     +" (or in the United Kingdom, which no longer accepts ID cards)."

@@ -30,6 +30,8 @@ with open("js/assets.js", "w") as f:
     f.write('const BUILD="%s";\n' % version)
     f.write('const TEMPLATE_B64="%s";\n' % stored_b64(sorted(glob.glob("documents/Application_form_*_MD*.xlsx"))[-1]))
     f.write('const COMMIT_B64="%s";\n' % stored_b64("documents/commit_template.docx"))
+    # modèles de la lettre à la famille d'accueil disponibles dans documents/ (un fichier par saison) : le lien « Download » prend celui de la saison, sinon le plus récent
+    f.write('const LETTER_FILES=%s;\n' % json.dumps([p.split("/")[-1] for p in sorted(glob.glob("documents/Letter_to_Host_Family_*.docx"))]))
 print("js/assets.js written,", version)
 
 # camps.json — export JSON pur des données de camps_data.js (source unique)
