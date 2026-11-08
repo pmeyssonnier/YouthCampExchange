@@ -124,7 +124,8 @@ async function syncFromTemplate(buf){
       const el=document.getElementById("f-"+f.ref);if(!el)return;
       let v=getCellValue(xml,sst,f.ref);
       if(f.type==="date"){
-        const dm=v.match(/^(\d{2})-(\d{2})-(\d{4})$/);
+        let dm=v.match(/^(\d{2})-(\d{2})-(\d{4})$/);
+        if(!dm){const sd=serialToDmy(v);dm=sd&&sd.match(/^(\d{2})-(\d{2})-(\d{4})$/);} // date saisie dans Excel : numéro de série
         v=dm?dm[3]+"-"+dm[2]+"-"+dm[1]:"";
       }
       if(fileWins||el.value===""||el.value===(el.dataset.tpl||"")){
@@ -165,6 +166,34 @@ function escXml(s){return String(s)
   .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 function fmtDate(iso){ // yyyy-mm-dd -> dd-mm-yyyy (format du formulaire)
   const p=iso.split("-");return p[2]+"-"+p[1]+"-"+p[0];
+}
+
+// Date de naissance : vraie date Excel (numéro de série + format de date) pour que la cellule calculée
+// « Age on 01/07/… » (=SI(X17>0;(D61-X17)/365;0)) fonctionne ; le style du modèle pour X17 est « texte ».
+function dmyToSerial(dmy){const p=dmy.split("-");return Math.round((Date.UTC(+p[2],+p[1]-1,+p[0])-Date.UTC(1899,11,30))/86400000);}
+function serialToDmy(v){ // numéro de série Excel -> dd-mm-yyyy ; "" si ce n'est pas un numéro de série plausible
+  v=String(v).trim();if(!/^\d{4,6}(\.\d+)?$/.test(v))return "";
+  const n=Math.floor(+v);if(n<1||n>2958465)return "";
+  const d=new Date(Date.UTC(1899,11,30)+n*86400000),z=function(x){return (x<10?"0":"")+x;};
+  return z(d.getUTCDate())+"-"+z(d.getUTCMonth()+1)+"-"+d.getUTCFullYear();
+}
+// ajoute à styles.xml un style de date (copie du style de base, format jj/mm/aaaa) ; renvoie {xml, idx} ou null
+function addDateStyle(sx,baseS){
+  const cx=sx.match(/<cellXfs count="(\d+)">([\s\S]*?)<\/cellXfs>/);if(!cx)return null;
+  const xfs=cx[2].match(/<xf\b[^>]*?(?:\/>|>[\s\S]*?<\/xf>)/g);if(!xfs||!xfs[baseS])return null;
+  let id=164;
+  const mf=sx.match(/<numFmts count="(\d+)">([\s\S]*?)<\/numFmts>/);
+  if(mf){
+    (mf[2].match(/numFmtId="(\d+)"/g)||[]).forEach(function(t){const n=+t.replace(/\D/g,"");if(n>=id)id=n+1;});
+    sx=sx.replace(mf[0],function(){return '<numFmts count="'+(+mf[1]+1)+'">'+mf[2]+'<numFmt numFmtId="'+id+'" formatCode="dd/mm/yyyy"/></numFmts>';});
+  }else sx=sx.replace(/(<styleSheet[^>]*>)/,function(m){return m+'<numFmts count="1"><numFmt numFmtId="'+id+'" formatCode="dd/mm/yyyy"/></numFmts>';});
+  let nx=xfs[baseS].replace(/numFmtId="\d+"/,'numFmtId="'+id+'"');
+  nx=/applyNumberFormat="/.test(nx)?nx.replace(/applyNumberFormat="\d"/,'applyNumberFormat="1"'):nx.replace("<xf ",'<xf applyNumberFormat="1" ');
+  sx=sx.replace(/<cellXfs count="\d+">[\s\S]*?<\/cellXfs>/,function(){return '<cellXfs count="'+(xfs.length+1)+'">'+cx[2]+nx+'</cellXfs>';});
+  return {xml:sx,idx:xfs.length};
+}
+function setCellDate(xml,ref,serial,styleIdx){
+  return xml.replace(new RegExp('<c r="'+ref+'"([^>]*?)(/>|>[\\s\\S]*?</c>)'),function(){return '<c r="'+ref+'" s="'+styleIdx+'"><v>'+serial+'</v></c>';});
 }
 
 // Remplace le contenu d'une cellule dans sheet1.xml en conservant son style.
