@@ -31,6 +31,7 @@ function facetCounts(key,skip){
 }
 function renderSeasonPills(){
   const el=document.getElementById('seas-pills');if(!el)return;
+  const sec=document.getElementById('sec-season');if(sec){sec.hidden=!MULTI_SEASON;if(sec.nextElementSibling)sec.nextElementSibling.hidden=!MULTI_SEASON;} // une seule saison : le filtre ne sert à rien
   const counts=facetCounts('season','s'),all={};CAMPS.forEach(c=>{if(c.season)all[c.season]=1;});
   el.innerHTML=Object.keys(all).sort().map(s=>
     `<div class="pill${selSeasons.has(s)?' on':''}${counts[s]?'':' zero'}" data-ss="${esc(s)}" onclick="toggleSeason(${jsArg(s)})">${esc(s)} <span style="opacity:0.6">${counts[s]||0}</span></div>`
@@ -97,8 +98,11 @@ function getSorted(arr){
       return a.camp_name.localeCompare(b.camp_name)*sortDir;
     }
     if(col==='country'){if(va!==vb)return va.localeCompare(vb)*sortDir;return a.camp_name.localeCompare(b.camp_name)*sortDir;}
-    if(col==='cs'){const ta=a.cs?a.cs.getTime():Infinity,tb=b.cs?b.cs.getTime():Infinity;return ta===tb?a.camp_name.localeCompare(b.camp_name):(ta<tb?-1:1)*sortDir;} // sans date : en dernier (tri croissant)
-    if(col==='fee_num'){va=a.fee_num;vb=b.fee_num;}
+    if(col==='cs'||col==='fee_num'){ // valeur absente (pas de date, pas de prix) : toujours en dernier, quel que soit le sens
+      const ta=col==='cs'?(a.cs?a.cs.getTime():null):a.fee_num,tb=col==='cs'?(b.cs?b.cs.getTime():null):b.fee_num;
+      if(ta==null||tb==null)return ta==null&&tb==null?a.camp_name.localeCompare(b.camp_name):(ta==null?1:-1);
+      return ta===tb?a.camp_name.localeCompare(b.camp_name):(ta<tb?-1:1)*sortDir;
+    }
     else if(va instanceof Date&&vb instanceof Date){va=va?va.getTime():0;vb=vb?vb.getTime():0;}
     else if(typeof va==='string'&&typeof vb==='string')return va.localeCompare(vb)*sortDir;
     if(va==null)va=0;if(vb==null)vb=0;
@@ -140,14 +144,15 @@ function renderTable(){
 
 // liste mobile en cartes (≤900px) — le tableau est masqué par le CSS à cette largeur
 // tri de la liste mobile (à droite du bouton Filters) : pays, nom, date, prix.
-// Masqué pour 0 ou 1 camp ; sans « Country » quand les camps affichés sont tous du même pays.
-const M_SORTS=[['country','Country'],['camp_name','Name'],['cs','Date'],['fee_num','Price']];
+// Masqué pour 0 ou 1 camp ; sans « Country » (ou « Continent ») quand les camps affichés sont tous du même pays (continent).
+const M_SORTS=[['continent','Continent'],['country','Country'],['camp_name','Name'],['cs','Date'],['fee_num','Price']];
 function renderMobileSort(filtered){
   const wrap=document.getElementById('m-sort-wrap'),sel=document.getElementById('m-sort');if(!wrap||!sel)return;
   if(filtered.length<2){wrap.hidden=true;return;}
   wrap.hidden=false;
   const oneCountry=new Set(filtered.map(c=>c.country)).size<2;
-  const opts=M_SORTS.filter(o=>!(o[0]==='country'&&oneCountry));
+  const oneContinent=new Set(filtered.map(c=>c.continent)).size<2;
+  const opts=M_SORTS.filter(o=>!(o[0]==='country'&&oneCountry)&&!(o[0]==='continent'&&oneContinent));
   const cur=opts.some(o=>o[0]===sortCol)?sortCol:'';
   sel.innerHTML=(cur?'':'<option value="" selected>Sort by…</option>')+opts.map(o=>`<option value="${o[0]}"${o[0]===cur?' selected':''}>${o[1]}</option>`).join('');
   const d=document.getElementById('m-sortdir');if(d){d.textContent=sortDir===1?'↑':'↓';d.hidden=!cur;d.title=sortDir===1?'Ascending':'Descending';}
@@ -162,14 +167,12 @@ function renderMobileCards(filtered){
   mc.innerHTML=filtered.map(c=>{
     const bc=CONT_COLORS[c.continent]||'b-Asia';
     const feeHtml=isFreeStr(c.fee)?'<span class="cc-chip cc-free">FREE</span>':(c.fee?`<span class="cc-chip cc-fee">${esc(c.fee)}</span>`:'');
-    const seasHtml=c.season?`<span class="cc-chip cc-season">📅 ${esc(c.season)}</span>`:'';
-    const famHtml=(c.fs?`<div class="cc-date-row"><span class="cc-date-lbl">🏠 Family Stay</span><span class="cc-date-val">${fmtDate2(c.fs)} → ${fmtDate2(c.fe)}</span></div>`:'')
-      +(c.fs2?`<div class="cc-date-row"><span class="cc-date-lbl">🏠 2nd Family Stay</span><span class="cc-date-val">${fmtDate2(c.fs2)} → ${fmtDate2(c.fe2)}</span></div>`:''); // 2e séjour : ligne seulement s'il existe
+    const seasHtml=c.season&&MULTI_SEASON?`<span class="cc-chip cc-season">📅 ${esc(c.season)}</span>`:'';
     return`<div class="camp-card" onclick="showCampDetail(${c._idx})">
       <div class="mc-top"><div class="cc-name">${esc(titleCase(c.camp_name))}</div><span class="badge ${bc}">${esc(c.continent)}</span></div>
       <div class="mc-ctry">${flagged(c.country)}${c.state?' — '+esc(c.state):''}</div>
       <div class="cc-row"><span class="cc-chip cc-age">👤 ${esc(c.age_requirements)}</span>${feeHtml}${seasHtml}${typeChips(c)}</div>
-      <div class="cc-dates"><div class="cc-date-row"><span class="cc-date-lbl">🏕️ Camp</span><span class="cc-date-val">${fmtDate2(c.cs)} → ${fmtDate2(c.ce)}</span></div>${famHtml}</div>
+      <div class="cc-dates">${periodRows(c)}</div>
     </div>`;
   }).join('');
 }

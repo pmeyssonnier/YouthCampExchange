@@ -37,6 +37,21 @@ function titleCase(s){
   }).join(' ');
 }
 
+// prix servant au tri : le montant en euros ("370 Euro Or 420 USD" → 370). « No camp fee » ou 0 → 0 ; sans prix → null (en dernier).
+// Camps sans prix en euros : conversion indicative (USD 0,92 · CAD 0,67 · CHF 1,05 · GBP 1,15), uniquement pour l'ordre du tri.
+const FEE_RATES={usd:0.92,cad:0.67,chf:1.05,gbp:1.15};
+function feeEuro(f){
+  if(!f)return null;
+  const s=String(f);
+  if(/\b(no camp fee|free|no fee)\b/i.test(s))return 0;
+  const num=x=>parseFloat(String(x).replace(',','.'));
+  let m=s.match(/(\d+(?:[.,]\d+)?)\s*(?:eur|euro|euros|€)/i)||s.match(/€\s*(\d+(?:[.,]\d+)?)/);
+  if(m)return num(m[1]);
+  m=s.match(/(\d+(?:[.,]\d+)?)\s*(usd|cad|chf|gbp)\b/i);
+  if(m)return Math.round(num(m[1])*FEE_RATES[m[2].toLowerCase()]*100)/100;
+  m=s.match(/\d+(?:[.,]\d+)?/);
+  return m?num(m[0]):null;
+}
 const CAMPS=RAW.map((c,i)=>{
   const cs=parseDate(c.camp_starts),ce=parseDate(c.camp_ends);
   const fs=parseDate(c.family_stay_starts),fe=parseDate(c.family_stay_ends);
@@ -45,7 +60,7 @@ const CAMPS=RAW.map((c,i)=>{
   const arrival=starts.length?new Date(Math.min.apply(null,starts)):null;
   const departure=ends.length?new Date(Math.max.apply(null,ends)):null;
   const age=parseAge(c.age_requirements);
-  const feeNum=c.fee?(parseFloat(c.fee.replace(/[^0-9.]/g,''))||0):0;
+  const feeNum=feeEuro(c.fee);
   // saison YCE : septembre à août — un camp de juillet 2026 appartient à 2025-2026
   const season=cs?((cs.getMonth()+1>=9)?cs.getFullYear()+'-'+(cs.getFullYear()+1):(cs.getFullYear()-1)+'-'+cs.getFullYear()):'';
   return{...c,_idx:i,cs,ce,fs,fe,fs2,fe2,arrival,departure,age_min:age.min,age_max:age.max,fee_num:feeNum,season};
@@ -57,6 +72,17 @@ function countryFlag(country){const cc=COUNTRY_ISO[country];return cc?cc.map(fun
 function flagged(country){const f=countryFlag(country);return (f?f+'\u00A0':'')+esc(country);}
 // puces « type de camp » des listes : ♿ Inclusion et ❄ Winter (champs inclusive et winter)
 function typeChips(c){return (c.inclusive?'<span class="cc-chip cc-incl">♿ Inclusion</span>':'')+(c.winter?'<span class="cc-chip cc-winter">❄ Winter</span>':'');}
+// la puce / le filtre « saison » n'ont de sens que si plusieurs saisons coexistent (camps de la saison précédente encore actifs)
+const MULTI_SEASON=new Set(CAMPS.map(c=>c.season).filter(Boolean)).size>1;
+// périodes d'un camp (accueil en famille, 2e accueil, camp), en lignes de dates classées par date de début
+function periodRows(c){
+  const rows=[];
+  if(c.fs)rows.push({t:c.fs,o:0,l:'🏠 Family Stay',a:c.fs,b:c.fe});
+  if(c.fs2)rows.push({t:c.fs2,o:1,l:'🏠 2nd Family Stay',a:c.fs2,b:c.fe2});
+  if(c.cs)rows.push({t:c.cs,o:2,l:'🏕️ Camp',a:c.cs,b:c.ce});
+  rows.sort((x,y)=>(x.t-y.t)||(x.o-y.o));
+  return rows.map(r=>`<div class="cc-date-row"><span class="cc-date-lbl">${r.l}</span><span class="cc-date-val">${fmtDate2(r.a)} → ${fmtDate2(r.b)}</span></div>`).join('');
+}
 // ── échappement : toute donnée de camp ou de configuration insérée en HTML passe par ici ──
 // (les camps viennent en partie du répertoire international importé : contenu externe)
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
