@@ -9,6 +9,7 @@ The version is shown on every page (site footer, tool headers).
 
 - **Contact details are no longer shown on the public camp sheet.** The *Contact* block (name, e-mail, phone) is removed from the camp sheet seen by candidates; it is reserved for the Lions coordinator of the area. The application deadline stays visible (in an *Application* block). The contact data is still stored with the camps and editable in the administration.
 - **New camp for 2027: Lions Camp Beitostølen 2027 – Knights of the Light** (Norway): adapted winter sports camp for young people with a physical or visual disability, 7–14 March 2027 (RidderWeek, with Foreningen Ridderrennet), 18–25 years. Flagged ♿ Inclusion and ❄ Winter. Fee, application deadline and contact are not filled in yet.
+- **Period blocks in date order on the camp sheet.** The *Camp Period*, *Family Stay* and *Second Family Stay* blocks are now listed by start date, as in the lists (usually the family stay first, then the camp). When there are three blocks, the third one spans the full width.
 
 ## 1.25.0 — 2026-11-08
 
