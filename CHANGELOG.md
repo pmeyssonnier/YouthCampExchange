@@ -5,6 +5,10 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.22.0 — 2026-11-08
+
+- **Duration of the family stay.** The *Family Stay* block of the camp sheet (and the *Second Family Stay* block when there is one) now shows its duration in days under the dates, like the *Camp Period* block (start and end days included).
+
 ## 1.21.0 — 2026-11-08
 
 - **♿ Inclusion tag on the camp sheet.** Camps flagged as inclusion / special camps show a "♿ Inclusion" tag next to the country in their sheet. The flag now covers camps for young people with disabilities *and* other special-needs camps: the Hannover 2027 camp for young people with Type 1 diabetes is flagged. The filter is renamed *Inclusion camps*, and in the administration the edit card field is *♿ Inclusion / special camp (disability, special needs)* (Yes/No).

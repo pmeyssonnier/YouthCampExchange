@@ -6,6 +6,9 @@ function showCampDetail(idx){
   document.querySelectorAll('tr.clickable-row').forEach(r=>r.classList.remove('selected'));
   const row=document.querySelector(`tr[data-idx="${idx}"]`);if(row)row.classList.add('selected');
   const isFree=c.fee&&(c.fee.startsWith('0 ')||c.fee==='0');
+  // durée en jours (jours de début et de fin compris), comme pour le camp
+  const stayDays=(a,b)=>a&&b&&b>=a?Math.round((b-a)/86400000)+1:null;
+  const durRow=n=>n?`<div class="ms-row"><span class="ms-lbl">Duration</span><span class="ms-val">${n} day${n>1?'s':''}</span></div>`:'';
   const campDays=c.cs&&c.ce?Math.round((c.ce-c.cs)/86400000)+1:null;
   const totalDays=c.arrival&&c.departure?Math.round((c.departure-c.arrival)/86400000)+1:null;
   const det=c.detail||null;
@@ -81,13 +84,14 @@ function showCampDetail(idx){
     </div>
     <div class="modal-section">
       <div class="ms-title">🏠 Family Stay</div>
-      ${c.fs?`<div class="ms-row"><span class="ms-lbl">Start</span><span class="ms-val">${fmtFull(c.fs)}</span></div><div class="ms-row"><span class="ms-lbl">End</span><span class="ms-val">${fmtFull(c.fe)}</span></div>`
+      ${c.fs?`<div class="ms-row"><span class="ms-lbl">Start</span><span class="ms-val">${fmtFull(c.fs)}</span></div><div class="ms-row"><span class="ms-lbl">End</span><span class="ms-val">${fmtFull(c.fe)}</span></div>${durRow(stayDays(c.fs,c.fe))}`
       :'<div style="color:var(--muted);font-size:11px;font-style:italic">No family stay information</div>'}
     </div>
     ${c.fs2?`<div class="modal-section full">
       <div class="ms-title">🏠 Second Family Stay</div>
       <div class="ms-row"><span class="ms-lbl">Start</span><span class="ms-val">${fmtFull(c.fs2)}</span></div>
       <div class="ms-row"><span class="ms-lbl">End</span><span class="ms-val">${fmtFull(c.fe2)}</span></div>
+      ${durRow(stayDays(c.fs2,c.fe2))}
     </div>`:''}
     <div class="modal-section full" style="background:rgba(255,183,77,0.06);border-color:rgba(255,183,77,0.25);">
       <div class="ms-title" style="color:var(--orange)">✈ Total Presence in Country</div>
