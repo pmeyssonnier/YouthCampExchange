@@ -5,6 +5,10 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.22.1 — 2026-11-08
+
+- **Durations are counted in nights.** On the camp sheet, the *Camp Period*, *Family Stay* and *Second Family Stay* durations and the *Total stay in country* are now numbers of nights (end date minus start date). When the family stay ends the day the camp starts, that day was counted twice in the sum of the days (e.g. 8 + 15 days for a 22-day total); in nights the total is the sum of the periods (7 + 15 = 22 nights).
+
 ## 1.22.0 — 2026-11-08
 
 - **Duration of the family stay.** The *Family Stay* block of the camp sheet (and the *Second Family Stay* block when there is one) now shows its duration in days under the dates, like the *Camp Period* block (start and end days included).

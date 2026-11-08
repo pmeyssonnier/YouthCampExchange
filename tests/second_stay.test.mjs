@@ -22,13 +22,18 @@ t.ok(!/Second Family Stay/i.test(withOne.b), 'no second-stay section otherwise')
 t.ok(!/Complete Timeline/i.test(withTwo.b), 'the Complete Timeline section is gone');
 const c2 = await pg.evaluate(i => CAMPS[i].departure >= CAMPS[i].fe2 && CAMPS[i].departure >= CAMPS[i].ce, i2);
 t.ok(c2, 'departure takes the second stay into account');
-// durée sous les dates du séjour en famille (jours de début et de fin compris)
+// durée sous les dates du séjour en famille (en nuits)
 const dur = await pg.evaluate(i => { const c = CAMPS[i]; showCampDetail(i);
   const sec = [...document.querySelectorAll('.modal-section')].find(s => /Family Stay/.test(s.querySelector('.ms-title').textContent) && !/Second/.test(s.querySelector('.ms-title').textContent));
   const sec2 = [...document.querySelectorAll('.modal-section')].find(s => /Second Family Stay/.test(s.querySelector('.ms-title').textContent));
-  return { txt: sec.innerText, txt2: sec2.innerText, n: Math.round((c.fe - c.fs) / 86400000) + 1, n2: Math.round((c.fe2 - c.fs2) / 86400000) + 1 }; }, i2);
-t.ok(new RegExp('Duration\\s+' + dur.n + ' days?').test(dur.txt), 'family stay shows its duration (' + dur.n + ' days)');
-t.ok(new RegExp('Duration\\s+' + dur.n2 + ' days?').test(dur.txt2), 'second family stay shows its duration (' + dur.n2 + ' days)');
+  return { txt: sec.innerText, txt2: sec2.innerText, n: Math.round((c.fe - c.fs) / 86400000), n2: Math.round((c.fe2 - c.fs2) / 86400000) }; }, i2);
+t.ok(new RegExp('Duration\\s+' + dur.n + ' nights?').test(dur.txt), 'family stay shows its duration (' + dur.n + ' nights)');
+t.ok(new RegExp('Duration\\s+' + dur.n2 + ' nights?').test(dur.txt2), 'second family stay shows its duration (' + dur.n2 + ' nights)');
+// durées en nuits : pour des périodes qui se suivent, le total est la somme des durées
+const tot = await pg.evaluate(() => { let bad = 0, n = 0; CAMPS.forEach((c, i) => { if (!c.fs || !c.fe || !c.cs || !c.ce || c.fe.getTime() !== c.cs.getTime() || c.fs2) return; n++; showCampDetail(i);
+  const g = re => { const m = document.getElementById('md-body').innerText.match(re); return m ? +m[1] : NaN; };
+  const sum = g(/Camp Period[\s\S]*?Duration\s+(\d+) night/i) + g(/Family Stay\n[\s\S]*?Duration\s+(\d+) night/i), total = g(/Total stay\s+(\d+) night/i); if (sum !== total) bad++; }); return { bad, n }; });
+t.ok(tot.n > 20 && tot.bad === 0, 'for contiguous family stay + camp, total nights = sum of the nights (' + tot.n + ' camps checked, ' + tot.bad + ' differ)');
 const iInc = RAW.findIndex(c => c.inclusive);
 t.ok(/♿ Inclusion/.test((await sheet(iInc)).tag), 'inclusive camp sheet shows the ♿ Inclusion tag');
 t.ok(!/Inclusion/.test(withOne.tag), 'other camps show no Inclusion tag');
