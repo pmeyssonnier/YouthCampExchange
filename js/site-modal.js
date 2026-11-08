@@ -37,9 +37,10 @@ function showCampDetail(idx){
     </div>`:'';
 
   const hasLang=det&&det.languages&&det.languages.length;
-  const web=det?safeUrl(det.website):null,yce=det?safeUrl(det.yce_url):null,flyer=det?safeUrl(det.flyer_url):null,mails=det?String(det.contact_email==null?'':det.contact_email).split(/\s*[;,]\s*/).filter(Boolean):[];
+  const web=det?safeUrl(det.website):null,yce=det?safeUrl(det.yce_url):null,flyer=det?safeUrl(det.flyer_url):null;
   const hasLinks=!!(web||yce||flyer);
-  const hasContact=det&&(det.contact_email||det.contact_name||det.contact_phone||det.application_deadline);
+  // le contact (nom, e-mail, téléphone) est réservé au coordinateur Lions de la zone : jamais affiché sur la fiche publique
+  const hasContact=!!(det&&det.application_deadline);
 
   const secLang=hasLang?`
     <div class="modal-section ${!hasLinks&&!hasContact?'full':''}">
@@ -57,11 +58,8 @@ function showCampDetail(idx){
 
   const secContact=hasContact?`
     <div class="modal-section full">
-      <div class="ms-title">📬 Contact</div>
-      ${det.contact_name?`<div class="ms-row"><span class="ms-lbl">Name</span><span class="ms-val">${esc(det.contact_name)}</span></div>`:''}
-      ${mails.map((m,k)=>{const ok=safeMail(m);return `<div class="ms-row"><span class="ms-lbl">${k?'':'Email'}</span>${ok?`<a class="ms-link" href="mailto:${esc(ok)}">${esc(ok)}</a>`:`<span class="ms-val">${esc(m)}</span>`}</div>`;}).join('')}
-      ${det.contact_phone?(()=>{const ph=phoneInfo(det.contact_phone);return `<div class="ms-row"><span class="ms-lbl">Phone</span>${ph.wa?`<a class="ms-link ms-wa" href="https://wa.me/${esc(ph.wa)}" target="_blank" rel="noopener noreferrer" title="Open in WhatsApp">${esc(ph.text)}</a>`:`<span class="ms-val">${esc(ph.text)}</span>`}</div>`;})():''}
-      ${det.application_deadline?`<div class="ms-row"><span class="ms-lbl">Deadline</span><span class="ms-val orange">${fmtDate(det.application_deadline)}</span></div>`:''}
+      <div class="ms-title">📅 Application</div>
+      <div class="ms-row"><span class="ms-lbl">Deadline</span><span class="ms-val orange">${fmtDate(det.application_deadline)}</span></div>
     </div>`:'';
 
   const secNoDetail=!det?`<div class="modal-section full"><div class="ms-title">ℹ️ Camp Details</div><div class="ms-no-detail">Detailed information not yet available for this camp.</div></div>`:'';

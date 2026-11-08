@@ -25,12 +25,14 @@ t.ok(res.kept === 'a@x.be; b@y.be', 'an invalid address is refused, the previous
 const pg = await br.newPage({ viewport: { width: 1280, height: 900 } });
 await pg.route('**fonts.googleapis.com/**', r => r.fulfill({ body: '', contentType: 'text/css' }));
 await pg.goto('http://localhost:8884/index.html', { waitUntil: 'load' });
-const links = await pg.evaluate(() => {
-  const i = RAW.findIndex(c => c.detail && /;/.test(c.detail.contact_email || ''));
-  const n = RAW[i].detail.contact_email.split(/\s*;\s*/).length;
-  showCampDetail(i);
-  return { n, hrefs: [...document.querySelectorAll('#md-body a[href^="mailto:"]')].map(a => a.getAttribute('href')) };
+// fiche publique : le contact (nom, e-mails, téléphone) est réservé au coordinateur Lions, jamais affiché ; la date limite reste visible
+const pub = await pg.evaluate(() => {
+  const i = RAW.findIndex(c => c.detail && /;/.test(c.detail.contact_email || '') && c.detail.application_deadline);
+  const d = RAW[i].detail; showCampDetail(i);
+  const html = document.getElementById('md-body').innerHTML;
+  return { leaks: [d.contact_name, d.contact_phone, ...String(d.contact_email).split(/\s*;\s*/)].filter(x => x && html.includes(x)), mailto: document.querySelectorAll('#md-body a[href^="mailto:"], #md-body a[href*="wa.me"]').length, contactTitle: /📬|Contact/.test(document.getElementById('md-body').innerText), deadline: /Deadline/i.test(document.getElementById('md-body').innerText) };
 });
-t.ok(links.n >= 2 && links.hrefs.length === links.n, 'the camp sheet shows one mailto link per address: ' + links.hrefs.join(' '));
+t.ok(pub.leaks.length === 0 && pub.mailto === 0 && !pub.contactTitle, 'public camp sheet: no contact name, e-mail or phone' + (pub.leaks.length ? ' — leaked: ' + pub.leaks.join(', ') : ''));
+t.ok(pub.deadline, 'public camp sheet: the application deadline is still shown');
 await br.close(); srv.close();
 process.exit(t.done() ? 1 : 0);

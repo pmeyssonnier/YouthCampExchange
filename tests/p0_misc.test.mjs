@@ -251,7 +251,7 @@ ok(r.mdy[0] === null && r.mdy[1] === '15-07-2027' && r.mdy[2] === null, 'directo
   ok(/Coordinates: give both/.test(e), 'camp sheet refuses impossible coordinates: ' + e);
 }
 
-// numéros de téléphone : espacement par pays + lien WhatsApp (page publique)
+// numéros de téléphone : espacement par pays + lien WhatsApp (fonction conservée ; le contact n'est plus affiché sur la page publique)
 {
   await pg.goto(B + 'index.html'); await pg.waitForTimeout(500);
   const ph = await pg.evaluate(() => ['+524921243877', '+32475782593', '00393357049046', '+1  262-224-5517', '+91-9706067767', '519-955-4669', '+33 6 12 34 56 78', 'x<b>']
@@ -264,7 +264,8 @@ ok(r.mdy[0] === null && r.mdy[1] === '15-07-2027' && r.mdy[2] === null, 'directo
   ok(ph[6].text === '+33 6 12 34 56 78', 'phone: France formatted: ' + ph[6].text);
   ok(ph[7].wa === null, 'phone: junk gets no link');
   const html = await pg.evaluate(() => { const i = CAMPS.findIndex(c => /Mexico: History/.test(c.camp_name)); showCampDetail(i); return document.getElementById('md-body').innerHTML; });
-  ok(/<a class="ms-link ms-wa" href="https:\/\/wa\.me\/524921243877" target="_blank" rel="noopener noreferrer"[^>]*>\+52 492 124 3877<\/a>/.test(html), 'camp sheet: phone is a WhatsApp link');
+  // le contact est réservé au coordinateur Lions de la zone : jamais sur la fiche publique
+  ok(!/wa\.me|ms-wa|492 124 3877|mailto:|Contact/.test(html), 'camp sheet: no contact block (name, e-mail, phone) on the public page');
 }
 
 // puces du filtre public : les nombres suivent les autres filtres (saison, continent, âge)
