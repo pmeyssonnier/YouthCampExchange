@@ -53,7 +53,8 @@ const CAMPS=RAW.map((c,i)=>{
 // drapeau d'un pays (émoji à partir du code ISO) ; « Czech rep. and Slovakia » donne les deux drapeaux ; '' si le pays est inconnu
 const COUNTRY_ISO={'Argentina':['AR'],'Australia':['AU'],'Austria':['AT'],'Bangladesh':['BD'],'Belgium':['BE'],'Brazil':['BR'],'Bulgaria':['BG'],'Canada':['CA'],'Croatia':['HR'],'Cyprus':['CY'],'Czech rep. and Slovakia':['CZ','SK'],'Czech Republic':['CZ'],'Denmark':['DK'],'Estonia':['EE'],'Finland':['FI'],'France':['FR'],'Germany':['DE'],'Greece':['GR'],'Hungary':['HU'],'Iceland':['IS'],'India':['IN'],'Indonesia':['ID'],'Ireland':['IE'],'Israel':['IL'],'Italy':['IT'],'Japan':['JP'],'Lithuania':['LT'],'Malaysia':['MY'],'Mexico':['MX'],'Namibia':['NA'],'Netherlands':['NL'],'North Macedonia':['MK'],'Norway':['NO'],'Poland':['PL'],'Portugal':['PT'],'Romania':['RO'],'Serbia':['RS'],'Slovakia':['SK'],'Slovenia':['SI'],'Spain':['ES'],'Sri Lanka':['LK'],'Sweden':['SE'],'Switzerland':['CH'],'Taiwan':['TW'],'Tunisia':['TN'],'Turkey':['TR'],'Ukraine':['UA'],'United Kingdom':['GB'],'United States':['US'],'USA':['US']};
 function countryFlag(country){const cc=COUNTRY_ISO[country];return cc?cc.map(function(c){return String.fromCodePoint(0x1F1E6+c.charCodeAt(0)-65,0x1F1E6+c.charCodeAt(1)-65);}).join(''):'';}
-function flagged(country){const f=countryFlag(country);return (f?f+'\u00A0':'')+esc(country); // espace insécable : le drapeau ne reste pas seul en bout de ligne}
+// espace insécable entre le drapeau et le nom : le drapeau ne reste pas seul en bout de ligne
+function flagged(country){const f=countryFlag(country);return (f?f+'\u00A0':'')+esc(country);}
 // puces « type de camp » des listes : ♿ Inclusion et ❄ Winter (champs inclusive et winter)
 function typeChips(c){return (c.inclusive?'<span class="cc-chip cc-incl">♿ Inclusion</span>':'')+(c.winter?'<span class="cc-chip cc-winter">❄ Winter</span>':'');}
 // ── échappement : toute donnée de camp ou de configuration insérée en HTML passe par ici ──
