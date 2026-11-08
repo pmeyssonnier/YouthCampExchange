@@ -1941,6 +1941,32 @@
     ],
     "flyer_url": "https://lionscamp.at/images/Campbilder/Germany_Diabetes.png"
    }
+  },
+  {
+   "continent": "Europe",
+   "country": "Iceland",
+   "camp_name": "Stykkishólmur 2027",
+   "age_requirements": "18-21",
+   "fee": "200 EURO",
+   "camp_starts": "05-07-2027",
+   "camp_ends": "16-07-2027",
+   "family_stay_starts": null,
+   "family_stay_ends": null,
+   "detail": {
+    "location": "Stykkishólmur, Snæfellsnes, Iceland",
+    "description": "Youth camp in Stykkishólmur, a cosy village of about 1,100 inhabitants on the west coast (about 220 km by road from Keflavík International Airport), with a great swimming pool on site. The Lions clubs of the Snæfellsnes area take you on road trips, hiking and all kinds of adventure: small fishing villages, glacier, lava, waterfalls, cliffs, black sandy beaches. No host family stay. Dates to be confirmed (the flyer reads 5–16 July 2027 with question marks).",
+    "languages": [
+     "English"
+    ],
+    "application_deadline": "31-03-2027",
+    "application_deadline_verification_required": true,
+    "application_deadline_note": "The flyer prints 31 March 2026; corrected to 2027 by inference. Organizer confirmation required.",
+    "contact_name": "Björg Bára Halldórsdóttir (YCE Chairperson MD109)",
+    "contact_email": "bjorgbarah@gmail.com",
+    "contact_phone": "+354 8635422",
+    "lat": 65.075,
+    "lon": -22.733
+   }
   }
  ]
 }
