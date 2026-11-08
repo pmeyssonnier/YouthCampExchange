@@ -26,7 +26,7 @@ const MD_COUNTRY = "Belgium";
 // Une clé absente/vide laisse le texte par défaut écrit dans index.html.
 const SITE = {
   label: "MD112 Belgium",
-  announce: "📢 <strong>Registrations for 2026 are closed.</strong> Next info session 8 November at 10:00. Follow us on Facebook for updates.",
+  announce: "📢 <strong>Registrations for 2026 are closed.</strong> Registrations for 2027 open on <strong>1 December</strong>. Follow us on Facebook for update",
   heroTitle: "Bringing youth together, <em>worldwide</em>",
   heroLead: "Live with a host family, join an international camp, and share ideas with young people from every continent. Lions Youth Camp & Exchange sends Belgian youth aged 16–22 abroad for 2 to 4 unforgettable weeks — and welcomes the world to Belgium.",
   welcomeNav: "Come to Belgium",
