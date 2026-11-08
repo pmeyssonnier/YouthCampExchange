@@ -1,7 +1,7 @@
 # Code map — Lions YCE
 
 > **Generated file — do not edit by hand.** Rebuilt by `python3 tools/build_codemap.py` (run automatically on every push to `main`).
-> Commit `d4108b1`, 2026-11-08 23:03 UTC. Interactive version: [`code_map.html`](code_map.html).
+> Commit `180b574`, 2026-11-08 23:24 UTC. Interactive version: [`code_map.html`](code_map.html).
 
 ## Pages
 
@@ -32,20 +32,20 @@
 |---|---:|---:|---|
 | `js/assets.js` | 6 | 504.5 KB | GENERATED — embedded templates (base64) + build version |
 | `js/zip.js` | 126 | 7.5 KB | bounded ZIP reading (limits against booby-trapped archives) — shared |
-| `js/xlsx.js` | 211 | 9.6 KB | ZIP writing + workbook cell read/write |
+| `js/xlsx.js` | 240 | 11.9 KB | ZIP writing + workbook cell read/write |
 | `js/docx.js` | 174 | 9.5 KB | Commitment: text, validation, signed Word generation |
 | `js/signatures.js` | 141 | 7.5 KB | signature pads + pasting signatures into the workbook |
 | `js/attachments.js` | 147 | 7.0 KB | pass photo & payment proof |
 | `js/storage.js` | 82 | 3.9 KB | local draft persistence |
 | `js/club-signing.js` | 84 | 4.7 KB | ?sign=club remote counter-signing |
-| `js/sections.js` | 165 | 10.6 KB | declarative form definition (SECTIONS, camps list, mode flags) |
+| `js/sections.js` | 164 | 10.5 KB | declarative form definition (SECTIONS, camps list, mode flags) |
 | `js/country.js` | 87 | 4.0 KB | default country, dial codes, phone normalisation |
 | `js/render.js` | 238 | 13.7 KB | section/widget rendering, X-groups, counter |
-| `js/form.js` | 231 | 15.4 KB | orchestration: generate() and init() — loaded last |
+| `js/form.js` | 239 | 16.0 KB | orchestration: generate() and init() — loaded last |
 
 **`js/zip.js`** — `zipBudget`, `zipCheckSize`, `zipDirectory` (validated central directory, no decompression), `zipNames` (file names of an archive without decompressing), `inflateRaw` (native inflate), `unzip` (parse a zip into [{name,data}] within ZIP_LIMITS)
 
-**`js/xlsx.js`** — `crc32` (CRC-32 for zip writing), `deflateRaw` (native deflate), `buildZip` (rebuild a zip Blob), `decodeEnt` (XML entities), `textOf` (concat <t> runs), `parseShared` (sharedStrings table), `getCellValue` (read one cell), `syncFromTemplate` (prefill inputs + X-groups from a workbook), `b64ToBuf` (base64 → ArrayBuffer), `loadTemplate` ('Other template' input), `setStatus` (status bar helper), `escXml` (escape XML), `fmtDate` (ISO → dd-mm-yyyy), `setCell` (write/clear one cell keeping style), `collectValues` (gather all field values (+phone check))
+**`js/xlsx.js`** — `crc32` (CRC-32 for zip writing), `deflateRaw` (native deflate), `buildZip` (rebuild a zip Blob), `decodeEnt` (XML entities), `textOf` (concat <t> runs), `parseShared` (sharedStrings table), `getCellValue` (read one cell), `syncFromTemplate` (prefill inputs + X-groups from a workbook), `b64ToBuf` (base64 → ArrayBuffer), `loadTemplate` ('Other template' input), `setStatus` (status bar helper), `escXml` (escape XML), `fmtDate` (ISO → dd-mm-yyyy), `dmyToSerial`, `serialToDmy`, `addDateStyle`, `setCellDate`, `setCell` (write/clear one cell keeping style), `collectValues` (gather all field values (+phone check))
 
 **`js/docx.js`** — `commitShow` (sync validate button + card UI), `commitCardClick` (card: scroll or download), `commitToggle` (validate/cancel (needs applicant+parent sigs)), `commitTextShow` (refresh commitment text), `commitTextUpload` (admin: text from a Word doc), `commitTextReset` (restore official text), `docxReplaceRun` (swap a marker run), `docxSigRun` (inline image run XML), `buildCommitmentDoc` (fill + sign the Commitment)
 
@@ -69,7 +69,7 @@
 |---|---:|---:|---|
 | `js/zip.js` | 126 | 7.5 KB | bounded ZIP reading (limits against booby-trapped archives) — shared |
 | `js/tracker-storage.js` | 22 | 1.0 KB | rows + localStorage persistence |
-| `js/tracker-parser.js` | 149 | 8.6 KB | file ingestion: zip, xlsx forms, commitment, attachments |
+| `js/tracker-parser.js` | 158 | 9.1 KB | file ingestion: zip, xlsx forms, commitment, attachments |
 | `js/tracker-export.js` | 31 | 2.0 KB | CSV export for Excel |
 | `js/tracker-ui.js` | 69 | 5.6 KB | table, filters, sorting, stats — runs render() |
 
@@ -77,7 +77,7 @@
 
 **`js/tracker-storage.js`** — `save` (persist rows), `clearAll` (wipe rows)
 
-**`js/tracker-parser.js`** — `decodeEnt` (XML entities), `textOf` (concat <t> runs), `parseShared` (sharedStrings table), `getCell` (read one cell), `norm` (normalise for matching), `rowKey` (row identity), `handleFiles` (dispatch dropped files (zip first-class)), `parseForm` (extract a form into a row), `findRowByName` (match a file to a row), `matchCommit` (commitment + club-signature detection), `matchAux` (photo / payment proof)
+**`js/tracker-parser.js`** — `decodeEnt` (XML entities), `textOf` (concat <t> runs), `parseShared` (sharedStrings table), `getCell` (read one cell), `norm` (normalise for matching), `rowKey` (row identity), `handleFiles` (dispatch dropped files (zip first-class)), `serialToDmy`, `parseForm` (extract a form into a row), `findRowByName` (match a file to a row), `matchCommit` (commitment + club-signature detection), `matchAux` (photo / payment proof)
 
 **`js/tracker-export.js`** — `csvSafe` (neutralise spreadsheet formulas in CSV cells), `exportCsv` (24-column CSV (BOM + ;))
 
@@ -107,7 +107,7 @@
 | `camps_data.js` | 72.2 KB | season data: SEASON + YEAR + RAW camps — common to every deployment |
 | `districts_data.js` | 5.8 KB | per-deployment data: SITE_REPO + DISTRICTS coordinators |
 | `js/version.js` | 0.5 KB | site version number (VERSION), shown on every page — bumped by each pull request |
-| `CHANGELOG.md` | 30.8 KB | what changed in each version |
+| `CHANGELOG.md` | 31.3 KB | what changed in each version |
 | `yce_form_filler.html` | 12.1 KB | filler HTML shell + styles |
 | `yce_tracker.html` | 9.0 KB | tracker HTML shell + styles |
 | `yce_admin.html` | 24.5 KB | administration HTML shell: tabs Site & season / Camps / Documents |
@@ -167,7 +167,7 @@
 | `js/form.js` | `js/render.js` | signSummary |
 | `js/assets.js` | `js/form.js` | BUILD, TEMPLATE_B64 |
 | `js/zip.js` | `js/form.js` | unzip |
-| `js/xlsx.js` | `js/form.js` | b64ToBuf, buildZip, collectValues, currentDistrict, setCell, setStatus, syncFromTemplate, templateBuf |
+| `js/xlsx.js` | `js/form.js` | addDateStyle, b64ToBuf, buildZip, collectValues, currentDistrict, dmyToSerial, setCell, setCellDate, setStatus, syncFromTemplate, templateBuf |
 | `js/docx.js` | `js/form.js` | COMMIT, buildCommitmentDoc, commitShow |
 | `js/signatures.js` | `js/form.js` | FILE_SIGS, SIGS, addSignatures, dataUrlToBytes, sigInit |
 | `js/attachments.js` | `js/form.js` | IDDOC, IDLATER, LETTER, PAY, PHOTO, idRequirement |
