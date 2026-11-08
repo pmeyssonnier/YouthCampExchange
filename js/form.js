@@ -72,6 +72,14 @@ async function generate(){
       btn.disabled=false;return;
     }
     cells.forEach(function(c){xml=setCell(xml,c.ref,c.value,c.numeric);});
+    // date de naissance : vraie date Excel (sinon la cellule calculée « Age on 01/07/… » ne peut pas fonctionner)
+    const dobCell=cells.find(function(c){return c.ref==="X17";});
+    const stE=entries.find(function(e){return e.name==="xl/styles.xml";});
+    const baseS=(xml.match(/<c r="X17"[^>]*? s="(\d+)"/)||[])[1];
+    if(dobCell&&/^\d{2}-\d{2}-\d{4}$/.test(dobCell.value)&&stE&&baseS!==undefined){
+      const ds=addDateStyle(new TextDecoder().decode(stE.data),+baseS);
+      if(ds){stE.data=new TextEncoder().encode(ds.xml);xml=setCellDate(xml,"X17",dmyToSerial(dobCell.value),ds.idx);}
+    }
     sheet.data=new TextEncoder().encode(xml);
     // force le recalcul complet à l'ouverture (âge, noms de signatures, pied de page)
     const wbe=entries.find(function(e){return e.name==="xl/workbook.xml";});

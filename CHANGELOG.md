@@ -5,6 +5,11 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.28.0 — 2026-11-08
+
+- **Application form (form filler): no more "Age on 01/07/…" field.** That field wrote into a helper cell of the family-data section; the age is computed by the form itself (cell next to the date of birth: `=IF(X17>0,(D61-X17)/365,0)`), so there is nothing to type.
+- **The date of birth is written as a real date in the Excel file** (a date number plus a dd/mm/yyyy format; the form's cell was formatted as text). Without it, the computed age could not work. The tracker reads both the new date cells and the older text dates.
+
 ## 1.27.1 — 2026-11-08
 
 - **No more false "Tests failed" e-mails after a save from the administration.** A save made in the administration (camps, home page) reaches `main` before the page fingerprints (`?v=…`) are refreshed by the rebuild robot, whose commit is `[skip ci]`; the *Tests* workflow, started at the same moment, then saw outdated fingerprints and failed although the site was fine. On a push, the *Tests* workflow now refreshes the fingerprints first (like the robot does); pull requests stay strict.

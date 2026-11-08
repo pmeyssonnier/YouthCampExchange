@@ -70,6 +70,13 @@ async function handleFiles(list){
   }
   save();render();
 }
+// numéro de série Excel -> jj-mm-aaaa ("" si ce n'est pas un numéro de série plausible)
+function serialToDmy(v){
+  v=String(v).trim();if(!/^\d{4,6}(\.\d+)?$/.test(v))return "";
+  const n=Math.floor(+v);if(n<1||n>2958465)return "";
+  const d=new Date(Date.UTC(1899,11,30)+n*86400000),z=function(x){return (x<10?"0":"")+x;};
+  return z(d.getUTCDate())+"-"+z(d.getUTCMonth()+1)+"-"+d.getUTCFullYear();
+}
 async function parseForm(fname,buf,budget){
   const entries=await unzip(buf,budget);
   const sheet=entries.find(function(e){return e.name==="xl/worksheets/sheet1.xml";});
@@ -88,12 +95,14 @@ async function parseForm(fname,buf,budget){
   REQUIRED.forEach(function(rq){if(!g(rq[0]))missing.push(rq[1]);});
   const pct=Math.round(100*(REQUIRED.length-missing.length)/REQUIRED.length);
   let age="";
-  const dm=g("X17").match(/^(\d{2})-(\d{2})-(\d{4})$/);
+  const dobRaw=g("X17");
+  const dobTxt=/^\d{2}-\d{2}-\d{4}$/.test(dobRaw)?dobRaw:serialToDmy(dobRaw); // vraie date Excel (numéro de série) ou texte jj-mm-aaaa
+  const dm=dobTxt.match(/^(\d{2})-(\d{2})-(\d{4})$/);
   if(dm){age=((new Date(+YEAR,6,1)-new Date(+dm[3],+dm[2]-1,+dm[1]))/31557600000).toFixed(1);}
   const key=rowKey(dist,fam,fir);
   const prev=ROWS[key]||{};
   ROWS[key]={
-    dist:dist,fam:fam,fir:fir,sex:g("J17"),dob:g("X17"),age:age,
+    dist:dist,fam:fam,fir:fir,sex:g("J17"),dob:dobTxt||dobRaw,age:age,
     club:g("F67"),email:g("S20"),mobile:g("S21"),
     pref1:(g("N10")+(g("AC10")?" — "+g("AC10"):"")).trim(),
     pref2:(g("N11")+(g("AC11")?" — "+g("AC11"):"")).trim(),
