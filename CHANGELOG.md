@@ -8,6 +8,7 @@ The version is shown on every page (site footer, tool headers).
 ## 1.22.1 — 2026-11-08
 
 - **Durations are counted in nights.** On the camp sheet, the *Camp Period*, *Family Stay* and *Second Family Stay* durations and the *Total stay in country* are now numbers of nights (end date minus start date). When the family stay ends the day the camp starts, that day was counted twice in the sum of the days (e.g. 8 + 15 days for a 22-day total); in nights the total is the sum of the periods (7 + 15 = 22 nights).
+- **New camp for 2027: Iceland – Stykkishólmur 2027** (Snæfellsnes, west coast; camp 5–16 July 2027, dates still to be confirmed; no host family stay; 18-21 years; 200 EURO). Contact: PCC Björg Bára Halldórsdóttir, YCE Chairperson MD109. The application deadline printed on the flyer (31 March 2026) is shown as 31 March 2027 and marked to be verified.
 
 ## 1.22.0 — 2026-11-08
 
