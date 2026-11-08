@@ -8,6 +8,7 @@ const CONT_COLORS={'Africa':'b-Africa','Asia':'b-Asia','Europe':'b-Europe','Nort
 
 let selStates=new Set();
 let selSeasons=new Set();
+let filterWinter=false; // seulement les camps d'hiver (champ winter)
 let filterInclusive=false; // seulement les camps pour personnes en situation de handicap (champ inclusive)
 
 // Nombres des puces : chaque filtre compte les camps qui passent TOUS les autres filtres (pas le sien),
@@ -19,6 +20,7 @@ function campMatches(c,skip){
   if(skip.indexOf('k')<0&&selCountries.size>0&&!selCountries.has(c.country))return false;
   if(skip.indexOf('t')<0&&selStates.size>0&&c.state&&!selStates.has(c.state))return false;
   if(skip.indexOf('i')<0&&filterInclusive&&!c.inclusive)return false;
+  if(skip.indexOf('w')<0&&filterWinter&&!c.winter)return false;
   if(filterAge!==null&&(filterAge<c.age_min||filterAge>c.age_max))return false;
   if(periodRange){const{start,end}=periodRange;if(!c.arrival||!c.departure||c.departure<start||c.arrival>end)return false;}
   return true;
@@ -40,8 +42,14 @@ function renderInclusivePill(){
   const n=CAMPS.filter(c=>c.inclusive&&campMatches(c,'i')).length;
   el.innerHTML=`<div class="pill${filterInclusive?' on':''}${n?'':' zero'}" onclick="toggleInclusive()">♿ Inclusion camps <span style="opacity:0.6">${n}</span></div>`;
 }
+function renderWinterPill(){
+  const el=document.getElementById('winter-pills');if(!el)return;
+  const n=CAMPS.filter(c=>c.winter&&campMatches(c,'w')).length;
+  el.innerHTML=`<div class="pill${filterWinter?' on':''}${n?'':' zero'}" onclick="toggleWinter()">❄ Winter camps <span style="opacity:0.6">${n}</span></div>`;
+}
+function toggleWinter(){filterWinter=!filterWinter;applyFilters();}
 function toggleInclusive(){filterInclusive=!filterInclusive;applyFilters();}
-function refreshFacets(){renderInclusivePill();renderStateList();renderSeasonPills();renderContinentPills();renderCountryList();}
+function refreshFacets(){renderInclusivePill();renderWinterPill();renderStateList();renderSeasonPills();renderContinentPills();renderCountryList();}
 function toggleSeason(s){
   if(selSeasons.has(s))selSeasons.delete(s);else selSeasons.add(s);
   applyFilters();
@@ -157,6 +165,7 @@ function renderFilterChips(){
   selContinents.forEach(c=>parts.push([`🌍 <b>${esc(c)}</b>`,()=>toggleContinent(c)]));
   selCountries.forEach(c=>parts.push([`🗺️ <b>${esc(c)}</b>`,()=>toggleCountry(c)]));
   selStates.forEach(s=>parts.push([`📍 <b>${esc(s)}</b>`,()=>toggleState(s)]));
+  if(filterWinter)parts.push([`❄ <b>Winter</b>`,()=>toggleWinter()]);
   if(filterInclusive)parts.push([`♿ <b>Inclusion</b>`,()=>toggleInclusive()]);
   if(filterAge!==null)parts.push([`👤 <b>${filterAge} y</b>`,()=>{document.getElementById('age-in').value='';applyFilters();}]);
   if(periodType!=='none'&&periodRange){
@@ -259,7 +268,7 @@ function applyFilters(){
 }
 
 function resetFilters(){
-  selContinents.clear();selCountries.clear();selStates.clear();selSeasons.clear();filterInclusive=false;filterAge=null;periodType='none';periodRange=null;
+  selContinents.clear();selCountries.clear();selStates.clear();selSeasons.clear();filterInclusive=false;filterWinter=false;filterAge=null;periodType='none';periodRange=null;
   document.getElementById('age-in').value='';document.getElementById('c-srch').value='';
   document.querySelectorAll('.pill').forEach(p=>p.classList.remove('on'));
   setPeriodType('none');refreshFacets();renderTable();
