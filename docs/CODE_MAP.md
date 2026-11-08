@@ -1,7 +1,7 @@
 # Code map — Lions YCE
 
 > **Generated file — do not edit by hand.** Rebuilt by `python3 tools/build_codemap.py` (run automatically on every push to `main`).
-> Commit `42394e3`, 2026-11-08 17:48 UTC. Interactive version: [`code_map.html`](code_map.html).
+> Commit `4446809`, 2026-11-08 18:30 UTC. Interactive version: [`code_map.html`](code_map.html).
 
 ## Pages
 
@@ -23,7 +23,7 @@
 | js/site-data.js (154 ln, 10.4 KB) | date helpers, CAMPS enrichment, season stats, HTML escaping (esc / jsArg / safeUrl / cleanHtml) |
 | js/site-explorer.js (313 ln, 18.8 KB) | directory: getFiltered/getSorted/renderTable + all filters, tabs |
 | js/site-map.js (209 ln, 19.2 KB) | world map (D3): initMap/renderWorldBubbles/zoomContinent/zoomCountry/showCountryCamps |
-| js/site-modal.js (113 ln, 7.8 KB) | camp detail modal: showCampDetail/buildTimeline |
+| js/site-modal.js (112 ln, 7.6 KB) | camp detail modal: showCampDetail/buildTimeline |
 | js/site-ui.js (122 ln, 7.4 KB) | theme toggle, mobile nav, scroll-reveal, Belgium teaser — runs init |
 
 ## Form filler modules
@@ -104,17 +104,17 @@
 
 | File | Size | Role |
 |---|---:|---|
-| `camps_data.js` | 73.7 KB | season data: SEASON + YEAR + RAW camps — common to every deployment |
+| `camps_data.js` | 72.2 KB | season data: SEASON + YEAR + RAW camps — common to every deployment |
 | `districts_data.js` | 5.8 KB | per-deployment data: SITE_REPO + DISTRICTS coordinators |
 | `js/version.js` | 0.5 KB | site version number (VERSION), shown on every page — bumped by each pull request |
-| `CHANGELOG.md` | 29.3 KB | what changed in each version |
+| `CHANGELOG.md` | 29.7 KB | what changed in each version |
 | `yce_form_filler.html` | 12.1 KB | filler HTML shell + styles |
 | `yce_tracker.html` | 9.0 KB | tracker HTML shell + styles |
 | `yce_admin.html` | 24.1 KB | administration HTML shell: tabs Site & season / Camps / Documents |
 | `yce_camps.html` | 1.0 KB | old camp manager address — redirects to yce_admin.html#camps |
 | `js/admin-core.js` | 13.2 KB | shared admin plumbing (token, passphrase, GitHub API, connect hooks) |
 | `js/admin.js` | 22.9 KB | admin Site & Documents tabs: season, coordinators, home page, gallery, uploads |
-| `js/camps-manager.js` | 38.3 KB | admin Camps tab: directory import, editing, backups, archive |
+| `js/camps-manager.js` | 38.5 KB | admin Camps tab: directory import, editing, backups, archive |
 | `js/admin-tabs.js` | 1.2 KB | admin tab switching (#site, #camps, #docs) |
 | `js/toolnav.js` | 1.3 KB | tool menu under the header of every tool page |
 | `css/tools.css` | 6.2 KB | styles shared by the tool pages |
