@@ -37,9 +37,8 @@ function showCampDetail(idx){
     </div>`:'';
 
   const hasLang=det&&det.languages&&det.languages.length;
-  const web=det?safeUrl(det.website):null,yce=det&&c.country==='Belgium'?safeUrl(det.yce_url):null, // la ligne « YCE Page » n'est gardée que pour le camp belge
-      flyer=det?safeUrl(det.flyer_url):null;
-  const hasLinks=!!(web||yce||flyer);
+  const web=det?safeUrl(det.website):null,flyer=det?safeUrl(det.flyer_url):null;
+  const hasLinks=!!(web||flyer);
   // le contact (nom, e-mail, téléphone) est réservé au coordinateur Lions de la zone : jamais affiché sur la fiche publique
   const hasContact=!!(det&&det.application_deadline);
 
@@ -53,8 +52,7 @@ function showCampDetail(idx){
     <div class="modal-section ${!hasLang&&!hasContact?'full':''}">
       <div class="ms-title">🔗 Links</div>
       ${web?`<div class="ms-row" style="margin-bottom:6px"><span class="ms-lbl">Website</span><a class="ms-link" href="${esc(web)}" target="_blank" rel="noopener">${esc(det.website.replace(/^https?:\/\//,''))}</a></div>`:''}
-      ${yce?`<div class="ms-row"><span class="ms-lbl">YCE Page</span><a class="ms-link" href="${esc(yce)}" target="_blank" rel="noopener">lions-yce-belgium.be ↗</a></div>`:''}
-      ${flyer?`<div class="ms-row"${web||yce?' style="margin-top:6px"':''}><span class="ms-lbl">Flyer</span><a class="ms-link" href="${esc(flyer)}" target="_blank" rel="noopener">View the camp flyer ↗</a></div>`:''}
+      ${flyer?`<div class="ms-row"${web?' style="margin-top:6px"':''}><span class="ms-lbl">Flyer</span><a class="ms-link" href="${esc(flyer)}" target="_blank" rel="noopener">View the camp flyer ↗</a></div>`:''}
     </div>`:'';
 
   const secContact=hasContact?`

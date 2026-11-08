@@ -9,7 +9,7 @@ let SORT_K="country", SORT_D=1; // tri du tableau (clic sur les en-têtes)
 
 const TOP_KEYS=["continent","country","state","district","camp_name","inclusive","winter","age_requirements","fee",
   "camp_starts","camp_ends","family_stay_starts","family_stay_ends","family_stay2_starts","family_stay2_ends","detail"];
-const DET_KEYS=["location","description","host_family_activities","languages","website","yce_url","flyer_url",
+const DET_KEYS=["location","description","host_family_activities","languages","website","flyer_url",
   "application_deadline","participants","contact_name","contact_email","contact_phone","lat","lon"];
 const CONTINENTS=["Africa","Asia","Europe","Middle America","North America","Oceania","South America"];
 
@@ -113,7 +113,6 @@ function openEdit(i){
     +fldHtml("e-description","Camp activities / description",d.description,"g6","textarea")
     +fldHtml("e-host_family_activities","Host family activities",d.host_family_activities,"g6","textarea")
     +fldHtml("e-website","Official website",d.website,"g2")
-    +fldHtml("e-yce_url","lions-yce-belgium.be page",d.yce_url,"g2")
     +fldHtml("e-flyer_url","Camp flyer (link to the image)",d.flyer_url,"g2")
     +fldHtml("e-contact_name","Contact name",d.contact_name,"g2")
     +fldHtml("e-contact_email","Contact e-mail (several: separate with ;)",d.contact_email,"g2")
@@ -178,7 +177,7 @@ function saveEdit(){
   if(gv("e-family_stay2_starts")||gv("e-family_stay2_ends")){nc.family_stay2_starts=gv("e-family_stay2_starts");nc.family_stay2_ends=gv("e-family_stay2_ends");}
   const d={};
   [["location","e-location"],["description","e-description"],["host_family_activities","e-host_family_activities"],
-   ["website","e-website"],["yce_url","e-yce_url"],["flyer_url","e-flyer_url"],["application_deadline","e-application_deadline"],
+   ["website","e-website"],["flyer_url","e-flyer_url"],["application_deadline","e-application_deadline"],
    ["participants","e-participants"],["contact_name","e-contact_name"],["contact_email","e-contact_email"],
    ["contact_phone","e-contact_phone"]].forEach(function(p){const v=gv(p[1]);if(v)d[p[0]]=v;});
   if(lat&&lon){d.lat=Math.round(+lat*10000)/10000;d.lon=Math.round(+lon*10000)/10000;}
@@ -234,6 +233,8 @@ function jsonPick(inp){
       let d=JSON.parse(r.result);
       let camps=Array.isArray(d)?d:d.camps;
       if(!Array.isArray(camps)||!camps.length||!camps[0].camp_name)throw new Error("expected {camps:[…]} or an array of camps");
+      // champ supprimé (adresse « YCE page ») : une ancienne sauvegarde ne le ramène pas
+      camps.concat(Array.isArray(d.archive)?d.archive:[]).forEach(function(c){if(c&&c.detail&&typeof c.detail==='object')delete c.detail.yce_url;});
       if(!confirm("Replace the working list with "+camps.length+" camps"
         +(d.archive?" + "+d.archive.length+" archived":"")+" from "+f.name+" ?"))return;
       CAMPS_W=camps;ARCH=Array.isArray(d.archive)?d.archive:ARCH;

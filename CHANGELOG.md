@@ -7,7 +7,7 @@ The version is shown on every page (site footer, tool headers).
 
 ## 1.26.1 — 2026-11-08
 
-- **Camp sheet: the "YCE Page" link line is removed** (the "lions-yce-belgium.be ↗" line of the Links block) for all camps except the Belgian one. The *Website* line stays. The stored addresses are not deleted, only no longer shown.
+- **The "YCE Page" address is removed everywhere.** The "lions-yce-belgium.be ↗" line is gone from the camp sheet (the *Website* line stays), and the `yce_url` field is deleted from the data (active camps and archive), from the camp edit card and from the camp data structure. Importing an old backup file ignores that field.
 
 ## 1.26.0 — 2026-11-08
 
