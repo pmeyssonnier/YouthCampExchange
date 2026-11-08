@@ -1964,7 +1964,7 @@
    "inclusive": true,
    "winter": true,
    "age_requirements": "18-25",
-   "fee": null,
+   "fee": "0",
    "camp_starts": "07-03-2027",
    "camp_ends": "14-03-2027",
    "family_stay_starts": null,
