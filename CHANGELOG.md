@@ -5,6 +5,11 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.29.0 — 2026-11-09
+
+- **Form filler: the same frame around every question.** The choice questions (Lion? Yes/No, Knowledge of English Good/Fair/None, T-shirt size S–XXL, "Previously participated", sport, swim, smoke, vegetarian, vegan, LEO, the medical questions, "country of Europe") now look like the text fields: the label above, then a frame identical to the text fields (same background, border and corners) that holds the buttons. The old cards (label on the left, buttons on the right) were cut off on a phone. *Lion?* is now full width on a phone.
+- **Reference date of the age = 1 July of the season's year (2027 for 2026-2027).** The embedded form template is the 2026 one (reference date 01/07/2026, label "Age on 01/07/2026", year 2026, proposed dates 01-07-2026 → 31-08-2026): the form filler now moves its year, the reference date of the computed age, its label and the proposed dates to the season's year (`YEAR` in `camps_data.js`), so the age is computed on 01/07/2027. A template of the season's own year is left as it is. (This change was prepared with 1.28.0 but was not part of that release.)
+
 ## 1.28.0 — 2026-11-08
 
 - **Application form (form filler): no more "Age on 01/07/…" field.** That field wrote into a helper cell of the family-data section; the age is computed by the form itself (cell next to the date of birth: `=IF(X17>0,(D61-X17)/365,0)`), so there is nothing to type.

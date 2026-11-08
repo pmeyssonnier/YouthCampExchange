@@ -213,6 +213,7 @@ async function init(){
       if(cfg)cells=cells.concat([["AF1",d],["AH78",MD+" "+d],["AE67",MD+d],["AH85",MD+d],
         ["F104",MD_COUNTRY+"/"+MD+d],["I78",cfg.name],["E79",cfg.email],["E80",cfg.mobile]]);
       cells.forEach(function(p){xml=setCell(xml,p[0],p[1],p[0]==="AB1");});
+      xml=yearizeTemplate(xml); // modèle d'une autre année que YEAR : année, date de référence de l'âge (1er juillet) et dates proposées
       sheet.data=new TextEncoder().encode(xml);
       templateBuf=await (await buildZip(entries)).arrayBuffer();
       if(cfg)setStatus("District "+MD+" "+d+" form ready — YCE coordinator: "+cfg.name,false);
