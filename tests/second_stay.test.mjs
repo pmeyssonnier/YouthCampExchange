@@ -22,6 +22,13 @@ t.ok(!/Second Family Stay/i.test(withOne.b), 'no second-stay section otherwise')
 t.ok(!/Complete Timeline/i.test(withTwo.b), 'the Complete Timeline section is gone');
 const c2 = await pg.evaluate(i => CAMPS[i].departure >= CAMPS[i].fe2 && CAMPS[i].departure >= CAMPS[i].ce, i2);
 t.ok(c2, 'departure takes the second stay into account');
+// durée sous les dates du séjour en famille (jours de début et de fin compris)
+const dur = await pg.evaluate(i => { const c = CAMPS[i]; showCampDetail(i);
+  const sec = [...document.querySelectorAll('.modal-section')].find(s => /Family Stay/.test(s.querySelector('.ms-title').textContent) && !/Second/.test(s.querySelector('.ms-title').textContent));
+  const sec2 = [...document.querySelectorAll('.modal-section')].find(s => /Second Family Stay/.test(s.querySelector('.ms-title').textContent));
+  return { txt: sec.innerText, txt2: sec2.innerText, n: Math.round((c.fe - c.fs) / 86400000) + 1, n2: Math.round((c.fe2 - c.fs2) / 86400000) + 1 }; }, i2);
+t.ok(new RegExp('Duration\\s+' + dur.n + ' days?').test(dur.txt), 'family stay shows its duration (' + dur.n + ' days)');
+t.ok(new RegExp('Duration\\s+' + dur.n2 + ' days?').test(dur.txt2), 'second family stay shows its duration (' + dur.n2 + ' days)');
 const iInc = RAW.findIndex(c => c.inclusive);
 t.ok(/♿ Inclusion/.test((await sheet(iInc)).tag), 'inclusive camp sheet shows the ♿ Inclusion tag');
 t.ok(!/Inclusion/.test(withOne.tag), 'other camps show no Inclusion tag');
