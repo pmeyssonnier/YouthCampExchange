@@ -5,6 +5,10 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.26.1 — 2026-11-08
+
+- **The "YCE Page" address is removed everywhere.** The "lions-yce-belgium.be ↗" line is gone from the camp sheet (the *Website* line stays), and the `yce_url` field is deleted from the data (active camps and archive), from the camp edit card and from the camp data structure. Importing an old backup file ignores that field.
+
 ## 1.26.0 — 2026-11-08
 
 - **Contact details are no longer shown on the public camp sheet.** The *Contact* block (name, e-mail, phone) is removed from the camp sheet seen by candidates; it is reserved for the Lions coordinator of the area. The application deadline stays visible (in an *Application* block). The contact data is still stored with the camps and editable in the administration.
