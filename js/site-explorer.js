@@ -126,11 +126,12 @@ function renderTable(){
     const bc=CONT_COLORS[c.continent]||'b-Asia';
     const feeHtml=isFreeStr(c.fee)?'<span class="fee-v free">FREE</span>':`<span class="fee-v">${esc(c.fee||'—')}</span>`;
     const campPer=c.cs&&c.ce?`<span class="dt-accent">${fmtDate(c.camp_starts)}</span><br><span class="dt">${fmtDate(c.camp_ends)}</span>`:'—';
-    const famPer=c.fs?`<span class="dt-accent">${fmtDate(c.family_stay_starts)}</span><br><span class="dt">${fmtDate(c.family_stay_ends)}</span>`:'<span class="dt">—</span>';
+    const fam2Per=c.fs2?`<br><span class="dt-accent">${fmtDate(c.family_stay2_starts)}</span><br><span class="dt">${fmtDate(c.family_stay2_ends)}</span>`:''; // 2e séjour : seconde ligne seulement s'il existe
+    const famPer=(c.fs?`<span class="dt-accent">${fmtDate(c.family_stay_starts)}</span><br><span class="dt">${fmtDate(c.family_stay_ends)}</span>`:'<span class="dt">—</span>')+fam2Per;
     const presPer=c.arrival&&c.departure?`<span style="color:var(--orange)">${fmtDate2(c.arrival)}</span><br><span class="dt">${fmtDate2(c.departure)}</span>`:'—';
     return`<tr class="clickable-row" data-idx="${c._idx}" onclick="showCampDetail(${c._idx})">
       <td><span class="badge ${bc}">${esc(c.continent)}</span></td>
-      <td>${esc(c.country)}</td><td class="dt" style="font-size:10px;color:var(--blue)">${esc(c.state||'')}</td><td class="camp-nm">${esc(titleCase(c.camp_name))}${typeChips(c)?' '+typeChips(c):''}</td>
+      <td>${flagged(c.country)}</td><td class="dt" style="font-size:10px;color:var(--blue)">${esc(c.state||'')}</td><td class="camp-nm">${esc(titleCase(c.camp_name))}${typeChips(c)?' '+typeChips(c):''}</td>
       <td>${esc(c.age_requirements)}</td><td>${feeHtml}</td>
       <td class="dt">${campPer}</td><td class="dt">${famPer}</td><td class="dt">${presPer}</td>
     </tr>`;
@@ -162,10 +163,11 @@ function renderMobileCards(filtered){
     const bc=CONT_COLORS[c.continent]||'b-Asia';
     const feeHtml=isFreeStr(c.fee)?'<span class="cc-chip cc-free">FREE</span>':(c.fee?`<span class="cc-chip cc-fee">${esc(c.fee)}</span>`:'');
     const seasHtml=c.season?`<span class="cc-chip cc-season">📅 ${esc(c.season)}</span>`:'';
-    const famHtml=c.fs?`<div class="cc-date-row"><span class="cc-date-lbl">🏠 Family Stay</span><span class="cc-date-val">${fmtDate2(c.fs)} → ${fmtDate2(c.fe)}</span></div>`:'';
+    const famHtml=(c.fs?`<div class="cc-date-row"><span class="cc-date-lbl">🏠 Family Stay</span><span class="cc-date-val">${fmtDate2(c.fs)} → ${fmtDate2(c.fe)}</span></div>`:'')
+      +(c.fs2?`<div class="cc-date-row"><span class="cc-date-lbl">🏠 2nd Family Stay</span><span class="cc-date-val">${fmtDate2(c.fs2)} → ${fmtDate2(c.fe2)}</span></div>`:''); // 2e séjour : ligne seulement s'il existe
     return`<div class="camp-card" onclick="showCampDetail(${c._idx})">
       <div class="mc-top"><div class="cc-name">${esc(titleCase(c.camp_name))}</div><span class="badge ${bc}">${esc(c.continent)}</span></div>
-      <div class="mc-ctry">${esc(c.country)}${c.state?' — '+esc(c.state):''}</div>
+      <div class="mc-ctry">${flagged(c.country)}${c.state?' — '+esc(c.state):''}</div>
       <div class="cc-row"><span class="cc-chip cc-age">👤 ${esc(c.age_requirements)}</span>${feeHtml}${seasHtml}${typeChips(c)}</div>
       <div class="cc-dates"><div class="cc-date-row"><span class="cc-date-lbl">🏕️ Camp</span><span class="cc-date-val">${fmtDate2(c.cs)} → ${fmtDate2(c.ce)}</span></div>${famHtml}</div>
     </div>`;

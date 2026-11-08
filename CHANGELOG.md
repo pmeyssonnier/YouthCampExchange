@@ -9,6 +9,7 @@ The version is shown on every page (site footer, tool headers).
 
 - **Sort the camp list on the phone.** On the right of the *Filters* button, a sort selector (Country, Name, Date, Price) with an ascending/descending button. It is hidden when the list has one camp or none, and the *Country* choice is left out when all the camps shown are from the same country (e.g. after filtering by a country). Camps without a camp date come last when sorting by date. Price sorts by the number, whatever the currency.
 - **♿ Inclusion and ❄ Winter chips in the summary lists.** The camp cards of the phone list and of the map's country panel, and the camp name in the table, now show a "♿ Inclusion" and/or "❄ Winter" chip for the camps concerned.
+- **Country flag and second family stay in the lists.** The camp table and the phone cards show the country's flag in front of its name (two flags for *Czech rep. and Slovakia*). When a camp has a second host-family period, the table and the cards (and the map's country panel) show a second line for it; camps with a single family stay are unchanged.
 
 ## 1.23.0 — 2026-11-08
 
