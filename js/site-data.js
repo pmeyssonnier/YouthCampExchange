@@ -50,6 +50,8 @@ const CAMPS=RAW.map((c,i)=>{
   const season=cs?((cs.getMonth()+1>=9)?cs.getFullYear()+'-'+(cs.getFullYear()+1):(cs.getFullYear()-1)+'-'+cs.getFullYear()):'';
   return{...c,_idx:i,cs,ce,fs,fe,fs2,fe2,arrival,departure,age_min:age.min,age_max:age.max,fee_num:feeNum,season};
 });
+// puces « type de camp » des listes : ♿ Inclusion et ❄ Winter (champs inclusive et winter)
+function typeChips(c){return (c.inclusive?'<span class="cc-chip cc-incl">♿ Inclusion</span>':'')+(c.winter?'<span class="cc-chip cc-winter">❄ Winter</span>':'');}
 // ── échappement : toute donnée de camp ou de configuration insérée en HTML passe par ici ──
 // (les camps viennent en partie du répertoire international importé : contenu externe)
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}

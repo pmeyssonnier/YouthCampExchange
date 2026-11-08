@@ -5,6 +5,11 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.24.0 — 2026-11-08
+
+- **Sort the camp list on the phone.** On the right of the *Filters* button, a sort selector (Country, Name, Date, Price) with an ascending/descending button. It is hidden when the list has one camp or none, and the *Country* choice is left out when all the camps shown are from the same country (e.g. after filtering by a country). Camps without a camp date come last when sorting by date. Price sorts by the number, whatever the currency.
+- **♿ Inclusion and ❄ Winter chips in the summary lists.** The camp cards of the phone list and of the map's country panel, and the camp name in the table, now show a "♿ Inclusion" and/or "❄ Winter" chip for the camps concerned.
+
 ## 1.23.0 — 2026-11-08
 
 - **Winter camps are identified.** New "❄ Winter camp" flag: the camp sheet shows a "❄ Winter camp" tag next to the country, the public list has a *Winter camps* pill in the new *Camp type* filter section (count that follows the other filters, chip in the active-filter bar, cleared by *Reset all filters*), and the edit card has a *❄ Winter camp* Yes/No field. Five camps are flagged: Lions Escapade Northeast, Namaste India (Central), Heritage Horizons – Northern India, Lions Youth Camp Italia Winter and the Sri Lanka camp (listed under Wintercamps on lionscamp.at).

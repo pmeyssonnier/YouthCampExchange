@@ -148,7 +148,7 @@ function showCountryCamps(country){
     const famHtml=c.fs?`<div class="cc-date-row"><span class="cc-date-lbl">🏠 Family Stay</span><span class="cc-date-val">${fmtDate2(c.fs)} → ${fmtDate2(c.fe)}</span></div>`:'';
     return`<div class="camp-card" onclick="showCampDetail(${c._idx})">
       <div class="cc-name">${esc(titleCase(c.camp_name))}</div>
-      <div class="cc-row"><span class="cc-chip cc-age">👤 ${esc(c.age_requirements)}</span>${feeHtml}${c.season?`<span class="cc-chip cc-season">📅 ${esc(c.season)}</span>`:''}</div>
+      <div class="cc-row"><span class="cc-chip cc-age">👤 ${esc(c.age_requirements)}</span>${feeHtml}${c.season?`<span class="cc-chip cc-season">📅 ${esc(c.season)}</span>`:''}${typeChips(c)}</div>
       <div class="cc-dates"><div class="cc-date-row"><span class="cc-date-lbl">🏕️ Camp</span><span class="cc-date-val">${fmtDate2(c.cs)} → ${fmtDate2(c.ce)}</span></div>${famHtml}${presHtml}</div>
     </div>`;
   }).join('');
