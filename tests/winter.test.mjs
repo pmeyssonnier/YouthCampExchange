@@ -22,7 +22,8 @@ await pg.click('#winter-pills .pill');
 t.ok((await rows()) === flagged.length, 'only the winter camps remain: ' + (await rows()) + ' = ' + flagged.length);
 t.ok(/Winter/.test(await pg.textContent('#f-chips')), 'active filter shown as a chip');
 await pg.click('#incl-pills .pill'); // hiver + inclusion : aucun camp ne cumule les deux
-t.ok(/No camps match/.test(await pg.textContent('#tbody')), 'winter + inclusion combine (no camp has both)');
+const both = RAW.filter(c => c.winter && c.inclusive).length;
+t.ok((await rows()) === both, 'winter + inclusion combine: only the camps having both (' + both + ')');
 await pg.click('.reset-btn');
 t.ok((await rows()) === all, 'reset restores every camp');
 const sheet = await pg.evaluate(i => { showCampDetail(i); return document.getElementById('md-country').innerText; }, RAW.findIndex(c => c.winter));

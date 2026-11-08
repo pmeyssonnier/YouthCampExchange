@@ -24,7 +24,7 @@ t.ok((await rows()) === flagged.length, 'only the inclusive camps remain: ' + (a
 t.ok(/Inclusion/.test(await pg.textContent('#f-chips')), 'active filter shown as a chip');
 t.ok(await pg.$eval('#incl-pills .pill', e => e.classList.contains('on')), 'pill is on');
 // se combine avec un autre filtre : un pays sans camp inclusif donne 0 ligne
-await pg.evaluate(() => { selCountries.add('Norway'); applyFilters(); });
+await pg.evaluate(() => { selCountries.add('Austria'); applyFilters(); });
 t.ok(/No camps match/.test(await pg.textContent('#tbody')), 'combined with a country without inclusive camp: no camp listed');
 await pg.click('.reset-btn');
 t.ok((await rows()) === all, 'reset restores every camp');

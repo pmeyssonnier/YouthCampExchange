@@ -37,9 +37,10 @@ function showCampDetail(idx){
     </div>`:'';
 
   const hasLang=det&&det.languages&&det.languages.length;
-  const web=det?safeUrl(det.website):null,yce=det?safeUrl(det.yce_url):null,flyer=det?safeUrl(det.flyer_url):null,mails=det?String(det.contact_email==null?'':det.contact_email).split(/\s*[;,]\s*/).filter(Boolean):[];
+  const web=det?safeUrl(det.website):null,yce=det?safeUrl(det.yce_url):null,flyer=det?safeUrl(det.flyer_url):null;
   const hasLinks=!!(web||yce||flyer);
-  const hasContact=det&&(det.contact_email||det.contact_name||det.contact_phone||det.application_deadline);
+  // le contact (nom, e-mail, téléphone) est réservé au coordinateur Lions de la zone : jamais affiché sur la fiche publique
+  const hasContact=!!(det&&det.application_deadline);
 
   const secLang=hasLang?`
     <div class="modal-section ${!hasLinks&&!hasContact?'full':''}">
@@ -57,15 +58,29 @@ function showCampDetail(idx){
 
   const secContact=hasContact?`
     <div class="modal-section full">
-      <div class="ms-title">📬 Contact</div>
-      ${det.contact_name?`<div class="ms-row"><span class="ms-lbl">Name</span><span class="ms-val">${esc(det.contact_name)}</span></div>`:''}
-      ${mails.map((m,k)=>{const ok=safeMail(m);return `<div class="ms-row"><span class="ms-lbl">${k?'':'Email'}</span>${ok?`<a class="ms-link" href="mailto:${esc(ok)}">${esc(ok)}</a>`:`<span class="ms-val">${esc(m)}</span>`}</div>`;}).join('')}
-      ${det.contact_phone?(()=>{const ph=phoneInfo(det.contact_phone);return `<div class="ms-row"><span class="ms-lbl">Phone</span>${ph.wa?`<a class="ms-link ms-wa" href="https://wa.me/${esc(ph.wa)}" target="_blank" rel="noopener noreferrer" title="Open in WhatsApp">${esc(ph.text)}</a>`:`<span class="ms-val">${esc(ph.text)}</span>`}</div>`;})():''}
-      ${det.application_deadline?`<div class="ms-row"><span class="ms-lbl">Deadline</span><span class="ms-val orange">${fmtDate(det.application_deadline)}</span></div>`:''}
+      <div class="ms-title">📅 Application</div>
+      <div class="ms-row"><span class="ms-lbl">Deadline</span><span class="ms-val orange">${fmtDate(det.application_deadline)}</span></div>
     </div>`:'';
 
   const secNoDetail=!det?`<div class="modal-section full"><div class="ms-title">ℹ️ Camp Details</div><div class="ms-no-detail">Detailed information not yet available for this camp.</div></div>`:'';
 
+  // blocs des périodes (camp, accueil en famille, 2e accueil) classés par date de début, comme dans les listes ;
+  // à égalité l'accueil passe avant le camp ; le bloc « pas d'accueil » (sans date) vient après. Le 3e bloc occupe toute la largeur.
+  const campBlock=`<div class="ms-title">🏕 Camp Period</div>
+      <div class="ms-row"><span class="ms-lbl">Start</span><span class="ms-val blue">${fmtFull(c.cs)}</span></div>
+      <div class="ms-row"><span class="ms-lbl">End</span><span class="ms-val blue">${fmtFull(c.ce)}</span></div>
+      ${durRow(campNights)}`;
+  const famBlock=`<div class="ms-title">🏠 Family Stay</div>
+      ${c.fs?`<div class="ms-row"><span class="ms-lbl">Start</span><span class="ms-val">${fmtFull(c.fs)}</span></div><div class="ms-row"><span class="ms-lbl">End</span><span class="ms-val">${fmtFull(c.fe)}</span></div>${durRow(nights(c.fs,c.fe))}`
+      :'<div style="color:var(--muted);font-size:11px;font-style:italic">No family stay information</div>'}`;
+  const fam2Block=`<div class="ms-title">🏠 Second Family Stay</div>
+      <div class="ms-row"><span class="ms-lbl">Start</span><span class="ms-val">${fmtFull(c.fs2)}</span></div>
+      <div class="ms-row"><span class="ms-lbl">End</span><span class="ms-val">${fmtFull(c.fe2)}</span></div>
+      ${durRow(nights(c.fs2,c.fe2))}`;
+  const periods=[{t:c.fs?c.fs.getTime():Infinity,o:0,h:famBlock},{t:c.cs?c.cs.getTime():Infinity,o:2,h:campBlock}];
+  if(c.fs2)periods.push({t:c.fs2.getTime(),o:1,h:fam2Block});
+  periods.sort((x,y)=>(x.t===y.t?0:(x.t<y.t?-1:1))||(x.o-y.o));
+  const periodBlocks=periods.map((p,i)=>`<div class="modal-section${periods.length===3&&i===2?' full':''}">${p.h}</div>`).join('\n    ');
   document.getElementById('md-body').innerHTML=`
     <div class="modal-section">
       <div class="ms-title">👤 Age Requirements</div>
@@ -77,23 +92,7 @@ function showCampDetail(idx){
       <div class="ms-row"><span class="ms-lbl">Amount</span><span class="ms-val big ${isFree?'free':''}">${isFree?'FREE':esc(c.fee||'—')}</span></div>
     </div>
     ${secLocation}${secDesc}${secHfa}${secLang}${secLinks}${secContact}${secNoDetail}
-    <div class="modal-section">
-      <div class="ms-title">🏕 Camp Period</div>
-      <div class="ms-row"><span class="ms-lbl">Start</span><span class="ms-val blue">${fmtFull(c.cs)}</span></div>
-      <div class="ms-row"><span class="ms-lbl">End</span><span class="ms-val blue">${fmtFull(c.ce)}</span></div>
-      ${durRow(campNights)}
-    </div>
-    <div class="modal-section">
-      <div class="ms-title">🏠 Family Stay</div>
-      ${c.fs?`<div class="ms-row"><span class="ms-lbl">Start</span><span class="ms-val">${fmtFull(c.fs)}</span></div><div class="ms-row"><span class="ms-lbl">End</span><span class="ms-val">${fmtFull(c.fe)}</span></div>${durRow(nights(c.fs,c.fe))}`
-      :'<div style="color:var(--muted);font-size:11px;font-style:italic">No family stay information</div>'}
-    </div>
-    ${c.fs2?`<div class="modal-section full">
-      <div class="ms-title">🏠 Second Family Stay</div>
-      <div class="ms-row"><span class="ms-lbl">Start</span><span class="ms-val">${fmtFull(c.fs2)}</span></div>
-      <div class="ms-row"><span class="ms-lbl">End</span><span class="ms-val">${fmtFull(c.fe2)}</span></div>
-      ${durRow(nights(c.fs2,c.fe2))}
-    </div>`:''}
+${periodBlocks}
     <div class="modal-section full" style="background:rgba(255,183,77,0.06);border-color:rgba(255,183,77,0.25);">
       <div class="ms-title" style="color:var(--orange)">✈ Total Presence in Country</div>
       <div class="ms-row"><span class="ms-lbl">Arrival</span><span class="ms-val orange">${fmtFull(c.arrival)}</span></div>

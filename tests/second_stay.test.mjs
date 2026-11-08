@@ -34,6 +34,16 @@ const tot = await pg.evaluate(() => { let bad = 0, n = 0; CAMPS.forEach((c, i) =
   const g = re => { const m = document.getElementById('md-body').innerText.match(re); return m ? +m[1] : NaN; };
   const sum = g(/Camp Period[\s\S]*?Duration\s+(\d+) night/i) + g(/Family Stay\n[\s\S]*?Duration\s+(\d+) night/i), total = g(/Total stay\s+(\d+) night/i); if (sum !== total) bad++; }); return { bad, n }; });
 t.ok(tot.n > 20 && tot.bad === 0, 'for contiguous family stay + camp, total nights = sum of the nights (' + tot.n + ' camps checked, ' + tot.bad + ' differ)');
+// blocs des périodes classés par date (comme dans les listes)
+const blocks = await pg.evaluate(() => { let bad = 0, n = 0; const kinds = h => [...document.querySelectorAll('#md-body .ms-title')].map(e => e.textContent).filter(x => /Camp Period|Family Stay/.test(x)).map(x => /Second/.test(x) ? 'f2' : /Family/.test(x) ? 'f' : 'c');
+  CAMPS.forEach((c, i) => { if (!c.cs) return; n++; showCampDetail(i); const got = kinds().join(','); const want = [{ k: 'f', t: c.fs ? +c.fs : Infinity, o: 0 }, { k: 'c', t: +c.cs, o: 2 }].concat(c.fs2 ? [{ k: 'f2', t: +c.fs2, o: 1 }] : []).sort((a, b) => (a.t === b.t ? 0 : a.t < b.t ? -1 : 1) || a.o - b.o).map(x => x.k).join(','); if (got !== want) bad++; });
+  // camp avant l'accueil : le bloc Camp passe en premier
+  const c = CAMPS.find(c => c.fs && c.cs); const save = [c.fs, c.fe]; c.fs = new Date(+c.ce + 86400000 * 5); c.fe = new Date(+c.fs + 86400000 * 3); showCampDetail(c._idx); const swapped = kinds().join(','); [c.fs, c.fe] = save;
+  const three = CAMPS.find(c => c.fs2); showCampDetail(three._idx); const secs = [...document.querySelectorAll('#md-body > .modal-section')].filter(e => /Camp Period|Family Stay/.test(e.querySelector('.ms-title').textContent));
+  return { bad, n, swapped, fullLast: secs.length === 3 && secs[2].classList.contains('full') && !secs[0].classList.contains('full') && !secs[1].classList.contains('full') }; });
+t.ok(blocks.n > 20 && blocks.bad === 0, 'camp sheet: period blocks in date order for every camp (' + blocks.n + ' checked, ' + blocks.bad + ' differ)');
+t.ok(blocks.swapped === 'c,f', 'camp starting before the family stay: Camp block first (' + blocks.swapped + ')');
+t.ok(blocks.fullLast, 'three period blocks: the third one spans the full width');
 const iInc = RAW.findIndex(c => c.inclusive);
 t.ok(/♿ Inclusion/.test((await sheet(iInc)).tag), 'inclusive camp sheet shows the ♿ Inclusion tag');
 t.ok(!/Inclusion/.test(withOne.tag), 'other camps show no Inclusion tag');
