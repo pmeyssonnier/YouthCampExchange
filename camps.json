@@ -1972,6 +1972,28 @@
     "lat": 65.075,
     "lon": -22.733
    }
+  },
+  {
+   "continent": "Europe",
+   "country": "Norway",
+   "camp_name": "Lions Camp Beitostølen 2027 – Knights of the Light",
+   "inclusive": true,
+   "winter": true,
+   "age_requirements": "18-25",
+   "fee": null,
+   "camp_starts": "07-03-2027",
+   "camp_ends": "14-03-2027",
+   "family_stay_starts": null,
+   "family_stay_ends": null,
+   "detail": {
+    "location": "Beitostølen, Norway",
+    "description": "International adapted winter sports camp organised by Lions Norway with Foreningen Ridderrennet, for young people with a physical or visual disability. Held during RidderWeek: cross-country skiing, biathlon, alpine skiing and snowboarding with adapted supervision, plus other sports and social activities. The highlight is the Ridderrennet, the traditional cross-country ski race created in 1964 by the blind Norwegian skier Erling Stordahl.",
+    "languages": [
+     "English"
+    ],
+    "lat": 61.248,
+    "lon": 8.914
+   }
   }
  ]
 }
