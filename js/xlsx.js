@@ -26,6 +26,10 @@ async function buildZip(entries,mime){ // -> Blob (xlsx par défaut)
   }
   entries=uniq;
   const te=new TextEncoder();
+  // date/heure DOS des fichiers de l'archive : le moment de la génération (heure locale), pas une date fixe
+  const now=new Date();
+  const dosTime=((now.getHours()<<11)|(now.getMinutes()<<5)|(now.getSeconds()>>1))&0xFFFF;
+  const dosDate=((Math.max(0,now.getFullYear()-1980)<<9)|((now.getMonth()+1)<<5)|now.getDate())&0xFFFF;
   const parts=[];const central=[];let offset=0;
   for(const e of entries){
     const nameB=te.encode(e.name);
@@ -36,7 +40,7 @@ async function buildZip(entries,mime){ // -> Blob (xlsx par défaut)
     const lh=new Uint8Array(30+nameB.length);
     const ldv=new DataView(lh.buffer);
     ldv.setUint32(0,0x04034b50,true);ldv.setUint16(4,20,true);ldv.setUint16(6,0,true);
-    ldv.setUint16(8,method,true);ldv.setUint16(10,0,true);ldv.setUint16(12,0x5821,true);
+    ldv.setUint16(8,method,true);ldv.setUint16(10,dosTime,true);ldv.setUint16(12,dosDate,true);
     ldv.setUint32(14,crc,true);ldv.setUint32(18,packed.length,true);ldv.setUint32(22,e.data.length,true);
     ldv.setUint16(26,nameB.length,true);ldv.setUint16(28,0,true);
     lh.set(nameB,30);
@@ -44,7 +48,7 @@ async function buildZip(entries,mime){ // -> Blob (xlsx par défaut)
     const ch=new Uint8Array(46+nameB.length);
     const cdv=new DataView(ch.buffer);
     cdv.setUint32(0,0x02014b50,true);cdv.setUint16(4,20,true);cdv.setUint16(6,20,true);
-    cdv.setUint16(8,0,true);cdv.setUint16(10,method,true);cdv.setUint16(12,0,true);cdv.setUint16(14,0x5821,true);
+    cdv.setUint16(8,0,true);cdv.setUint16(10,method,true);cdv.setUint16(12,dosTime,true);cdv.setUint16(14,dosDate,true);
     cdv.setUint32(16,crc,true);cdv.setUint32(20,packed.length,true);cdv.setUint32(24,e.data.length,true);
     cdv.setUint16(28,nameB.length,true);
     cdv.setUint32(42,offset,true);
