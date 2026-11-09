@@ -22,10 +22,68 @@ function saveDraft(){
     const au={};
     ["G20","G22"].forEach(function(r){const el=document.getElementById("f-"+r);
       if(el&&el.dataset.auto==="1")au[r]=1;});
-    localStorage.setItem(DRAFT_KEY,JSON.stringify({ts:Date.now(),v:v,x:XSTATE,t:t,s:sg,a:au,p:PHOTO.dataUrl?{d:PHOTO.dataUrl,w:PHOTO.w,h:PHOTO.h}:null,cm:COMMIT.agreed?{d:COMMIT.date}:null,pay:(PAY.dataUrl&&PAY.dataUrl.length<2500000)?{d:PAY.dataUrl,n:PAY.name,e:PAY.ext}:null,lt:(LETTER.dataUrl&&LETTER.dataUrl.length<2500000)?{d:LETTER.dataUrl,n:LETTER.name,e:LETTER.ext}:null,idl:IDLATER}));
+    localStorage.setItem(DRAFT_KEY,JSON.stringify({ts:Date.now(),v:v,x:XSTATE,t:t,s:sg,a:au,p:PHOTO.dataUrl?{d:PHOTO.dataUrl,w:PHOTO.w,h:PHOTO.h}:null,cm:COMMIT.agreed?{d:COMMIT.date}:null,pay:(PAY.dataUrl&&PAY.dataUrl.length<2500000)?{d:PAY.dataUrl,n:PAY.name,e:PAY.ext}:null,idl:IDLATER}));
   }catch(e){}
+  saveFile("id",IDDOC);saveFile("letter",LETTER);
+}
+// pièces jointes volumineuses (scan du passeport, lettre) : IndexedDB, car localStorage est limité à ~5 Mo.
+// Même durée de vie que le brouillon (30 jours) ; 🗑 Clear form les efface.
+const FILE_KEYS={id:DRAFT_KEY+":id",letter:DRAFT_KEY+":letter"};
+let FILES_READY=false;
+const FILES_SAVED={id:null,letter:null};
+function filesOp(mode,fn){
+  return new Promise(function(resolve,reject){
+    if(typeof indexedDB==="undefined"){reject(new Error("no indexedDB"));return;}
+    const rq=indexedDB.open("yce_form_files",1);
+    rq.onupgradeneeded=function(){rq.result.createObjectStore("files");};
+    rq.onerror=function(){reject(rq.error);};
+    rq.onsuccess=function(){
+      const db=rq.result,tx=db.transaction("files",mode),out=fn(tx.objectStore("files"));
+      tx.oncomplete=function(){db.close();resolve(out&&out.result);};
+      tx.onerror=tx.onabort=function(){db.close();reject(tx.error);};
+    };
+  });
+}
+function saveFile(kind,obj){
+  if(!FILES_READY||SIGN_MODE)return;
+  const sig=obj.dataUrl?obj.name+"|"+obj.dataUrl.length:"";
+  if(FILES_SAVED[kind]===sig)return;
+  FILES_SAVED[kind]=sig;
+  filesOp("readwrite",function(st){
+    if(obj.dataUrl)st.put({ts:Date.now(),d:obj.dataUrl,n:obj.name,e:obj.ext},FILE_KEYS[kind]);
+    else st.delete(FILE_KEYS[kind]);
+  }).catch(function(){FILES_SAVED[kind]=null;});
+}
+function restoreFiles(hasDraft){
+  const done=function(){FILES_READY=true;};
+  if(SIGN_MODE||typeof indexedDB==="undefined"){done();return;}
+  filesOp("readwrite",function(st){
+    // pièces des autres saisons, ou sans brouillon valide : effacées
+    const rq=st.openCursor();
+    rq.onsuccess=function(){
+      const c=rq.result;if(!c)return;
+      if(!hasDraft||(typeof c.key==="string"&&c.key.indexOf(DRAFT_KEY+":")!==0))c.delete();
+      c.continue();
+    };
+    const g={id:st.get(FILE_KEYS.id),letter:st.get(FILE_KEYS.letter)};
+    return {get result(){return g;}};
+  }).then(function(g){
+    if(!hasDraft)return;
+    [["id",IDDOC,idShow],["letter",LETTER,letterShow]].forEach(function(a){
+      const r=g[a[0]].result;
+      if(!r||!r.d||(r.ts&&Date.now()-r.ts>DRAFT_MAX_DAYS*86400000))return;
+      a[1].dataUrl=r.d;a[1].name=r.n;a[1].ext=r.e;
+      FILES_SAVED[a[0]]=r.n+"|"+r.d.length;
+      a[2]();
+    });
+    upd();
+  }).catch(function(){}).then(done);
 }
 function restoreDraft(){
+  const had=restoreDraftText();
+  restoreFiles(had);
+}
+function restoreDraftText(){
   // brouillons des autres saisons (clé yce_form_draft_<année>) : jamais relus, donc jamais expirés —
   // ils resteraient indéfiniment sur un ordinateur partagé, scan de passeport compris
   try{
@@ -35,11 +93,11 @@ function restoreDraft(){
   }catch(e){}
   try{
     const d=JSON.parse(localStorage.getItem(DRAFT_KEY)||"null");
-    if(!d)return;
+    if(!d)return false;
     if(d.ts&&Date.now()-d.ts>DRAFT_MAX_DAYS*86400000){
       localStorage.removeItem(DRAFT_KEY);
       DRAFT_INFO="Your previous draft was older than "+DRAFT_MAX_DAYS+" days and has been erased from this browser.";
-      return;
+      return false;
     }
     DRAFT_INFO="Draft restored from this browser"+(d.ts?" (last saved "+new Date(d.ts).toLocaleDateString("en-GB")+")":"")
       +". On a shared computer, click 🗑 Clear form when you have finished.";
@@ -70,12 +128,16 @@ function restoreDraft(){
       img.onload=function(){st.ctx.drawImage(img,0,0);st.ink=true;upd();};
       img.src=d.s[k];
     });
+    return true;
   }catch(e){}
+  return false;
 }
 function clearForm(){
   if(!confirm("Erase all entered data and restart with a blank form?"))return;
   try{localStorage.removeItem(DRAFT_KEY);}catch(e){}
-  location.reload();
+  FILES_READY=false;
+  const go=function(){location.reload();};
+  filesOp("readwrite",function(st){st.clear();}).then(go,go);
 }
 
 // boutons Yes/No (valeur stockée dans un input caché : draft, sync et export inchangés)

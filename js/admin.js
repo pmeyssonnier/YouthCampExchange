@@ -175,7 +175,7 @@ function upsertConst(src,name,value,comment){
 function updPaths(){
   const y=document.getElementById("in-year").value||YEAR;
   document.getElementById("p-af").textContent="documents/Application_form_"+y+"_MD"+MD+".xlsx";
-  document.getElementById("p-letter").textContent="documents/Letter_to_Host_Family_"+y+".docx";
+  document.getElementById("p-letter").textContent="documents/Letter_to_Host_Family.docx";
 }
 
 // -------------------- galerie de la page d'accueil --------------------
@@ -306,7 +306,7 @@ function uploadPick(inp,kind){
   const y=document.getElementById("in-year").value||YEAR;
   const path="documents/"+{af:"Application_form_"+y+"_MD"+MD+".xlsx",
               commit:"Commitment to Reciprocity.docx",
-              letter:"Letter_to_Host_Family_"+y+".docx",
+              letter:"Letter_to_Host_Family.docx",
               tpl:"commit_template.docx"}[kind];
   if(!confirm("Replace "+path+" on the site with "+f.name+" ?")){inp.value="";return;}
   const fn=document.getElementById("u-"+kind);

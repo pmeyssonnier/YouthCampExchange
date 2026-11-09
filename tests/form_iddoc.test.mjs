@@ -36,10 +36,10 @@ t.ok(/\/yce_vault\.html$/.test(vp.url()), 'vault button opens the vault in a new
 // brouillon : jamais la pièce d'identité
 await pg.waitForTimeout(500);
 const draft = await pg.evaluate(() => localStorage.getItem(DRAFT_KEY) || '');
-t.ok(draft.includes('Doe') && !draft.includes('test passport') && !/"id"\s*:/.test(draft), 'ID scan not stored in the browser draft');
+t.ok(draft.includes('Doe') && !draft.includes('test passport') && !/"id"\s*:/.test(draft), 'ID scan not stored in the localStorage draft (kept apart, in IndexedDB)');
 await pg.reload(); await pg.waitForTimeout(800);
 t.ok((await pg.inputValue('#f-F16')) === 'Doe', 'draft restored after reload');
-t.ok(/✖ Passport or ID card scan/.test(await pg.textContent('#att-check')), 'ID scan must be added again after reload');
+t.ok(/✔ Passport or ID card scan/.test(await pg.textContent('#att-check')), 'ID scan is kept (browser storage, 30 days) after reload');
 
 // tracker : la pièce est reconnue et compte pour un dossier complet
 fs.writeFileSync(FIX + '/dossier_with_id.zip', buf);

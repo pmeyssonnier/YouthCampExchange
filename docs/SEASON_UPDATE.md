@@ -52,7 +52,7 @@ mapped before, add its coordinates in `js/site-map.js` (`COUNTRY_COORDS` +
    on the public site. One place, nothing else to touch.
 3. Update `documents/Commitment to Reciprocity.docx`, `documents/commit_template.docx`
    (keep the `§CAND§ / §DATE§ / [BODY] / [SIG1-3]` markers) and
-   `documents/Letter_to_Host_Family_20XX.docx` if their official text changed.
+   `documents/Letter_to_Host_Family.docx` if their official text changed.
 
 ## 4. Update the season year
 
@@ -71,8 +71,7 @@ drafts and tracker rows.
 
 Two things stay manual because they are real file names or editorial text:
 the download links and announcement banner in `index.html` (checked in step 3),
-and the template files' own names (`documents/Letter_to_Host_Family_20XX.docx` must be
-renamed to match the new year — the filler links to it by `YEAR`). A final
+and nothing else in the file names (`documents/Letter_to_Host_Family.docx` has no year, so it is kept as is). A final
 `grep -rn "20XX-1"` (previous year) across the repo catches anything left.
 
 If a field's cell reference changed in the new official form (rare), fix it in
