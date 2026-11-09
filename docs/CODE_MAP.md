@@ -1,7 +1,7 @@
 # Code map — Lions YCE
 
 > **Generated file — do not edit by hand.** Rebuilt by `python3 tools/build_codemap.py` (run automatically on every push to `main`).
-> Commit `b982870`, 2026-11-09 00:10 UTC. Interactive version: [`code_map.html`](code_map.html).
+> Commit `ae60c07`, 2026-11-09 00:21 UTC. Interactive version: [`code_map.html`](code_map.html).
 
 ## Pages
 
@@ -36,7 +36,7 @@
 | `js/docx.js` | 174 | 9.5 KB | Commitment: text, validation, signed Word generation |
 | `js/signatures.js` | 141 | 7.5 KB | signature pads + pasting signatures into the workbook |
 | `js/attachments.js` | 147 | 7.0 KB | pass photo & payment proof |
-| `js/storage.js` | 82 | 3.9 KB | local draft persistence |
+| `js/storage.js` | 144 | 6.4 KB | local draft persistence |
 | `js/club-signing.js` | 84 | 4.7 KB | ?sign=club remote counter-signing |
 | `js/sections.js` | 164 | 10.5 KB | declarative form definition (SECTIONS, camps list, mode flags) |
 | `js/country.js` | 87 | 4.0 KB | default country, dial codes, phone normalisation |
@@ -53,7 +53,7 @@
 
 **`js/attachments.js`** — `photoPick` (photo upload + downscale 800px), `photoShow` (preview), `photoClear` (remove), `readDoc`, `docShow`, `payPick` (proof upload (PDF as-is, images 1600px)), `payShow` (preview), `payClear` (remove), `idRequirement`, `idLabel`, `idPick`, `idShow`, `idClear`, `idLaterToggle`, `letterPick`, `letterShow`, `letterClear`
 
-**`js/storage.js`** — `saveDraft` (persist everything (debounced)), `restoreDraft` (restore everything), `clearForm` (wipe + reload)
+**`js/storage.js`** — `saveDraft` (persist everything (debounced)), `filesOp`, `saveFile`, `restoreFiles`, `restoreDraft` (restore everything), `restoreDraftText`, `clearForm` (wipe + reload)
 
 **`js/club-signing.js`** — `loadDossier`, `commitPreview`, `signCommitmentFile` (insert club signature at bookmark)
 
@@ -107,7 +107,7 @@
 | `camps_data.js` | 72.2 KB | season data: SEASON + YEAR + RAW camps — common to every deployment |
 | `districts_data.js` | 5.8 KB | per-deployment data: SITE_REPO + DISTRICTS coordinators |
 | `js/version.js` | 0.5 KB | site version number (VERSION), shown on every page — bumped by each pull request |
-| `CHANGELOG.md` | 32.4 KB | what changed in each version |
+| `CHANGELOG.md` | 33.1 KB | what changed in each version |
 | `yce_form_filler.html` | 12.3 KB | filler HTML shell + styles |
 | `yce_tracker.html` | 9.0 KB | tracker HTML shell + styles |
 | `yce_admin.html` | 24.5 KB | administration HTML shell: tabs Site & season / Camps / Documents |
@@ -148,7 +148,7 @@
 | `js/render.js` | `js/attachments.js` | esc, upd |
 | `js/docx.js` | `js/storage.js` | COMMIT, commitShow |
 | `js/signatures.js` | `js/storage.js` | SIGS |
-| `js/attachments.js` | `js/storage.js` | IDLATER, LETTER, PAY, PHOTO, idShow, letterShow, payShow, photoShow |
+| `js/attachments.js` | `js/storage.js` | IDDOC, IDLATER, LETTER, PAY, PHOTO, idShow, letterShow, payShow, photoShow |
 | `js/sections.js` | `js/storage.js` | SECTIONS, SIGN_MODE |
 | `js/render.js` | `js/storage.js` | XSTATE, depShow, upd |
 | `js/zip.js` | `js/club-signing.js` | unzip, zipCheckSize |
