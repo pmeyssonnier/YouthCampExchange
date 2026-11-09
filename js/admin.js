@@ -18,10 +18,20 @@ const LIM_FIELDS=[
   ["pdf","minKb","PDF — minimum weight","KB"],["pdf","maxKb","PDF — maximum weight (refused above)","KB"]];
 function limShow(u){
   const base=uploadLimits(),src=u||{};
-  document.getElementById("lim-body").innerHTML=LIM_FIELDS.map(function(f){
-    const v=(src[f[0]]&&+src[f[0]][f[1]]>0)?+src[f[0]][f[1]]:base[f[0]][f[1]];
-    return '<div class="fld w3"><label class="flbl">'+f[2]+' ('+f[3]+')</label><input type="number" min="1" id="lim-'+f[0]+'-'+f[1]+'" value="'+v+'"></div>';
-  }).join("");
+  const cols=["minPx","minKb","maxKb","maxPx"],heads=["Min px","Min KB","Max KB","Reduce to px"];
+  const rows=[["photo","Photo",{minPx:"minSidePx"}],["id","ID scan",{minPx:"minLongPx"}],["pdf","PDF",{}]];
+  let h='<span></span>'+heads.map(function(t){return '<span class="lh">'+t+'</span>';}).join("");
+  rows.forEach(function(r){
+    h+='<span class="lr">'+r[1]+'</span>';
+    cols.forEach(function(c){
+      const key=r[2][c]||c;
+      if(!LIM_FIELDS.some(function(f){return f[0]===r[0]&&f[1]===key;})){h+='<span></span>';return;}
+      const v=(src[r[0]]&&+src[r[0]][key]>0)?+src[r[0]][key]:base[r[0]][key];
+      const f=LIM_FIELDS.filter(function(f){return f[0]===r[0]&&f[1]===key;})[0];
+      h+='<input type="number" min="1" inputmode="numeric" id="lim-'+r[0]+'-'+key+'" value="'+v+'" aria-label="'+f[2]+' ('+f[3]+')" title="'+f[2]+' ('+f[3]+')">';
+    });
+  });
+  document.getElementById("lim-body").innerHTML=h;
 }
 function limValues(){
   const o={photo:{},id:{},pdf:{}};

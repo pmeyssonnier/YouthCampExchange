@@ -5,6 +5,10 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.31.1 — 2026-11-09
+
+- Admin: the "Attachment limits" section is now a compact table (one line per attachment type, four values per line) instead of ten stacked fields, so it fits a phone screen.
+
 ## 1.31.0 — 2026-11-09
 
 - Form filler: attachments are now checked when added. A photo, ID / passport scan or PDF that is **too small or too light** is refused with a clear message (photo: shorter side under 400 px or under 20 KB; scan: longer side under 1000 px or under 60 KB; PDF under 20 KB). Images that are **too heavy are reduced automatically** (size, then JPEG quality) to 1 MB for the photo and 1.5 MB for scans and the payment proof, and the candidate is told ("reduced from 6.2 MB to 0.9 MB"). A PDF cannot be reduced in the browser, so it is refused above 5 MB.
