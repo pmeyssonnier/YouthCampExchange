@@ -9,6 +9,32 @@ let TEAM_W={national:[],outgoing:[]}; // équipe nationale en cours d'édition (
 let TEAM_EDIT=null;  // {g:"national"|"outgoing", i:index, -1 = nouveau membre}
 let MD_W=MD;         // numéro du district multiple en cours d'édition (const MD de districts_data.js)
 const PAY_KEYS=["amount","iban","bic","beneficiary","communication"];
+// seuils des pièces jointes : [groupe, clé, libellé, unité]
+const LIM_FIELDS=[
+  ["photo","minSidePx","Photo — minimum shorter side","px"],["photo","minKb","Photo — minimum weight","KB"],
+  ["photo","maxKb","Photo — maximum weight (reduced above)","KB"],["photo","maxPx","Photo — maximum size after reduction","px"],
+  ["id","minLongPx","ID / passport scan — minimum longer side","px"],["id","minKb","ID / passport scan — minimum weight","KB"],
+  ["id","maxKb","ID / passport scan — maximum weight (reduced above)","KB"],["id","maxPx","ID / passport scan — maximum size after reduction","px"],
+  ["pdf","minKb","PDF — minimum weight","KB"],["pdf","maxKb","PDF — maximum weight (refused above)","KB"]];
+function limShow(u){
+  const base=uploadLimits(),src=u||{};
+  document.getElementById("lim-body").innerHTML=LIM_FIELDS.map(function(f){
+    const v=(src[f[0]]&&+src[f[0]][f[1]]>0)?+src[f[0]][f[1]]:base[f[0]][f[1]];
+    return '<div class="fld w3"><label class="flbl">'+f[2]+' ('+f[3]+')</label><input type="number" min="1" id="lim-'+f[0]+'-'+f[1]+'" value="'+v+'"></div>';
+  }).join("");
+}
+function limValues(){
+  const o={photo:{},id:{},pdf:{}};
+  LIM_FIELDS.forEach(function(f){
+    const v=Math.round(+document.getElementById("lim-"+f[0]+"-"+f[1]).value);
+    if(!(v>0))throw new Error("attachment limits: “"+f[2]+"” must be a positive number");
+    o[f[0]][f[1]]=v;
+  });
+  if(o.photo.minKb>=o.photo.maxKb||o.id.minKb>=o.id.maxKb||o.pdf.minKb>=o.pdf.maxKb)throw new Error("attachment limits: a minimum weight must be lower than the maximum weight");
+  if(o.photo.minSidePx>o.photo.maxPx)throw new Error("attachment limits: the photo minimum side is larger than its maximum size");
+  if(o.id.minLongPx>o.id.maxPx)throw new Error("attachment limits: the scan minimum size is larger than its maximum size");
+  return o;
+}
 
 // -------------------- formulaire --------------------
 // d = données à afficher ; par défaut celles chargées avec la page (peut-être une copie en cache :
@@ -16,7 +42,7 @@ const PAY_KEYS=["amount","iban","bic","beneficiary","communication"];
 function fillForm(d){
   d=d||{season:SEASON,year:YEAR,districts:DISTRICTS,camps:RAW.length,
     announce:(typeof SITE!=="undefined"&&SITE.announce)||"",gallery:(typeof GALLERY!=="undefined")?GALLERY:[],
-    team:(typeof TEAM!=="undefined")?TEAM:null,payment:(typeof PAYMENT!=="undefined")?PAYMENT:null,md:MD};
+    team:(typeof TEAM!=="undefined")?TEAM:null,payment:(typeof PAYMENT!=="undefined")?PAYMENT:null,upload:(typeof UPLOAD_LIMITS!=="undefined")?UPLOAD_LIMITS:null,md:MD};
   document.getElementById("in-season").value=d.season;
   document.getElementById("in-year").value=d.year;
   MD_W=d.md||MD;document.getElementById("in-md").value=MD_W;mdShow();
@@ -26,6 +52,7 @@ function fillForm(d){
   TEAM_W={national:(t.national||[]).map(function(m){return Object.assign({},m);}),outgoing:(t.outgoing||[]).map(function(m){return Object.assign({},m);})};
   TEAM_EDIT=null;teamShow();
   PAY_KEYS.forEach(function(k){document.getElementById("pay-"+k).value=(d.payment&&d.payment[k])||"";});
+  limShow(d.upload);
   document.getElementById("camps-note").textContent=d.camps+" camps currently on the site (season "+d.season+")";
   document.getElementById("in-announce").value=d.announce||"";
   GAL=d.gallery.slice();
@@ -288,6 +315,7 @@ async function saveData(){
     const galU=GAL.filter(function(g,i){return GAL.findIndex(function(x){return x.src===g.src;})===i;}); // jamais deux fois la même photo
     if(/const GALLERY = \[[\s\S]*?\];/.test(srcD))srcD=srcD.replace(/const GALLERY = \[[\s\S]*?\];/,function(){return "const GALLERY = "+JSON.stringify(galU)+";";});
     srcD=upsertConst(srcD,"TEAM",TEAM_W,"Équipe nationale affichée sur la page d'accueil — gérée depuis la page d'administration.");
+    srcD=upsertConst(srcD,"UPLOAD_LIMITS",limValues(),"Contrôles de poids/taille des pièces jointes du formulaire (scan, photo, PDF) — gérés depuis la page d'administration.");
     srcD=upsertConst(srcD,"PAYMENT",paymentValues(),"Frais de dossier et coordonnées bancaires — gérés depuis la page d'administration.");
     const changes=[];
     if(src!==b64ToUtf8(cur.content))changes.push({path:"camps_data.js",b64:utf8ToB64(src),sha:cur.sha});
@@ -345,7 +373,7 @@ function parseSiteData(campsSrc,distSrc){
   if(!raw||!gallery||!Object.keys(districts).length||str(campsSrc,"SEASON")===null)throw new Error("unexpected file format");
   const line=function(name){const m=new RegExp("^const "+name+" = (.*);$","m").exec(distSrc);return m?JSON.parse(m[1]):null;};
   return {season:str(campsSrc,"SEASON"),year:str(campsSrc,"YEAR"),camps:raw.length,
-    districts:districts,md:str(distSrc,"MD"),announce:ann?JSON.parse(ann[1]):"",gallery:gallery,team:line("TEAM"),payment:line("PAYMENT")};
+    districts:districts,md:str(distSrc,"MD"),announce:ann?JSON.parse(ann[1]):"",gallery:gallery,team:line("TEAM"),payment:line("PAYMENT"),upload:line("UPLOAD_LIMITS")};
 }
 ON_CONNECT.push(async function(){
   try{

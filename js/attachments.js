@@ -1,22 +1,51 @@
 // attachments.js — photo d'identité, preuve de paiement, pièce d'identité, lettre
 // Chargé par yce_form_filler.html ; scripts classiques partageant la portée globale.
 "use strict";
+// -------------------- contrôles de taille des pièces jointes --------------------
+// seuils : voir js/upload-limits.js (réglables depuis l'administration)
+function fmtSize(b){return b>=1048576?(b/1048576).toFixed(1)+" MB":Math.max(1,Math.round(b/1024))+" KB";}
+function dataUrlBytes(u){const i=u.indexOf(",");return Math.round((u.length-i-1)*3/4);}
+// réduit l'image (dimensions puis qualité JPEG) jusqu'à passer sous maxKb ; -> {dataUrl,w,h}
+function shrinkImage(img,maxPx,maxKb){
+  let k=Math.min(1,maxPx/Math.max(img.width,img.height));
+  for(let pass=0;pass<8;pass++){
+    const w=Math.max(1,Math.round(img.width*k)),h=Math.max(1,Math.round(img.height*k));
+    const cv=document.createElement("canvas");cv.width=w;cv.height=h;
+    cv.getContext("2d").drawImage(img,0,0,w,h);
+    let q=0.85,url=cv.toDataURL("image/jpeg",q);
+    while(dataUrlBytes(url)>maxKb*1024&&q>0.45){q-=0.1;url=cv.toDataURL("image/jpeg",q);}
+    if(dataUrlBytes(url)<=maxKb*1024||pass===7)return {dataUrl:url,w:w,h:h};
+    k*=0.8;
+  }
+}
+// message de refus, ou "" si le fichier convient
+function tooSmallMsg(file,img,lim,label,kind){
+  const kb=file.size/1024;
+  if(kind==="photo"&&Math.min(img.width,img.height)<lim.minSidePx)
+    return label+" too small ("+img.width+"×"+img.height+" px): the shorter side must be at least "+lim.minSidePx+" px.";
+  if(kind==="id"&&Math.max(img.width,img.height)<lim.minLongPx)
+    return label+" too small ("+img.width+"×"+img.height+" px): the longer side must be at least "+lim.minLongPx+" px — please scan or photograph it again at a higher quality.";
+  if(lim.minKb&&kb<lim.minKb)return label+" too light ("+fmtSize(file.size)+"): at least "+lim.minKb+" KB expected — the file looks too compressed or incomplete.";
+  return "";
+}
+function reducedNote(label,before,after){return before>after*1.15?"ℹ "+label+" reduced from "+fmtSize(before)+" to "+fmtSize(after)+".":"";}
+
 // -------------------- photo d'identité --------------------
 const PHOTO={dataUrl:null,w:0,h:0};
 function photoPick(inp){
   const file=inp.files[0];if(!file)return;
+  const lim=uploadLimits().photo;
   const r=new FileReader();
   r.onload=function(){
     const img=new Image();
+    img.onerror=function(){setStatus("⚠ Photo: this file is not a readable image.",true);};
     img.onload=function(){
-      const MAX=800;
-      let w=img.width,h=img.height;
-      const k=Math.min(1,MAX/Math.max(w,h));
-      w=Math.round(w*k);h=Math.round(h*k);
-      const cv=document.createElement("canvas");cv.width=w;cv.height=h;
-      cv.getContext("2d").drawImage(img,0,0,w,h);
-      PHOTO.dataUrl=cv.toDataURL("image/jpeg",0.85);PHOTO.w=w;PHOTO.h=h;
+      const bad=tooSmallMsg(file,img,lim,"Photo","photo");
+      if(bad){setStatus("⚠ "+bad,true);return;}
+      const o=shrinkImage(img,lim.maxPx,lim.maxKb);
+      PHOTO.dataUrl=o.dataUrl;PHOTO.w=o.w;PHOTO.h=o.h;
       photoShow();upd();
+      const n=reducedNote("Photo",file.size,dataUrlBytes(o.dataUrl));if(n)setStatus(n,false);
     };
     img.src=r.result;
   };
@@ -32,14 +61,19 @@ function photoShow(){
 function photoClear(e){e.stopPropagation();PHOTO.dataUrl=null;PHOTO.w=PHOTO.h=0;photoShow();upd();}
 
 // -------------------- pièces PDF ou image (paiement, pièce d'identité) --------------------
-// PDF tel quel ; image réduite à 1600 px en JPEG
-function readDoc(inp,obj,showFn,label){
+// PDF tel quel (poids borné) ; image réduite en JPEG selon UPLOAD_LIMITS
+function readDoc(inp,obj,showFn,label,kind){ // kind "id" : contrôle de résolution minimale ; sinon seulement la réduction
   const file=inp.files[0];if(!file)return;
-  const finish=function(dataUrl,ext){
+  const L=uploadLimits(),lim=L.id,pl=L.pdf;
+  const finish=function(dataUrl,ext,note){
     obj.dataUrl=dataUrl;obj.name=file.name;obj.ext=ext;
     showFn();upd();
+    if(note)setStatus(note,false);
   };
-  if(file.type==="application/pdf"){
+  const isPdf=file.type==="application/pdf"||/\.pdf$/i.test(file.name);
+  if(isPdf){
+    if(file.size<pl.minKb*1024){setStatus("⚠ "+label+" too light ("+fmtSize(file.size)+"): a PDF of at least "+pl.minKb+" KB is expected.",true);inp.value="";return;}
+    if(file.size>pl.maxKb*1024){setStatus("⚠ "+label+" too big ("+fmtSize(file.size)+"): the maximum for a PDF is "+fmtSize(pl.maxKb*1024)+". Scan it again at a lower resolution, or as a JPG (the site reduces images automatically).",true);inp.value="";return;}
     const r=new FileReader();
     r.onload=function(){finish(r.result,"pdf");};
     r.readAsDataURL(file);
@@ -47,14 +81,12 @@ function readDoc(inp,obj,showFn,label){
     const r=new FileReader();
     r.onload=function(){
       const img=new Image();
+      img.onerror=function(){setStatus("⚠ "+label+": this file is not a readable image.",true);};
       img.onload=function(){
-        const MAX=1600;
-        let w=img.width,h=img.height;
-        const k=Math.min(1,MAX/Math.max(w,h));
-        w=Math.round(w*k);h=Math.round(h*k);
-        const cv=document.createElement("canvas");cv.width=w;cv.height=h;
-        cv.getContext("2d").drawImage(img,0,0,w,h);
-        finish(cv.toDataURL("image/jpeg",0.85),"jpg");
+        const bad=kind==="id"?tooSmallMsg(file,img,lim,label,"id"):"";
+        if(bad){setStatus("⚠ "+bad,true);return;}
+        const o=shrinkImage(img,lim.maxPx,lim.maxKb);
+        finish(o.dataUrl,"jpg",reducedNote(label,file.size,dataUrlBytes(o.dataUrl)));
       };
       img.src=r.result;
     };
@@ -108,7 +140,7 @@ function idLabel(){
   const r=idRequirement();
   return r==="passport"?"Passport scan":r==="idcard"?"ID card (or passport) scan":"Passport or ID card scan";
 }
-function idPick(inp){readDoc(inp,IDDOC,idShow,"ID document");}
+function idPick(inp){readDoc(inp,IDDOC,idShow,"ID document","id");}
 function idShow(){
   const r=idRequirement();
   docShow("id",IDDOC,"🛂 Click to add the "+(r==="passport"?"passport scan":r==="idcard"?"ID card or passport scan":"passport or ID card scan")

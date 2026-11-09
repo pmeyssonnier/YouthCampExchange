@@ -10,7 +10,7 @@ const ctx = await br.newContext({ acceptDownloads: true });
 const pg = await ctx.newPage(); const errs = [];
 pg.on('pageerror', e => errs.push(e.message));
 const B = 'http://localhost:8880/';
-const pdf = { name: 'my-passport.pdf', mimeType: 'application/pdf', buffer: Buffer.from('%PDF-1.4\n% test passport\n%%EOF') };
+const pdf = { name: 'my-passport.pdf', mimeType: 'application/pdf', buffer: Buffer.concat([Buffer.from('%PDF-1.4\n% test passport\n'), Buffer.alloc(30000, 32), Buffer.from('\n%%EOF')]) };
 
 await pg.goto(B + 'yce_form_filler.html'); await pg.evaluate(() => localStorage.clear());
 await pg.goto(B + 'yce_form_filler.html'); await pg.waitForTimeout(700);

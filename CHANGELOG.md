@@ -5,6 +5,12 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.31.0 — 2026-11-09
+
+- Form filler: attachments are now checked when added. A photo, ID / passport scan or PDF that is **too small or too light** is refused with a clear message (photo: shorter side under 400 px or under 20 KB; scan: longer side under 1000 px or under 60 KB; PDF under 20 KB). Images that are **too heavy are reduced automatically** (size, then JPEG quality) to 1 MB for the photo and 1.5 MB for scans and the payment proof, and the candidate is told ("reduced from 6.2 MB to 0.9 MB"). A PDF cannot be reduced in the browser, so it is refused above 5 MB.
+- Admin, "Site & season" tab: new "Attachment limits" section to change all these thresholds (saved as `UPLOAD_LIMITS` in `districts_data.js` with "Save the data").
+- Generated application files (ZIP, Excel): the files inside now carry the date and time they were generated, instead of a fixed "1 January 2024".
+
 ## 1.30.0 — 2026-11-08
 
 - Form filler: the passport / ID card scan and the host-family letter now stay attached after a page refresh. They are kept in this browser only (IndexedDB), for 30 days like the rest of the draft, and are erased by "Clear form" or when the draft expires. Previously the scan was deliberately never kept.
