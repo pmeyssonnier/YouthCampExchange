@@ -1,7 +1,7 @@
 # Code map — Lions YCE
 
 > **Generated file — do not edit by hand.** Rebuilt by `python3 tools/build_codemap.py` (run automatically on every push to `main`).
-> Commit `59d527b`, 2026-11-09 00:48 UTC. Interactive version: [`code_map.html`](code_map.html).
+> Commit `29cb49a`, 2026-11-09 08:16 UTC. Interactive version: [`code_map.html`](code_map.html).
 
 ## Pages
 
@@ -107,13 +107,13 @@
 | `camps_data.js` | 72.2 KB | season data: SEASON + YEAR + RAW camps — common to every deployment |
 | `districts_data.js` | 6.1 KB | per-deployment data: SITE_REPO + DISTRICTS coordinators |
 | `js/version.js` | 0.5 KB | site version number (VERSION), shown on every page — bumped by each pull request |
-| `CHANGELOG.md` | 34.1 KB | what changed in each version |
+| `CHANGELOG.md` | 34.3 KB | what changed in each version |
 | `yce_form_filler.html` | 12.4 KB | filler HTML shell + styles |
 | `yce_tracker.html` | 9.0 KB | tracker HTML shell + styles |
-| `yce_admin.html` | 25.2 KB | administration HTML shell: tabs Site & season / Camps / Documents |
+| `yce_admin.html` | 25.8 KB | administration HTML shell: tabs Site & season / Camps / Documents |
 | `yce_camps.html` | 1.0 KB | old camp manager address — redirects to yce_admin.html#camps |
 | `js/admin-core.js` | 13.2 KB | shared admin plumbing (token, passphrase, GitHub API, connect hooks) |
-| `js/admin.js` | 25.5 KB | admin Site & Documents tabs: season, coordinators, home page, gallery, uploads |
+| `js/admin.js` | 26.1 KB | admin Site & Documents tabs: season, coordinators, home page, gallery, uploads |
 | `js/camps-manager.js` | 38.5 KB | admin Camps tab: directory import, editing, backups, archive |
 | `js/admin-tabs.js` | 1.2 KB | admin tab switching (#site, #camps, #docs) |
 | `js/toolnav.js` | 1.3 KB | tool menu under the header of every tool page |
