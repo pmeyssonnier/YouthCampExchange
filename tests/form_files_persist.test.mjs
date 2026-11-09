@@ -61,6 +61,15 @@ t.ok(fs.existsSync(new URL('../' + href, import.meta.url)), 'and that file exist
 t.ok(!fs.readdirSync(new URL('../documents/', import.meta.url)).some(f => /^Letter_to_Host_Family_\d{4}/.test(f)), 'no per-year copy is left in documents/');
 const idx = fs.readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 t.ok(!/Letter_to_Host_Family_\d{4}\.docx/.test(idx) && idx.includes('documents/Letter_to_Host_Family.docx'), 'the home page links to the same file');
+
+// dates of the files inside a generated archive = generation time, not a fixed 2024 date
+const zd = await pg.evaluate(async () => {
+  const blob = await buildZip([{ name: 'a.txt', data: new TextEncoder().encode('hello hello hello') }]);
+  const dv = new DataView(await blob.arrayBuffer());
+  const d = dv.getUint16(12, true), tm = dv.getUint16(10, true), n = new Date();
+  return { y: (d >> 9) + 1980, m: (d >> 5) & 15, day: d & 31, h: tm >> 11, now: [n.getFullYear(), n.getMonth() + 1, n.getDate()] };
+});
+t.ok(zd.y === zd.now[0] && zd.m === zd.now[1] && zd.day === zd.now[2], 'files in a generated archive carry today\'s date: ' + zd.y + '-' + zd.m + '-' + zd.day);
 t.ok(!errs.length, 'no page error' + (errs.length ? ': ' + errs[0] : ''));
 await br.close(); srv.close();
 process.exit(t.done() ? 1 : 0);

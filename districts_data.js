@@ -47,6 +47,9 @@ const TEAM = {"national":[{"name":"Stijn Renier","role":"President · Incoming",
 // Frais de dossier et coordonnées bancaires affichés sur la page d'accueil — gérés depuis la page d'administration.
 const PAYMENT = {"amount":"€125","iban":"BE62 3100 7424 1361","bic":"BBRUBEBB","beneficiary":"Lions Youth Camp & Exchange","communication":"Name · Destination · District"};
 
+// Contrôles de poids/taille des pièces jointes du formulaire (scan, photo, PDF) — gérés depuis la page d'administration.
+const UPLOAD_LIMITS = {"photo":{"minSidePx":400,"minKb":20,"maxKb":1024,"maxPx":800},"id":{"minLongPx":1000,"minKb":60,"maxKb":1536,"maxPx":1600},"pdf":{"minKb":20,"maxKb":5120}};
+
 // Galerie photos animée de la page d'accueil — gérée depuis la page d'administration.
 // Chaque entrée : {"src": "assets/gallery/….jpg", "caption": "…"}. Vide = section masquée.
 const GALLERY = [{"src":"assets/gallery/20190726_184657.jpg","caption":""},{"src":"assets/gallery/20190726_184627.jpg","caption":""},{"src":"assets/gallery/20190726_191740.jpg","caption":""},{"src":"assets/gallery/20190726_201436.jpg","caption":""},{"src":"assets/gallery/20190726_202353.jpg","caption":""},{"src":"assets/gallery/20190726_202736.jpg","caption":""},{"src":"assets/gallery/20190726_203022.jpg","caption":""},{"src":"assets/gallery/20190726_203949.jpg","caption":""},{"src":"assets/gallery/20190726_203952.jpg","caption":""}];
