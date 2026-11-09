@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lions YCE — Administration — MD 112 Belgium</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
-<link rel="stylesheet" href="css/tools.css?v=1.31.0.04dc00f9">
+<link rel="stylesheet" href="css/tools.css?v=1.31.1.04dc00f9">
 <style id="noframe">html{display:none!important}</style>
-<script src="js/noframe.js?v=1.31.0.85617a56"></script>
+<script src="js/noframe.js?v=1.31.1.85617a56"></script>
 <meta name="robots" content="noindex">
 <script>try{if(localStorage.getItem('yce-theme')==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}</script>
 <style>
@@ -21,6 +21,11 @@ main{max-width:1100px;margin:0 auto;padding:20px 16px 60px;}
 @media(max-width:700px){.w2,.w3,.w4{grid-column:span 6;}.w1{grid-column:span 3;}}
 input,select,textarea{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:8px 11px;color:var(--text);font-size:13px;font-family:inherit;outline:none;width:100%;}
 input:focus{border-color:var(--gold);}
+.lim-grid{grid-column:span 6;display:grid;grid-template-columns:auto repeat(4,minmax(0,1fr));gap:6px 8px;align-items:center;}
+.lim-grid .lh{font-size:10px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);text-align:center;line-height:1.25;}
+.lim-grid .lr{font-size:12.5px;font-weight:700;color:var(--text);}
+.lim-grid input{padding:7px 4px;text-align:center;-moz-appearance:textfield;}
+.lim-grid input::-webkit-outer-spin-button,.lim-grid input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
 .hint{font-size:10.5px;color:var(--muted);line-height:1.5;}
 .btn{background:var(--gold);color:#0d1827;border:none;border-radius:8px;padding:11px 22px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;}
 .btn:hover{background:var(--gold2);}
@@ -204,8 +209,8 @@ tr:hover td{background:var(--hover);}
 
   <div class="section">
     <div class="sec-head"><span class="sec-title">Attachment limits</span><span class="sec-note">checked in the form filler when a candidate adds a file — published with “Save the data”</span></div>
-    <div class="sec-body" id="lim-body"></div>
-    <div class="sec-body"><div class="fld w6"><span class="hint">Too light or too small: the file is <b>refused</b> with a message. Too big: images are <b>reduced automatically</b> (size, then JPEG quality) to the maximum weight; a PDF cannot be reduced in the browser, so it is refused above its maximum. Images are never enlarged.</span></div></div>
+    <div class="sec-body"><div class="lim-grid" id="lim-body"></div></div>
+    <div class="sec-body"><div class="fld w6"><span class="hint">Photo: minimum = <i>shorter</i> side; ID scan: minimum = <i>longer</i> side. Too light or too small: the file is <b>refused</b> with a message. Too big: images are <b>reduced automatically</b> (size, then JPEG quality) to the maximum weight; a PDF cannot be reduced in the browser, so it is refused above its maximum. Images are never enlarged.</span></div></div>
   </div>
 
   <div class="section">
@@ -315,18 +320,18 @@ tr:hover td{background:var(--hover);}
     <div class="sec-body"><div class="fld w6" id="log"></div></div>
   </div>
 </main>
-<script src="js/version.js?v=1.31.0.dfc71933"></script>
-<script src="js/toolnav.js?v=1.31.0.540a0f90"></script>
-<script src="js/theme.js?v=1.31.0.8bd1d199"></script>
-<script src="camps_data.js?v=1.31.0.71bc294b"></script>
-<script src="districts_data.js?v=1.31.0.4fab46df"></script>
-<script src="js/zip.js?v=1.31.0.912def0f"></script>
-<script src="js/xlsx.js?v=1.31.0.cc885944"></script>
-<script src="js/admin-core.js?v=1.31.0.d83dfc63"></script>
-<script src="js/clean-html.js?v=1.31.0.814230e0"></script>
-<script src="js/upload-limits.js?v=1.31.0.e69ad089"></script>
-<script src="js/admin.js?v=1.31.0.8f90d5e7"></script>
-<script src="js/camps-manager.js?v=1.31.0.9c838c66"></script>
-<script src="js/admin-tabs.js?v=1.31.0.eb93884e"></script>
+<script src="js/version.js?v=1.31.1.a564dcd7"></script>
+<script src="js/toolnav.js?v=1.31.1.540a0f90"></script>
+<script src="js/theme.js?v=1.31.1.8bd1d199"></script>
+<script src="camps_data.js?v=1.31.1.71bc294b"></script>
+<script src="districts_data.js?v=1.31.1.4fab46df"></script>
+<script src="js/zip.js?v=1.31.1.912def0f"></script>
+<script src="js/xlsx.js?v=1.31.1.cc885944"></script>
+<script src="js/admin-core.js?v=1.31.1.d83dfc63"></script>
+<script src="js/clean-html.js?v=1.31.1.814230e0"></script>
+<script src="js/upload-limits.js?v=1.31.1.e69ad089"></script>
+<script src="js/admin.js?v=1.31.1.a68ff29f"></script>
+<script src="js/camps-manager.js?v=1.31.1.9c838c66"></script>
+<script src="js/admin-tabs.js?v=1.31.1.eb93884e"></script>
 </body>
 </html>
