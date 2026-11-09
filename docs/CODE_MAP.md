@@ -1,7 +1,7 @@
 # Code map — Lions YCE
 
 > **Generated file — do not edit by hand.** Rebuilt by `python3 tools/build_codemap.py` (run automatically on every push to `main`).
-> Commit `ae60c07`, 2026-11-09 00:21 UTC. Interactive version: [`code_map.html`](code_map.html).
+> Commit `59d527b`, 2026-11-09 00:48 UTC. Interactive version: [`code_map.html`](code_map.html).
 
 ## Pages
 
@@ -32,10 +32,10 @@
 |---|---:|---:|---|
 | `js/assets.js` | 6 | 504.5 KB | GENERATED — embedded templates (base64) + build version |
 | `js/zip.js` | 126 | 7.5 KB | bounded ZIP reading (limits against booby-trapped archives) — shared |
-| `js/xlsx.js` | 254 | 12.7 KB | ZIP writing + workbook cell read/write |
+| `js/xlsx.js` | 258 | 13.0 KB | ZIP writing + workbook cell read/write |
 | `js/docx.js` | 174 | 9.5 KB | Commitment: text, validation, signed Word generation |
 | `js/signatures.js` | 141 | 7.5 KB | signature pads + pasting signatures into the workbook |
-| `js/attachments.js` | 147 | 7.0 KB | pass photo & payment proof |
+| `js/attachments.js` | 179 | 9.6 KB | pass photo & payment proof |
 | `js/storage.js` | 144 | 6.4 KB | local draft persistence |
 | `js/club-signing.js` | 84 | 4.7 KB | ?sign=club remote counter-signing |
 | `js/sections.js` | 164 | 10.5 KB | declarative form definition (SECTIONS, camps list, mode flags) |
@@ -51,7 +51,7 @@
 
 **`js/signatures.js`** — `sigInit` (canvas pads + auto date), `sigClear` (clear a pad), `sigUpload` (signature from an image), `sigsFromWorkbook`, `dataUrlToBytes` (dataURL → bytes), `addSignatures` (anchor inked pads in the workbook)
 
-**`js/attachments.js`** — `photoPick` (photo upload + downscale 800px), `photoShow` (preview), `photoClear` (remove), `readDoc`, `docShow`, `payPick` (proof upload (PDF as-is, images 1600px)), `payShow` (preview), `payClear` (remove), `idRequirement`, `idLabel`, `idPick`, `idShow`, `idClear`, `idLaterToggle`, `letterPick`, `letterShow`, `letterClear`
+**`js/attachments.js`** — `fmtSize`, `dataUrlBytes`, `shrinkImage`, `tooSmallMsg`, `reducedNote`, `photoPick` (photo upload + downscale 800px), `photoShow` (preview), `photoClear` (remove), `readDoc`, `docShow`, `payPick` (proof upload (PDF as-is, images 1600px)), `payShow` (preview), `payClear` (remove), `idRequirement`, `idLabel`, `idPick`, `idShow`, `idClear`, `idLaterToggle`, `letterPick`, `letterShow`, `letterClear`
 
 **`js/storage.js`** — `saveDraft` (persist everything (debounced)), `filesOp`, `saveFile`, `restoreFiles`, `restoreDraft` (restore everything), `restoreDraftText`, `clearForm` (wipe + reload)
 
@@ -105,15 +105,15 @@
 | File | Size | Role |
 |---|---:|---|
 | `camps_data.js` | 72.2 KB | season data: SEASON + YEAR + RAW camps — common to every deployment |
-| `districts_data.js` | 5.8 KB | per-deployment data: SITE_REPO + DISTRICTS coordinators |
+| `districts_data.js` | 6.1 KB | per-deployment data: SITE_REPO + DISTRICTS coordinators |
 | `js/version.js` | 0.5 KB | site version number (VERSION), shown on every page — bumped by each pull request |
-| `CHANGELOG.md` | 33.1 KB | what changed in each version |
-| `yce_form_filler.html` | 12.3 KB | filler HTML shell + styles |
+| `CHANGELOG.md` | 34.1 KB | what changed in each version |
+| `yce_form_filler.html` | 12.4 KB | filler HTML shell + styles |
 | `yce_tracker.html` | 9.0 KB | tracker HTML shell + styles |
-| `yce_admin.html` | 24.5 KB | administration HTML shell: tabs Site & season / Camps / Documents |
+| `yce_admin.html` | 25.2 KB | administration HTML shell: tabs Site & season / Camps / Documents |
 | `yce_camps.html` | 1.0 KB | old camp manager address — redirects to yce_admin.html#camps |
 | `js/admin-core.js` | 13.2 KB | shared admin plumbing (token, passphrase, GitHub API, connect hooks) |
-| `js/admin.js` | 23.4 KB | admin Site & Documents tabs: season, coordinators, home page, gallery, uploads |
+| `js/admin.js` | 25.5 KB | admin Site & Documents tabs: season, coordinators, home page, gallery, uploads |
 | `js/camps-manager.js` | 38.5 KB | admin Camps tab: directory import, editing, backups, archive |
 | `js/admin-tabs.js` | 1.2 KB | admin tab switching (#site, #camps, #docs) |
 | `js/toolnav.js` | 1.3 KB | tool menu under the header of every tool page |
