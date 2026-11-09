@@ -1,12 +1,6 @@
 // render.js — rendu des sections et widgets (groupes X, boutons Yes/No, champs conditionnels), compteur
 // Chargé par yce_form_filler.html ; scripts classiques partageant la portée globale.
 "use strict";
-// modèle de la lettre à la famille d'accueil : celui de la saison (Letter_to_Host_Family_<YEAR>.docx) s'il est dans documents/, sinon le plus récent
-function letterTemplateFile(){
-  const want="Letter_to_Host_Family_"+YEAR+".docx";
-  if(typeof LETTER_FILES==="undefined"||!LETTER_FILES.length||LETTER_FILES.indexOf(want)>=0)return want;
-  return LETTER_FILES[LETTER_FILES.length-1];
-}
 function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 
 function render(){
@@ -90,7 +84,7 @@ function render(){
       }
       if(f.download){
         h+='<div class="fld w'+w+'"><label class="flbl">'+esc(f.label)+'</label>'
-          +'<a class="dl-card" download href="documents/'+letterTemplateFile()+'" style="margin-bottom:6px">📄 Download the Word template<br>“Dear Host Family…”</a>'
+          +'<a class="dl-card" download href="documents/Letter_to_Host_Family.docx" style="margin-bottom:6px">📄 Download the Word template<br>“Dear Host Family…”</a>'
           +'<div class="photobox" onclick="document.getElementById(\'letter-file\').click()">'
           +'<span class="ph-hint" id="letter-hint">💌 Click to add your completed letter<br>(Word or PDF — included in the application file)</span>'
           +'<button type="button" class="sig-clear" id="letter-clear" style="display:none" onclick="letterClear(event)">✕ remove</button>'

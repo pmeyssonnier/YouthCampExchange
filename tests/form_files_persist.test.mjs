@@ -54,18 +54,13 @@ t.ok(!(await pg.evaluate(() => IDDOC.name)), 'Clear form erases the scan');
 await open();
 t.ok(!(await pg.evaluate(() => IDDOC.name)), 'and it does not come back');
 
-// letter template link
-const tpl = async (files) => {
-  const p2 = await ctx.newPage();
-  await p2.route('**fonts.googleapis.com/**', r => r.fulfill({ body: '', contentType: 'text/css' }));
-  await p2.route('**/js/assets.js*', async r => { const resp = await r.fetch(); await r.fulfill({ response: resp, body: (await resp.text()) + (files ? '\nconst LETTER_FILES=' + JSON.stringify(files) + ';' : '') }); });
-  await p2.goto(url, { waitUntil: 'load' }); await p2.waitForTimeout(600);
-  const href = await p2.evaluate(() => document.querySelector('a.dl-card[href*="Letter_to_Host_Family"]').getAttribute('href'));
-  await p2.close(); return href;
-};
-t.ok(/Letter_to_Host_Family_2027\.docx$/.test(await tpl(['Letter_to_Host_Family_2026.docx', 'Letter_to_Host_Family_2027.docx'])), 'the season template is used when it exists');
-t.ok(/Letter_to_Host_Family_2026\.docx$/.test(await tpl(['Letter_to_Host_Family_2026.docx'])), 'otherwise the most recent template is offered (no more 404)');
-t.ok(fs.existsSync(new URL('../documents/' + (await tpl(['Letter_to_Host_Family_2026.docx'])).replace('documents/', ''), import.meta.url)), 'and that file exists');
+// letter template: one file, same name every season
+const href = await pg.evaluate(() => document.querySelector('a.dl-card[href*="Letter_to_Host_Family"]').getAttribute('href'));
+t.ok(href === 'documents/Letter_to_Host_Family.docx', 'the template link has no year: ' + href);
+t.ok(fs.existsSync(new URL('../' + href, import.meta.url)), 'and that file exists');
+t.ok(!fs.readdirSync(new URL('../documents/', import.meta.url)).some(f => /^Letter_to_Host_Family_\d{4}/.test(f)), 'no per-year copy is left in documents/');
+const idx = fs.readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+t.ok(!/Letter_to_Host_Family_\d{4}\.docx/.test(idx) && idx.includes('documents/Letter_to_Host_Family.docx'), 'the home page links to the same file');
 t.ok(!errs.length, 'no page error' + (errs.length ? ': ' + errs[0] : ''));
 await br.close(); srv.close();
 process.exit(t.done() ? 1 : 0);
