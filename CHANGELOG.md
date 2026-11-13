@@ -5,6 +5,13 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.35.0 — 2026-11-14
+
+- **Phone numbers: the number of digits is checked against the country code.** A Belgian number must have 8 or 9 digits after +32, a French one 9 after +33, and so on for the main countries (Netherlands, Spain, Portugal, Switzerland, Poland, Czechia, United Kingdom, Italy, Germany, Austria, Nordic countries, Greece, Türkiye, USA/Canada, India…). The message in *Check missing fields* and when generating says what is expected and how many digits were typed. Other countries are still checked on 8 to 15 digits in total.
+- **All international codes are recognised**, not only the 20 European ones: `+1 650 296 2870`, `+971 50 123 4567` and `+7 912 345 67 89` kept their code instead of being cut at two digits (`+16`, `+97`, `+79`).
+- **Italian landlines keep their 0** (`+39 02 1234567`): the 0 was removed, which changed the number.
+- A last single digit is joined to the previous group (`650 296 2870`, not `650 296 287 0`).
+
 ## 1.34.0 — 2026-11-13
 
 - **"Check missing fields" also checks e-mail addresses and phone numbers.** A "Wrong format" block at the top of the list names each e-mail (no @, spaces, incomplete domain) and each phone number (not valid in the international format) with a short explanation; tapping it goes to the field. Local numbers (e.g. 0470 12 34 56) are accepted, as at generation, because the country code is added automatically. **Invalid e-mail addresses now also block the generation** of the Excel file (as invalid phone numbers already did), with a message naming the field; not in the club-chairman / district signing modes, where the received dossier is taken as it is.
