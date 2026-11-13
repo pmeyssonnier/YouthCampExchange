@@ -5,6 +5,10 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.33.0 — 2026-11-13
+
+- **Application form: "🔎 Check missing fields" button**, next to "Clear form". It opens a list of what is still missing — key fields, attachments (pass photo, payment proof, ID scan, host-family letter), signatures and the reciprocity commitment — grouped by section. Tapping an item closes the list and takes you to the field, which flashes. The other empty fields (optional or conditional) are folded below. The list and the "fields completed" counter now come from the same function, so they always agree.
+
 ## 1.32.0 — 2026-11-13
 
 - **New Commitment to Reciprocity.** The contract now asks to host **one** young person for **one week** (two young people, one week each, only if the candidate goes outside Europe and there are not enough host families; up to three weeks for a young person from Japan). The rule that moved a week to the next year is removed. Grammar corrected throughout (hyphens, numbers in words, "members of our family", "responsible and respectful manner", "free of charge", "both parties", "Application Form (AF)"…), title and signature labels fixed ("Commitment to Reciprocity", "Signature of parent(s)/guardian and candidate(s)", "Chairman of the Lions Club"). The Word file in `documents/`, the signed-contract template and the text shown in the application form are updated together. Contracts already signed with the old text stay valid; new applications use the new text.

@@ -1,7 +1,7 @@
 # Code map — Lions YCE
 
 > **Generated file — do not edit by hand.** Rebuilt by `python3 tools/build_codemap.py` (run automatically on every push to `main`).
-> Commit `beb9f12`, 2026-11-13 20:11 UTC. Interactive version: [`code_map.html`](code_map.html).
+> Commit `a443e6c`, 2026-11-13 22:44 UTC. Interactive version: [`code_map.html`](code_map.html).
 
 ## Pages
 
@@ -40,7 +40,7 @@
 | `js/club-signing.js` | 84 | 4.7 KB | ?sign=club remote counter-signing |
 | `js/sections.js` | 164 | 10.5 KB | declarative form definition (SECTIONS, camps list, mode flags) |
 | `js/country.js` | 87 | 4.0 KB | default country, dial codes, phone normalisation |
-| `js/render.js` | 238 | 13.7 KB | section/widget rendering, X-groups, counter |
+| `js/render.js` | 287 | 17.2 KB | section/widget rendering, X-groups, counter |
 | `js/form.js` | 240 | 16.1 KB | orchestration: generate() and init() — loaded last |
 
 **`js/zip.js`** — `zipBudget`, `zipCheckSize`, `zipDirectory` (validated central directory, no decompression), `zipNames` (file names of an archive without decompressing), `inflateRaw` (native inflate), `unzip` (parse a zip into [{name,data}] within ZIP_LIMITS)
@@ -59,7 +59,7 @@
 
 **`js/country.js`** — `countryCfg` (current country config), `normPhone` (international normalisation), `validPhone` (phone validation), `wirePhones` (tel inputs wiring), `applyCountry` (prefill nationality/country), `setCountry` (admin selector)
 
-**`js/render.js`** — `esc` (escape HTML), `render` (render all sections & widgets), `depShow` (conditional 'specify' fields), `xsel` (X-group selection), `initLists` (country/camp datalists), `syncCamps` (filter camps by country), `ynClick` (Yes/No & pill buttons), `refreshYn` (sync button visuals), `updState` (State field visibility), `attChecklist`, `upd` (fields-completed counter)
+**`js/render.js`** — `esc` (escape HTML), `render` (render all sections & widgets), `depShow` (conditional 'specify' fields), `xsel` (X-group selection), `initLists` (country/camp datalists), `syncCamps` (filter camps by country), `ynClick` (Yes/No & pill buttons), `refreshYn` (sync button visuals), `updState` (State field visibility), `attChecklist`, `formItems`, `upd` (fields-completed counter), `missingClose`, `missingGo`, `checkMissing`
 
 **`js/form.js`** — `signSummary`, `generate` (orchestrator: cells, signatures, downloads, e-mails), `openVault`, `adminOptions`, `init` (mode setup + startup)
 
@@ -107,8 +107,8 @@
 | `camps_data.js` | 72.2 KB | season data: SEASON + YEAR + RAW camps — common to every deployment |
 | `districts_data.js` | 6.1 KB | per-deployment data: SITE_REPO + DISTRICTS coordinators |
 | `js/version.js` | 0.5 KB | site version number (VERSION), shown on every page — bumped by each pull request |
-| `CHANGELOG.md` | 35.2 KB | what changed in each version |
-| `yce_form_filler.html` | 12.4 KB | filler HTML shell + styles |
+| `CHANGELOG.md` | 35.7 KB | what changed in each version |
+| `yce_form_filler.html` | 13.7 KB | filler HTML shell + styles |
 | `yce_tracker.html` | 9.0 KB | tracker HTML shell + styles |
 | `yce_admin.html` | 25.8 KB | administration HTML shell: tabs Site & season / Camps / Documents |
 | `yce_camps.html` | 1.0 KB | old camp manager address — redirects to yce_admin.html#camps |
@@ -164,7 +164,7 @@
 | `js/attachments.js` | `js/render.js` | IDDOC, IDLATER, LETTER, PAY, PHOTO, idClear, idLabel, idLaterToggle, idPick, idShow, letterClear, letterPick … |
 | `js/storage.js` | `js/render.js` | saveDraft, saveTimer |
 | `js/sections.js` | `js/render.js` | CAMPS, IS_ADMIN, SECTIONS, SIGN_CLUB, SIGN_DISTRICT |
-| `js/form.js` | `js/render.js` | signSummary |
+| `js/form.js` | `js/render.js` | REQUIRED_FIELDS, generate, signSummary |
 | `js/assets.js` | `js/form.js` | BUILD, TEMPLATE_B64 |
 | `js/zip.js` | `js/form.js` | unzip |
 | `js/xlsx.js` | `js/form.js` | addDateStyle, b64ToBuf, buildZip, collectValues, currentDistrict, dmyToSerial, setCell, setCellDate, setStatus, syncFromTemplate, templateBuf, yearizeTemplate |

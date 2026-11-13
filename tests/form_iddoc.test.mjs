@@ -73,6 +73,30 @@ await pg.setInputFiles('input[type=file]', FIX + '/dossier_id_later.zip'); await
 t.ok(await pg.evaluate(() => Object.values(ROWS)[0].iddoc === 'later'), 'tracker marks the scan as to follow');
 t.ok(/⏳/.test(await pg.textContent('#tbody')), 'tracker shows ⏳');
 t.ok(await pg.evaluate(() => !isComplete(Object.values(ROWS)[0])), 'file not counted complete while the scan is missing');
+
+// bouton « Check missing fields » : liste cliquable de ce qui manque
+{
+  const m = await ctx.newPage(); const me = []; m.on('pageerror', e => me.push(e.message));
+  await m.goto(B + 'yce_form_filler.html'); await m.evaluate(() => localStorage.clear());
+  await m.goto(B + 'yce_form_filler.html'); await m.waitForTimeout(700);
+  t.ok(await m.isVisible('#miss-btn') && /Check missing fields/.test(await m.textContent('#miss-btn')), 'Check missing fields button next to Clear form');
+  await m.click('#miss-btn');
+  const txt = await m.textContent('#miss-dlg');
+  t.ok(await m.evaluate(() => document.getElementById('miss-dlg').open), 'dialog opens');
+  t.ok(/Family Name/.test(txt) && /Date of birth/.test(txt) && /pass photo/i.test(txt) && /Proof of payment/.test(txt), 'lists key fields and attachments');
+  t.ok(!/Nickname/.test(await m.evaluate(() => document.querySelector('.miss-dlg').innerText.split('other empty')[0])), 'optional fields are kept out of the required list');
+  const n1 = await m.$$eval('.miss-item', e => e.length);
+  const total = await m.evaluate(() => formItems().length), done = await m.evaluate(() => formItems().filter(x => x.done).length);
+  t.ok((await m.textContent('#p-count')) === done + '/' + total, 'counter and list use the same items: ' + (await m.textContent('#p-count')));
+  await m.evaluate(() => missingClose());
+  await m.fill('#f-F16', 'Doe'); await m.dispatchEvent('#f-F16', 'input');
+  await m.click('#miss-btn');
+  t.ok(!/Family Name/.test(await m.evaluate(() => document.querySelector('.miss-dlg').innerText.split('other empty')[0])), 'a filled field leaves the list');
+  await m.click('.miss-item'); await m.waitForTimeout(700);
+  t.ok(!(await m.evaluate(() => document.getElementById('miss-dlg').open)), 'tapping an item closes the dialog and goes to the field');
+  t.ok(!me.length, 'no page error ' + me.join(' | '));
+  await m.close();
+}
 t.ok(!errs.length, 'no page error ' + errs.join(' | '));
 
 await br.close(); srv.close();

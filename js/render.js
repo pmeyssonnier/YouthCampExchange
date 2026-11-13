@@ -212,26 +212,75 @@ function attChecklist(){
 }
 
 // compteur de champs remplis
+// Éléments à remplir du formulaire : une ligne par champ / pièce / signature, avec son état (done).
+// Sert au compteur « fields completed » et à la liste « Check missing fields » — les deux restent donc d'accord.
+function formItems(){
+  const items=[];
+  SECTIONS.forEach(function(sec,si){
+    if(sec.noCount)return;
+    const add=function(label,done,target,key){items.push({sec:sec.title,si:si,label:label,done:!!done,target:target,key:key||null});};
+    if(sec.commitBlock){add("Commitment to Reciprocity — validate with the signatures",COMMIT.agreed,"commit-btn");return;}
+    sec.fields.forEach(function(f){
+      if(f.photo){add(f.label,PHOTO.dataUrl,"photo-hint");return;}
+      if(f.payproof){add(f.label,PAY.dataUrl,"pay-hint");return;}
+      if(f.iddoc){add(f.label+" (or tick \u201cI will send it later\u201d)",IDDOC.dataUrl||IDLATER,"id-hint");return;}
+      if(f.download){add(f.label,LETTER.dataUrl,"letter-hint");return;}
+      if(f.sig){if(!SIGS[f.sig])return;add(f.label,SIGS[f.sig].ink,"sig-"+f.sig);return;}
+      if(f.xgroup){add(f.label,XSTATE[f.xgroup],"xg-"+f.xgroup,"xg"+f.xgroup);return;}
+      const el=document.getElementById("f-"+f.ref);
+      if(!el||el.disabled)return; // "If yes: specify" fields are excluded while No / unanswered
+      add(f.label,el.value,(f.type==="ynbtn"||f.type==="pills")?"yn-"+f.ref:"f-"+f.ref,f.ref);
+    });
+  });
+  return items;
+}
 function upd(){
   updState();
-  let n=0,total=0;
-  SECTIONS.forEach(function(sec){
-    if(sec.noCount)return;
-    if(sec.commitBlock){total++;if(COMMIT.agreed)n++;return;}
-    sec.fields.forEach(function(f){
-    if(f.photo){total++;if(PHOTO.dataUrl)n++;return;}
-    if(f.payproof){total++;if(PAY.dataUrl)n++;return;}
-    if(f.iddoc){total++;if(IDDOC.dataUrl||IDLATER)n++;return;}
-    if(f.download){total++;if(LETTER.dataUrl)n++;return;}
-    if(f.sig){if(!SIGS[f.sig])return;total++;if(SIGS[f.sig].ink)n++;return;}
-    if(f.xgroup){total++;if(XSTATE[f.xgroup])n++;}
-    else{const el=document.getElementById("f-"+f.ref);
-      if(!el||el.disabled)return; // "If yes: specify" fields are excluded while No / unanswered
-      total++;if(el.value)n++;}
-  });});
+  const all=formItems(),total=all.length,n=all.filter(function(x){return x.done;}).length;
 
   document.getElementById("p-count").textContent=n+"/"+total;
   refreshYn();attChecklist();if(typeof idShow==="function")idShow();
   if(typeof signSummary==="function")signSummary();
   clearTimeout(saveTimer);saveTimer=setTimeout(saveDraft,300);
+}
+
+// ---- 🔎 Check missing fields : liste cliquable de ce qui reste à remplir
+function missingClose(){const d=document.getElementById("miss-dlg");if(d&&d.open)d.close();}
+function missingGo(si,target){
+  missingClose();
+  const sec=document.getElementById("sec"+si);
+  if(sec)sec.classList.remove("closed");
+  const el=document.getElementById(target);
+  const box=el?(el.closest(".fld")||el):sec;
+  if(!box)return;
+  box.scrollIntoView({behavior:"smooth",block:"center"});
+  box.classList.add("miss-flash");setTimeout(function(){box.classList.remove("miss-flash");},2200);
+  if(el&&/^(INPUT|SELECT|TEXTAREA)$/.test(el.tagName)&&!el.disabled&&el.type!=="hidden")setTimeout(function(){el.focus({preventScroll:true});},400);
+}
+function checkMissing(){
+  updState();
+  let d=document.getElementById("miss-dlg");
+  if(!d){d=document.createElement("dialog");d.id="miss-dlg";d.className="miss-dlg";document.body.appendChild(d);
+    d.addEventListener("click",function(e){if(e.target===d)d.close();});}
+  const all=formItems().filter(function(x){return document.getElementById(x.target);}),miss=all.filter(function(x){return !x.done;}); // seulement ce qui est affiché
+  const pct=all.length?Math.round(100*(all.length-miss.length)/all.length):100;
+  let h='<div class="miss-head"><b>Missing fields</b><button type="button" class="tpl-btn" onclick="missingClose()">\u2715 Close</button></div>';
+  if(!miss.length){
+    h+='<p class="miss-ok">\u2714 Nothing missing: all '+all.length+' items are filled in. You can generate the files.</p>';
+  }else{
+    // à remplir : champs clés (comme la complétude du coordinateur), pièces jointes, signatures, engagement ; le reste (facultatif) est replié
+    const isKey=function(x){return x.key===null||REQUIRED_FIELDS.some(function(r){return r[0]===x.key;});};
+    const must=miss.filter(isKey),other=miss.filter(function(x){return !isKey(x);});
+    const list=function(arr){let out="",last=null;
+      arr.forEach(function(x){
+        if(x.sec!==last){out+='<div class="miss-sec">'+esc(x.sec)+'</div>';last=x.sec;}
+        out+='<button type="button" class="miss-item" onclick="missingGo('+x.si+',\''+x.target+'\')">\u2716 '+esc(x.label)+'</button>';
+      });return out;};
+    h+='<p class="miss-sum">'+(must.length?'<b>'+must.length+'</b> required item'+(must.length>1?'s':'')+' missing. Tap an item to go to it.':'\u2714 All required items are filled in.')
+      +' ('+(all.length-miss.length)+'/'+all.length+' items done, '+pct+' %)</p>';
+    h+=list(must);
+    if(other.length)h+='<details class="miss-more"><summary>'+other.length+' other empty field'+(other.length>1?'s':'')+' (optional or conditional)</summary>'+list(other)+'</details>';
+  }
+  d.innerHTML=h;
+  if(typeof d.showModal==="function")d.showModal();else d.setAttribute("open","");
 }
