@@ -71,6 +71,15 @@ async function generate(){
       setStatus("⚠ Invalid phone number (use international format, e.g. "+countryCfg().dial+" 470 12 34 56): "+cells.badPhones.join(", "),true);
       btn.disabled=false;return;
     }
+    // e-mails mal écrits : on bloque aussi (sauf en mode signature président / district, où le dossier reçu est repris tel quel)
+    if(!SIGN_CLUB&&!SIGN_DISTRICT){
+      const be=formProblems().filter(function(x){return x.kind==="email";});
+      if(be.length){
+        setStatus("\u26a0 Invalid e-mail address: "+be.map(function(x){return x.label+" ("+x.why+")";}).join(", ")+" \u2014 click \ud83d\udd0e Check missing fields to fix it.",true);
+        missingGo(be[0].si,be[0].target);
+        btn.disabled=false;return;
+      }
+    }
     cells.forEach(function(c){xml=setCell(xml,c.ref,c.value,c.numeric);});
     // date de naissance : vraie date Excel (sinon la cellule calculée « Age on 01/07/… » ne peut pas fonctionner)
     const dobCell=cells.find(function(c){return c.ref==="X17";});
