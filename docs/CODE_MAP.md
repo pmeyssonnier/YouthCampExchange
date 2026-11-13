@@ -1,7 +1,7 @@
 # Code map — Lions YCE
 
 > **Generated file — do not edit by hand.** Rebuilt by `python3 tools/build_codemap.py` (run automatically on every push to `main`).
-> Commit `cbeaa7d`, 2026-11-13 23:03 UTC. Interactive version: [`code_map.html`](code_map.html).
+> Commit `2ee106e`, 2026-11-13 23:11 UTC. Interactive version: [`code_map.html`](code_map.html).
 
 ## Pages
 
@@ -41,7 +41,7 @@
 | `js/sections.js` | 164 | 10.5 KB | declarative form definition (SECTIONS, camps list, mode flags) |
 | `js/country.js` | 87 | 4.0 KB | default country, dial codes, phone normalisation |
 | `js/render.js` | 320 | 18.8 KB | section/widget rendering, X-groups, counter |
-| `js/form.js` | 240 | 16.1 KB | orchestration: generate() and init() — loaded last |
+| `js/form.js` | 249 | 16.6 KB | orchestration: generate() and init() — loaded last |
 
 **`js/zip.js`** — `zipBudget`, `zipCheckSize`, `zipDirectory` (validated central directory, no decompression), `zipNames` (file names of an archive without decompressing), `inflateRaw` (native inflate), `unzip` (parse a zip into [{name,data}] within ZIP_LIMITS)
 
@@ -107,7 +107,7 @@
 | `camps_data.js` | 72.2 KB | season data: SEASON + YEAR + RAW camps — common to every deployment |
 | `districts_data.js` | 6.1 KB | per-deployment data: SITE_REPO + DISTRICTS coordinators |
 | `js/version.js` | 0.5 KB | site version number (VERSION), shown on every page — bumped by each pull request |
-| `CHANGELOG.md` | 36.1 KB | what changed in each version |
+| `CHANGELOG.md` | 36.4 KB | what changed in each version |
 | `yce_form_filler.html` | 13.8 KB | filler HTML shell + styles |
 | `yce_tracker.html` | 9.0 KB | tracker HTML shell + styles |
 | `yce_admin.html` | 25.8 KB | administration HTML shell: tabs Site & season / Camps / Documents |
@@ -176,4 +176,4 @@
 | `js/club-signing.js` | `js/form.js` | COMMIT_FILE, SIGN_EXTRAS, signCommitmentFile |
 | `js/sections.js` | `js/form.js` | IS_ADMIN, SIGN_CLUB, SIGN_DISTRICT, SIGN_MODE |
 | `js/country.js` | `js/form.js` | COUNTRIES, CTRY, applyCountry, countryCfg, wirePhones |
-| `js/render.js` | `js/form.js` | esc, initLists, render, upd |
+| `js/render.js` | `js/form.js` | esc, formProblems, initLists, missingGo, render, upd |

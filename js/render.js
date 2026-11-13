@@ -264,7 +264,7 @@ function formProblems(){
       let why="";
       if(f.type==="email")why=emailProblem(v);
       else{const n=normPhone(v);if(!validPhone(n))why="not a valid number \u2014 use the international format, e.g. "+countryCfg().dial+" 470 12 34 56";}
-      if(why)out.push({sec:sec.title,si:si,label:f.label,value:v,why:why,target:"f-"+f.ref});
+      if(why)out.push({sec:sec.title,si:si,label:f.label,value:v,why:why,target:"f-"+f.ref,kind:f.type});
     });
   });
   return out;

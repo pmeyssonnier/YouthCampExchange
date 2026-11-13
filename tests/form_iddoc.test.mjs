@@ -113,6 +113,12 @@ t.ok(await pg.evaluate(() => !isComplete(Object.values(ROWS)[0])), 'file not cou
   t.ok(/Wrong format \(3\)/i.test(await m.textContent('#miss-dlg')), 'dialog lists the wrong formats');
   await m.click('.miss-badi'); await m.waitForTimeout(600);
   t.ok(await m.evaluate(() => document.activeElement && document.activeElement.id) === 'f-S20', 'tapping a wrong format goes to that field');
+  await m.evaluate(() => missingClose());
+  await m.fill('#f-F16', 'Doe'); await m.fill('#f-S16', 'Jane'); await m.evaluate(() => { document.getElementById('f-S21').value = '+32 470 12 34 56'; });
+  await m.evaluate(() => generate()); await m.waitForTimeout(500);
+  const stt = await m.textContent('#status');
+  t.ok(/Invalid e-mail address: Email \(/.test(stt) && /Club e-mail \(remove the spaces\)/.test(stt), 'generation is blocked by invalid e-mails: ' + stt.slice(0, 120));
+  t.ok(await m.evaluate(() => !document.getElementById('btn-gen').disabled), 'generate button usable again after the refusal');
   await m.evaluate(() => { ['S20', 'E69', 'S21'].forEach(r => { const e = document.getElementById('f-' + r); e.value = ''; }); });
   t.ok(await m.evaluate(() => formProblems().length) === 0, 'no problem once the fields are cleared');
   t.ok(!me.length, 'no page error ' + me.join(' | '));
