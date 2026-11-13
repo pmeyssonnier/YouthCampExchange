@@ -2,13 +2,12 @@
 // Chargé par yce_form_filler.html ; scripts classiques partageant la portée globale.
 "use strict";
 const COMMIT_TEXT_DEFAULT=[
-"We, the undersigned, undertake to host a young foreign student, boy or girl, for a two week period, or two young people for a one week period. If departure is to Japan hosting will be in August and can go up to 3 weeks hosting.",
-"This commitment will be implemented in the following year or the year to be determined by the YCE committee.",
-"The hosting can take place: either during the summer: 1 July to 31 July; for young people coming from Japan the period is in August.",
-"If, for serious and exceptional reasons, we are unable to honor our commitment for a certain period, we undertake to provide for another family to take over our task. If no solution is found even then, the Lions club concerned will honor this commitment and provide a host family to take over our commitment.",
-"If, for the current year, 2 young people must be received and only 1 is taken in, one week will be moved to the next year. If no young person is to be admitted, the same applies.",
-"As a host family, we are also committed to welcoming these young people in a serious and correct manner, and to treating them as a member of our family. This implies that we take care of board and lodging, the cost of excursions, restaurant, visits and possibly transport without any compensation. If the young person wishes to make certain purchases, or extra visits or excursions, this will be at his/her own expense.",
-"This contract, dated and signed, drawn up in 3 copies, forms an integral part of your application file for participation in the Youth Camp and Exchange Program and your Application Form will only be processed after this document has been signed by the two parties and 1 copy attached to the AF.",
+"We, the undersigned, undertake to host one young foreign person, boy or girl, for a one-week period. If our candidate takes part in a program outside Europe and there are not enough host families available, we undertake to host two young people for one week each. If the young person comes from Japan, hosting may last up to three weeks.",
+"This commitment will be implemented in the following year, or in a year to be determined by the YCE committee.",
+"Hosting takes place between 1 and 31 July, except for young people coming from Japan, for whom it takes place in August.",
+"If, for serious and exceptional reasons, we are unable to honor our commitment for a given period, we undertake to arrange for another family to take over our task. If no solution is found even so, the Lions club concerned will honor this commitment and find a host family to take over our commitment.",
+"As a host family, we also undertake to welcome these young people in a responsible and respectful manner and to treat them as members of our family. This implies that we take care of board and lodging, the cost of excursions, restaurant meals, visits and possibly transport, free of charge. If the young person wishes to make personal purchases or take part in extra visits or excursions, this will be at his/her own expense.",
+"This contract, dated and signed, and drawn up in three copies, forms an integral part of the application file for participation in the Youth Camp and Exchange (YCE) Program. The Application Form (AF) will only be processed after this document has been signed by both parties and one copy attached to the AF.",
 ];
 let COMMIT_TEXT=COMMIT_TEXT_DEFAULT;
 try{
