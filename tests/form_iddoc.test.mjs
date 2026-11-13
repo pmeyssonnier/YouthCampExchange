@@ -97,6 +97,27 @@ t.ok(await pg.evaluate(() => !isComplete(Object.values(ROWS)[0])), 'file not cou
   t.ok(!me.length, 'no page error ' + me.join(' | '));
   await m.close();
 }
+
+// « Check missing fields » : format des e-mails et des téléphones
+{
+  const m = await ctx.newPage(); const me = []; m.on('pageerror', e => me.push(e.message));
+  await m.goto(B + 'yce_form_filler.html'); await m.evaluate(() => localStorage.clear());
+  await m.goto(B + 'yce_form_filler.html'); await m.waitForTimeout(700);
+  await m.evaluate(() => { const set = (r, v) => { document.getElementById('f-' + r).value = v; };
+    set('S20', 'jane.doe@gmail'); set('E69', 'jane doe@x.be'); set('P64', 'ok@example.be'); set('S21', '12'); set('AE68', '+32 470 12 34 56'); set('G21', '0470123456'); });
+  const f = await m.evaluate(() => formProblems().map(x => x.label + ': ' + x.why));
+  t.ok(f.length === 3, 'three wrong formats found: ' + JSON.stringify(f));
+  t.ok(f.some(x => /^Email: .*incomplete/.test(x)) && f.some(x => /^Club e-mail: remove the spaces/.test(x)) && f.some(x => /^Mobile: not a valid number/.test(x)), 'each problem is explained');
+  t.ok(!f.some(x => /Emergency e-mail|Chairperson mobile|Phone \(home\)/.test(x)), 'correct e-mails and numbers (also a local number that gets the country code) are accepted');
+  await m.click('#miss-btn');
+  t.ok(/Wrong format \(3\)/i.test(await m.textContent('#miss-dlg')), 'dialog lists the wrong formats');
+  await m.click('.miss-badi'); await m.waitForTimeout(600);
+  t.ok(await m.evaluate(() => document.activeElement && document.activeElement.id) === 'f-S20', 'tapping a wrong format goes to that field');
+  await m.evaluate(() => { ['S20', 'E69', 'S21'].forEach(r => { const e = document.getElementById('f-' + r); e.value = ''; }); });
+  t.ok(await m.evaluate(() => formProblems().length) === 0, 'no problem once the fields are cleared');
+  t.ok(!me.length, 'no page error ' + me.join(' | '));
+  await m.close();
+}
 t.ok(!errs.length, 'no page error ' + errs.join(' | '));
 
 await br.close(); srv.close();

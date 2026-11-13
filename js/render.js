@@ -244,6 +244,32 @@ function upd(){
   clearTimeout(saveTimer);saveTimer=setTimeout(saveDraft,300);
 }
 
+// Format des e-mails et des téléphones saisis (mêmes règles qu'à la génération pour les téléphones).
+function emailProblem(v){
+  if(/\s/.test(v))return "remove the spaces";
+  if(v.indexOf("@")<1)return "the @ sign is missing";
+  if(v.split("@").length>2)return "more than one @ sign";
+  if(!/^[^\s@<>"'()]+@[^\s@<>"'()]+\.[^\s@<>"'()]{2,}$/.test(v))return "the part after the @ looks incomplete (expected name@domain.com)";
+  return "";
+}
+function formProblems(){
+  const out=[];
+  SECTIONS.forEach(function(sec,si){
+    sec.fields.forEach(function(f){
+      if(f.type!=="tel"&&f.type!=="email")return;
+      const el=document.getElementById("f-"+f.ref);
+      if(!el||el.disabled)return;
+      const v=el.value.trim();
+      if(!v||v===countryCfg().dial)return;
+      let why="";
+      if(f.type==="email")why=emailProblem(v);
+      else{const n=normPhone(v);if(!validPhone(n))why="not a valid number \u2014 use the international format, e.g. "+countryCfg().dial+" 470 12 34 56";}
+      if(why)out.push({sec:sec.title,si:si,label:f.label,value:v,why:why,target:"f-"+f.ref});
+    });
+  });
+  return out;
+}
+
 // ---- 🔎 Check missing fields : liste cliquable de ce qui reste à remplir
 function missingClose(){const d=document.getElementById("miss-dlg");if(d&&d.open)d.close();}
 function missingGo(si,target){
@@ -264,9 +290,16 @@ function checkMissing(){
     d.addEventListener("click",function(e){if(e.target===d)d.close();});}
   const all=formItems().filter(function(x){return document.getElementById(x.target);}),miss=all.filter(function(x){return !x.done;}); // seulement ce qui est affiché
   const pct=all.length?Math.round(100*(all.length-miss.length)/all.length):100;
-  let h='<div class="miss-head"><b>Missing fields</b><button type="button" class="tpl-btn" onclick="missingClose()">\u2715 Close</button></div>';
+  const bad=formProblems();
+  let h='<div class="miss-head"><b>Check the form</b><button type="button" class="tpl-btn" onclick="missingClose()">\u2715 Close</button></div>';
+  if(bad.length){
+    h+='<div class="miss-sec miss-bad">Wrong format ('+bad.length+')</div>';
+    bad.forEach(function(x){
+      h+='<button type="button" class="miss-item miss-badi" onclick="missingGo('+x.si+',\''+x.target+'\')">\u26a0 <b>'+esc(x.label)+'</b> \u2014 \u201c'+esc(x.value)+'\u201d<br><span class="miss-why">'+esc(x.why)+'</span></button>';
+    });
+  }
   if(!miss.length){
-    h+='<p class="miss-ok">\u2714 Nothing missing: all '+all.length+' items are filled in. You can generate the files.</p>';
+    h+='<p class="miss-ok">\u2714 Nothing missing: all '+all.length+' items are filled in.'+(bad.length?' Fix the wrong formats above, then you can generate the files.':' E-mail addresses and phone numbers look correct. You can generate the files.')+'</p>';
   }else{
     // à remplir : champs clés (comme la complétude du coordinateur), pièces jointes, signatures, engagement ; le reste (facultatif) est replié
     const isKey=function(x){return x.key===null||REQUIRED_FIELDS.some(function(r){return r[0]===x.key;});};

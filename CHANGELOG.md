@@ -5,6 +5,10 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.34.0 — 2026-11-13
+
+- **"Check missing fields" also checks e-mail addresses and phone numbers.** A "Wrong format" block at the top of the list names each e-mail (no @, spaces, incomplete domain) and each phone number (not valid in the international format) with a short explanation; tapping it goes to the field. Local numbers (e.g. 0470 12 34 56) are accepted, as at generation, because the country code is added automatically.
+
 ## 1.33.0 — 2026-11-13
 
 - **Application form: "🔎 Check missing fields" button**, next to "Clear form". It opens a list of what is still missing — key fields, attachments (pass photo, payment proof, ID scan, host-family letter), signatures and the reciprocity commitment — grouped by section. Tapping an item closes the list and takes you to the field, which flashes. The other empty fields (optional or conditional) are folded below. The list and the "fields completed" counter now come from the same function, so they always agree.
