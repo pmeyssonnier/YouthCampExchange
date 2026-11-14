@@ -5,6 +5,15 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.37.1 — 2026-11-14
+
+No change for users: code organisation and its documentation.
+
+- **Camp manager split into four files.** `js/camps-manager.js` (669 lines) did everything for the Camps tab of the administration. It now keeps the list, the camp sheet, the archive, the JSON backup and the save to the site; the rest moved, unchanged, to `js/camps-match.js` (same camp? similarity, duplicates), `js/camps-import.js` (official directory import: read, review, apply) and `js/camps-geo.js` (map coordinates from GeoJSON).
+- **Vault interface split into four files.** `js/vault.js` (590 lines) keeps the constants, the helpers, the start-up, the sign-in and the two-step verification; the rest moved, unchanged, to `js/vault-dashboard.js` (list of files, whose turn, new file), `js/vault-dossier.js` (one file: display, upload, sign-off, comments) and `js/vault-staff.js` (staff and retention purge).
+- **Administration Site tab split into three files.** `js/admin.js` (417 lines) keeps the form, the fees and bank details, the save, the official documents and the start-up; the coordinators, the multiple district number and the national team moved, unchanged, to `js/admin-people.js`, and the photo gallery to `js/admin-gallery.js`.
+- **Code map extended.** `docs/CODE_MAP.md` and the interactive `docs/code_map.html` now describe the administration and the public site module by module (functions with their role, who uses what), and the interactive map has Vault and Administration tabs. Until now only the form filler and the tracker were detailed.
+
 ## 1.37.0 — 2026-11-14
 
 - **Directory import: renamed camps get their new name.** When the import recognises a camp under another name (same dates and place, or same contact — « Brussels Lions Youth Camp » becoming « Belgium Lions YCE Camp 2027 »), the review line now offers « rename the camp to … », ticked by default. Untick it to keep the current name while the other changes apply. Until now the camp kept its old name and had to be renamed by hand. A name that only differs by capitals or punctuation is not treated as a rename. A camp whose only change is its name now appears in the review instead of being counted as unchanged. On phones, the review lines put their text under the tick box and the label, so it is readable.

@@ -119,12 +119,21 @@ js/
   render.js                           section/widget rendering, X-groups, counter
   form.js                             orchestration: generate() and init() — loaded last
   admin-core.js                       admin plumbing: passphrase-encrypted token, GitHub API, atomic commits, connect hooks
-  admin.js                            admin Site & season and Documents tabs
-  camps-manager.js                    admin Camps tab: directory import, editing, backups, archive
+  admin.js                            admin Site & season and Documents tabs: form, fees, save, documents, start-up
+  admin-people.js                     admin: district coordinators, multiple district number, national team
+  admin-gallery.js                    admin: home page photo gallery
+  camps-manager.js                    admin Camps tab: list, camp sheet, archive, JSON backup, save to the site
+  camps-match.js                      admin Camps tab: same camp? similarity, renamed camps, duplicates
+  camps-import.js                     admin Camps tab: official YCE directory (xlsx) import — parse, review, apply
+  camps-geo.js                        admin Camps tab: map coordinates from a GeoJSON export
   admin-tabs.js                       admin tab switching (#site, #camps, #docs)
   tracker-storage.js / -parser.js / -export.js / -ui.js   tracker modules
   club-copy.js                        vault: redacted copy for the club president
-  vault-api.js / vault.js             vault: Supabase access layer + interface
+  vault-api.js                        vault: Supabase access layer (the only one talking to the server)
+  vault.js                            vault: constants, helpers, start-up, sign-in, two-step verification
+  vault-dashboard.js                  vault: dashboard — list of files, whose turn, new file
+  vault-dossier.js                    vault: one file — display, upload, sign-off, comments
+  vault-staff.js                      vault: staff and retention purge
 supabase/vault_schema.sql             vault database: tables, row-level security, workflow, retention
 docs/
   CODE_MAP.md, code_map.html          GENERATED code map (with docs/codemap-data.js)

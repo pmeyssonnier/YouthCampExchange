@@ -217,14 +217,14 @@ function pagePane(pack){
 
 function sitePane(){
   const pane=document.createElement("div");
-  const h=document.createElement("h2");h.textContent=CODEMAP.site.file+" — "+CODEMAP.site.lines+" lines · "+kb(CODEMAP.site.bytes)+" (monolithic page)";
+  const h=document.createElement("h2");h.textContent=CODEMAP.site.file+" — "+CODEMAP.site.lines+" lines · "+kb(CODEMAP.site.bytes)+" — page shell and styles";
   pane.appendChild(h);
   const t=document.createElement("table");t.className="simple";
   t.innerHTML="<tr><th>Block</th><th>Content</th></tr>"
     +CODEMAP.site.blocks.map(b=>"<tr><td class='mono'>"+esc(b.name)+"</td><td>"+esc(b.role)+"</td></tr>").join("");
   pane.appendChild(t);
   const n=document.createElement("p");n.style.cssText="font-size:11px;color:var(--muted);margin-top:10px";
-  n.textContent="Only page with external runtime dependencies (D3 + TopoJSON via CDN, for the world map).";
+  n.textContent="The world map uses D3 and TopoJSON, served from the vendor/ folder of the site (no external request).";
   pane.appendChild(n);
   return pane;
 }
@@ -242,7 +242,9 @@ function dataPane(){
 const TABS=[
   {id:"filler",label:"📝 Form filler",make:()=>pagePane(CODEMAP.filler)},
   {id:"tracker",label:"📋 Tracker",make:()=>pagePane(CODEMAP.tracker)},
-  {id:"site",label:"🌍 Public site",make:sitePane},
+  {id:"vault",label:"🔐 Vault",make:()=>pagePane(CODEMAP.vault)},
+  {id:"admin",label:"⚙️ Administration",make:()=>pagePane(CODEMAP.admin)},
+  {id:"public",label:"🌍 Public site",make:()=>{const p=pagePane(CODEMAP.public);p.appendChild(sitePane());return p;}},
   {id:"data",label:"🧰 Data & tools",make:dataPane},
 ];
 const tabs=document.getElementById("tabs"),panes=document.getElementById("panes");
@@ -256,7 +258,8 @@ TABS.forEach((t,i)=>{
   p.appendChild(t.make());panes.appendChild(p);
 });
 document.getElementById("sub").textContent="Interactive code map · generated "+CODEMAP.generated+" · commit "+CODEMAP.commit;
-const all=[...CODEMAP.filler.modules,...CODEMAP.tracker.modules].filter(m=>!m.generated);
+// every hand-written module once (zip.js, xlsx.js… are shared by several pages)
+const seen={},all=[];["filler","tracker","vault","admin","public"].forEach(k=>CODEMAP[k].modules.forEach(m=>{if(!m.generated&&!seen[m.file]){seen[m.file]=1;all.push(m);}}));
 document.getElementById("st-mods").textContent=all.length;
 document.getElementById("st-lines").textContent=all.reduce((a,m)=>a+m.lines,0);
 document.getElementById("st-kb").textContent=Math.round(all.reduce((a,m)=>a+m.bytes,0)/1024);
