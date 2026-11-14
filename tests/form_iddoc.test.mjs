@@ -107,7 +107,7 @@ t.ok(await pg.evaluate(() => !isComplete(Object.values(ROWS)[0])), 'file not cou
     set('S20', 'jane.doe@gmail'); set('E69', 'jane doe@x.be'); set('P64', 'ok@example.be'); set('S21', '12'); set('AE68', '+32 470 12 34 56'); set('G21', '0470123456'); });
   const f = await m.evaluate(() => formProblems().map(x => x.label + ': ' + x.why));
   t.ok(f.length === 3, 'three wrong formats found: ' + JSON.stringify(f));
-  t.ok(f.some(x => /^Email: .*incomplete/.test(x)) && f.some(x => /^Club e-mail: remove the spaces/.test(x)) && f.some(x => /^Mobile: not a valid number/.test(x)), 'each problem is explained');
+  t.ok(f.some(x => /^Email: .*incomplete/.test(x)) && f.some(x => /^Club e-mail: remove the spaces/.test(x)) && f.some(x => /^Mobile: a number in Belgium has 8 to 9 digits after \+32 \(you typed 2\)/.test(x)), 'each problem is explained');
   t.ok(!f.some(x => /Emergency e-mail|Chairperson mobile|Phone \(home\)/.test(x)), 'correct e-mails and numbers (also a local number that gets the country code) are accepted');
   await m.click('#miss-btn');
   t.ok(/Wrong format \(3\)/i.test(await m.textContent('#miss-dlg')), 'dialog lists the wrong formats');
@@ -121,6 +121,24 @@ t.ok(await pg.evaluate(() => !isComplete(Object.values(ROWS)[0])), 'file not cou
   t.ok(await m.evaluate(() => !document.getElementById('btn-gen').disabled), 'generate button usable again after the refusal');
   await m.evaluate(() => { ['S20', 'E69', 'S21'].forEach(r => { const e = document.getElementById('f-' + r); e.value = ''; }); });
   t.ok(await m.evaluate(() => formProblems().length) === 0, 'no problem once the fields are cleared');
+  t.ok(!me.length, 'no page error ' + me.join(' | '));
+  await m.close();
+}
+
+// téléphones : indicatif pays <-> nombre de chiffres, tous les indicatifs reconnus, 0 des fixes italiens conservé
+{
+  const m = await ctx.newPage(); const me = []; m.on('pageerror', e => me.push(e.message));
+  await m.goto(B + 'yce_form_filler.html'); await m.waitForTimeout(500);
+  const r = await m.evaluate(() => Object.fromEntries(['0470123456', '+32 470 12 34 56', '+32 470 12 34', '+32 470 12 34 56 78 90', '+33 6 12 34', '+39 02 1234567', '+1 650 296 2870',
+    '+971 50 123 4567', '+7 912 345 67 89', '+44 7911 123456', '+358 50 3575965', '+47 123 45'].map(x => { const n = normPhone(x); return [x, [n, phoneProblem(n)]]; })));
+  t.ok(r['0470123456'][0] === '+32 470 123 456' && r['0470123456'][1] === '' && r['+32 470 12 34 56'][1] === '', 'Belgian mobile accepted');
+  t.ok(/Belgium has 8 to 9 digits after \+32 \(you typed 7\)/.test(r['+32 470 12 34'][1]), 'too short for Belgium: ' + r['+32 470 12 34'][1]);
+  t.ok(/Belgium has 8 to 9 digits after \+32 \(you typed 13\)/.test(r['+32 470 12 34 56 78 90'][1]), 'too long for Belgium');
+  t.ok(/France has 9 digits after \+33 \(you typed 5\)/.test(r['+33 6 12 34'][1]), 'too short for France (below the old 8-digit floor): ' + r['+33 6 12 34'][1]);
+  t.ok(r['+39 02 1234567'][0] === '+39 021 234 567' && r['+39 02 1234567'][1] === '', 'Italian landline keeps its 0');
+  t.ok(r['+1 650 296 2870'][0] === '+1 650 296 2870' && r['+971 50 123 4567'][0] === '+971 501 234 567' && r['+7 912 345 67 89'][0] === '+7 912 345 6789', 'codes +1, +971, +7 recognised');
+  t.ok(r['+44 7911 123456'][1] === '' && r['+358 50 3575965'][1] === '', 'UK and Finnish mobiles accepted');
+  t.ok(r['+47 123 45'][1] !== '', 'too short for Norway is refused');
   t.ok(!me.length, 'no page error ' + me.join(' | '));
   await m.close();
 }
