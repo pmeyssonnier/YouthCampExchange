@@ -2,7 +2,7 @@
 // édition des fiches, export/import JSON de sauvegarde, archivage, enregistrement vers le site.
 // Onglet Camps de yce_admin.html ; chargé après camps_data.js, js/zip.js, js/xlsx.js et js/admin-core.js.
 "use strict";
-let CAMPS_W=RAW.map(function(c){return JSON.parse(JSON.stringify(c));}); // copie de travail (coordonnées retirées au démarrage, voir stripContacts)
+let CAMPS_W=RAW.map(function(c){return JSON.parse(JSON.stringify(c));}); // copie de travail
 let ARCH=[];              // camps archivés (camps_archive.json)
 let CONT="",DIRTY=false, CONNECTED=false, VIEW="active", EDIT_I=-1, EDIT_C=null, EDIT_NEW=false, REVIEW=null;
 let SORT_K="country", SORT_D=1; // tri du tableau (clic sur les en-têtes)
@@ -10,39 +10,13 @@ let SORT_K="country", SORT_D=1; // tri du tableau (clic sur les en-têtes)
 const TOP_KEYS=["continent","country","state","district","camp_name","inclusive","winter","age_requirements","fee",
   "camp_starts","camp_ends","family_stay_starts","family_stay_ends","family_stay2_starts","family_stay2_ends","detail"];
 const DET_KEYS=["location","description","host_family_activities","languages","website","flyer_url",
-  "application_deadline","participants","contact_key","lat","lon"];
+  "application_deadline","participants","contact_name","contact_email","contact_phone","lat","lon"];
 const CONTINENTS=["Africa","Asia","Europe","Middle America","North America","Oceania","South America"];
 
 function markDirty(){DIRTY=true;document.getElementById("dirty").style.display="";updSave();}
 function updSave(){document.getElementById("save-site").disabled=!(CONNECTED&&DIRTY);
   document.getElementById("save-site").title=CONNECTED?(DIRTY?"":"No changes to save"):"Connect first";}
 function simple(s){return String(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g,"");}
-// Contact d'un camp : le site (dépôt public) ne garde ni nom, ni e-mail, ni téléphone — ils restent dans le répertoire YCE.
-// Seule une empreinte de l'e-mail (contact_key) est conservée : elle suffit à reconnaître le même contact d'un import à l'autre
-// (doublons, camps renommés) sans permettre de lire l'adresse.
-function contactKey(mail){ // FNV-1a 32 bits de l'adresse simplifiée -> 8 caractères hexadécimaux ; "" si pas d'adresse
-  const t=simple(mail);if(!t)return "";
-  let h=0x811c9dc5;
-  for(let i=0;i<t.length;i++){h^=t.charCodeAt(i);h=Math.imul(h,0x01000193);}
-  return ("0000000"+(h>>>0).toString(16)).slice(-8);
-}
-// adresses e-mail et numéros de téléphone internationaux écrits dans un texte libre (« send applications to … ») : remplacés par un renvoi au coordinateur
-function scrubContacts(txt){
-  return String(txt).replace(/[^\s@<>()":;,]+@[^\s@<>()":;,]+\.[a-z]{2,}/gi,"[contact: ask your YCE coordinator]")
-    .replace(/(?:\+|\b00)[\s\u00a0\ufffd]?\d[\d\s\u00a0().\/-]{7,}\d/g,"[contact: ask your YCE coordinator]")
-    .replace(/(\[contact: ask your YCE coordinator\])(?:[\s,;\/-]*\[contact: ask your YCE coordinator\])+/g,"$1");
-}
-// retire les coordonnées d'une liste de camps (anciennes données, ancienne sauvegarde) en gardant l'empreinte
-function stripContacts(list){
-  (list||[]).forEach(function(c){
-    const d=c&&c.detail;if(!d||typeof d!=="object")return;
-    if(d.contact_email&&!d.contact_key)d.contact_key=contactKey(d.contact_email);
-    Object.keys(d).forEach(function(k){if(/^contact/.test(k)&&k!=="contact_key")delete d[k];}); // contact_name, contact_email, contact_phone et variantes
-    if(!d.contact_key)delete d.contact_key;
-    ["description","host_family_activities","location"].forEach(function(k){if(typeof d[k]==="string")d[k]=scrubContacts(d[k]);});
-  });
-  return list;
-}
 function seasonOf(c){const m=/(\d{4})$/.exec(c.camp_starts||"");if(!m)return "";
   const y=+m[1],mm=+(c.camp_starts||"").slice(3,5);return (mm>=9)?(y+"-"+(y+1)):((y-1)+"-"+y);}
 
@@ -144,7 +118,9 @@ function openEdit(i){
     +fldHtml("e-host_family_activities","Host family activities",d.host_family_activities,"g6","textarea")
     +fldHtml("e-website","Official website",d.website,"g2")
     +fldHtml("e-flyer_url","Camp flyer (link to the image)",d.flyer_url,"g2")
-    +'<div class="fld g6"><span class="hint">Contact name, e-mail and phone are not stored on the site (public repository): look them up in the official YCE directory.</span></div>';
+    +fldHtml("e-contact_name","Contact name",d.contact_name,"g2")
+    +fldHtml("e-contact_email","Contact e-mail (several: separate with ;)",d.contact_email,"g2")
+    +fldHtml("e-contact_phone","Contact phone",d.contact_phone,"g2");
   document.getElementById("edit-del").style.display="";
   document.getElementById("edit-box").style.display="block";
   document.getElementById("edit-box").scrollIntoView({behavior:"smooth",block:"start"});
@@ -189,6 +165,7 @@ function saveEdit(){
   if(ages&&ages.length>=2&&+ages[0]>+ages[1]){log("Ages: the minimum is above the maximum.","err");return;}
   if(gv("e-flyer_url")&&!/^https?:\/\/[a-z0-9-]+(\.[a-z0-9-]+)+(\/\S*)?$/i.test(gv("e-flyer_url"))){log("Flyer must be a web address (https://…).","err");return;}
   if(gv("e-website")&&!/^(https?:\/\/)?[a-z0-9-]+(\.[a-z0-9-]+)+(\/\S*)?$/i.test(gv("e-website"))){log("Website must be a web address (https://…).","err");return;}
+  if(gv("e-contact_email")&&!gv("e-contact_email").split(/\s*[;,]\s*/).every(function(m){return /^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/.test(m);})){log("Contact e-mail is not valid (several addresses: separate them with a semicolon).","err");return;}
   const lat=gv("e-lat"),lon=gv("e-lon");
   if(lat||lon){
     if(!lat||!lon||!isFinite(+lat)||!isFinite(+lon)||Math.abs(+lat)>90||Math.abs(+lon)>180){log("Coordinates: give both latitude (-90 to 90) and longitude (-180 to 180) as numbers, e.g. 50.9307 and 5.332.","err");return;}
@@ -206,8 +183,8 @@ function saveEdit(){
   const d={};
   [["location","e-location"],["description","e-description"],["host_family_activities","e-host_family_activities"],
    ["website","e-website"],["flyer_url","e-flyer_url"],["application_deadline","e-application_deadline"],
-   ["participants","e-participants"]].forEach(function(p){const v=gv(p[1]);if(v)d[p[0]]=v;});
-  if(c.detail&&c.detail.contact_key)d.contact_key=c.detail.contact_key; // empreinte du contact : conservée telle quelle
+   ["participants","e-participants"],["contact_name","e-contact_name"],["contact_email","e-contact_email"],
+   ["contact_phone","e-contact_phone"]].forEach(function(p){const v=gv(p[1]);if(v)d[p[0]]=v;});
   if(lat&&lon){d.lat=Math.round(+lat*10000)/10000;d.lon=Math.round(+lon*10000)/10000;}
   const langs=gv("e-languages");
   if(langs)d.languages=langs.split(",").map(function(x){return x.trim();}).filter(Boolean);
@@ -266,7 +243,7 @@ function jsonPick(inp){
       camps.concat(Array.isArray(d.archive)?d.archive:[]).forEach(function(c){if(c&&c.detail&&typeof c.detail==='object')delete c.detail.yce_url;});
       if(!confirm("Replace the working list with "+camps.length+" camps"
         +(d.archive?" + "+d.archive.length+" archived":"")+" from "+f.name+" ?"))return;
-      CAMPS_W=stripContacts(camps);ARCH=Array.isArray(d.archive)?stripContacts(d.archive):ARCH;
+      CAMPS_W=camps;ARCH=Array.isArray(d.archive)?d.archive:ARCH;
       log("Backup imported from "+esc(f.name)+" — review, then “Save to the site”.","ok");
       markDirty();render();
     }catch(e){log("Import rejected: "+esc(e.message),"err");}
@@ -354,8 +331,8 @@ async function dirPick(inp){
     if(rows.length<2)throw new Error("empty sheet");
     const hdr=rows[0].map(function(h){return String(h||"").toLowerCase();});
     const col=function(part){for(let i=0;i<hdr.length;i++)if(hdr[i]&&hdr[i].indexOf(part)>=0)return i;return -1;};
-    const C={country:col("country"),name:col("camp name"),
-      email:col("email"),deadline:col("deadline"),ages:col("age"),
+    const C={country:col("country"),name:col("camp name"),first:col("first name"),last:col("last name"),
+      email:col("email"),phone:col("phone"),deadline:col("deadline"),ages:col("age"),
       participants:col("participants"),langs:col("language"),fee:col("fees"),cur:col("currency"),
       fs:col("family stay dates (month/day/year) start"),fe:col("family stay dates (month/day/year) end"),
       hfa:col("host family activities"),web:col("website"),loc:col("location"),
@@ -371,7 +348,7 @@ async function dirPick(inp){
         fs:mdyToDmy(g(C.fs)),fe:mdyToDmy(g(C.fe)),deadline:mdyToDmy(g(C.deadline)),
         ages:g(C.ages),participants:g(C.participants),fee:feeOf(g(C.fee),g(C.cur)),
         hfa:g(C.hfa),website:g(C.web),location:g(C.loc),activities:g(C.act),langs:langs,
-        ckey:contactKey(g(C.email))||null}); // du contact, seule l'empreinte de l'e-mail est lue
+        cname:[g(C.first),g(C.last)].filter(Boolean).join(" ")||null,cemail:g(C.email),cphone:g(C.phone)});
     }
     buildReview(f.name,items);
   }catch(e){log("Directory import failed: "+esc(e.message),"err");}
@@ -466,22 +443,22 @@ function changesFor(c,t){ // champs à mettre à jour (une valeur vide du réper
   chk("det","host_family_activities",t.hfa,"host family");chk("det","website",t.website,"website");
   chk("det","location",t.location,"location");chk("det","description",t.activities,"activities");
   chk("det","languages",t.langs&&t.langs.length?t.langs:null,"languages");
-  if(t.ckey&&det.contact_key!==t.ckey)out.push({scope:"det",field:"contact_key",val:t.ckey,label:"contact",old:det.contact_key?"previous contact":"",show:"new contact"});
+  chk("det","contact_name",t.cname,"contact");chk("det","contact_email",t.cemail,"contact e-mail");
+  chk("det","contact_phone",t.cphone,"contact phone");
   return out;
 }
 // Deux fiches décrivent-elles le même camp ? Les noms changent d'une année à l'autre (« Brussels Lions Youth Camp »
 // devient « Belgium Lions YCE Camp 2027 »), donc on recoupe aussi les dates, le lieu et le contact.
 // Renvoie une raison (texte) ou null. a, b : {name,country,start,loc,email}
-// email : empreinte du contact (contactKey), jamais l'adresse
-function factsOf(c){const d=c.detail||{};return {name:c.camp_name,country:c.country,start:c.camp_starts,loc:d.location,email:d.contact_key||contactKey(d.contact_email)};}
-function factsOfT(t){return {name:t.name,country:t.country,start:t.cs,loc:t.location,email:t.ckey||""};}
+function factsOf(c){const d=c.detail||{};return {name:c.camp_name,country:c.country,start:c.camp_starts,loc:d.location,email:d.contact_email};}
+function factsOfT(t){return {name:t.name,country:t.country,start:t.cs,loc:t.location,email:t.cemail};}
 function alike(a,b){
   if(simple(a.country)!==simple(b.country))return null;
   if(simple(a.name)===simple(b.name))return "exact";
   const nm=sim(stripNoise(a.name),stripNoise(b.name));
   const lc=a.loc&&b.loc?sim(stripNoise(a.loc),stripNoise(b.loc)):0;
   const sameStart=!!a.start&&a.start===b.start;
-  const sameMail=!!a.email&&a.email===b.email;
+  const sameMail=!!a.email&&simple(a.email)===simple(b.email);
   if(sameStart&&lc>=0.7)return "same dates and place";
   if(sameStart&&sameMail&&(lc>=0.4||nm>=0.4||!a.loc||!b.loc))return "same dates and contact";
   if(nm>=0.72)return "close name "+nm.toFixed(2);
@@ -492,7 +469,7 @@ function likeness(a,b){
   const nm=sim(stripNoise(a.name),stripNoise(b.name));
   const lc=a.loc&&b.loc?sim(stripNoise(a.loc),stripNoise(b.loc)):0;
   const st=a.start&&a.start===b.start?1:0;
-  const ml=a.email&&a.email===b.email?1:0;
+  const ml=a.email&&simple(a.email)===simple(b.email)?1:0;
   return Math.round(100*(0.30*nm+0.30*lc+0.25*st+0.15*ml));
 }
 // camp du répertoire retrouvé dans une liste : même nom, sinon camp reconnu par ses dates, son lieu ou son contact
@@ -521,7 +498,8 @@ function showDuplicates(){
   const d=findDuplicates(),box=document.getElementById("dups");
   document.getElementById("dups-note").textContent=d.length?d.length+" pair(s) to check":"";
   document.getElementById("dups-body").innerHTML=d.length?d.map(function(x){
-    const row=function(c){return "<b>"+esc(c.camp_name)+"</b> <span class='sub'>"+esc(c.camp_starts||"—")+" · "+esc((c.detail||{}).location||"—")+'</span> <button class="btn2" onclick="openEdit('+CAMPS_W.indexOf(c)+')">✏ Edit</button>';};
+    const row=function(c){return "<b>"+esc(c.camp_name)+"</b> <span class='sub'>"+esc(c.camp_starts||"—")+" · "+esc((c.detail||{}).location||"—")
+      +" · "+esc((c.detail||{}).contact_email||"—")+'</span> <button class="btn2" onclick="openEdit('+CAMPS_W.indexOf(c)+')">✏ Edit</button>';};
     return '<div class="rev-row"><div class="rev-what">'+row(x.a)+"<br>"+row(x.b)+'<div class="chg"><b>'+x.pct+' % similar</b> — '+esc(x.why)+"</div></div></div>";
   }).join(""):'<span class="hint">No duplicate found among the active camps.</span>';
   box.style.display="";
@@ -537,7 +515,7 @@ function replacesFor(t){
   olds.forEach(function(i){
     const c=CAMPS_W[i],d=c.detail||{};
     let sc,w;
-    if(t.ckey&&factsOf(c).email===t.ckey){sc=2;w="same contact";}
+    if(t.cemail&&d.contact_email&&simple(t.cemail)===simple(d.contact_email)){sc=2;w="same contact";}
     else{
       const l=t.location&&d.location?sim(stripNoise(d.location),stripNoise(t.location)):0;
       const n=sim(stripNoise(c.camp_name),stripNoise(t.name));
@@ -575,7 +553,7 @@ function buildReview(fname,items){
         +(r.rep?'<label class="rev-rep"><input type="checkbox" id="rva-'+i+'"> may replace <b>'+esc(r.rep.camp.camp_name)+"</b> ("
           +esc(seasonOf(r.rep.camp))+", "+esc(r.rep.why)+") — archive the old camp</label>":"")
       :"<b>"+esc(r.camp.camp_name)+"</b> ⇐ "+esc(r.t.name)
-        +"<div class='chg'>"+r.chg.map(function(x){return esc(x.label)+": "+esc(String(x.old).slice(0,30)||"∅")+" → "+esc(x.show||String(Array.isArray(x.val)?x.val.join(", "):x.val).slice(0,40));}).join(" · ")+"</div>";
+        +"<div class='chg'>"+r.chg.map(function(x){return esc(x.label)+": "+esc(String(x.old).slice(0,30)||"∅")+" → "+esc(String(Array.isArray(x.val)?x.val.join(", "):x.val).slice(0,40));}).join(" · ")+"</div>";
     return '<div class="rev-row"><input type="checkbox" id="rv-'+i+'"'+(r.on?" checked":"")+"> "+tag+'<div class="rev-what">'+what+"</div></div>";
   }).join(""):'<span class="hint">Everything already matches the directory — nothing to apply.</span>';
   document.getElementById("review").style.display="";
@@ -605,7 +583,7 @@ function applyReview(){
       [["location",t.location],["description",t.activities],["host_family_activities",t.hfa],
        ["languages",t.langs&&t.langs.length?t.langs:null],["website",t.website],
        ["application_deadline",t.deadline],["participants",t.participants],
-       ["contact_key",t.ckey]]
+       ["contact_name",t.cname],["contact_email",t.cemail],["contact_phone",t.cphone]]
         .forEach(function(p){if(p[1])det[p[0]]=p[1];});
       const known={Denmark:"Europe",Hungary:"Europe",Malaysia:"Asia","Sri Lanka":"Asia",Mexico:"Middle America"};
       const ex=CAMPS_W.find(function(c){return c.country===t.country;});
@@ -632,7 +610,6 @@ function cancelReview(){REVIEW=null;document.getElementById("review").style.disp
 async function saveSite(){
   const btn=document.getElementById("save-site");btn.disabled=true;
   try{
-    stripContacts(CAMPS_W);stripContacts(ARCH); // jamais de coordonnées dans les fichiers du site
     const clean=CAMPS_W.map(function(c){const o={};TOP_KEYS.forEach(function(k){if(k in c)o[k]=c[k];});return o;});
     const cur=await getFile("camps_data.js");
     if(!cur)throw new Error("camps_data.js not found on main");
@@ -665,9 +642,9 @@ ON_CONNECT.push(async function(){
     if(!DIRTY){
       const cur=await getFile("camps_data.js");
       const src=b64ToUtf8(cur.content),span=rawSpan(src);
-      if(span){CAMPS_W=stripContacts(JSON.parse(src.slice(span[0],span[1])));if(EDIT_C&&!EDIT_NEW)closeEdit();}
+      if(span){CAMPS_W=JSON.parse(src.slice(span[0],span[1]));if(EDIT_C&&!EDIT_NEW)closeEdit();}
       const curA=await getFile("camps_archive.json");
-      if(curA){const a=JSON.parse(b64ToUtf8(curA.content));if(Array.isArray(a.archive))ARCH=stripContacts(a.archive);}
+      if(curA){const a=JSON.parse(b64ToUtf8(curA.content));if(Array.isArray(a.archive))ARCH=a.archive;}
       log("Latest repository state loaded ("+CAMPS_W.length+" active, "+ARCH.length+" archived).","info");
     }else log("Connected — local unsaved changes kept.","warn");
   }catch(e){log("Could not refresh from the repository: "+esc(e.message),"warn");}
@@ -678,9 +655,8 @@ ON_LOGOUT.push(function(){CONNECTED=false;updSave();});
 // -------------------- démarrage --------------------
 (function(){
   fetch("camps_archive.json").then(function(r){return r.ok?r.json():null;})
-    .then(function(a){if(a&&Array.isArray(a.archive)){ARCH=stripContacts(a.archive);render();}})
+    .then(function(a){if(a&&Array.isArray(a.archive)){ARCH=a.archive;render();}})
     .catch(function(){});
-  stripContacts(CAMPS_W);
   render();
   initAccess();
   window.addEventListener("beforeunload",function(e){if(DIRTY){e.preventDefault();e.returnValue="";}});
