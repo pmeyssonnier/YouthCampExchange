@@ -1,7 +1,7 @@
 # Code map — Lions YCE
 
 > **Generated file — do not edit by hand.** Rebuilt by `python3 tools/build_codemap.py` (run automatically on every push to `main`).
-> Commit `72cfcf3`, 2026-11-14 18:32 UTC. Interactive version: [`code_map.html`](code_map.html).
+> Commit `2135362`, 2026-11-14 20:22 UTC. Interactive version: [`code_map.html`](code_map.html).
 
 ## Pages
 
@@ -100,6 +100,67 @@
 
 **`js/vault.js`** — `esc` (escape HTML), `show`, `msg`, `fmtDT`, `fmtD`, `isStaff`, `selfLink`, `sha256Hex`, `isMinor`, `validBirth`, `latestFile`, `idPending`, `applicationSeason`, `vaultInit`, `fillStaticLists`, `sendLink`, `startSession`, `mfaNeeded`, `mfaVerify`, `continueSession`, `signOut`, `myTurn`, `waitingFor`, `renderNext`, `renderWelcome`, `loadDashboard`, `renderList`, `createDossier`, `openDossier`, `closeDossier`, `canUpload`, `renderDossier`, `renderActions`, `saveEdit`, `uploadZip`, `uploadIdLater`, `downloadFile`, `signedDoc`, `act`, `offerNotify`, `copyLink`, `withdraw`, `addComment`, `readAfClub`, `showAfClub`, `loadStaff`, `staffAdd`, `staffDelete`, `loadPurge`, `runPurge`
 
+## Administration modules
+
+| Module | Lines | Size | Role |
+|---|---:|---:|---|
+| `js/zip.js` | 126 | 7.5 KB | bounded ZIP reading (limits against booby-trapped archives) — shared |
+| `js/xlsx.js` | 258 | 13.0 KB | ZIP writing + workbook cell read/write |
+| `js/admin-core.js` | 238 | 13.8 KB | shared admin plumbing: passphrase-encrypted token, GitHub API, atomic commits, connect hooks |
+| `js/clean-html.js` | 32 | 1.7 KB | cleanHtml: the few formatting tags allowed in customisable texts — shared |
+| `js/upload-limits.js` | 19 | 1.1 KB | upload size limits — shared |
+| `js/admin.js` | 418 | 26.1 KB | Site & season and Documents tabs: season, coordinators, national team, home page, gallery, uploads |
+| `js/camps-manager.js` | 320 | 19.5 KB | Camps tab: list, camp sheet, archive, JSON backup, save to the site |
+| `js/camps-match.js` | 71 | 4.2 KB | Camps tab: is it the same camp? name/place similarity, renamed camps, duplicates |
+| `js/camps-import.js` | 219 | 13.4 KB | Camps tab: official YCE directory (xlsx) import — parse, review, apply |
+| `js/camps-geo.js` | 77 | 4.4 KB | Camps tab: map coordinates from a NextGIS GeoJSON export |
+| `js/admin-tabs.js` | 21 | 1.2 KB | admin tab switching (#site, #camps, #docs) |
+
+**`js/zip.js`** — `zipBudget`, `zipCheckSize`, `zipDirectory` (validated central directory, no decompression), `zipNames` (file names of an archive without decompressing), `inflateRaw` (native inflate), `unzip` (parse a zip into [{name,data}] within ZIP_LIMITS)
+
+**`js/xlsx.js`** — `crc32` (CRC-32 for zip writing), `deflateRaw` (native deflate), `buildZip` (rebuild a zip Blob), `decodeEnt` (XML entities), `textOf` (concat <t> runs), `parseShared` (sharedStrings table), `getCellValue` (read one cell), `syncFromTemplate` (prefill inputs + X-groups from a workbook), `b64ToBuf` (base64 → ArrayBuffer), `loadTemplate` ('Other template' input), `setStatus` (status bar helper), `escXml` (escape XML), `fmtDate` (ISO → dd-mm-yyyy), `dmyToSerial`, `serialToDmy`, `addDateStyle`, `setCellDate`, `yearizeTemplate`, `setCell` (write/clear one cell keeping style), `collectValues` (gather all field values (+phone check))
+
+**`js/admin-core.js`** — `sessionSave`, `sessionClear`, `sessionToken`, `b64e`, `b64d`, `pinKey`, `encryptToken` (token encrypted with the passphrase (kept in this browser)), `decryptToken` (unlock with the passphrase), `hasEnc`, `accessMode`, `log` (activity journal of the page), `esc` (escape HTML), `token`, `gh` (GitHub API call with the token), `getFile` (read a file of the repository), `putFile` (write one file), `commitFiles` (atomic multi-file commit (Git Data API)), `b64ToUtf8`, `utf8ToB64`, `bufToB64`, `connect` (check the token, then unlock the page), `finishConnect`, `resumeSession`, `logout` (forget the token), `initAccess` (choose token / passphrase screen), `rawSpan` (position of the RAW camp array in camps_data.js)
+
+**`js/clean-html.js`** — `safeUrl`, `cleanHtml`
+
+**`js/upload-limits.js`** — `uploadLimits`
+
+**`js/admin.js`** — `limShow`, `limValues`, `fillForm` (show the site data in the form), `distShow` (district coordinators list), `distEdit`, `distNew`, `distCancel`, `distApply`, `distRemove`, `mdShow`, `mdInput`, `teamForm`, `teamShow` (national team list), `teamEdit`, `teamCancel`, `teamApply`, `teamRemove`, `teamMove`, `ibanOk` (IBAN checksum), `paymentValues`, `upsertConst` (set a constant in a data file), `updPaths`, `galShow`, `galMove`, `galZoom`, `galPick` (add gallery photos), `buildDistrictsLiteral` (DISTRICTS block as written in the file), `saveData` (save season, coordinators, home page in one commit), `uploadPick` (replace an official document), `parseSiteData` (read camps_data.js / districts_data.js as text), `annMode`
+
+**`js/camps-manager.js`** — `markDirty` (unsaved changes flag), `updSave`, `simple` (lower case, no accents, letters and digits only), `seasonOf` (YCE season of a camp (September to August)), `dmyKey`, `setSort` (column sort), `setContinent`, `setView`, `render` (camp table (search, continent, sort)), `fldHtml`, `editIndex` (position of the open sheet's camp (followed by object)), `openEdit` (open a camp sheet), `newCamp` (empty sheet), `deleteEditing` (delete the open camp), `closeEdit`, `gv`, `saveEdit` (validate and apply the sheet), `today`, `archiveCamp` (move to the archive), `restoreCamp` (back from the archive), `deleteCamp`, `exportJson` (JSON backup), `jsonPick` (restore a JSON backup), `validDmy` (real calendar date check), `saveSite` (write camps_data.js + camps_archive.json in one commit)
+
+**`js/camps-match.js`** — `sim` (bigram similarity of two texts (0 to 1)), `stripNoise` (drop years and words like Lions / camp / YCE), `factsOf` (facts of a saved camp used for matching), `factsOfT` (same facts for a directory line), `alike` (same camp? returns the reason (exact, same dates and place, …)), `likeness` (similarity percentage of two sheets), `matchCamp` (find a directory camp in a list), `findDuplicates` (possible duplicate pairs), `showDuplicates` (🔎 Check duplicates list)
+
+**`js/camps-import.js`** — `decodeXml`, `colIdx`, `serialToDmy`, `mdyToDmy` (MM-DD-YYYY or Excel serial → dd-mm-yyyy), `parseDirectory` (read the Approved Camps sheet of the xlsx), `feeOf` (fee with its currency), `dirPick` (directory file chosen → review), `changesFor` (fields the directory would change), `replacesFor` (earlier camp a new one may replace), `buildReview` (review list: updates, renames, new camps), `applyReview` (apply the ticked lines (directory or coordinates)), `cancelReview` (close the review)
+
+**`js/camps-geo.js`** — `mercToLonLat` (EPSG:3857 → longitude, latitude), `geoPick` (GeoJSON file chosen), `geoPoints` (points with a country and a camp name), `buildGeoReview` (match points to camps, review list)
+
+**`js/admin-tabs.js`** — `showTab`
+
+## Public site modules
+
+| Module | Lines | Size | Role |
+|---|---:|---:|---|
+| `js/clean-html.js` | 32 | 1.7 KB | cleanHtml: the few formatting tags allowed in customisable texts — shared |
+| `js/site-data.js` | 103 | 7.4 KB | date helpers, CAMPS enrichment, season stats, HTML escaping |
+| `js/site-explorer.js` | 316 | 19.3 KB | camp directory: filters with live counts, sorting, table, phone cards |
+| `js/site-map.js` | 209 | 19.2 KB | world map (D3): continents, countries, one dot per camp |
+| `js/site-modal.js` | 112 | 7.6 KB | camp sheet (modal) with its timeline |
+| `js/site-ui.js` | 122 | 7.4 KB | team, payment and district cards, theme, mobile menu — runs init |
+
+**`js/clean-html.js`** — `safeUrl`, `cleanHtml`
+
+**`js/site-data.js`** — `parseDate` (dd-mm-yyyy → Date (real dates only)), `fmtDate` (ISO → dd-mm-yyyy), `fmtDate2`, `fmtFull`, `parseAge`, `titleCase` (uniform display of camp names), `feeEuro` (fee in euros, for sorting), `countryFlag` (flag emoji of a country), `flagged`, `typeChips`, `periodRows` (family stay / camp date lines), `esc` (escape HTML (every camp value goes through it)), `jsArg` (safe text argument of an onclick), `safeMail` (valid e-mail or null)
+
+**`js/site-explorer.js`** — `campMatches` (does a camp pass the filters (some may be skipped for counts)), `facetCounts` (count per chip value), `renderSeasonPills`, `initSeasonPills`, `renderInclusivePill`, `renderWinterPill`, `toggleWinter`, `toggleInclusive`, `refreshFacets` (recount every filter chip), `toggleSeason`, `renderStateList`, `toggleState`, `getFiltered` (camps passing all filters), `getSorted` (sort for table and cards), `sortBy`, `renderTable` (table + phone cards + map refresh), `renderMobileSort`, `mobileSort`, `mobileSortDir`, `renderMobileCards` (phone cards), `renderFilterChips` (active filter chips), `openFilters`, `closeFilters`, `renderContinentPills`, `initContinentPills`, `toggleContinent`, `renderCountryList`, `toggleCountry`, `toggleAcc`, `setPeriodType`, `populatePeriodSelect` (month / half-month / week choices), `applyFilters` (read age / period, then redraw), `resetFilters` (clear every filter), `switchTab`, `focusBelgium`
+
+**`js/site-map.js`** — `mapCamps`, `mapFiltersChanged`, `initMap`, `renderWorldBubbles`, `zoomContinent`, `renderContInfo`, `refreshContinent`, `renderCountryBubbles`, `zoomCountry`, `showCountryCamps`, `renderCampDots`, `clearCampDots`, `closeCountryPanel`, `goBack`, `zoomContFromCrumb`, `zoomWorld`, `renderLegend`
+
+**`js/site-modal.js`** — `showCampDetail` (open the camp sheet), `closeModal`
+
+**`js/site-ui.js`** — `toggleTheme`
+
 ## Data, tools and other files
 
 | File | Size | Role |
@@ -107,15 +168,11 @@
 | `camps_data.js` | 72.2 KB | season data: SEASON + YEAR + RAW camps — common to every deployment |
 | `districts_data.js` | 6.1 KB | per-deployment data: SITE_REPO + DISTRICTS coordinators |
 | `js/version.js` | 0.5 KB | site version number (VERSION), shown on every page — bumped by each pull request |
-| `CHANGELOG.md` | 40.5 KB | what changed in each version |
+| `CHANGELOG.md` | 41.5 KB | what changed in each version |
 | `yce_form_filler.html` | 13.8 KB | filler HTML shell + styles |
 | `yce_tracker.html` | 9.0 KB | tracker HTML shell + styles |
-| `yce_admin.html` | 25.8 KB | administration HTML shell: tabs Site & season / Camps / Documents |
+| `yce_admin.html` | 26.1 KB | administration HTML shell: tabs Site & season / Camps / Documents |
 | `yce_camps.html` | 1.0 KB | old camp manager address — redirects to yce_admin.html#camps |
-| `js/admin-core.js` | 13.8 KB | shared admin plumbing (token, passphrase, GitHub API, connect hooks) |
-| `js/admin.js` | 26.1 KB | admin Site & Documents tabs: season, coordinators, home page, gallery, uploads |
-| `js/camps-manager.js` | 40.1 KB | admin Camps tab: directory import, editing, backups, archive |
-| `js/admin-tabs.js` | 1.2 KB | admin tab switching (#site, #camps, #docs) |
 | `js/toolnav.js` | 1.3 KB | tool menu under the header of every tool page |
 | `css/tools.css` | 6.9 KB | styles shared by the tool pages |
 | `yce_vault.html` | 20.1 KB | application vault HTML shell (Supabase) |
@@ -124,7 +181,7 @@
 | `supabase/vault_schema.sql` | 29.7 KB | vault database: tables, row-level security, workflow, retention |
 | `docs/VAULT_SETUP.md` | 14.3 KB | vault setup guide (Supabase project, SMTP, GDPR) |
 | `tools/build_assets.py` | 2.2 KB | regenerates js/assets.js |
-| `tools/build_codemap.py` | 13.7 KB | regenerates this visualisation's data and docs/CODE_MAP.md |
+| `tools/build_codemap.py` | 19.6 KB | regenerates this visualisation's data and docs/CODE_MAP.md |
 | `tests/` | 4.0 KB | security & regression tests run by GitHub Actions (npm test) |
 | `documents/` | 4.0 KB | official documents: reference form, Commitment, host-family letter, Commitment template (markers) |
 
@@ -177,3 +234,63 @@
 | `js/sections.js` | `js/form.js` | IS_ADMIN, SIGN_CLUB, SIGN_DISTRICT, SIGN_MODE |
 | `js/country.js` | `js/form.js` | COUNTRIES, CTRY, applyCountry, countryCfg, wirePhones |
 | `js/render.js` | `js/form.js` | esc, formProblems, initLists, missingGo, render, upd |
+
+## Who uses what (tracker)
+
+| Defined in | Used by | Names |
+|---|---|---|
+| `js/tracker-ui.js` | `js/tracker-storage.js` | render |
+| `js/zip.js` | `js/tracker-parser.js` | unzip, zipBudget, zipCheckSize |
+| `js/tracker-storage.js` | `js/tracker-parser.js` | ROWS, save |
+| `js/tracker-ui.js` | `js/tracker-parser.js` | log, render |
+| `js/tracker-storage.js` | `js/tracker-export.js` | ROWS |
+| `js/tracker-storage.js` | `js/tracker-ui.js` | ROWS, STATUSES, save |
+| `js/tracker-parser.js` | `js/tracker-ui.js` | handleFiles, norm |
+
+## Who uses what (vault)
+
+| Defined in | Used by | Names |
+|---|---|---|
+| `js/zip.js` | `js/club-copy.js` | unzip, zipBudget |
+| `js/vault.js` | `js/vault-api.js` | addComment, createDossier, mfaVerify, sendLink, signOut, staffAdd, staffDelete |
+| `js/zip.js` | `js/vault.js` | unzip, zipBudget, zipNames |
+| `js/club-copy.js` | `js/vault.js` | buildClubCopy |
+| `js/vault-api.js` | `js/vault.js` | makeVaultApi |
+
+## Who uses what (administration)
+
+| Defined in | Used by | Names |
+|---|---|---|
+| `js/zip.js` | `js/xlsx.js` | inflateRaw, unzip |
+| `js/admin-core.js` | `js/admin.js` | ON_CONNECT, b64ToUtf8, bufToB64, commitFiles, esc, getFile, initAccess, log, putFile, rawSpan, utf8ToB64 |
+| `js/clean-html.js` | `js/admin.js` | cleanHtml |
+| `js/upload-limits.js` | `js/admin.js` | uploadLimits |
+| `js/admin-core.js` | `js/camps-manager.js` | ON_CONNECT, b64ToUtf8, commitFiles, esc, getFile, initAccess, log, rawSpan, utf8ToB64 |
+| `js/camps-match.js` | `js/camps-manager.js` | showDuplicates |
+| `js/admin-core.js` | `js/camps-match.js` | esc |
+| `js/camps-manager.js` | `js/camps-match.js` | CAMPS_W, openEdit, simple |
+| `js/zip.js` | `js/camps-import.js` | unzip, zipCheckSize |
+| `js/admin-core.js` | `js/camps-import.js` | esc, log |
+| `js/camps-manager.js` | `js/camps-import.js` | ARCH, CAMPS_W, DET_KEYS, markDirty, render, seasonOf, simple, today, validDmy |
+| `js/camps-match.js` | `js/camps-import.js` | factsOf, factsOfT, likeness, matchCamp, sim, stripNoise |
+| `js/admin-core.js` | `js/camps-geo.js` | esc, log |
+| `js/camps-manager.js` | `js/camps-geo.js` | CAMPS_W, simple |
+| `js/camps-match.js` | `js/camps-geo.js` | sim, stripNoise |
+| `js/camps-import.js` | `js/camps-geo.js` | applyReview |
+| `js/admin-core.js` | `js/admin-tabs.js` | ON_CONNECT, connect |
+
+## Who uses what (public site)
+
+| Defined in | Used by | Names |
+|---|---|---|
+| `js/site-data.js` | `js/site-explorer.js` | CAMPS, MULTI_SEASON, esc, flagged, fmtDate, fmtDate2, jsArg, periodRows, titleCase, typeChips |
+| `js/site-map.js` | `js/site-explorer.js` | initMap, mapFiltersChanged, mapInited |
+| `js/site-modal.js` | `js/site-explorer.js` | showCampDetail |
+| `js/site-data.js` | `js/site-map.js` | CAMPS, CONT_CAMP_COUNTS, MULTI_SEASON, esc, fmtDate2, jsArg, periodRows, titleCase, typeChips |
+| `js/site-explorer.js` | `js/site-map.js` | getFiltered, renderTable |
+| `js/site-modal.js` | `js/site-map.js` | showCampDetail |
+| `js/clean-html.js` | `js/site-modal.js` | safeUrl |
+| `js/site-data.js` | `js/site-modal.js` | CAMPS, esc, fmtDate, fmtFull, titleCase |
+| `js/clean-html.js` | `js/site-ui.js` | cleanHtml, safeUrl |
+| `js/site-data.js` | `js/site-ui.js` | CAMPS, esc, fmtDate2, safeMail, titleCase |
+| `js/site-explorer.js` | `js/site-ui.js` | initContinentPills, initSeasonPills, renderCountryList, renderInclusivePill, renderStateList, renderTable, renderWinterPill |

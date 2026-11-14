@@ -13,6 +13,10 @@ FILLER = ["js/assets.js", "js/zip.js", "js/xlsx.js", "js/docx.js", "js/signature
 TRACKER = ["js/zip.js", "js/tracker-storage.js", "js/tracker-parser.js",
            "js/tracker-export.js", "js/tracker-ui.js"]
 VAULT = ["js/zip.js", "js/club-copy.js", "js/vault-api.js", "js/vault.js"]
+# administration (yce_admin.html) and public site (index.html), in load order
+ADMIN = ["js/zip.js", "js/xlsx.js", "js/admin-core.js", "js/clean-html.js", "js/upload-limits.js", "js/admin.js",
+         "js/camps-manager.js", "js/camps-match.js", "js/camps-import.js", "js/camps-geo.js", "js/admin-tabs.js"]
+PUBLIC = ["js/clean-html.js", "js/site-data.js", "js/site-explorer.js", "js/site-map.js", "js/site-modal.js", "js/site-ui.js"]
 
 ROLES = {
     "js/assets.js": "GENERATED — embedded templates (base64) + build version",
@@ -34,6 +38,55 @@ ROLES = {
     "js/tracker-parser.js": "file ingestion: zip, xlsx forms, commitment, attachments",
     "js/tracker-export.js": "CSV export for Excel",
     "js/tracker-ui.js": "table, filters, sorting, stats — runs render()",
+    "js/admin-core.js": "shared admin plumbing: passphrase-encrypted token, GitHub API, atomic commits, connect hooks",
+    "js/admin.js": "Site & season and Documents tabs: season, coordinators, national team, home page, gallery, uploads",
+    "js/camps-manager.js": "Camps tab: list, camp sheet, archive, JSON backup, save to the site",
+    "js/camps-match.js": "Camps tab: is it the same camp? name/place similarity, renamed camps, duplicates",
+    "js/camps-import.js": "Camps tab: official YCE directory (xlsx) import — parse, review, apply",
+    "js/camps-geo.js": "Camps tab: map coordinates from a NextGIS GeoJSON export",
+    "js/admin-tabs.js": "admin tab switching (#site, #camps, #docs)",
+    "js/clean-html.js": "cleanHtml: the few formatting tags allowed in customisable texts — shared",
+    "js/upload-limits.js": "upload size limits — shared",
+    "js/site-data.js": "date helpers, CAMPS enrichment, season stats, HTML escaping",
+    "js/site-explorer.js": "camp directory: filters with live counts, sorting, table, phone cards",
+    "js/site-map.js": "world map (D3): continents, countries, one dot per camp",
+    "js/site-modal.js": "camp sheet (modal) with its timeline",
+    "js/site-ui.js": "team, payment and district cards, theme, mobile menu — runs init",
+}
+# a role that only holds in one file (the same function name exists elsewhere with another job)
+FILE_FN_ROLES = {
+    "js/admin-core.js": {"log": "activity journal of the page", "esc": "escape HTML", "gh": "GitHub API call with the token",
+        "getFile": "read a file of the repository", "putFile": "write one file", "connect": "check the token, then unlock the page",
+        "encryptToken": "token encrypted with the passphrase (kept in this browser)", "decryptToken": "unlock with the passphrase",
+        "rawSpan": "position of the RAW camp array in camps_data.js", "logout": "forget the token", "initAccess": "choose token / passphrase screen"},
+    "js/admin.js": {"fillForm": "show the site data in the form", "saveData": "save season, coordinators, home page in one commit",
+        "parseSiteData": "read camps_data.js / districts_data.js as text", "buildDistrictsLiteral": "DISTRICTS block as written in the file",
+        "galPick": "add gallery photos", "uploadPick": "replace an official document", "distShow": "district coordinators list",
+        "teamShow": "national team list", "ibanOk": "IBAN checksum", "upsertConst": "set a constant in a data file"},
+    "js/camps-manager.js": {"render": "camp table (search, continent, sort)", "setSort": "column sort", "openEdit": "open a camp sheet",
+        "saveEdit": "validate and apply the sheet", "editIndex": "position of the open sheet's camp (followed by object)",
+        "newCamp": "empty sheet", "deleteEditing": "delete the open camp", "archiveCamp": "move to the archive", "restoreCamp": "back from the archive",
+        "exportJson": "JSON backup", "jsonPick": "restore a JSON backup", "saveSite": "write camps_data.js + camps_archive.json in one commit",
+        "seasonOf": "YCE season of a camp (September to August)", "simple": "lower case, no accents, letters and digits only",
+        "markDirty": "unsaved changes flag"},
+    "js/camps-match.js": {"sim": "bigram similarity of two texts (0 to 1)", "stripNoise": "drop years and words like Lions / camp / YCE",
+        "alike": "same camp? returns the reason (exact, same dates and place, …)", "likeness": "similarity percentage of two sheets",
+        "matchCamp": "find a directory camp in a list", "findDuplicates": "possible duplicate pairs", "showDuplicates": "🔎 Check duplicates list",
+        "factsOf": "facts of a saved camp used for matching", "factsOfT": "same facts for a directory line"},
+    "js/camps-import.js": {"parseDirectory": "read the Approved Camps sheet of the xlsx", "dirPick": "directory file chosen → review",
+        "mdyToDmy": "MM-DD-YYYY or Excel serial → dd-mm-yyyy", "feeOf": "fee with its currency", "changesFor": "fields the directory would change",
+        "replacesFor": "earlier camp a new one may replace", "buildReview": "review list: updates, renames, new camps",
+        "applyReview": "apply the ticked lines (directory or coordinates)", "cancelReview": "close the review"},
+    "js/camps-geo.js": {"mercToLonLat": "EPSG:3857 → longitude, latitude", "geoPick": "GeoJSON file chosen", "geoPoints": "points with a country and a camp name",
+        "buildGeoReview": "match points to camps, review list"},
+    "js/site-data.js": {"esc": "escape HTML (every camp value goes through it)", "parseDate": "dd-mm-yyyy → Date (real dates only)",
+        "feeEuro": "fee in euros, for sorting", "titleCase": "uniform display of camp names", "countryFlag": "flag emoji of a country",
+        "periodRows": "family stay / camp date lines", "safeMail": "valid e-mail or null", "jsArg": "safe text argument of an onclick"},
+    "js/site-explorer.js": {"campMatches": "does a camp pass the filters (some may be skipped for counts)", "facetCounts": "count per chip value",
+        "refreshFacets": "recount every filter chip", "getFiltered": "camps passing all filters", "getSorted": "sort for table and cards",
+        "renderTable": "table + phone cards + map refresh", "renderMobileCards": "phone cards", "renderFilterChips": "active filter chips",
+        "applyFilters": "read age / period, then redraw", "resetFilters": "clear every filter", "populatePeriodSelect": "month / half-month / week choices"},
+    "js/site-modal.js": {"showCampDetail": "open the camp sheet", "buildTimeline": "family stay and camp on a time line"},
 }
 
 FN_ROLES = {
@@ -90,7 +143,7 @@ def scan(path):
     for j, mk in enumerate(marks):
         end = marks[j + 1]["line"] - 1 if j + 1 < len(marks) else len(lines)
         mk["loc"] = max(1, end - mk["line"] + 1)
-        mk["role"] = FN_ROLES.get(mk["name"], "")
+        mk["role"] = FILE_FN_ROLES.get(path, {}).get(mk["name"]) or FN_ROLES.get(mk["name"], "")
     return {"file": path, "lines": len(lines), "bytes": os.path.getsize(path),
             "role": ROLES.get(path, ""), "defs": marks, "src": src}
 
@@ -140,10 +193,6 @@ data_files = [{"file": f, "bytes": os.path.getsize(f), "role": r} for f, r in [
     ("yce_tracker.html", "tracker HTML shell + styles"),
     ("yce_admin.html", "administration HTML shell: tabs Site & season / Camps / Documents"),
     ("yce_camps.html", "old camp manager address — redirects to yce_admin.html#camps"),
-    ("js/admin-core.js", "shared admin plumbing (token, passphrase, GitHub API, connect hooks)"),
-    ("js/admin.js", "admin Site & Documents tabs: season, coordinators, home page, gallery, uploads"),
-    ("js/camps-manager.js", "admin Camps tab: directory import, editing, backups, archive"),
-    ("js/admin-tabs.js", "admin tab switching (#site, #camps, #docs)"),
     ("js/toolnav.js", "tool menu under the header of every tool page"),
     ("css/tools.css", "styles shared by the tool pages"),
     ("yce_vault.html", "application vault HTML shell (Supabase)"),
@@ -162,6 +211,7 @@ sha = subprocess.run(["git", "rev-parse", "--short", "HEAD"],
 codemap = {"generated": datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"),
            "commit": sha,
            "filler": pack(FILLER), "tracker": pack(TRACKER), "vault": pack(VAULT),
+           "admin": pack(ADMIN), "public": pack(PUBLIC),
            "site": site, "data": data_files}
 
 with open("docs/codemap-data.js", "w") as f:
@@ -202,12 +252,14 @@ md += ["| `%s` | %s |" % p for p in PAGES]
 md += ["", "## Public site (`index.html`)", "", "| File | Role |", "|---|---|"]
 md += ["| %s | %s |" % (b["name"], b["role"]) for b in site["blocks"]]
 md += [""] + md_modules("Form filler modules", codemap["filler"]) + md_modules("Tracker modules", codemap["tracker"]) \
-      + md_modules("Vault modules", codemap["vault"])
+      + md_modules("Vault modules", codemap["vault"]) + md_modules("Administration modules", codemap["admin"]) \
+      + md_modules("Public site modules", codemap["public"])
 md += ["## Data, tools and other files", "", "| File | Size | Role |", "|---|---:|---|"]
 md += ["| `%s` | %.1f KB | %s |" % (d["file"], d["bytes"] / 1024, d["role"]) for d in data_files]
-md += ["", "## Who uses what (form filler)", "", "| Defined in | Used by | Names |", "|---|---|---|"]
-md += ["| `%s` | `%s` | %s |" % (e["from"], e["to"], ", ".join(e["names"][:12]) + (" …" if len(e["names"]) > 12 else ""))
-       for e in codemap["filler"]["edges"]]
+for _title, _key in [("form filler", "filler"), ("tracker", "tracker"), ("vault", "vault"), ("administration", "admin"), ("public site", "public")]:
+    md += ["", "## Who uses what (%s)" % _title, "", "| Defined in | Used by | Names |", "|---|---|---|"]
+    md += ["| `%s` | `%s` | %s |" % (e["from"], e["to"], ", ".join(e["names"][:12]) + (" …" if len(e["names"]) > 12 else ""))
+           for e in codemap[_key]["edges"]]
 with open("docs/CODE_MAP.md", "w") as f:
     f.write("\n".join(md) + "\n")
 print("docs/CODE_MAP.md written")
