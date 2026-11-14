@@ -5,6 +5,14 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.37.2 — 2026-11-14
+
+Interactive code map (`docs/code_map.html`) only.
+
+- **Details of a line.** Tapping a function or a piece of data now opens its details: what it does, the comment written above it in the code, what it uses, where it is used (file · function), and the code itself with its line numbers. A second tap closes it.
+- **Readable on phones.** The gold bars were squeezed unevenly on a narrow screen (a short function could show a longer bar than a long one) and the descriptions were cut. Bars now keep their proportion, the description goes under the name, modules are in one column and the header no longer stays stuck over a quarter of the screen.
+- A legend above the modules explains the colours (blue = function, purple = data kept in memory), the `L12` line number, the bar and `loc`.
+
 ## 1.37.1 — 2026-11-14
 
 No change for users: code organisation and its documentation.

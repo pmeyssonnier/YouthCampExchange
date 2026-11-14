@@ -166,6 +166,13 @@ def scan(path):
         end = marks[j + 1]["line"] - 1 if j + 1 < len(marks) else len(lines)
         mk["loc"] = max(1, end - mk["line"] + 1)
         mk["role"] = FILE_FN_ROLES.get(path, {}).get(mk["name"]) or FN_ROLES.get(mk["name"], "")
+        # comment written just above the definition in the source (shown when a line of the map is opened)
+        doc, k = [], mk["line"] - 2
+        while k >= 0 and lines[k].lstrip().startswith("//") and not re.match(r"\s*// ?-{4,}", lines[k]):
+            doc.insert(0, lines[k].lstrip()[2:].strip())
+            k -= 1
+        if doc:
+            mk["doc"] = " ".join(doc)[:600]
     return {"file": path, "lines": len(lines), "bytes": os.path.getsize(path),
             "role": ROLES.get(path, ""), "defs": marks, "src": src}
 
@@ -182,9 +189,32 @@ def edges(mods):
                 out.append({"from": g["file"], "to": m["file"], "names": used})
     return out
 
+def links(mods):
+    """Per definition: the names of the page it uses, and where it is used (file · function)."""
+    bodies = []
+    for m in mods:
+        if m["file"].endswith("assets.js"):
+            continue
+        ls = m["src"].split("\n")
+        for d in m["defs"]:
+            bodies.append((m, d, "\n".join(ls[d["line"] - 1:d["line"] - 1 + d["loc"]])))
+    owner = {}
+    for m, d, _ in bodies:
+        owner.setdefault(d["name"], m["file"])
+    for m, d, body in bodies:
+        words = set(re.findall(r"[A-Za-z_$][\w$]*", body))
+        d["calls"] = sorted(n for n in words if n in owner and n != d["name"]
+                            and (owner[n] == m["file"] or n not in {x["name"] for x in m["defs"]}))[:40]
+    for m, d, _ in bodies:
+        used = sorted({m2["file"][3:-3] + " · " + d2["name"] for m2, d2, _ in bodies
+                       if d2 is not d and d["name"] in d2.get("calls", [])
+                       and (m2["file"] == m["file"] or owner[d["name"]] == m["file"])})
+        d["usedBy"] = used[:40]
+
 def pack(files):
     mods = [scan(f) for f in files]
     e = edges(mods)
+    links(mods)
     for m in mods:
         del m["src"]
         if m["file"].endswith("assets.js"):
