@@ -5,6 +5,16 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.37.3 — 2026-11-14
+
+Directory import (administration, Camps tab): four weaknesses corrected.
+
+- **A sheet listed in the workbook but missing from the file** stopped the import with an obscure script error. The message now names the sheet and says what to do (open the file in Excel and save it again). A damaged sheet and a file that is not a workbook also get an explicit message.
+- **New camp of a country the site does not know: no more « Europe » by default.** The continent comes from a camp of the same country already on the site (active or archived), otherwise from a table of about 150 countries. If the country is still unknown, the review line asks for the continent, and « Apply selected » applies nothing until it is chosen.
+- **Lines without a valid camp start date are no longer dropped silently.** The review opens with the list of the lines left out — row number, country, camp and reason (no date, text instead of a date, day/month inverted) — and the journal repeats it, so no camp goes missing unnoticed.
+- **The workbook is read with the browser's XML parser** instead of regular expressions: attributes in any order, namespace prefixes, entities, CDATA sections and phonetic guides are handled correctly.
+- Tests: new `directory_import` test file, with fictional workbooks built for each case.
+
 ## 1.37.2 — 2026-11-14
 
 Interactive code map (`docs/code_map.html`) only.

@@ -3,7 +3,6 @@
 // Chargé par yce_admin.html après js/camps-manager.js et js/camps-match.js ; scripts classiques partageant la portée globale.
 "use strict";
 // -------------------- import du répertoire officiel (xlsx) --------------------
-function decodeXml(s){return s.replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&#(\d+);/g,function(m,d){return String.fromCodePoint(+d);}).replace(/&amp;/g,"&");}
 function colIdx(ref){let c=0;const m=ref.match(/^[A-Z]+/)[0];
   for(let i=0;i<m.length;i++)c=c*26+m.charCodeAt(i)-64;return c-1;}
 function serialToDmy(n){ // numéro de série Excel -> dd-mm-yyyy
@@ -17,39 +16,77 @@ function mdyToDmy(v){ // MM-DD-YYYY (ou MM/DD/YYYY) -> dd-mm-yyyy ; série Excel
   if(/^\d+(\.\d+)?$/.test(s)&&+s>20000&&+s<70000)return serialToDmy(+s);
   return null;
 }
+// Le classeur est lu avec l'analyseur XML du navigateur (DOMParser), pas avec des expressions régulières :
+// attributs dans n'importe quel ordre, préfixes d'espace de noms, entités et sections CDATA sont donc gérés par l'analyseur.
+function xmlDoc(text,what){
+  const d=new DOMParser().parseFromString(text,"application/xml");
+  if(d.getElementsByTagName("parsererror").length)throw new Error(what+" is damaged (not valid XML)");
+  return d;
+}
+function xmlEls(node,name){return Array.prototype.slice.call(node.getElementsByTagNameNS("*",name));}
+// texte d'une cellule ou d'une chaîne partagée : tous les <t>, sauf ceux des guides phonétiques (<rPh>)
+function xmlText(node){
+  return xmlEls(node,"t").filter(function(t){return !(t.parentNode&&t.parentNode.localName==="rPh");}).map(function(t){return t.textContent;}).join("");
+}
 async function parseDirectory(buf){
   const entries=await unzip(buf);
   const td=new TextDecoder();
   const part=function(n){const e=entries.find(function(x){return x.name===n;});return e?td.decode(e.data):null;};
+  const wbX=part("xl/workbook.xml");
+  if(!wbX)throw new Error("not an Excel workbook (.xlsx): the workbook part is missing");
   // feuille "Approved Camps" via workbook + rels (repli : première feuille)
-  const wb=part("xl/workbook.xml")||"", rels=part("xl/_rels/workbook.xml.rels")||"";
-  let target=null, first=null;
-  wb.replace(/<sheet [^>]*?name="([^"]*)"[^>]*?r:id="([^"]*)"/g,function(m0,nm,rid){
-    const mm=rels.match(new RegExp('Id="'+rid+'"[^>]*Target="([^"]*)"'));
-    if(mm){const t="xl/"+mm[1].replace(/^\/?(xl\/)?/,"");
-      if(!first)first=t;
-      if(/approved\s*camps/i.test(nm))target=t;}
-    return m0;});
-  target=target||first;
-  if(!target)throw new Error("no worksheet found");
-  const sst=[];
+  const relsX=part("xl/_rels/workbook.xml.rels");
+  const targets={};
+  if(relsX)xmlEls(xmlDoc(relsX,"the workbook relations"),"Relationship").forEach(function(r){
+    const t=r.getAttribute("Target")||"";
+    targets[r.getAttribute("Id")]=t.charAt(0)==="/"?t.slice(1):"xl/"+t.replace(/^xl\//,"");});
+  const sheets=xmlEls(xmlDoc(wbX,"the workbook"),"sheet").map(function(sh){
+    const rid=sh.getAttributeNS("http://schemas.openxmlformats.org/officeDocument/2006/relationships","id")||sh.getAttribute("r:id");
+    return {name:sh.getAttribute("name")||"",path:targets[rid]||null};});
+  if(!sheets.length)throw new Error("no worksheet found in the workbook");
+  const sheet=sheets.find(function(x){return /approved\s*camps/i.test(x.name);})||sheets[0];
+  const sx=sheet.path?part(sheet.path):null;
+  if(sx==null)throw new Error("the sheet “"+sheet.name+"” is listed in the workbook but its content is missing from the file"
+    +(sheet.path?" ("+sheet.path+")":"")+" — open the file in Excel and save it again as .xlsx");
   const ss=part("xl/sharedStrings.xml");
-  if(ss)ss.replace(/<si>([\s\S]*?)<\/si>/g,function(m0,inner){
-    sst.push(decodeXml((inner.match(/<t[^>]*>([\s\S]*?)<\/t>/g)||[]).map(function(x){return x.replace(/<[^>]+>/g,"");}).join("")));return m0;});
-  const sx=part(target);
+  const sst=ss?xmlEls(xmlDoc(ss,"the text table of the workbook"),"si").map(xmlText):[];
   const rows=[];
-  sx.replace(/<row[^>]*>([\s\S]*?)<\/row>/g,function(m0,inner){
-    const cells=[];
-    inner.replace(/<c r="([A-Z]+\d+)"([^>]*?)(?:\/>|>([\s\S]*?)<\/c>)/g,function(c0,ref,attrs,body){
-      body=body||"";let v=null;
-      if(/t="inlineStr"/.test(attrs)){v=decodeXml((body.match(/<t[^>]*>([\s\S]*?)<\/t>/g)||[]).map(function(x){return x.replace(/<[^>]+>/g,"");}).join(""));}
-      else{const vm=body.match(/<v[^>]*>([\s\S]*?)<\/v>/);
-        if(vm)v=/t="s"/.test(attrs)?sst[+vm[1]]:decodeXml(vm[1]);}
-      if(v!=null&&String(v).trim()!=="")cells[colIdx(ref)]=String(v).trim();
-      return c0;});
+  xmlEls(xmlDoc(sx,"the sheet “"+sheet.name+"”"),"row").forEach(function(row){
+    const cells=[];let next=0;
+    xmlEls(row,"c").forEach(function(c){
+      const ref=c.getAttribute("r"),type=c.getAttribute("t");
+      const idx=ref&&/^[A-Z]+/.test(ref)?colIdx(ref):next; // cellule sans référence : colonne suivante
+      next=idx+1;
+      let v=null;
+      if(type==="inlineStr")v=xmlText(c);
+      else{const ve=xmlEls(c,"v")[0];
+        if(ve)v=type==="s"?sst[+ve.textContent]:ve.textContent;}
+      if(v!=null&&String(v).trim()!=="")cells[idx]=String(v).trim();
+    });
     if(cells.length)rows.push(cells);
-    return m0;});
+  });
   return rows;
+}
+// -------------------- continent d'un pays --------------------
+// Un nouveau camp reprend le continent d'un camp déjà connu du même pays (actif ou archivé), sinon celui de cette table
+// (découpage YCE : « Middle America » = Mexique, Amérique centrale et Caraïbes). Pays inconnu : "" — la revue demande alors le continent.
+const COUNTRY_CONTINENT=(function(){
+  const t={
+    "Africa":"Algeria,Angola,Benin,Botswana,Burkina Faso,Cameroon,Congo,Egypt,Ethiopia,Gabon,Ghana,Ivory Coast,Cote d'Ivoire,Kenya,Madagascar,Malawi,Mali,Mauritius,Morocco,Mozambique,Namibia,Nigeria,Rwanda,Senegal,South Africa,Tanzania,Togo,Tunisia,Uganda,Zambia,Zimbabwe",
+    "Asia":"Bangladesh,Cambodia,China,Hong Kong,India,Indonesia,Israel,Japan,Jordan,Kazakhstan,Korea,South Korea,Republic of Korea,Lebanon,Macau,Malaysia,Mongolia,Nepal,Pakistan,Philippines,Singapore,Sri Lanka,Taiwan,Thailand,United Arab Emirates,Vietnam",
+    "Europe":"Albania,Armenia,Austria,Azerbaijan,Belarus,Belgium,Bosnia and Herzegovina,Bulgaria,Croatia,Cyprus,Czech Republic,Czechia,Czech rep. and Slovakia,Denmark,Estonia,Faroe Islands,Finland,France,Georgia,Germany,Greece,Hungary,Iceland,Ireland,Italy,Kosovo,Latvia,Liechtenstein,Lithuania,Luxembourg,Malta,Moldova,Monaco,Montenegro,Netherlands,North Macedonia,Norway,Poland,Portugal,Romania,Russia,San Marino,Serbia,Slovakia,Slovenia,Spain,Sweden,Switzerland,Turkey,Türkiye,Ukraine,United Kingdom,UK,England,Scotland,Wales",
+    "Middle America":"Bahamas,Barbados,Belize,Costa Rica,Cuba,Dominican Republic,El Salvador,Guatemala,Haiti,Honduras,Jamaica,Mexico,Nicaragua,Panama,Puerto Rico,Trinidad and Tobago",
+    "North America":"Canada,United States,USA,United States of America",
+    "Oceania":"Australia,Fiji,New Zealand,Papua New Guinea",
+    "South America":"Argentina,Bolivia,Brazil,Chile,Colombia,Ecuador,Paraguay,Peru,Suriname,Uruguay,Venezuela"};
+  const out={};
+  Object.keys(t).forEach(function(k){t[k].split(",").forEach(function(c){out[simple(c)]=k;});});
+  return out;
+})();
+function continentFor(country){
+  const key=simple(country);if(!key)return "";
+  const ex=CAMPS_W.concat(ARCH).find(function(c){return simple(c.country)===key&&CONTINENTS.indexOf(c.continent)>=0;});
+  return ex?ex.continent:(COUNTRY_CONTINENT[key]||"");
 }
 function feeOf(fee,cur){
   if(!fee)return null;
@@ -73,19 +110,22 @@ async function dirPick(inp){
       hfa:col("host family activities"),web:col("website"),loc:col("location"),
       cs:col("camp start"),ce:col("camp end"),act:col("activities will include")};
     if(C.name<0||C.country<0||C.cs<0)throw new Error("not a YCE directory (missing columns)");
-    const items=[];
-    for(const r of rows.slice(1)){
+    const items=[],skipped=[]; // skipped : camps laissés de côté, avec la raison — affichés dans la revue, jamais ignorés en silence
+    rows.slice(1).forEach(function(r,ri){
       const g=function(i){return i>=0&&r[i]!=null?String(r[i]).trim():null;};
-      const name=g(C.name);if(!name)continue;
-      const cs=mdyToDmy(g(C.cs));if(!cs)continue;
+      const name=g(C.name);
+      if(!name){if(g(C.country)&&g(C.cs))skipped.push({row:ri+2,name:"(no camp name)",country:g(C.country),why:"the camp name is empty"});return;}
+      const rawCs=g(C.cs),cs=mdyToDmy(rawCs);
+      if(!cs){skipped.push({row:ri+2,name:name,country:g(C.country),
+        why:rawCs?"camp start “"+rawCs+"” is not a date (expected month/day/year, e.g. 07/15/2027)":"no camp start date"});return;}
       const langs=(g(C.langs)||"").split(/[,;\/]| and /).map(function(x){return x.trim();}).filter(Boolean);
       items.push({country:g(C.country),name:name,cs:cs,ce:mdyToDmy(g(C.ce)),
         fs:mdyToDmy(g(C.fs)),fe:mdyToDmy(g(C.fe)),deadline:mdyToDmy(g(C.deadline)),
         ages:g(C.ages),participants:g(C.participants),fee:feeOf(g(C.fee),g(C.cur)),
         hfa:g(C.hfa),website:g(C.web),location:g(C.loc),activities:g(C.act),langs:langs,
         cname:[g(C.first),g(C.last)].filter(Boolean).join(" ")||null,cemail:g(C.email),cphone:g(C.phone)});
-    }
-    buildReview(f.name,items);
+    });
+    buildReview(f.name,items,skipped);
   }catch(e){log("Directory import failed: "+esc(e.message),"err");}
   finally{inp.value="";}
 }
@@ -133,7 +173,8 @@ function replacesFor(t){
   if(olds.length===1)return {camp:CAMPS_W[olds[0]],why:"only earlier camp in "+t.country};
   return null;
 }
-function buildReview(fname,items){
+function buildReview(fname,items,skipped){
+  skipped=skipped||[];
   const rev=[];let unchanged=0,archived=0;
   for(const t of items){
     const m=matchCamp(CAMPS_W,t);
@@ -146,7 +187,7 @@ function buildReview(fname,items){
       const rename=simple(CAMPS_W[hit].camp_name)!==simple(t.name);
       if(!chg.length&&!rename){unchanged++;continue;}
       rev.push({kind:"update",camp:CAMPS_W[hit],how:how,t:t,chg:chg,rename:rename,on:how==="exact",pct:how==="exact"?100:likeness(factsOf(CAMPS_W[hit]),factsOfT(t))});
-    }else rev.push({kind:"new",t:t,on:true,rep:replacesFor(t)});
+    }else rev.push({kind:"new",t:t,on:true,rep:replacesFor(t),cont:continentFor(t.country)});
   }
   REVIEW=rev;
   document.getElementById("rev-note").textContent=fname+" — "
@@ -160,17 +201,30 @@ function buildReview(fname,items){
       ?"<b>"+esc(r.t.country)+" — "+esc(r.t.name)+"</b><div class='chg'>camp "+esc(r.t.cs)+" → "+esc(r.t.ce||"?")+" · "+esc(r.t.ages||"")+" · "+esc(r.t.fee||"")+"</div>"
         +(r.rep?'<label class="rev-rep"><input type="checkbox" id="rva-'+i+'"> may replace <b>'+esc(r.rep.camp.camp_name)+"</b> ("
           +esc(seasonOf(r.rep.camp))+", "+esc(r.rep.why)+") — archive the old camp</label>":"")
+        +(r.cont?"":'<label class="rev-rep rev-cont">⚠ Country not known to the site — continent: <select id="rvc-'+i+'"><option value="">— choose —</option>'
+          +CONTINENTS.map(function(x){return "<option>"+x+"</option>";}).join("")+"</select></label>")
       :"<b>"+esc(r.camp.camp_name)+"</b> ⇐ "+esc(r.t.name)
         +"<div class='chg'>"+r.chg.map(function(x){return esc(x.label)+": "+esc(String(x.old).slice(0,30)||"∅")+" → "+esc(String(Array.isArray(x.val)?x.val.join(", "):x.val).slice(0,40));}).join(" · ")+"</div>"
         +(r.rename?'<label class="rev-rep"><input type="checkbox" id="rvn-'+i+'" checked> rename the camp to <b>'+esc(r.t.name)+"</b> (untick to keep the current name)</label>":"");
     return '<div class="rev-row"><input type="checkbox" id="rv-'+i+'"'+(r.on?" checked":"")+"> "+tag+'<div class="rev-what">'+what+"</div></div>";
   }).join(""):'<span class="hint">Everything already matches the directory — nothing to apply.</span>';
+  if(skipped.length){
+    document.getElementById("rev-note").textContent+=" — ⚠ "+skipped.length+" line(s) left out";
+    document.getElementById("rev-body").insertAdjacentHTML("afterbegin",'<div class="rev-row rev-skip"><div class="rev-what"><b>⚠ '+skipped.length
+      +" line(s) of the directory were left out</b> — correct them in the file and import it again, or add these camps by hand:<div class='chg'>"
+      +skipped.map(function(x){return "row "+x.row+" · "+esc(x.country||"?")+" — "+esc(x.name)+": "+esc(x.why);}).join("<br>")+"</div></div></div>");
+    log(skipped.length+" line(s) of the directory left out: "+skipped.map(function(x){return esc(x.name)+" ("+esc(x.why)+")";}).join("; "),"warn");
+  }
   document.getElementById("review").style.display="";
   document.getElementById("review").scrollIntoView({behavior:"smooth",block:"start"});
   log("Directory parsed: "+items.length+" dated entr"+(items.length>1?"ies":"y")+" examined.","ok");
 }
 function applyReview(){
   if(!REVIEW)return;
+  // nouveau camp d'un pays inconnu du site : le continent doit être choisi (plus de classement en Europe par défaut)
+  const noCont=REVIEW.filter(function(r,i){const sel=document.getElementById("rvc-"+i);
+    return r.kind==="new"&&!r.cont&&document.getElementById("rv-"+i).checked&&!(sel&&sel.value);});
+  if(noCont.length){log("Choose the continent of: "+noCont.map(function(r){return esc(r.t.country)+" — "+esc(r.t.name);}).join("; ")+" (or untick these lines). Nothing was applied.","err");return;}
   let up=0,nw=0,gp=0,gone=0,rn_count=0;const old=[];
   REVIEW.forEach(function(r,i){
     if(!document.getElementById("rv-"+i).checked)return;
@@ -196,11 +250,10 @@ function applyReview(){
        ["application_deadline",t.deadline],["participants",t.participants],
        ["contact_name",t.cname],["contact_email",t.cemail],["contact_phone",t.cphone]]
         .forEach(function(p){if(p[1])det[p[0]]=p[1];});
-      const known={Denmark:"Europe",Hungary:"Europe",Malaysia:"Asia","Sri Lanka":"Asia",Mexico:"Middle America"};
-      const ex=CAMPS_W.find(function(c){return c.country===t.country;});
+      const sel=document.getElementById("rvc-"+i);
       const ra=document.getElementById("rva-"+i);
       if(r.rep&&ra&&ra.checked&&old.indexOf(r.rep.camp)<0)old.push(r.rep.camp);
-      CAMPS_W.push({continent:(ex&&ex.continent)||known[t.country]||"Europe",country:t.country,
+      CAMPS_W.push({continent:r.cont||(sel&&sel.value)||continentFor(t.country),country:t.country,
         camp_name:t.name,age_requirements:t.ages||"",fee:t.fee,
         camp_starts:t.cs,camp_ends:t.ce,family_stay_starts:t.fs,family_stay_ends:t.fe,
         detail:det});
