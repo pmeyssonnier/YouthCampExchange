@@ -12,7 +12,8 @@ FILLER = ["js/assets.js", "js/zip.js", "js/xlsx.js", "js/docx.js", "js/signature
           "js/render.js", "js/form.js"]
 TRACKER = ["js/zip.js", "js/tracker-storage.js", "js/tracker-parser.js",
            "js/tracker-export.js", "js/tracker-ui.js"]
-VAULT = ["js/zip.js", "js/club-copy.js", "js/vault-api.js", "js/vault.js"]
+VAULT = ["js/zip.js", "js/xlsx.js", "js/club-copy.js", "js/vault-api.js", "js/vault.js",
+         "js/vault-dashboard.js", "js/vault-dossier.js", "js/vault-staff.js"]
 # administration (yce_admin.html) and public site (index.html), in load order
 ADMIN = ["js/zip.js", "js/xlsx.js", "js/admin-core.js", "js/clean-html.js", "js/upload-limits.js", "js/admin.js",
          "js/camps-manager.js", "js/camps-match.js", "js/camps-import.js", "js/camps-geo.js", "js/admin-tabs.js"]
@@ -24,7 +25,10 @@ ROLES = {
     "js/xlsx.js": "ZIP writing + workbook cell read/write",
     "js/vault-api.js": "vault: the only layer talking to Supabase",
     "js/club-copy.js": "vault: reduced copy for the club president (AF without ID, religion, health + Commitment)",
-    "js/vault.js": "vault UI: sign-in, dashboard, file, signatures, team, retention",
+    "js/vault.js": "vault UI core: constants, helpers, start-up, sign-in link, two-step verification",
+    "js/vault-dashboard.js": "vault UI: dashboard — list of files, whose turn, new file",
+    "js/vault-dossier.js": "vault UI: one file — display, upload, sign-off, notify, comments, club declared in the form",
+    "js/vault-staff.js": "vault UI: staff (coordinators, national team) and retention purge",
     "js/docx.js": "Commitment: text, validation, signed Word generation",
     "js/signatures.js": "signature pads + pasting signatures into the workbook",
     "js/attachments.js": "pass photo & payment proof",
@@ -86,6 +90,18 @@ FILE_FN_ROLES = {
         "refreshFacets": "recount every filter chip", "getFiltered": "camps passing all filters", "getSorted": "sort for table and cards",
         "renderTable": "table + phone cards + map refresh", "renderMobileCards": "phone cards", "renderFilterChips": "active filter chips",
         "applyFilters": "read age / period, then redraw", "resetFilters": "clear every filter", "populatePeriodSelect": "month / half-month / week choices"},
+    "js/vault.js": {"esc": "escape HTML", "msg": "message banner", "isStaff": "does my account hold this role", "isMinor": "under 18 at the reference date",
+        "vaultInit": "create the Supabase client, resume the session", "sendLink": "e-mail sign-in link", "startSession": "after sign-in: roles, then dashboard",
+        "mfaNeeded": "two-step code required for staff", "mfaVerify": "check the code", "applicationSeason": "season being applied for", "sha256Hex": "fingerprint of a file"},
+    "js/vault-dashboard.js": {"myTurn": "is this file waiting for me", "waitingFor": "who must act next", "renderNext": "next-step line of a file",
+        "loadDashboard": "read my files", "renderList": "files table", "createDossier": "new file (consent recorded)", "renderWelcome": "welcome text by role"},
+    "js/vault-dossier.js": {"openDossier": "load one file", "renderDossier": "file page: checklist, signatures, history, comments", "renderActions": "buttons allowed at this step",
+        "uploadZip": "store the application ZIP (and the club copy)", "uploadIdLater": "passport scan sent later", "downloadFile": "signed download link",
+        "act": "sign / validate / refuse: move to the next step", "offerNotify": "prepare the e-mail to the next person", "withdraw": "delete my file",
+        "addComment": "comment on the file", "readAfClub": "club cells of the application form", "showAfClub": "compare the declared club with the file",
+        "saveEdit": "save the file's identity fields", "canUpload": "may this account upload", "signedDoc": "document the signature refers to"},
+    "js/vault-staff.js": {"loadStaff": "staff list", "staffAdd": "add a coordinator / national member", "staffDelete": "remove one",
+        "loadPurge": "files past their retention", "runPurge": "delete them (logged)"},
     "js/site-modal.js": {"showCampDetail": "open the camp sheet", "buildTimeline": "family stay and camp on a time line"},
 }
 
@@ -196,8 +212,6 @@ data_files = [{"file": f, "bytes": os.path.getsize(f), "role": r} for f, r in [
     ("js/toolnav.js", "tool menu under the header of every tool page"),
     ("css/tools.css", "styles shared by the tool pages"),
     ("yce_vault.html", "application vault HTML shell (Supabase)"),
-    ("js/vault-api.js", "vault: the only layer talking to Supabase"),
-    ("js/vault.js", "vault UI: sign-in, dashboard, file, signatures, team, retention"),
     ("supabase/vault_schema.sql", "vault database: tables, row-level security, workflow, retention"),
     ("docs/VAULT_SETUP.md", "vault setup guide (Supabase project, SMTP, GDPR)"),
     ("tools/build_assets.py", "regenerates js/assets.js"),

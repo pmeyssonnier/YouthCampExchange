@@ -1,7 +1,7 @@
 # Code map — Lions YCE
 
 > **Generated file — do not edit by hand.** Rebuilt by `python3 tools/build_codemap.py` (run automatically on every push to `main`).
-> Commit `2135362`, 2026-11-14 20:22 UTC. Interactive version: [`code_map.html`](code_map.html).
+> Commit `93f3474`, 2026-11-14 20:36 UTC. Interactive version: [`code_map.html`](code_map.html).
 
 ## Pages
 
@@ -88,17 +88,29 @@
 | Module | Lines | Size | Role |
 |---|---:|---:|---|
 | `js/zip.js` | 126 | 7.5 KB | bounded ZIP reading (limits against booby-trapped archives) — shared |
+| `js/xlsx.js` | 258 | 13.0 KB | ZIP writing + workbook cell read/write |
 | `js/club-copy.js` | 49 | 2.8 KB | vault: reduced copy for the club president (AF without ID, religion, health + Commitment) |
 | `js/vault-api.js` | 91 | 5.4 KB | vault: the only layer talking to Supabase |
-| `js/vault.js` | 591 | 35.7 KB | vault UI: sign-in, dashboard, file, signatures, team, retention |
+| `js/vault.js` | 163 | 9.5 KB | vault UI core: constants, helpers, start-up, sign-in link, two-step verification |
+| `js/vault-dashboard.js` | 93 | 5.8 KB | vault UI: dashboard — list of files, whose turn, new file |
+| `js/vault-dossier.js` | 298 | 19.2 KB | vault UI: one file — display, upload, sign-off, notify, comments, club declared in the form |
+| `js/vault-staff.js` | 48 | 2.6 KB | vault UI: staff (coordinators, national team) and retention purge |
 
 **`js/zip.js`** — `zipBudget`, `zipCheckSize`, `zipDirectory` (validated central directory, no decompression), `zipNames` (file names of an archive without decompressing), `inflateRaw` (native inflate), `unzip` (parse a zip into [{name,data}] within ZIP_LIMITS)
+
+**`js/xlsx.js`** — `crc32` (CRC-32 for zip writing), `deflateRaw` (native deflate), `buildZip` (rebuild a zip Blob), `decodeEnt` (XML entities), `textOf` (concat <t> runs), `parseShared` (sharedStrings table), `getCellValue` (read one cell), `syncFromTemplate` (prefill inputs + X-groups from a workbook), `b64ToBuf` (base64 → ArrayBuffer), `loadTemplate` ('Other template' input), `setStatus` (status bar helper), `escXml` (escape XML), `fmtDate` (ISO → dd-mm-yyyy), `dmyToSerial`, `serialToDmy`, `addDateStyle`, `setCellDate`, `yearizeTemplate`, `setCell` (write/clear one cell keeping style), `collectValues` (gather all field values (+phone check))
 
 **`js/club-copy.js`** — `zipBase`, `u8buf`, `dropUnusedShared` (removes orphan Excel shared strings), `redactApplicationForm` (empties ID / religion / health cells), `buildClubCopy` (full dossier ZIP → club copy ZIP)
 
 **`js/vault-api.js`** — `makeVaultApi`
 
-**`js/vault.js`** — `esc` (escape HTML), `show`, `msg`, `fmtDT`, `fmtD`, `isStaff`, `selfLink`, `sha256Hex`, `isMinor`, `validBirth`, `latestFile`, `idPending`, `applicationSeason`, `vaultInit`, `fillStaticLists`, `sendLink`, `startSession`, `mfaNeeded`, `mfaVerify`, `continueSession`, `signOut`, `myTurn`, `waitingFor`, `renderNext`, `renderWelcome`, `loadDashboard`, `renderList`, `createDossier`, `openDossier`, `closeDossier`, `canUpload`, `renderDossier`, `renderActions`, `saveEdit`, `uploadZip`, `uploadIdLater`, `downloadFile`, `signedDoc`, `act`, `offerNotify`, `copyLink`, `withdraw`, `addComment`, `readAfClub`, `showAfClub`, `loadStaff`, `staffAdd`, `staffDelete`, `loadPurge`, `runPurge`
+**`js/vault.js`** — `esc` (escape HTML), `show`, `msg` (message banner), `fmtDT`, `fmtD`, `isStaff` (does my account hold this role), `selfLink`, `sha256Hex` (fingerprint of a file), `isMinor` (under 18 at the reference date), `validBirth`, `latestFile`, `idPending`, `applicationSeason` (season being applied for), `vaultInit` (create the Supabase client, resume the session), `fillStaticLists`, `sendLink` (e-mail sign-in link), `startSession` (after sign-in: roles, then dashboard), `mfaNeeded` (two-step code required for staff), `mfaVerify` (check the code), `continueSession`, `signOut`
+
+**`js/vault-dashboard.js`** — `myTurn` (is this file waiting for me), `waitingFor` (who must act next), `renderNext` (next-step line of a file), `renderWelcome` (welcome text by role), `loadDashboard` (read my files), `renderList` (files table), `createDossier` (new file (consent recorded))
+
+**`js/vault-dossier.js`** — `openDossier` (load one file), `closeDossier`, `canUpload` (may this account upload), `renderDossier` (file page: checklist, signatures, history, comments), `renderActions` (buttons allowed at this step), `saveEdit` (save the file's identity fields), `uploadZip` (store the application ZIP (and the club copy)), `uploadIdLater` (passport scan sent later), `downloadFile` (signed download link), `signedDoc` (document the signature refers to), `act` (sign / validate / refuse: move to the next step), `offerNotify` (prepare the e-mail to the next person), `copyLink`, `withdraw` (delete my file), `addComment` (comment on the file), `readAfClub` (club cells of the application form), `showAfClub` (compare the declared club with the file)
+
+**`js/vault-staff.js`** — `loadStaff` (staff list), `staffAdd` (add a coordinator / national member), `staffDelete` (remove one), `loadPurge` (files past their retention), `runPurge` (delete them (logged))
 
 ## Administration modules
 
@@ -168,20 +180,18 @@
 | `camps_data.js` | 72.2 KB | season data: SEASON + YEAR + RAW camps — common to every deployment |
 | `districts_data.js` | 6.1 KB | per-deployment data: SITE_REPO + DISTRICTS coordinators |
 | `js/version.js` | 0.5 KB | site version number (VERSION), shown on every page — bumped by each pull request |
-| `CHANGELOG.md` | 41.5 KB | what changed in each version |
+| `CHANGELOG.md` | 41.8 KB | what changed in each version |
 | `yce_form_filler.html` | 13.8 KB | filler HTML shell + styles |
 | `yce_tracker.html` | 9.0 KB | tracker HTML shell + styles |
-| `yce_admin.html` | 26.1 KB | administration HTML shell: tabs Site & season / Camps / Documents |
+| `yce_admin.html` | 26.2 KB | administration HTML shell: tabs Site & season / Camps / Documents |
 | `yce_camps.html` | 1.0 KB | old camp manager address — redirects to yce_admin.html#camps |
 | `js/toolnav.js` | 1.3 KB | tool menu under the header of every tool page |
 | `css/tools.css` | 6.9 KB | styles shared by the tool pages |
-| `yce_vault.html` | 20.1 KB | application vault HTML shell (Supabase) |
-| `js/vault-api.js` | 5.4 KB | vault: the only layer talking to Supabase |
-| `js/vault.js` | 35.7 KB | vault UI: sign-in, dashboard, file, signatures, team, retention |
+| `yce_vault.html` | 20.3 KB | application vault HTML shell (Supabase) |
 | `supabase/vault_schema.sql` | 29.7 KB | vault database: tables, row-level security, workflow, retention |
 | `docs/VAULT_SETUP.md` | 14.3 KB | vault setup guide (Supabase project, SMTP, GDPR) |
 | `tools/build_assets.py` | 2.2 KB | regenerates js/assets.js |
-| `tools/build_codemap.py` | 19.6 KB | regenerates this visualisation's data and docs/CODE_MAP.md |
+| `tools/build_codemap.py` | 21.6 KB | regenerates this visualisation's data and docs/CODE_MAP.md |
 | `tests/` | 4.0 KB | security & regression tests run by GitHub Actions (npm test) |
 | `documents/` | 4.0 KB | official documents: reference form, Commitment, host-family letter, Commitment template (markers) |
 
@@ -251,11 +261,27 @@
 
 | Defined in | Used by | Names |
 |---|---|---|
+| `js/zip.js` | `js/xlsx.js` | inflateRaw, unzip |
+| `js/vault.js` | `js/xlsx.js` | API, msg |
 | `js/zip.js` | `js/club-copy.js` | unzip, zipBudget |
-| `js/vault.js` | `js/vault-api.js` | addComment, createDossier, mfaVerify, sendLink, signOut, staffAdd, staffDelete |
-| `js/zip.js` | `js/vault.js` | unzip, zipBudget, zipNames |
-| `js/club-copy.js` | `js/vault.js` | buildClubCopy |
+| `js/xlsx.js` | `js/club-copy.js` | buildZip, setCell |
+| `js/vault.js` | `js/vault-api.js` | mfaVerify, sendLink, signOut |
+| `js/vault-dashboard.js` | `js/vault-api.js` | createDossier |
+| `js/vault-dossier.js` | `js/vault-api.js` | addComment |
+| `js/vault-staff.js` | `js/vault-api.js` | staffAdd, staffDelete |
 | `js/vault-api.js` | `js/vault.js` | makeVaultApi |
+| `js/vault-dashboard.js` | `js/vault.js` | loadDashboard |
+| `js/vault-dossier.js` | `js/vault.js` | openDossier |
+| `js/vault-staff.js` | `js/vault.js` | loadPurge, loadStaff |
+| `js/vault.js` | `js/vault-dashboard.js` | API, CONSENT_VERSION, STATUS, esc, fmtD, isMinor, isStaff, msg, show, validBirth |
+| `js/vault-dossier.js` | `js/vault-dashboard.js` | openDossier |
+| `js/zip.js` | `js/vault-dossier.js` | unzip, zipBudget, zipNames |
+| `js/xlsx.js` | `js/vault-dossier.js` | getCellValue, parseShared |
+| `js/club-copy.js` | `js/vault-dossier.js` | buildClubCopy |
+| `js/vault.js` | `js/vault-dossier.js` | API, CHECKLIST, STATUS, esc, fmtD, fmtDT, idPending, isMinor, isStaff, latestFile, msg, selfLink … |
+| `js/vault-dashboard.js` | `js/vault-dossier.js` | loadDashboard, renderNext |
+| `js/vault.js` | `js/vault-staff.js` | API, esc, msg |
+| `js/vault-dashboard.js` | `js/vault-staff.js` | loadDashboard |
 
 ## Who uses what (administration)
 
