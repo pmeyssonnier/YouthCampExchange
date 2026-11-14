@@ -299,6 +299,17 @@ ok(r.mdy[0] === null && r.mdy[1] === '15-07-2027' && r.mdy[2] === null, 'directo
   ok(f.contAge === f.expectAge, 'filter chips: age 17 recounts the continents: ' + f.contAge + ' vs ' + f.expectAge);
   ok(f.afterReset === f.total, 'filter chips: reset restores all counts');
 }
+
+// dates de la page publique : en anglais (plus de « juillet », « Sem. », « Qzn »)
+{
+  await pg.goto(B + 'index.html'); await pg.waitForTimeout(500);
+  const d = await pg.evaluate(() => { const i = CAMPS.findIndex(c => c.arrival); showCampDetail(i);
+    const sheet = document.getElementById('md-body').innerText; const o = t => { setPeriodType(t); return [...document.getElementById('p-sel').options].map(x => x.text).join(' '); };
+    return { sheet, month: o('month'), qzn: o('qzn'), week: o('week'), tab: document.querySelector('.ptab[data-t=qzn]').textContent, row: document.querySelector('#tbody tr').innerText, full: fmtFull(new Date(2027, 6, 12)), short: fmtDate('12-07-2027') }; });
+  ok(d.full === 'Mon, 12 July 2027' && d.short === '12 Jul 2027', 'camp sheet dates in English: ' + d.full + ' / ' + d.short);
+  ok(!/\b(janvier|février|mars|avril|juin|juillet|août|septembre|octobre|novembre|décembre)\b|\b(janv|févr|avr|juil|sept|oct|nov|déc|lun|mar|mer|jeu|ven|sam|dim)\./i.test(d.sheet.split('\n').filter(l => /20\d\d/.test(l) && l.length < 60).join(' ') + ' ' + d.month + ' ' + d.qzn + ' ' + d.week + ' ' + d.row), 'no French month or weekday left on the camp sheet, the table and the period filter');
+  ok(/^Wk /.test(d.week.split(' ')[0] + ' ') && d.tab === 'Half-month', 'period filter labels in English: ' + d.tab + ' / ' + d.week.slice(0, 30));
+}
 ok(!errs.length, 'no page errors: ' + errs.join(' | '));
 console.log(`\n${pass} passed, ${fail} failed`);
 await br.close(); srv.close(); process.exit(fail ? 1 : 0);

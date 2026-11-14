@@ -11,9 +11,9 @@ function parseDate(s){
   if(isNaN(dt)||dt.getFullYear()!==+y||dt.getMonth()!==+m-1||dt.getDate()!==+d)return null;
   return dt;
 }
-function fmtDate(s){const d=parseDate(s);if(!d)return'—';return d.toLocaleDateString('fr-BE',{day:'2-digit',month:'short',year:'numeric'});}
-function fmtDate2(d){if(!d)return'—';return d.toLocaleDateString('fr-BE',{day:'2-digit',month:'short'});}
-function fmtFull(d){if(!d)return'—';return d.toLocaleDateString('fr-BE',{weekday:'short',day:'2-digit',month:'long',year:'numeric'});}
+function fmtDate(s){const d=parseDate(s);if(!d)return'—';return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});}
+function fmtDate2(d){if(!d)return'—';return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'});}
+function fmtFull(d){if(!d)return'—';return d.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'long',year:'numeric'});}
 function parseAge(s){
   if(!s)return{min:14,max:30};
   const nums=s.match(/\d+/g);

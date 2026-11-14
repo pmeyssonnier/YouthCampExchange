@@ -5,6 +5,10 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.36.0 — 2026-11-14
+
+- **Public site: dates in English.** The dates of the camp sheet (timeline, camp period, deadline), of the explorer table and of the period filter were written in French (« lun. 12 juillet 2027 », « Sem. », « Qzn »). They are now in English (« Mon 12 July 2027 », « Wk », « Half-month »), like the rest of the site.
+
 ## 1.35.0 — 2026-11-14
 
 - **Phone numbers: the number of digits is checked against the country code.** A Belgian number must have 8 or 9 digits after +32, a French one 9 after +33, and so on for the main countries (Netherlands, Spain, Portugal, Switzerland, Poland, Czechia, United Kingdom, Italy, Germany, Austria, Nordic countries, Greece, Türkiye, USA/Canada, India…). The message in *Check missing fields* and when generating says what is expected and how many digits were typed. Other countries are still checked on 8 to 15 digits in total.
