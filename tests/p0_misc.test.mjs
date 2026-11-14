@@ -182,13 +182,25 @@ ok(r.mdy[0] === null && r.mdy[1] === '15-07-2027' && r.mdy[2] === null, 'directo
     buildReview('directory.xlsx', [t('Belgium Lions YCE Camp 2027', 'Belgium', '17-07-2027', 'Limburg, Belgium', 'A@x.example'),
       t('Camp Lakes', 'Italy', '18-07-2027', 'Como', 'it@x.example')]);
     const rows = [...document.querySelectorAll('#rev-body .rev-row')].map(r => r.textContent);
-    cancelReview();
+    // le nouveau nom est proposé (case cochée) : gardé si on décoche, appliqué sinon ; un camp au même nom à la casse près n'est pas « renommé »
+    const offer = document.querySelectorAll('#rev-body [id^="rvn-"]').length, pre = document.getElementById('rvn-0').checked;
+    document.getElementById('rv-0').checked = true; document.getElementById('rv-1').checked = false; document.getElementById('rvn-0').checked = false; applyReview();
+    const keptName = CAMPS_W[0].camp_name, endSet = CAMPS_W[0].camp_ends;
+    buildReview('directory.xlsx', [t('Belgium Lions YCE Camp 2027', 'Belgium', '17-07-2027', 'Limburg, Belgium', 'A@x.example'), t('CAMP NORTH!', 'Germany', '06-08-2027', 'Hamburg', 'de@x.example')]);
+    const again = [...document.querySelectorAll('#rev-body .rev-row')].map(r => r.textContent), caseOnly = document.querySelectorAll('#rev-body [id^="rvn-"]').length;
+    document.getElementById('rv-0').checked = true; applyReview();
+    const newName = CAMPS_W[0].camp_name, logTxt = document.getElementById('log').textContent, n = CAMPS_W.length;
+    CAMPS_W[0].camp_name = 'Brussels Lions Youth Camp';
     CAMPS_W.push(c('Belgium', 'Belgium Lions YCE Camp 2027', '17-07-2027', 'Limburg, Belgium', 'a@x.example'));
     const d = findDuplicates().map(x => x.a.camp_name + ' ~ ' + x.b.camp_name);
     CAMPS_W = keepC; ARCH = keepA; render();
-    return { rows: rows, d: d };
+    return { rows: rows, d: d, offer, pre, keptName, endSet, again, caseOnly, newName, logTxt, n };
   });
   ok(du.rows.length === 2 && /UPDATE\? \d+ % · same dates and place/.test(du.rows[0]) && /Brussels Lions Youth Camp/.test(du.rows[0]), 'renamed camp (same dates, place, contact) recognised, not offered as new: ' + du.rows[0]);
+  ok(du.offer === 1 && du.pre && /rename the camp to Belgium Lions YCE Camp 2027/.test(du.rows[0]), 'renamed camp: the new name is offered, ticked: ' + du.rows[0]);
+  ok(du.keptName === 'Brussels Lions Youth Camp' && du.endSet === '30-07-2027', 'renamed camp: unticking keeps the current name while the other changes apply');
+  ok(du.again.length === 2 && /rename the camp to/.test(du.again[0]) && du.caseOnly === 1 && !/rename/.test(du.again[1]), 'a name that only differs by case or punctuation is not a rename; a rename alone is still listed: ' + du.again.join(' | '));
+  ok(du.newName === 'Belgium Lions YCE Camp 2027' && /1 renamed/.test(du.logTxt) && du.n === 5, 'renamed camp: the new name is applied, no camp added: ' + du.newName);
   ok(/NEW/.test(du.rows[1]) && /Camp Lakes/.test(du.rows[1]), 'same country, same date, other place and same shared contact: still a new camp');
   ok(du.d.length === 1 && /Brussels.*Belgium Lions YCE/.test(du.d[0]), 'duplicate scan flags only the real pair: ' + du.d.join(' | '));
 }
