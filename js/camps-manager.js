@@ -536,8 +536,10 @@ function buildReview(fname,items){
     if(hit<0&&matchCamp(ARCH,t)){archived++;continue;}
     if(hit>=0){
       const chg=changesFor(CAMPS_W[hit],t);
-      if(!chg.length){unchanged++;continue;}
-      rev.push({kind:"update",camp:CAMPS_W[hit],how:how,t:t,chg:chg,on:how==="exact",pct:how==="exact"?100:likeness(factsOf(CAMPS_W[hit]),factsOfT(t))});
+      // camp reconnu sous un autre nom (pas une simple différence de casse ou de ponctuation) : le nouveau nom est proposé
+      const rename=simple(CAMPS_W[hit].camp_name)!==simple(t.name);
+      if(!chg.length&&!rename){unchanged++;continue;}
+      rev.push({kind:"update",camp:CAMPS_W[hit],how:how,t:t,chg:chg,rename:rename,on:how==="exact",pct:how==="exact"?100:likeness(factsOf(CAMPS_W[hit]),factsOfT(t))});
     }else rev.push({kind:"new",t:t,on:true,rep:replacesFor(t)});
   }
   REVIEW=rev;
@@ -553,7 +555,8 @@ function buildReview(fname,items){
         +(r.rep?'<label class="rev-rep"><input type="checkbox" id="rva-'+i+'"> may replace <b>'+esc(r.rep.camp.camp_name)+"</b> ("
           +esc(seasonOf(r.rep.camp))+", "+esc(r.rep.why)+") — archive the old camp</label>":"")
       :"<b>"+esc(r.camp.camp_name)+"</b> ⇐ "+esc(r.t.name)
-        +"<div class='chg'>"+r.chg.map(function(x){return esc(x.label)+": "+esc(String(x.old).slice(0,30)||"∅")+" → "+esc(String(Array.isArray(x.val)?x.val.join(", "):x.val).slice(0,40));}).join(" · ")+"</div>";
+        +"<div class='chg'>"+r.chg.map(function(x){return esc(x.label)+": "+esc(String(x.old).slice(0,30)||"∅")+" → "+esc(String(Array.isArray(x.val)?x.val.join(", "):x.val).slice(0,40));}).join(" · ")+"</div>"
+        +(r.rename?'<label class="rev-rep"><input type="checkbox" id="rvn-'+i+'" checked> rename the camp to <b>'+esc(r.t.name)+"</b> (untick to keep the current name)</label>":"");
     return '<div class="rev-row"><input type="checkbox" id="rv-'+i+'"'+(r.on?" checked":"")+"> "+tag+'<div class="rev-what">'+what+"</div></div>";
   }).join(""):'<span class="hint">Everything already matches the directory — nothing to apply.</span>';
   document.getElementById("review").style.display="";
@@ -562,7 +565,7 @@ function buildReview(fname,items){
 }
 function applyReview(){
   if(!REVIEW)return;
-  let up=0,nw=0,gp=0,gone=0;const old=[];
+  let up=0,nw=0,gp=0,gone=0,rn_count=0;const old=[];
   REVIEW.forEach(function(r,i){
     if(!document.getElementById("rv-"+i).checked)return;
     if(r.kind!=="new"&&CAMPS_W.indexOf(r.camp)<0){gone++;return;} // camp archivé ou supprimé depuis la lecture du fichier
@@ -577,6 +580,8 @@ function applyReview(){
         else{c.detail=c.detail||{};c.detail[x.field]=x.val;}
       });
       if(c.detail){const det={};DET_KEYS.forEach(function(k){if(k in c.detail)det[k]=c.detail[k];});c.detail=det;}
+      const rn=document.getElementById("rvn-"+i);
+      if(r.rename&&rn&&rn.checked){c.camp_name=r.t.name;rn_count++;}
       up++;
     }else{
       const t=r.t,det={};
@@ -601,7 +606,7 @@ function applyReview(){
   cancelReview();
   if(gone)log(gone+" ticked line(s) skipped: the camp was archived or deleted after the file was read.","warn");
   if(gp&&!up&&!nw){log("Coordinates applied to "+gp+" camp(s). Review, then “Save to the site”.","ok");markDirty();render();return;}
-  log("Directory applied: "+up+" camp(s) updated, "+nw+" created"+(old.length?", "+old.length+" replaced camp(s) archived":"")+". Review, then “Save to the site”.","ok");
+  log("Directory applied: "+up+" camp(s) updated"+(rn_count?" ("+rn_count+" renamed)":"")+", "+nw+" created"+(old.length?", "+old.length+" replaced camp(s) archived":"")+". Review, then “Save to the site”.","ok");
   markDirty();render();
 }
 function cancelReview(){REVIEW=null;document.getElementById("review").style.display="none";}

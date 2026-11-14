@@ -5,6 +5,10 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.37.0 — 2026-11-14
+
+- **Directory import: renamed camps get their new name.** When the import recognises a camp under another name (same dates and place, or same contact — « Brussels Lions Youth Camp » becoming « Belgium Lions YCE Camp 2027 »), the review line now offers « rename the camp to … », ticked by default. Untick it to keep the current name while the other changes apply. Until now the camp kept its old name and had to be renamed by hand. A name that only differs by capitals or punctuation is not treated as a rename. A camp whose only change is its name now appears in the review instead of being counted as unchanged. On phones, the review lines put their text under the tick box and the label, so it is readable.
+
 ## 1.36.1 — 2026-11-14
 
 Fixes found by a code review of the points listed for verification.
