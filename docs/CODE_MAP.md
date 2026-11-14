@@ -1,7 +1,7 @@
 # Code map — Lions YCE
 
 > **Generated file — do not edit by hand.** Rebuilt by `python3 tools/build_codemap.py` (run automatically on every push to `main`).
-> Commit `a0cc29f`, 2026-11-14 20:58 UTC. Interactive version: [`code_map.html`](code_map.html).
+> Commit `33a0026`, 2026-11-14 23:27 UTC. Interactive version: [`code_map.html`](code_map.html).
 
 ## Pages
 
@@ -186,7 +186,7 @@
 | `camps_data.js` | 72.2 KB | season data: SEASON + YEAR + RAW camps — common to every deployment |
 | `districts_data.js` | 6.1 KB | per-deployment data: SITE_REPO + DISTRICTS coordinators |
 | `js/version.js` | 0.5 KB | site version number (VERSION), shown on every page — bumped by each pull request |
-| `CHANGELOG.md` | 42.2 KB | what changed in each version |
+| `CHANGELOG.md` | 42.9 KB | what changed in each version |
 | `yce_form_filler.html` | 13.8 KB | filler HTML shell + styles |
 | `yce_tracker.html` | 9.0 KB | tracker HTML shell + styles |
 | `yce_admin.html` | 26.3 KB | administration HTML shell: tabs Site & season / Camps / Documents |
@@ -197,7 +197,7 @@
 | `supabase/vault_schema.sql` | 29.7 KB | vault database: tables, row-level security, workflow, retention |
 | `docs/VAULT_SETUP.md` | 14.3 KB | vault setup guide (Supabase project, SMTP, GDPR) |
 | `tools/build_assets.py` | 2.2 KB | regenerates js/assets.js |
-| `tools/build_codemap.py` | 22.3 KB | regenerates this visualisation's data and docs/CODE_MAP.md |
+| `tools/build_codemap.py` | 23.7 KB | regenerates this visualisation's data and docs/CODE_MAP.md |
 | `tests/` | 4.0 KB | security & regression tests run by GitHub Actions (npm test) |
 | `documents/` | 4.0 KB | official documents: reference form, Commitment, host-family letter, Commitment template (markers) |
 
