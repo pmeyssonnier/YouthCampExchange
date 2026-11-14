@@ -1,7 +1,7 @@
 # Code map — Lions YCE
 
 > **Generated file — do not edit by hand.** Rebuilt by `python3 tools/build_codemap.py` (run automatically on every push to `main`).
-> Commit `93f3474`, 2026-11-14 20:36 UTC. Interactive version: [`code_map.html`](code_map.html).
+> Commit `6d5d787`, 2026-11-14 20:43 UTC. Interactive version: [`code_map.html`](code_map.html).
 
 ## Pages
 
@@ -121,7 +121,9 @@
 | `js/admin-core.js` | 238 | 13.8 KB | shared admin plumbing: passphrase-encrypted token, GitHub API, atomic commits, connect hooks |
 | `js/clean-html.js` | 32 | 1.7 KB | cleanHtml: the few formatting tags allowed in customisable texts — shared |
 | `js/upload-limits.js` | 19 | 1.1 KB | upload size limits — shared |
-| `js/admin.js` | 418 | 26.1 KB | Site & season and Documents tabs: season, coordinators, national team, home page, gallery, uploads |
+| `js/admin-people.js` | 117 | 8.4 KB | Site & season tab: district coordinators, multiple district number, national team |
+| `js/admin-gallery.js` | 80 | 4.3 KB | Site & season tab: home page photo gallery |
+| `js/admin.js` | 232 | 14.5 KB | Site & season and Documents tabs: form, fees and bank details, save, official documents, start-up |
 | `js/camps-manager.js` | 320 | 19.5 KB | Camps tab: list, camp sheet, archive, JSON backup, save to the site |
 | `js/camps-match.js` | 71 | 4.2 KB | Camps tab: is it the same camp? name/place similarity, renamed camps, duplicates |
 | `js/camps-import.js` | 219 | 13.4 KB | Camps tab: official YCE directory (xlsx) import — parse, review, apply |
@@ -138,7 +140,11 @@
 
 **`js/upload-limits.js`** — `uploadLimits`
 
-**`js/admin.js`** — `limShow`, `limValues`, `fillForm` (show the site data in the form), `distShow` (district coordinators list), `distEdit`, `distNew`, `distCancel`, `distApply`, `distRemove`, `mdShow`, `mdInput`, `teamForm`, `teamShow` (national team list), `teamEdit`, `teamCancel`, `teamApply`, `teamRemove`, `teamMove`, `ibanOk` (IBAN checksum), `paymentValues`, `upsertConst` (set a constant in a data file), `updPaths`, `galShow`, `galMove`, `galZoom`, `galPick` (add gallery photos), `buildDistrictsLiteral` (DISTRICTS block as written in the file), `saveData` (save season, coordinators, home page in one commit), `uploadPick` (replace an official document), `parseSiteData` (read camps_data.js / districts_data.js as text), `annMode`
+**`js/admin-people.js`** — `distShow` (district coordinators list), `distEdit`, `distNew`, `distCancel`, `distApply` (validate a coordinator), `distRemove` (remove a district), `mdShow` (multiple district number), `mdInput`, `teamForm`, `teamShow` (national team list), `teamEdit`, `teamCancel`, `teamApply` (validate a member), `teamRemove`, `teamMove` (change the order)
+
+**`js/admin-gallery.js`** — `galShow` (gallery thumbnails), `galMove` (change the order), `galZoom` (full-size preview), `galPick` (add photos (reduced before upload))
+
+**`js/admin.js`** — `limShow` (attachment size limits fields), `limValues`, `fillForm` (show the site data in the form), `ibanOk` (IBAN checksum), `paymentValues` (fee and bank details from the form), `upsertConst` (set a constant in a data file), `updPaths`, `buildDistrictsLiteral` (DISTRICTS block as written in the file), `saveData` (save season, coordinators, home page in one commit), `uploadPick` (replace an official document), `parseSiteData` (read camps_data.js / districts_data.js as text), `annMode` (announcement: edit / preview)
 
 **`js/camps-manager.js`** — `markDirty` (unsaved changes flag), `updSave`, `simple` (lower case, no accents, letters and digits only), `seasonOf` (YCE season of a camp (September to August)), `dmyKey`, `setSort` (column sort), `setContinent`, `setView`, `render` (camp table (search, continent, sort)), `fldHtml`, `editIndex` (position of the open sheet's camp (followed by object)), `openEdit` (open a camp sheet), `newCamp` (empty sheet), `deleteEditing` (delete the open camp), `closeEdit`, `gv`, `saveEdit` (validate and apply the sheet), `today`, `archiveCamp` (move to the archive), `restoreCamp` (back from the archive), `deleteCamp`, `exportJson` (JSON backup), `jsonPick` (restore a JSON backup), `validDmy` (real calendar date check), `saveSite` (write camps_data.js + camps_archive.json in one commit)
 
@@ -180,10 +186,10 @@
 | `camps_data.js` | 72.2 KB | season data: SEASON + YEAR + RAW camps — common to every deployment |
 | `districts_data.js` | 6.1 KB | per-deployment data: SITE_REPO + DISTRICTS coordinators |
 | `js/version.js` | 0.5 KB | site version number (VERSION), shown on every page — bumped by each pull request |
-| `CHANGELOG.md` | 41.8 KB | what changed in each version |
+| `CHANGELOG.md` | 42.2 KB | what changed in each version |
 | `yce_form_filler.html` | 13.8 KB | filler HTML shell + styles |
 | `yce_tracker.html` | 9.0 KB | tracker HTML shell + styles |
-| `yce_admin.html` | 26.2 KB | administration HTML shell: tabs Site & season / Camps / Documents |
+| `yce_admin.html` | 26.3 KB | administration HTML shell: tabs Site & season / Camps / Documents |
 | `yce_camps.html` | 1.0 KB | old camp manager address — redirects to yce_admin.html#camps |
 | `js/toolnav.js` | 1.3 KB | tool menu under the header of every tool page |
 | `css/tools.css` | 6.9 KB | styles shared by the tool pages |
@@ -191,7 +197,7 @@
 | `supabase/vault_schema.sql` | 29.7 KB | vault database: tables, row-level security, workflow, retention |
 | `docs/VAULT_SETUP.md` | 14.3 KB | vault setup guide (Supabase project, SMTP, GDPR) |
 | `tools/build_assets.py` | 2.2 KB | regenerates js/assets.js |
-| `tools/build_codemap.py` | 21.6 KB | regenerates this visualisation's data and docs/CODE_MAP.md |
+| `tools/build_codemap.py` | 22.3 KB | regenerates this visualisation's data and docs/CODE_MAP.md |
 | `tests/` | 4.0 KB | security & regression tests run by GitHub Actions (npm test) |
 | `documents/` | 4.0 KB | official documents: reference form, Commitment, host-family letter, Commitment template (markers) |
 
@@ -288,9 +294,15 @@
 | Defined in | Used by | Names |
 |---|---|---|
 | `js/zip.js` | `js/xlsx.js` | inflateRaw, unzip |
+| `js/admin-core.js` | `js/admin-people.js` | esc, log |
+| `js/admin.js` | `js/admin-people.js` | DIST_EDIT, DIST_W, MD_W, TEAM_EDIT, TEAM_W |
+| `js/admin-core.js` | `js/admin-gallery.js` | esc, getFile, log, putFile |
+| `js/admin.js` | `js/admin-gallery.js` | GAL |
 | `js/admin-core.js` | `js/admin.js` | ON_CONNECT, b64ToUtf8, bufToB64, commitFiles, esc, getFile, initAccess, log, putFile, rawSpan, utf8ToB64 |
 | `js/clean-html.js` | `js/admin.js` | cleanHtml |
 | `js/upload-limits.js` | `js/admin.js` | uploadLimits |
+| `js/admin-people.js` | `js/admin.js` | distShow, mdShow, teamShow |
+| `js/admin-gallery.js` | `js/admin.js` | galShow |
 | `js/admin-core.js` | `js/camps-manager.js` | ON_CONNECT, b64ToUtf8, commitFiles, esc, getFile, initAccess, log, rawSpan, utf8ToB64 |
 | `js/camps-match.js` | `js/camps-manager.js` | showDuplicates |
 | `js/admin-core.js` | `js/camps-match.js` | esc |

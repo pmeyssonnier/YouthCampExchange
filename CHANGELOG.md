@@ -11,6 +11,7 @@ No change for users: code organisation and its documentation.
 
 - **Camp manager split into four files.** `js/camps-manager.js` (669 lines) did everything for the Camps tab of the administration. It now keeps the list, the camp sheet, the archive, the JSON backup and the save to the site; the rest moved, unchanged, to `js/camps-match.js` (same camp? similarity, duplicates), `js/camps-import.js` (official directory import: read, review, apply) and `js/camps-geo.js` (map coordinates from GeoJSON).
 - **Vault interface split into four files.** `js/vault.js` (590 lines) keeps the constants, the helpers, the start-up, the sign-in and the two-step verification; the rest moved, unchanged, to `js/vault-dashboard.js` (list of files, whose turn, new file), `js/vault-dossier.js` (one file: display, upload, sign-off, comments) and `js/vault-staff.js` (staff and retention purge).
+- **Administration Site tab split into three files.** `js/admin.js` (417 lines) keeps the form, the fees and bank details, the save, the official documents and the start-up; the coordinators, the multiple district number and the national team moved, unchanged, to `js/admin-people.js`, and the photo gallery to `js/admin-gallery.js`.
 - **Code map extended.** `docs/CODE_MAP.md` and the interactive `docs/code_map.html` now describe the administration and the public site module by module (functions with their role, who uses what), and the interactive map has Vault and Administration tabs. Until now only the form filler and the tracker were detailed.
 
 ## 1.37.0 — 2026-11-14

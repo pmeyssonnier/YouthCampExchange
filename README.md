@@ -119,7 +119,9 @@ js/
   render.js                           section/widget rendering, X-groups, counter
   form.js                             orchestration: generate() and init() — loaded last
   admin-core.js                       admin plumbing: passphrase-encrypted token, GitHub API, atomic commits, connect hooks
-  admin.js                            admin Site & season and Documents tabs
+  admin.js                            admin Site & season and Documents tabs: form, fees, save, documents, start-up
+  admin-people.js                     admin: district coordinators, multiple district number, national team
+  admin-gallery.js                    admin: home page photo gallery
   camps-manager.js                    admin Camps tab: list, camp sheet, archive, JSON backup, save to the site
   camps-match.js                      admin Camps tab: same camp? similarity, renamed camps, duplicates
   camps-import.js                     admin Camps tab: official YCE directory (xlsx) import — parse, review, apply

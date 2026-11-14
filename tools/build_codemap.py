@@ -15,7 +15,8 @@ TRACKER = ["js/zip.js", "js/tracker-storage.js", "js/tracker-parser.js",
 VAULT = ["js/zip.js", "js/xlsx.js", "js/club-copy.js", "js/vault-api.js", "js/vault.js",
          "js/vault-dashboard.js", "js/vault-dossier.js", "js/vault-staff.js"]
 # administration (yce_admin.html) and public site (index.html), in load order
-ADMIN = ["js/zip.js", "js/xlsx.js", "js/admin-core.js", "js/clean-html.js", "js/upload-limits.js", "js/admin.js",
+ADMIN = ["js/zip.js", "js/xlsx.js", "js/admin-core.js", "js/clean-html.js", "js/upload-limits.js",
+         "js/admin-people.js", "js/admin-gallery.js", "js/admin.js",
          "js/camps-manager.js", "js/camps-match.js", "js/camps-import.js", "js/camps-geo.js", "js/admin-tabs.js"]
 PUBLIC = ["js/clean-html.js", "js/site-data.js", "js/site-explorer.js", "js/site-map.js", "js/site-modal.js", "js/site-ui.js"]
 
@@ -43,7 +44,9 @@ ROLES = {
     "js/tracker-export.js": "CSV export for Excel",
     "js/tracker-ui.js": "table, filters, sorting, stats — runs render()",
     "js/admin-core.js": "shared admin plumbing: passphrase-encrypted token, GitHub API, atomic commits, connect hooks",
-    "js/admin.js": "Site & season and Documents tabs: season, coordinators, national team, home page, gallery, uploads",
+    "js/admin.js": "Site & season and Documents tabs: form, fees and bank details, save, official documents, start-up",
+    "js/admin-people.js": "Site & season tab: district coordinators, multiple district number, national team",
+    "js/admin-gallery.js": "Site & season tab: home page photo gallery",
     "js/camps-manager.js": "Camps tab: list, camp sheet, archive, JSON backup, save to the site",
     "js/camps-match.js": "Camps tab: is it the same camp? name/place similarity, renamed camps, duplicates",
     "js/camps-import.js": "Camps tab: official YCE directory (xlsx) import — parse, review, apply",
@@ -65,8 +68,11 @@ FILE_FN_ROLES = {
         "rawSpan": "position of the RAW camp array in camps_data.js", "logout": "forget the token", "initAccess": "choose token / passphrase screen"},
     "js/admin.js": {"fillForm": "show the site data in the form", "saveData": "save season, coordinators, home page in one commit",
         "parseSiteData": "read camps_data.js / districts_data.js as text", "buildDistrictsLiteral": "DISTRICTS block as written in the file",
-        "galPick": "add gallery photos", "uploadPick": "replace an official document", "distShow": "district coordinators list",
-        "teamShow": "national team list", "ibanOk": "IBAN checksum", "upsertConst": "set a constant in a data file"},
+        "uploadPick": "replace an official document", "ibanOk": "IBAN checksum", "upsertConst": "set a constant in a data file",
+        "limShow": "attachment size limits fields", "paymentValues": "fee and bank details from the form", "annMode": "announcement: edit / preview"},
+    "js/admin-people.js": {"distShow": "district coordinators list", "distApply": "validate a coordinator", "distRemove": "remove a district",
+        "mdShow": "multiple district number", "teamShow": "national team list", "teamApply": "validate a member", "teamMove": "change the order"},
+    "js/admin-gallery.js": {"galShow": "gallery thumbnails", "galPick": "add photos (reduced before upload)", "galMove": "change the order", "galZoom": "full-size preview"},
     "js/camps-manager.js": {"render": "camp table (search, continent, sort)", "setSort": "column sort", "openEdit": "open a camp sheet",
         "saveEdit": "validate and apply the sheet", "editIndex": "position of the open sheet's camp (followed by object)",
         "newCamp": "empty sheet", "deleteEditing": "delete the open camp", "archiveCamp": "move to the archive", "restoreCamp": "back from the archive",
