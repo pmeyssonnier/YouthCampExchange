@@ -47,11 +47,14 @@ const DIAL_CODES=(function(){
   return set;
 })();
 // Nombre de chiffres du numéro national (après l'indicatif, sans le 0 d'appel) : [min, max].
-// Plages volontairement larges (fixe, mobile…) ; un pays absent de la liste n'est contrôlé que sur 8 à 15 chiffres au total.
-const NAT_LEN={"+1":[10,10],"+7":[10,10],"+30":[10,10],"+31":[9,9],"+32":[8,9],"+33":[9,9],"+34":[9,9],"+351":[9,9],"+352":[6,9],"+353":[7,9],
-  "+358":[6,12],"+39":[8,11],"+41":[9,9],"+420":[9,9],"+43":[7,13],"+44":[9,10],"+45":[8,8],"+46":[7,9],"+47":[8,8],"+48":[9,9],"+49":[7,13],
-  "+52":[10,10],"+55":[10,11],"+61":[9,9],"+81":[9,10],"+86":[10,11],"+90":[10,10],"+91":[10,10]};
-const KEEP_ZERO={"+39":1}; // en Italie le 0 des numéros fixes fait partie du numéro
+// Bornes recoupées avec le plan de numérotation de chaque pays (fixes et mobiles, métadonnées libphonenumber) :
+// un numéro réel n'est jamais refusé ; un pays absent de la liste n'est contrôlé que sur 8 à 15 chiffres au total.
+const NAT_LEN={"+1":[10,10],"+7":[10,10],"+30":[10,10],"+31":[9,9],"+32":[8,9],"+33":[9,9],"+34":[9,9],"+351":[9,9],"+352":[4,11],"+353":[7,10],
+  "+358":[5,12],"+39":[6,12],"+41":[9,9],"+420":[9,9],"+43":[4,13],"+44":[9,10],"+45":[8,8],"+46":[7,10],"+47":[8,8],"+48":[9,9],"+49":[5,13],
+  "+52":[10,11],"+55":[10,11],"+61":[9,9],"+81":[9,10],"+86":[7,11],"+90":[10,10],"+91":[10,10]};
+// Pays où le 0 initial fait partie du numéro (il ne faut pas le retirer après l'indicatif) :
+// Italie et Saint-Marin (fixes), Côte d'Ivoire, Bénin, Gabon, Congo-Brazzaville (tous les numéros).
+const KEEP_ZERO={"+39":1,"+378":1,"+225":1,"+229":1,"+241":1,"+242":1};
 function dialOf(digits){ // "32470123456" -> "+32" ; null si indicatif inconnu
   for(let n=1;n<=3;n++){if(DIAL_CODES[+digits.slice(0,n)]&&digits.charAt(0)!=="0")return "+"+digits.slice(0,n);}
   return null;

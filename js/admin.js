@@ -371,7 +371,7 @@ function uploadPick(inp,kind){
 function parseSiteData(campsSrc,distSrc){
   const str=function(src,name){const m=new RegExp("const "+name+' = "([^"]*)";').exec(src);return m?m[1]:null;};
   const json=function(src,re){const m=re.exec(src);return m?JSON.parse(m[1]):null;};
-  const raw=json(campsSrc,/const RAW = (\[[\s\S]*?\]);/);
+  const span=rawSpan(campsSrc),raw=span?JSON.parse(campsSrc.slice(span[0],span[1])):null;
   const gallery=json(distSrc,/const GALLERY = (\[[\s\S]*?\]);/);
   const ann=/\n  announce: ("(?:[^"\\]|\\.)*"),/.exec(distSrc);
   const block=/const DISTRICTS = \{([\s\S]*?)\n\};/.exec(distSrc);

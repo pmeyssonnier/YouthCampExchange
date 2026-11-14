@@ -13,12 +13,13 @@ let filterInclusive=false; // seulement les camps pour personnes en situation de
 
 // Nombres des puces : chaque filtre compte les camps qui passent TOUS les autres filtres (pas le sien),
 // donc un choix de saison ou d'âge met à jour les continents, les pays et les États.
-// skip : lettres des filtres ignorés — s saison, c continent, k pays, t État. L'âge et la période comptent toujours.
+// skip : lettres des filtres ignorés — s saison, c continent, k pays, t État, i inclusion, w hiver. L'âge et la période comptent toujours.
+// État : un camp sans État (hors USA/Canada) ne reste affiché que si son pays a été coché ; sinon cocher « Ontario » laisserait tous les autres pays.
 function campMatches(c,skip){
   if(skip.indexOf('s')<0&&selSeasons.size>0&&!selSeasons.has(c.season))return false;
   if(skip.indexOf('c')<0&&selContinents.size>0&&!selContinents.has(c.continent))return false;
   if(skip.indexOf('k')<0&&selCountries.size>0&&!selCountries.has(c.country))return false;
-  if(skip.indexOf('t')<0&&selStates.size>0&&c.state&&!selStates.has(c.state))return false;
+  if(skip.indexOf('t')<0&&selStates.size>0&&(c.state?!selStates.has(c.state):!selCountries.has(c.country)))return false;
   if(skip.indexOf('i')<0&&filterInclusive&&!c.inclusive)return false;
   if(skip.indexOf('w')<0&&filterWinter&&!c.winter)return false;
   if(filterAge!==null&&(filterAge<c.age_min||filterAge>c.age_max))return false;
@@ -50,7 +51,7 @@ function renderWinterPill(){
 }
 function toggleWinter(){filterWinter=!filterWinter;applyFilters();}
 function toggleInclusive(){filterInclusive=!filterInclusive;applyFilters();}
-function refreshFacets(){renderInclusivePill();renderWinterPill();renderStateList();renderSeasonPills();renderContinentPills();renderCountryList();}
+function refreshFacets(){renderStateList();renderInclusivePill();renderWinterPill();renderSeasonPills();renderContinentPills();renderCountryList();} // les États d'abord : la liste peut vider selStates, dont dépendent les autres compteurs
 function toggleSeason(s){
   if(selSeasons.has(s))selSeasons.delete(s);else selSeasons.add(s);
   applyFilters();
@@ -69,6 +70,7 @@ function renderStateList(){
   if(!hasCtx||base.length===0){section.style.display='none';hr.style.display='none';selStates.clear();return;}
   const counts={};
   base.forEach(c=>{if(c.state)counts[c.state]=(counts[c.state]||0)+1;});
+  selStates.forEach(st=>{if(!counts[st])counts[st]=0;}); // un État coché reste dans la liste (0) : on peut le décocher
   const states=Object.keys(counts).sort();
   if(!states.length){section.style.display='none';hr.style.display='none';selStates.clear();return;}
   section.style.display='';hr.style.display='';
@@ -230,6 +232,7 @@ function renderCountryList(){
   const srch=document.getElementById('c-srch').value.toLowerCase();
   const base=CAMPS.filter(c=>campMatches(c,'kt'));
   const counts={};base.forEach(c=>counts[c.country]=(counts[c.country]||0)+1);
+  selCountries.forEach(c=>{if(!counts[c])counts[c]=0;}); // un pays coché reste dans la liste (0) même si un autre filtre l'exclut
   const countries=Object.keys(counts).sort().filter(c=>c.toLowerCase().includes(srch));
   const sc=document.getElementById('sel-country');if(sc)sc.textContent=selCountries.size?'· '+selCountries.size+' selected':'';
   const el=document.getElementById('c-list');

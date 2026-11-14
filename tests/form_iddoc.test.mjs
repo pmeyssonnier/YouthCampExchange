@@ -139,7 +139,32 @@ t.ok(await pg.evaluate(() => !isComplete(Object.values(ROWS)[0])), 'file not cou
   t.ok(r['+1 650 296 2870'][0] === '+1 650 296 2870' && r['+971 50 123 4567'][0] === '+971 501 234 567' && r['+7 912 345 67 89'][0] === '+7 912 345 6789', 'codes +1, +971, +7 recognised');
   t.ok(r['+44 7911 123456'][1] === '' && r['+358 50 3575965'][1] === '', 'UK and Finnish mobiles accepted');
   t.ok(r['+47 123 45'][1] !== '', 'too short for Norway is refused');
+  // bornes recoupées avec les plans de numérotation : aucun numéro réel refusé, le 0 initial gardé là où il fait partie du numéro
+  const r2 = await m.evaluate(() => Object.fromEntries(['+225 07 12 34 56 78', '+229 01 95 12 34 56', '+241 06 03 12 34', '+242 06 123 4567', '+352 26 12 34', '+353 85 012 3456 7', '+43 1 51234',
+    '+49 6331 12', '+52 1 55 1234 5678', '+39 02 1234', '+358 9 1234', '+86 21 1234 5678', '+32 0470 12 34 56', '+33 06 12 34 56 78', '+52 55 1234', '+31 6 1234 567'].map(x => { const n = normPhone(x); return [x, [n, phoneProblem(n)]]; })));
+  t.ok(r2['+225 07 12 34 56 78'][0].replace(/ /g, '') === '+2250712345678' && r2['+229 01 95 12 34 56'][0].replace(/ /g, '') === '+2290195123456'
+    && r2['+241 06 03 12 34'][0].replace(/ /g, '') === '+24106031234' && r2['+242 06 123 4567'][0].replace(/ /g, '') === '+242061234567',
+    'leading 0 kept where it is part of the number (Ivory Coast, Benin, Gabon, Congo): ' + JSON.stringify([r2['+225 07 12 34 56 78'][0], r2['+242 06 123 4567'][0]]));
+  const refused = ['+225 07 12 34 56 78', '+229 01 95 12 34 56', '+241 06 03 12 34', '+242 06 123 4567', '+352 26 12 34', '+353 85 012 3456 7', '+43 1 51234', '+49 6331 12', '+52 1 55 1234 5678', '+39 02 1234', '+358 9 1234', '+86 21 1234 5678'].filter(k => r2[k][1] !== '');
+  t.ok(!refused.length, 'real number lengths accepted (Luxembourg, Ireland, Austria, Germany, Mexico +52 1, Italy, Finland, China): refused ' + JSON.stringify(refused.map(k => k + ' -> ' + r2[k][1])));
+  t.ok(r2['+32 0470 12 34 56'][0] === '+32 470 123 456' && r2['+33 06 12 34 56 78'][0].replace(/ /g, '') === '+33612345678', 'the 0 is still dropped after +32 / +33');
+  t.ok(r2['+52 55 1234'][1] !== '' && r2['+31 6 1234 567'][1] !== '', 'numbers with missing digits are still refused');
   t.ok(!me.length, 'no page error ' + me.join(' | '));
+  await m.close();
+}
+// Commitment to Reciprocity : le texte par défaut du formulaire est celui du document Word officiel, et le modèle garde ses repères
+{
+  const m = await ctx.newPage();
+  await m.goto(B + 'yce_form_filler.html'); await m.waitForTimeout(500);
+  const c = await m.evaluate(async () => {
+    const paras = async (url) => { const e = (await unzip(await (await fetch(url)).arrayBuffer())).find(x => x.name === 'word/document.xml'); const xml = new TextDecoder().decode(e.data);
+      return (xml.match(/<w:p[ >][\s\S]*?<\/w:p>/g) || []).map(p => decodeEnt((p.match(/<w:t[^>]*>[\s\S]*?<\/w:t>/g) || []).map(x => x.replace(/<[^>]+>/g, '')).join('')).replace(/\s+/g, ' ').trim()).filter(Boolean); };
+    const doc = await paras('documents/Commitment%20to%20Reciprocity.docx'), tpl = await paras('documents/commit_template.docx');
+    return { missing: COMMIT_TEXT_DEFAULT.filter(x => doc.indexOf(x) < 0).length, extra: doc.filter(x => COMMIT_TEXT_DEFAULT.indexOf(x) < 0 && !/^(commitment to reciprocity$|name of the candidate|date\s*:|signature)/i.test(x)), n: COMMIT_TEXT_DEFAULT.length,
+      marks: ['[BODY]', '\u00a7CAND\u00a7', '\u00a7DATE\u00a7', '[SIG1]', '[SIG2]', '[SIG3]'].filter(k => !tpl.some(x => x.indexOf(k) >= 0)) };
+  });
+  t.ok(c.n >= 5 && c.missing === 0 && !c.extra.length, 'Commitment: form text identical to the official Word document: ' + JSON.stringify(c));
+  t.ok(!c.marks.length, 'Commitment: the template keeps its markers: missing ' + JSON.stringify(c.marks));
   await m.close();
 }
 t.ok(!errs.length, 'no page error ' + errs.join(' | '));

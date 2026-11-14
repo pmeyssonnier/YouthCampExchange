@@ -5,6 +5,18 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.36.1 — 2026-11-14
+
+Fixes found by a code review of the points listed for verification.
+
+- **Camp manager: a camp could be overwritten.** With a camp sheet open, archiving or deleting *another* camp (or applying an import) shifted the list, and « Apply » then wrote the sheet over the next camp: one camp lost, one duplicated. The open sheet now follows its camp, not its position; if the camp was archived meanwhile, the save is refused with a message. A pending import review follows the camps the same way. A « New camp » abandoned by opening another sheet no longer leaves an empty line.
+- **Camp manager: saving is robust to the text of a camp.** A description containing `];` could cut the camp list in `camps_data.js` at the wrong place when saving. The list is now located by reading its brackets and strings. The « current season » colour in the list follows `SEASON` instead of a fixed « 2026-2027 ».
+- **Form, phone numbers: no real number refused.** The number of digits per country was checked against the national numbering plans: Luxembourg, Ireland, Austria, Germany, Italy, Finland, China and Mexico (old « +52 1 » mobile format) were too strict and could block the generation of the file. The leading 0 is now kept where it is part of the number (Ivory Coast, Benin, Gabon, Congo-Brazzaville, San Marino): it was silently removed, which wrote a wrong number in the Excel file.
+- **Public site, State filter.** Ticking a state (e.g. Ontario) left every camp of the other countries in the list (80 of 83). It now shows the camps of that state only, plus the countries ticked explicitly. A ticked country or state stays in its list (with 0) when another filter excludes it, so it can be unticked there.
+- **Phones: filter drawer and form.** In the public filter drawer, the age, country search, period and sort fields are 16 px (iOS no longer zooms when typing) and the chips, Close and Reset buttons are large enough for a finger. In the form, « Clear form », « Check missing fields » and the Yes/No choices are taller on phones.
+- Removed the phone formatting code of the public page, unused since the contact block left the public camp sheet.
+- Tests: the Commitment to Reciprocity text of the form is compared with the official Word document, and the template markers are checked.
+
 ## 1.36.0 — 2026-11-14
 
 - **Public site: dates in English.** The dates of the camp sheet (timeline, camp period, deadline), of the explorer table and of the period filter were written in French (« lun. 12 juillet 2027 », « Sem. », « Qzn »). They are now in English (« Mon 12 July 2027 », « Wk », « Half-month »), like the rest of the site.
