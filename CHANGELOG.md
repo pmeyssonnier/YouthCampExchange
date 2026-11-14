@@ -5,6 +5,12 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.37.0 — 2026-11-14
+
+- **Camp contacts are no longer published.** The contact block had left the public camp sheet, but the name, e-mail and phone of each camp contact were still readable in the site files (`camps_data.js`, `camps.json`, `camps_archive.json`). They are removed from these files (62 names, 64 e-mail addresses, 36 phone numbers, plus the archive). E-mail addresses and international phone numbers written inside a camp description are replaced by « [contact: ask your YCE coordinator] » (9 archived camps).
+- **Administration, Camps tab.** The camp sheet no longer has the three contact fields: look the contact up in the official YCE directory. To keep recognising the same contact from one import to the next (duplicates, renamed camps, « may replace »), the site keeps only a fingerprint of the e-mail address (`contact_key`, 8 characters), from which the address cannot be read. The directory import reads the e-mail column only to compute this fingerprint. An old JSON backup is cleaned the same way when it is imported.
+- Earlier versions of these files remain in the Git history of the repository.
+
 ## 1.36.1 — 2026-11-14
 
 Fixes found by a code review of the points listed for verification.

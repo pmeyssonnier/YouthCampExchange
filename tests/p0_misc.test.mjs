@@ -115,7 +115,6 @@ const r = await pg.evaluate(() => {
   tryIt('family inverted', () => { set('e-family_stay_starts', '20-07-2027'); set('e-family_stay_ends', '10-07-2027'); });
   tryIt('ages', () => set('e-age_requirements', '21-17'));
   tryIt('website', () => set('e-website', 'javascript:alert(1)'));
-  tryIt('email', () => set('e-contact_email', 'x"><img>'));
   tryIt('valid', () => { set('e-camp_starts', '01-07-2027'); set('e-camp_ends', '10-07-2027'); });
   res.mdy = [mdyToDmy('02-31-2027'), mdyToDmy('07-15-2027'), mdyToDmy('13-01-2027')];
   return res;
@@ -125,7 +124,6 @@ ok(/start date is after/.test(r.inverted), 'camp manager refuses inverted camp d
 ok(/Family stay: the start date is after/.test(r['family inverted']), 'camp manager refuses inverted family stay');
 ok(/minimum is above/.test(r.ages), 'camp manager refuses min age > max age');
 ok(/web address/.test(r.website), 'camp manager refuses javascript: website');
-ok(/e-mail is not valid/.test(r.email), 'camp manager refuses malformed e-mail');
 ok(/Camp updated/.test(r.valid), 'valid edit still accepted: ' + r.valid);
 ok(r.mdy[0] === null && r.mdy[1] === '15-07-2027' && r.mdy[2] === null, 'directory import drops impossible dates: ' + JSON.stringify(r.mdy));
 // import du répertoire : les camps archivés ne sont ni proposés ni affichés
@@ -152,7 +150,7 @@ ok(r.mdy[0] === null && r.mdy[1] === '15-07-2027' && r.mdy[2] === null, 'directo
       { country: 'Chile', camp_name: 'Patagonia Trek', camp_starts: '15-07-2026', detail: {} }];
     ARCH = [];
     const t = (name, country, extra) => Object.assign({ name: name, country: country, cs: '03-07-2027', ce: '15-07-2027', langs: [] }, extra || {});
-    buildReview('directory.xlsx', [t('Inca Trail Youth Camp', 'Peru', { cemail: 'YCE@lions-peru.example' }), t('Volcano Camp', 'Iceland'), t('Easter Island Camp', 'Chile')]);
+    buildReview('directory.xlsx', [t('Inca Trail Youth Camp', 'Peru', { ckey: contactKey('YCE@lions-peru.example') }), t('Volcano Camp', 'Iceland'), t('Easter Island Camp', 'Chile')]);
     const rows = [...document.querySelectorAll('#rev-body .rev-row')].map(r => ({ text: r.textContent, rep: !!r.querySelector('.rev-rep'), checked: !!(r.querySelector('.rev-rep input') || {}).checked }));
     document.getElementById('rva-0').checked = true; // l'admin archive l'ancien camp péruvien, pas l'islandais
     applyReview();
@@ -178,7 +176,7 @@ ok(r.mdy[0] === null && r.mdy[1] === '15-07-2027' && r.mdy[2] === null, 'directo
       c('Italy', 'Camp Sea', '18-07-2027', 'Bari', 'it@x.example'),
       c('Italy', 'Camp Mountain', '18-07-2027', 'Aosta', 'it@x.example')];
     ARCH = [];
-    const t = (name, country, cs, loc, mail) => ({ name: name, country: country, cs: cs, ce: '30-07-2027', location: loc, cemail: mail, langs: [] });
+    const t = (name, country, cs, loc, mail) => ({ name: name, country: country, cs: cs, ce: '30-07-2027', location: loc, ckey: contactKey(mail), langs: [] });
     buildReview('directory.xlsx', [t('Belgium Lions YCE Camp 2027', 'Belgium', '17-07-2027', 'Limburg, Belgium', 'A@x.example'),
       t('Camp Lakes', 'Italy', '18-07-2027', 'Como', 'it@x.example')]);
     const rows = [...document.querySelectorAll('#rev-body .rev-row')].map(r => r.textContent);
