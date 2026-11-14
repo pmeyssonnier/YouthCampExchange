@@ -209,7 +209,7 @@ ok(r.mdy[0] === null && r.mdy[1] === '15-07-2027' && r.mdy[2] === null, 'directo
     document.querySelector('#dups-body button').click();
     const delShown = document.getElementById('edit-del').style.display !== 'none', title = document.getElementById('edit-title').textContent;
     const orig = window.confirm; window.confirm = () => true;
-    EDIT_I = idx; deleteEditing(); window.confirm = orig;
+    openEdit(idx); deleteEditing(); window.confirm = orig;
     const left = CAMPS_W.map(x => x.camp_name), arch = ARCH.length - arch0, dupsLeft = document.getElementById('dups-body').textContent;
     newCamp(); const delNew = document.getElementById('edit-del').style.display; closeEdit();
     CAMPS_W = keepC; ARCH = keepA; render(); document.getElementById('dups').style.display = 'none';
@@ -254,15 +254,18 @@ ok(r.mdy[0] === null && r.mdy[1] === '15-07-2027' && r.mdy[2] === null, 'directo
 // numéros de téléphone : espacement par pays + lien WhatsApp (fonction conservée ; le contact n'est plus affiché sur la page publique)
 {
   await pg.goto(B + 'index.html'); await pg.waitForTimeout(500);
-  const ph = await pg.evaluate(() => ['+524921243877', '+32475782593', '00393357049046', '+1  262-224-5517', '+91-9706067767', '519-955-4669', '+33 6 12 34 56 78', 'x<b>']
-    .map(n => phoneInfo(n)));
-  ok(ph[0].text === '+52 492 124 3877' && ph[0].wa === '524921243877', 'phone: Mexico formatted +52 492 124 3877: ' + JSON.stringify(ph[0]));
-  ok(ph[1].text === '+32 475 78 25 93', 'phone: Belgium formatted: ' + ph[1].text);
-  ok(ph[2].text === '+39 335 704 9046' && ph[2].wa === '393357049046', 'phone: 00 prefix understood: ' + JSON.stringify(ph[2]));
-  ok(ph[3].text === '+1 262 224 5517' && ph[4].text === '+91 97060 67767', 'phone: US and India formatted: ' + ph[3].text + ' / ' + ph[4].text);
-  ok(ph[5].text === '519-955-4669' && ph[5].wa === null, 'phone: no country code -> left as typed, no WhatsApp link');
-  ok(ph[6].text === '+33 6 12 34 56 78', 'phone: France formatted: ' + ph[6].text);
-  ok(ph[7].wa === null, 'phone: junk gets no link');
+  ok(await pg.evaluate(() => typeof phoneInfo === 'undefined' && typeof PHONE_CC === 'undefined'), 'public page: no phone formatting code left (the contact block is not public)');
+  // filtre État : seuls les camps de cet État restent (les autres pays ne restent que s'ils sont cochés)
+  const stf = await pg.evaluate(() => {
+    resetFilters(); const st = CAMPS.find(c => c.state), other = CAMPS.find(c => !c.state && c.country !== st.country);
+    toggleState(st.state); const only = getFiltered();
+    toggleCountry(st.country); toggleCountry(other.country); const both = getFiltered();
+    const listed = document.getElementById('s-list').textContent.indexOf(st.state) >= 0;
+    resetFilters();
+    return { only: only.length, onlyOk: only.every(c => c.state === st.state), both: both.every(c => c.state === st.state || c.country === other.country) && both.some(c => c.country === other.country), listed, back: getFiltered().length === CAMPS.length };
+  });
+  ok(stf.only >= 1 && stf.onlyOk, 'filters: a state alone shows only the camps of that state: ' + JSON.stringify(stf));
+  ok(stf.both && stf.listed && stf.back, 'filters: a state plus another ticked country shows both; reset restores everything');
   const html = await pg.evaluate(() => { const i = CAMPS.findIndex(c => /Mexico: History/.test(c.camp_name)); showCampDetail(i); return document.getElementById('md-body').innerHTML; });
   // le contact est réservé au coordinateur Lions de la zone : jamais sur la fiche publique
   ok(!/wa\.me|ms-wa|492 124 3877|mailto:|Contact/.test(html), 'camp sheet: no contact block (name, e-mail, phone) on the public page');

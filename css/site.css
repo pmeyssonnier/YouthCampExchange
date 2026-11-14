@@ -452,3 +452,13 @@ html[data-theme="light"] #tab-map,html[data-theme="light"] .tt{
   .m-sort button{background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:16px;width:34px;height:34px;font-size:15px;cursor:pointer;padding:0;}
   .m-sort button[hidden]{display:none;}
 }
+/* tiroir des filtres sur téléphone : champs à 16 px (sinon iOS zoome à la saisie), zones tactiles d'au moins 40 px */
+@media(max-width:900px){
+  .filters-panel .srch,.filters-panel .num-input,.filters-panel .psel,.m-sort select{font-size:16px;min-height:44px;}
+  .m-sort select{max-width:140px;padding:7px 10px;}
+  .m-sort button{width:44px;height:44px;}
+  .filters-panel .pill{padding:9px 14px;font-size:13px;margin-bottom:2px;}
+  .fp-close{min-height:40px;padding:8px 14px;font-size:13px;}
+  .reset-btn{min-height:44px;font-size:13px;}
+  .m-chip{min-height:32px;padding:6px 12px;font-size:12px;}
+}

@@ -4,7 +4,7 @@
 "use strict";
 let CAMPS_W=RAW.map(function(c){return JSON.parse(JSON.stringify(c));}); // copie de travail
 let ARCH=[];              // camps archivés (camps_archive.json)
-let CONT="",DIRTY=false, CONNECTED=false, VIEW="active", EDIT_I=-1, EDIT_NEW=false, REVIEW=null;
+let CONT="",DIRTY=false, CONNECTED=false, VIEW="active", EDIT_I=-1, EDIT_C=null, EDIT_NEW=false, REVIEW=null;
 let SORT_K="country", SORT_D=1; // tri du tableau (clic sur les en-têtes)
 
 const TOP_KEYS=["continent","country","state","district","camp_name","inclusive","winter","age_requirements","fee",
@@ -53,7 +53,7 @@ function render(){
     });
   const tb=document.getElementById("tbody");
   tb.innerHTML=rows.map(function(c){
-    const sn=seasonOf(c), cur=sn==="2026-2027";
+    const sn=seasonOf(c), cur=sn===String(SEASON).replace(/\D+/g,"-");
     const act=VIEW==="active"
       ?'<button class="btn2" onclick="openEdit('+c._i+')">✏ Edit</button> <button class="btn2" onclick="archiveCamp('+c._i+')">🗄 Archive</button>'
       :'<button class="btn2" onclick="restoreCamp('+c._i+')">↩ Restore</button> <button class="btn2 danger" onclick="deleteCamp('+c._i+')">✕ Delete</button>';
@@ -85,8 +85,12 @@ function fldHtml(id,label,val,span,tag){
     +CONTINENTS.map(function(x){return '<option'+(x===val?" selected":"")+">"+x+"</option>";}).join("")+"</select></div>";}
   return '<div class="fld '+span+'"><label class="flbl">'+label+'</label><input id="'+id+'" value="'+esc(val||"")+'"></div>';
 }
+// La fiche ouverte est suivie par l'objet (EDIT_C), pas par sa position : archiver, supprimer ou importer
+// pendant qu'une fiche est ouverte décale les positions, et l'enregistrement écraserait un autre camp.
+function editIndex(){EDIT_I=EDIT_C?CAMPS_W.indexOf(EDIT_C):-1;return EDIT_I;}
 function openEdit(i){
-  EDIT_I=i;EDIT_NEW=false;
+  if(EDIT_NEW&&EDIT_C&&CAMPS_W.indexOf(EDIT_C)>=0&&CAMPS_W.indexOf(EDIT_C)!==i){CAMPS_W.splice(CAMPS_W.indexOf(EDIT_C),1);if(CAMPS_W.length<=i)i=CAMPS_W.length-1;} // nouveau camp abandonné
+  EDIT_I=i;EDIT_C=CAMPS_W[i];EDIT_NEW=false;
   const c=CAMPS_W[i],d=c.detail||{};
   document.getElementById("edit-title").textContent="Edit — "+c.camp_name;
   document.getElementById("edit-grid").innerHTML=
@@ -130,7 +134,7 @@ function newCamp(){
 }
 // supprime définitivement le camp en cours d'édition (doublon, saisie erronée) ; l'archivage est réservé aux camps des saisons passées
 function deleteEditing(){
-  if(EDIT_NEW||EDIT_I<0||!CAMPS_W[EDIT_I])return;
+  if(EDIT_NEW||editIndex()<0)return;
   const c=CAMPS_W[EDIT_I];
   if(!confirm("Delete «"+c.camp_name+"» permanently? (it stays in git history)\nUse Archive instead for a camp of a past season."))return;
   CAMPS_W.splice(EDIT_I,1);
@@ -138,13 +142,14 @@ function deleteEditing(){
   EDIT_NEW=false;closeEdit();markDirty();
 }
 function closeEdit(){
-  if(EDIT_NEW)CAMPS_W.splice(EDIT_I,1); // nouveau camp annulé
-  EDIT_I=-1;EDIT_NEW=false;
+  if(EDIT_NEW&&editIndex()>=0)CAMPS_W.splice(EDIT_I,1); // nouveau camp annulé
+  EDIT_I=-1;EDIT_C=null;EDIT_NEW=false;
   document.getElementById("edit-box").style.display="none";render();
   if(document.getElementById("dups").style.display!=="none")showDuplicates();
 }
 function gv(id){const v=document.getElementById(id).value.trim();return v||null;}
 function saveEdit(){
+  if(editIndex()<0){log("This camp is no longer in the active list (archived, deleted or replaced by an import) — nothing saved.","err");EDIT_NEW=false;closeEdit();return;}
   const c=CAMPS_W[EDIT_I];
   const name=gv("e-camp_name"),ctry=gv("e-country");
   if(!name||!ctry){log("Camp name and country are required.","err");return;}
@@ -188,6 +193,7 @@ function saveEdit(){
   if(Object.keys(det).length)nc.detail=det;
   const ordered={};TOP_KEYS.forEach(function(k){if(k in nc)ordered[k]=nc[k];});
   CAMPS_W[EDIT_I]=ordered;
+  if(REVIEW)REVIEW.forEach(function(r){if(r.camp===c)r.camp=ordered;}); // un import en attente de validation suit la fiche modifiée
   log((EDIT_NEW?"Camp created: ":"Camp updated: ")+esc(name),"ok");
   EDIT_NEW=false;closeEdit();markDirty();
 }
@@ -406,14 +412,14 @@ function buildGeoReview(fname,gj){
     const c=CAMPS_W[i],b=best[i],d=c.detail||{};
     if(d.lat===b.q.lat&&d.lon===b.q.lon){same++;return;}
     const had=d.lat!=null&&d.lon!=null;
-    rev.push({kind:"geo",idx:i,q:b.q,pct:Math.round(b.sc*100),had:had,on:b.sc>=0.9&&!had&&used[b.qi]===1});
+    rev.push({kind:"geo",camp:c,q:b.q,pct:Math.round(b.sc*100),had:had,on:b.sc>=0.9&&!had&&used[b.qi]===1});
   });
   REVIEW=rev;
   document.getElementById("rev-note").textContent=fname+" — "+pts.length+" point(s) read, "+rev.length+" camp(s) can get coordinates, "
     +same+" already up to date, "+(CAMPS_W.length-rev.length-same)+" without a match";
   document.getElementById("rev-body").innerHTML=rev.length?rev.map(function(r,i){
     return '<div class="rev-row"><input type="checkbox" id="rv-'+i+'"'+(r.on?" checked":"")+'> <span class="rev-tag '+(r.pct>=90?"t-upd":"t-fuz")+'">📍 '+r.pct+" %</span>"
-      +'<div class="rev-what"><b>'+esc(CAMPS_W[r.idx].camp_name)+"</b> ⇐ "+esc(r.q.name)
+      +'<div class="rev-what"><b>'+esc(r.camp.camp_name)+"</b> ⇐ "+esc(r.q.name)
       +"<div class='chg'>"+r.q.lat+", "+r.q.lon+(r.had?" (replaces the coordinates already saved)":"")+"</div></div></div>";
   }).join(""):'<span class="hint">No camp to place from this file.</span>';
   document.getElementById("review").style.display="";
@@ -531,7 +537,7 @@ function buildReview(fname,items){
     if(hit>=0){
       const chg=changesFor(CAMPS_W[hit],t);
       if(!chg.length){unchanged++;continue;}
-      rev.push({kind:"update",idx:hit,how:how,t:t,chg:chg,on:how==="exact",pct:how==="exact"?100:likeness(factsOf(CAMPS_W[hit]),factsOfT(t))});
+      rev.push({kind:"update",camp:CAMPS_W[hit],how:how,t:t,chg:chg,on:how==="exact",pct:how==="exact"?100:likeness(factsOf(CAMPS_W[hit]),factsOfT(t))});
     }else rev.push({kind:"new",t:t,on:true,rep:replacesFor(t)});
   }
   REVIEW=rev;
@@ -546,7 +552,7 @@ function buildReview(fname,items){
       ?"<b>"+esc(r.t.country)+" — "+esc(r.t.name)+"</b><div class='chg'>camp "+esc(r.t.cs)+" → "+esc(r.t.ce||"?")+" · "+esc(r.t.ages||"")+" · "+esc(r.t.fee||"")+"</div>"
         +(r.rep?'<label class="rev-rep"><input type="checkbox" id="rva-'+i+'"> may replace <b>'+esc(r.rep.camp.camp_name)+"</b> ("
           +esc(seasonOf(r.rep.camp))+", "+esc(r.rep.why)+") — archive the old camp</label>":"")
-      :"<b>"+esc(CAMPS_W[r.idx].camp_name)+"</b> ⇐ "+esc(r.t.name)
+      :"<b>"+esc(r.camp.camp_name)+"</b> ⇐ "+esc(r.t.name)
         +"<div class='chg'>"+r.chg.map(function(x){return esc(x.label)+": "+esc(String(x.old).slice(0,30)||"∅")+" → "+esc(String(Array.isArray(x.val)?x.val.join(", "):x.val).slice(0,40));}).join(" · ")+"</div>";
     return '<div class="rev-row"><input type="checkbox" id="rv-'+i+'"'+(r.on?" checked":"")+"> "+tag+'<div class="rev-what">'+what+"</div></div>";
   }).join(""):'<span class="hint">Everything already matches the directory — nothing to apply.</span>';
@@ -556,15 +562,16 @@ function buildReview(fname,items){
 }
 function applyReview(){
   if(!REVIEW)return;
-  let up=0,nw=0,gp=0;const old=[];
+  let up=0,nw=0,gp=0,gone=0;const old=[];
   REVIEW.forEach(function(r,i){
     if(!document.getElementById("rv-"+i).checked)return;
+    if(r.kind!=="new"&&CAMPS_W.indexOf(r.camp)<0){gone++;return;} // camp archivé ou supprimé depuis la lecture du fichier
     if(r.kind==="geo"){
-      const c=CAMPS_W[r.idx];c.detail=c.detail||{};c.detail.lat=r.q.lat;c.detail.lon=r.q.lon;
+      const c=r.camp;c.detail=c.detail||{};c.detail.lat=r.q.lat;c.detail.lon=r.q.lon;
       const det={};DET_KEYS.forEach(function(k){if(k in c.detail)det[k]=c.detail[k];});c.detail=det;
       gp++;
     }else if(r.kind==="update"){
-      const c=CAMPS_W[r.idx];
+      const c=r.camp;
       r.chg.forEach(function(x){
         if(x.scope==="top")c[x.field]=x.val;
         else{c.detail=c.detail||{};c.detail[x.field]=x.val;}
@@ -592,6 +599,7 @@ function applyReview(){
   // anciens camps remplacés : archivés comme avec le bouton 🗄 Archive (ils quittent le site public)
   old.forEach(function(c){const k=CAMPS_W.indexOf(c);if(k<0)return;CAMPS_W.splice(k,1);c.archived_on=today();ARCH.push(c);});
   cancelReview();
+  if(gone)log(gone+" ticked line(s) skipped: the camp was archived or deleted after the file was read.","warn");
   if(gp&&!up&&!nw){log("Coordinates applied to "+gp+" camp(s). Review, then “Save to the site”.","ok");markDirty();render();return;}
   log("Directory applied: "+up+" camp(s) updated, "+nw+" created"+(old.length?", "+old.length+" replaced camp(s) archived":"")+". Review, then “Save to the site”.","ok");
   markDirty();render();
@@ -606,8 +614,9 @@ async function saveSite(){
     const cur=await getFile("camps_data.js");
     if(!cur)throw new Error("camps_data.js not found on main");
     let src=b64ToUtf8(cur.content);
-    if(!/const RAW = \[[\s\S]*?\];/.test(src))throw new Error("RAW block not found");
-    src=src.replace(/const RAW = \[[\s\S]*?\];/,function(){return "const RAW = "+JSON.stringify(clean)+";";});
+    const span=rawSpan(src);
+    if(!span)throw new Error("RAW block not found");
+    src=src.slice(0,span[0])+JSON.stringify(clean)+src.slice(span[1]);
     const changes=[];
     if(src!==b64ToUtf8(cur.content))changes.push({path:"camps_data.js",b64:utf8ToB64(src),sha:cur.sha});
     const body=JSON.stringify({updated:new Date().toISOString().slice(0,10),count:ARCH.length,archive:ARCH},null,1)+"\n";
@@ -632,8 +641,8 @@ ON_CONNECT.push(async function(){
   try{
     if(!DIRTY){
       const cur=await getFile("camps_data.js");
-      const m=b64ToUtf8(cur.content).match(/const RAW = (\[[\s\S]*?\]);/);
-      if(m)CAMPS_W=JSON.parse(m[1]);
+      const src=b64ToUtf8(cur.content),span=rawSpan(src);
+      if(span){CAMPS_W=JSON.parse(src.slice(span[0],span[1]));if(EDIT_C&&!EDIT_NEW)closeEdit();}
       const curA=await getFile("camps_archive.json");
       if(curA){const a=JSON.parse(b64ToUtf8(curA.content));if(Array.isArray(a.archive))ARCH=a.archive;}
       log("Latest repository state loaded ("+CAMPS_W.length+" active, "+ARCH.length+" archived).","info");

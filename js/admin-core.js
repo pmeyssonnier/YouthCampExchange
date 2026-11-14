@@ -221,3 +221,17 @@ function initAccess(){
   accessMode("token");
 }
 
+// Position du tableau RAW dans camps_data.js : [début, fin] du littéral JSON, en suivant les crochets et les chaînes
+// (un texte de camp contenant « ]; » ne coupe donc pas le bloc). null si le bloc est introuvable.
+function rawSpan(src){
+  const m=/const RAW = \[/.exec(src);if(!m)return null;
+  const a=m.index+m[0].length-1;let depth=0,str=false;
+  for(let i=a;i<src.length;i++){
+    const ch=src[i];
+    if(str){if(ch==="\\")i++;else if(ch==='"')str=false;continue;}
+    if(ch==='"')str=true;
+    else if(ch==="[")depth++;
+    else if(ch==="]"&&--depth===0)return src[i+1]===";"?[a,i+1]:null;
+  }
+  return null;
+}

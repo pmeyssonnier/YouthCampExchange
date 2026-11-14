@@ -62,7 +62,7 @@ body select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3
 .edit-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
 @media(max-width:700px){
   /* zones tactiles d'au moins 44 px ; boutons d'une rangée d'actions de même largeur */
-  body .btn,body .btn2,body .tb-btn,body .filebtn{min-height:44px;display:inline-flex;align-items:center;justify-content:center;
+  body .btn,body .btn2,body .tb-btn,body .filebtn,body .tpl-btn{min-height:44px;display:inline-flex;align-items:center;justify-content:center;
     text-align:center;font-size:14px;line-height:1.2;padding:10px 14px;touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
   body .head-actions{margin-left:0;width:100%;flex-wrap:nowrap;}
   body .head-actions>*{flex:1 1 0;min-width:0;padding-left:8px;padding-right:8px;}
@@ -70,6 +70,7 @@ body select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3
   .edit-head>b{flex:1 1 100%;}
   /* 16 px : iOS n'agrandit plus la page quand on touche un champ */
   input,select,textarea{font-size:16px!important;min-height:44px;}
+  body .xopt{min-height:40px;padding:8px 16px;font-size:13px;} /* choix Yes/No et cases X du formulaire */
   input[type=checkbox],input[type=radio]{min-height:0;width:auto;}
   /* barres d'outils : grille de 2 colonnes, boutons de même largeur ; enregistrer sur toute la largeur */
   body .toolbar{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:stretch;}

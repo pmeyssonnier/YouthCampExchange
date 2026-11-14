@@ -264,6 +264,29 @@ const lastLog = pg => pg.evaluate(() => document.querySelector('#log div').textC
   // nouvelle sauvegarde sans changement : pas de commit (la date seule ne compte pas)
   await pg.evaluate(() => { DIRTY = true; saveSite(); }); await pg.waitForTimeout(1200);
   ok(st.refUpdates === 1, 'camp manager: no empty commit when nothing changed');
+  // un texte de camp contenant « ]; » ne coupe pas le bloc RAW : le fichier enregistré reste lisible en entier
+  await pg.evaluate(() => { openEdit(0); document.getElementById('e-description').value = 'Programme [see the list]; bring "boots" \\ and a hat'; saveEdit(); });
+  await pg.evaluate(() => saveSite()); await pg.waitForTimeout(1500);
+  const saved = new Function(st.files['camps_data.js'] + ';return {n:RAW.length,d:RAW[0].detail.description,season:SEASON,year:YEAR};')();
+  ok(saved.n === n0 - 1 && /\[see the list\]; bring "boots" \\ and a hat/.test(saved.d) && saved.season && saved.year, 'camp manager: a description containing "];" is saved without breaking camps_data.js');
+  await pg.evaluate(() => { DIRTY = true; openEdit(1); document.getElementById('e-fee').value = '123 EURO'; saveEdit(); return saveSite(); }); await pg.waitForTimeout(1500);
+  const again = new Function(st.files['camps_data.js'] + ';return {n:RAW.length,d:RAW[0].detail.description,f:RAW[1].fee};')();
+  ok(again.n === n0 - 1 && /see the list/.test(again.d) && again.f === '123 EURO', 'camp manager: the next save reads that block back correctly');
+  // fiche ouverte pendant qu'un autre camp est archivé : l'enregistrement va au bon camp, aucun camp n'est écrasé
+  const ed = await pg.evaluate(() => {
+    const names = CAMPS_W.map(c => c.camp_name), target = names[5];
+    openEdit(5); archiveCamp(2); document.getElementById('e-fee').value = '777 EURO'; saveEdit();
+    const after = CAMPS_W.map(c => c.camp_name);
+    return { fee: CAMPS_W.find(c => c.camp_name === target).fee, lost: names.filter((n, i) => i !== 2 && after.indexOf(n) < 0), len: after.length === names.length - 1 };
+  });
+  ok(ed.fee === '777 EURO' && !ed.lost.length && ed.len, 'camp manager: archiving another camp while a sheet is open does not overwrite a camp: ' + JSON.stringify(ed));
+  // fiche ouverte puis archivée : l'enregistrement est refusé au lieu d'écraser le camp suivant
+  const gone = await pg.evaluate(() => { const before = JSON.stringify(CAMPS_W.slice(0, 4).map(c => [c.camp_name, c.fee])); openEdit(1); archiveCamp(1); document.getElementById('log').innerHTML = ''; saveEdit();
+    return { log: document.getElementById('log').textContent, same: JSON.stringify(CAMPS_W.slice(0, 3).map(c => [c.camp_name, c.fee])) === JSON.stringify(JSON.parse(before).filter((c, i) => i !== 1)), box: document.getElementById('edit-box').style.display }; });
+  ok(/no longer in the active list/.test(gone.log) && gone.same && gone.box === 'none', 'camp manager: saving a sheet whose camp was archived is refused: ' + JSON.stringify(gone));
+  // « New camp » abandonné en ouvrant une autre fiche : pas de camp vide laissé dans la liste
+  const blank = await pg.evaluate(() => { const n = CAMPS_W.length; newCamp(); openEdit(0); closeEdit(); return CAMPS_W.length - n + CAMPS_W.filter(c => !c.camp_name).length; });
+  ok(blank === 0, 'camp manager: an abandoned new camp does not stay as an empty line');
   ok(!errs.length, 'camp manager: no page error ' + errs.join(' | '));
   await ctx.close();
 }
