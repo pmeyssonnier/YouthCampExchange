@@ -264,14 +264,14 @@ const SEASON_RANGE=(function(){
 function populatePeriodSelect(t){
   const MONTHS=[];
   for(let d=new Date(SEASON_RANGE.start);d<=SEASON_RANGE.end;d=new Date(d.getFullYear(),d.getMonth()+1,1)){
-    let lbl=d.toLocaleDateString('fr-BE',{month:'long',year:'numeric'});
+    let lbl=d.toLocaleDateString('en-GB',{month:'long',year:'numeric'});
     lbl=lbl.charAt(0).toUpperCase()+lbl.slice(1);
     MONTHS.push({y:d.getFullYear(),m:d.getMonth(),lbl});
   }
   const sel=document.getElementById('p-sel');let opts=[];
   if(t==='month'){opts=MONTHS.map((m,i)=>({value:i,label:m.lbl,start:new Date(m.y,m.m,1),end:new Date(m.y,m.m+1,0)}));}
   else if(t==='qzn'){MONTHS.forEach(m=>{const d=new Date(m.y,m.m+1,0).getDate();opts.push({value:opts.length,label:`1–15 ${m.lbl}`,start:new Date(m.y,m.m,1),end:new Date(m.y,m.m,15)});opts.push({value:opts.length,label:`16–${d} ${m.lbl}`,start:new Date(m.y,m.m,16),end:new Date(m.y,m.m,d)});});}
-  else if(t==='week'){let d=new Date(SEASON_RANGE.start);while(d<=SEASON_RANGE.end){const we=new Date(d);we.setDate(we.getDate()+6);opts.push({value:opts.length,label:`Sem. ${d.toLocaleDateString('fr-BE',{day:'2-digit',month:'short'})} – ${we.toLocaleDateString('fr-BE',{day:'2-digit',month:'short',year:'numeric'})}`,start:new Date(d),end:new Date(we)});d=new Date(d);d.setDate(d.getDate()+7);}}
+  else if(t==='week'){let d=new Date(SEASON_RANGE.start);while(d<=SEASON_RANGE.end){const we=new Date(d);we.setDate(we.getDate()+6);opts.push({value:opts.length,label:`Wk ${d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})} – ${we.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}`,start:new Date(d),end:new Date(we)});d=new Date(d);d.setDate(d.getDate()+7);}}
   // ne garder que les périodes où au moins un camp est présent (arrivée → départ)
   opts=opts.filter(o=>CAMPS.some(c=>c.arrival&&c.departure&&!(c.departure<o.start||c.arrival>o.end)));
   opts.forEach((o,i)=>o.value=i);
