@@ -186,7 +186,7 @@ ok(r.mdy[0] === null && r.mdy[1] === '15-07-2027' && r.mdy[2] === null, 'directo
     const offer = document.querySelectorAll('#rev-body [id^="rvn-"]').length, pre = document.getElementById('rvn-0').checked;
     document.getElementById('rv-0').checked = true; document.getElementById('rv-1').checked = false; document.getElementById('rvn-0').checked = false; applyReview();
     const keptName = CAMPS_W[0].camp_name, endSet = CAMPS_W[0].camp_ends;
-    buildReview('directory.xlsx', [t('Belgium Lions YCE Camp 2027', 'Belgium', '17-07-2027', 'Limburg, Belgium', 'A@x.example'), t('CAMP NORTH!', 'Germany', '06-08-2027', 'Hamburg', 'de@x.example')]);
+    buildReview('directory.xlsx', [t('Belgium Lions YCE Camp 2027', 'Belgium', '17-07-2027', 'Limburg, Belgium', 'A@x.example'), Object.assign(t('CAMP NORTH!', 'Germany', '06-08-2027', 'Hamburg', 'de@x.example'), { ce: '20-08-2027' })]);
     const again = [...document.querySelectorAll('#rev-body .rev-row')].map(r => r.textContent), caseOnly = document.querySelectorAll('#rev-body [id^="rvn-"]').length;
     document.getElementById('rv-0').checked = true; applyReview();
     const newName = CAMPS_W[0].camp_name, logTxt = document.getElementById('log').textContent, n = CAMPS_W.length;

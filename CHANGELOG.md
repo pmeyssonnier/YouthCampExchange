@@ -5,6 +5,16 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.38.0 — 2026-11-15
+
+Directory import (administration, Camps tab): all-or-nothing application and a report.
+
+- **Report when the file is read.** The review opens with the counts: lines read, lines to review (updates, new camps), lines ignored (unchanged, already archived) and lines rejected — read = to review + ignored + rejected. Each rejected line gives its Excel row number, its country, its camp and the reason.
+- **More reasons for rejection, none silent.** Besides a missing or unreadable camp start date: empty camp name, empty country, camp end before camp start, family stay end before its start, and a line repeating an earlier one (same country, name and start date). An unreadable *optional* date (camp end, family stay, deadline) does not reject the camp: the value is not imported and the line is listed as « accepted with a remark ».
+- **All-or-nothing application.** « Apply selected » applies every ticked line together. If an anomaly appears on the way (a date that is not a real date, a new camp without continent…), nothing is applied: the camp list and the archive are put back exactly as they were, the review stays open and the journal gives the reason.
+- **Final report.** After the application, a « Directory import — report » panel stays on screen: read, applied (updated, renamed, created), ignored (unchanged, already archived, not ticked) and rejected, with the reason of each rejection and the earlier camps moved to the archive.
+- Row numbers in the report are the real Excel rows, even when the sheet has empty lines.
+
 ## 1.37.3 — 2026-11-14
 
 Directory import (administration, Camps tab): four weaknesses corrected.

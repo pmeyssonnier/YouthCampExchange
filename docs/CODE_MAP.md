@@ -1,7 +1,7 @@
 # Code map — Lions YCE
 
 > **Generated file — do not edit by hand.** Rebuilt by `python3 tools/build_codemap.py` (run automatically on every push to `main`).
-> Commit `d5eedd9`, 2026-11-14 23:54 UTC. Interactive version: [`code_map.html`](code_map.html).
+> Commit `3c7dd7f`, 2026-11-15 00:03 UTC. Interactive version: [`code_map.html`](code_map.html).
 
 ## Pages
 
@@ -126,8 +126,8 @@
 | `js/admin.js` | 232 | 14.5 KB | Site & season and Documents tabs: form, fees and bank details, save, official documents, start-up |
 | `js/camps-manager.js` | 320 | 19.5 KB | Camps tab: list, camp sheet, archive, JSON backup, save to the site |
 | `js/camps-match.js` | 71 | 4.2 KB | Camps tab: is it the same camp? name/place similarity, renamed camps, duplicates |
-| `js/camps-import.js` | 272 | 18.5 KB | Camps tab: official YCE directory (xlsx) import — parse, review, apply |
-| `js/camps-geo.js` | 77 | 4.4 KB | Camps tab: map coordinates from a NextGIS GeoJSON export |
+| `js/camps-import.js` | 347 | 24.9 KB | Camps tab: official YCE directory (xlsx) import — parse, review, apply |
+| `js/camps-geo.js` | 77 | 4.5 KB | Camps tab: map coordinates from a NextGIS GeoJSON export |
 | `js/admin-tabs.js` | 21 | 1.2 KB | admin tab switching (#site, #camps, #docs) |
 
 **`js/zip.js`** — `zipBudget`, `zipCheckSize`, `zipDirectory` (validated central directory, no decompression), `zipNames` (file names of an archive without decompressing), `inflateRaw` (native inflate), `unzip` (parse a zip into [{name,data}] within ZIP_LIMITS)
@@ -150,7 +150,7 @@
 
 **`js/camps-match.js`** — `sim` (bigram similarity of two texts (0 to 1)), `stripNoise` (drop years and words like Lions / camp / YCE), `factsOf` (facts of a saved camp used for matching), `factsOfT` (same facts for a directory line), `alike` (same camp? returns the reason (exact, same dates and place, …)), `likeness` (similarity percentage of two sheets), `matchCamp` (find a directory camp in a list), `findDuplicates` (possible duplicate pairs), `showDuplicates` (🔎 Check duplicates list)
 
-**`js/camps-import.js`** — `colIdx`, `serialToDmy`, `mdyToDmy` (MM-DD-YYYY or Excel serial → dd-mm-yyyy), `xmlDoc` (parse an XML part, clear error if damaged), `xmlEls`, `xmlText` (text of a cell or shared string), `parseDirectory` (read the Approved Camps sheet of the xlsx (browser XML parser)), `continentFor` (continent of a country (known camp, else table, else unknown)), `feeOf` (fee with its currency), `dirPick` (directory file chosen → review), `changesFor` (fields the directory would change), `replacesFor` (earlier camp a new one may replace), `buildReview` (review list: updates, renames, new camps), `applyReview` (apply the ticked lines (directory or coordinates)), `cancelReview` (close the review)
+**`js/camps-import.js`** — `colIdx`, `serialToDmy`, `mdyToDmy` (MM-DD-YYYY or Excel serial → dd-mm-yyyy), `xmlDoc` (parse an XML part, clear error if damaged), `xmlEls`, `xmlText` (text of a cell or shared string), `parseDirectory` (read the Approved Camps sheet of the xlsx (browser XML parser)), `continentFor` (continent of a country (known camp, else table, else unknown)), `feeOf` (fee with its currency), `dirPick` (directory file chosen → review), `changesFor` (fields the directory would change), `replacesFor` (earlier camp a new one may replace), `reportLines` (row · country — camp: reason), `hideReport`, `buildReview` (review list: updates, renames, new camps), `applyReview` (apply the ticked lines all together, or nothing (directory or coordinates)), `snapshotCamps` (state of the camps before applying), `restoreCamps` (put that state back (same objects)), `checkCamp` (last check of an imported camp; an anomaly cancels everything), `showReport` (final report: read, applied, ignored, rejected), `cancelReview` (close the review)
 
 **`js/camps-geo.js`** — `mercToLonLat` (EPSG:3857 → longitude, latitude), `geoPick` (GeoJSON file chosen), `geoPoints` (points with a country and a camp name), `buildGeoReview` (match points to camps, review list)
 
@@ -186,10 +186,10 @@
 | `camps_data.js` | 72.2 KB | season data: SEASON + YEAR + RAW camps — common to every deployment |
 | `districts_data.js` | 6.1 KB | per-deployment data: SITE_REPO + DISTRICTS coordinators |
 | `js/version.js` | 0.5 KB | site version number (VERSION), shown on every page — bumped by each pull request |
-| `CHANGELOG.md` | 44.2 KB | what changed in each version |
+| `CHANGELOG.md` | 45.8 KB | what changed in each version |
 | `yce_form_filler.html` | 13.8 KB | filler HTML shell + styles |
 | `yce_tracker.html` | 9.0 KB | tracker HTML shell + styles |
-| `yce_admin.html` | 26.5 KB | administration HTML shell: tabs Site & season / Camps / Documents |
+| `yce_admin.html` | 27.7 KB | administration HTML shell: tabs Site & season / Camps / Documents |
 | `yce_camps.html` | 1.0 KB | old camp manager address — redirects to yce_admin.html#camps |
 | `js/toolnav.js` | 1.3 KB | tool menu under the header of every tool page |
 | `css/tools.css` | 6.9 KB | styles shared by the tool pages |
@@ -197,7 +197,7 @@
 | `supabase/vault_schema.sql` | 29.7 KB | vault database: tables, row-level security, workflow, retention |
 | `docs/VAULT_SETUP.md` | 14.3 KB | vault setup guide (Supabase project, SMTP, GDPR) |
 | `tools/build_assets.py` | 2.2 KB | regenerates js/assets.js |
-| `tools/build_codemap.py` | 23.9 KB | regenerates this visualisation's data and docs/CODE_MAP.md |
+| `tools/build_codemap.py` | 24.2 KB | regenerates this visualisation's data and docs/CODE_MAP.md |
 | `tests/` | 4.0 KB | security & regression tests run by GitHub Actions (npm test) |
 | `documents/` | 4.0 KB | official documents: reference form, Commitment, host-family letter, Commitment template (markers) |
 
@@ -309,12 +309,12 @@
 | `js/camps-manager.js` | `js/camps-match.js` | CAMPS_W, openEdit, simple |
 | `js/zip.js` | `js/camps-import.js` | unzip, zipCheckSize |
 | `js/admin-core.js` | `js/camps-import.js` | esc, log |
-| `js/camps-manager.js` | `js/camps-import.js` | ARCH, CAMPS_W, CONTINENTS, DET_KEYS, markDirty, render, seasonOf, simple, today, validDmy |
+| `js/camps-manager.js` | `js/camps-import.js` | ARCH, CAMPS_W, CONTINENTS, DET_KEYS, dmyKey, markDirty, render, seasonOf, simple, today, validDmy |
 | `js/camps-match.js` | `js/camps-import.js` | factsOf, factsOfT, likeness, matchCamp, sim, stripNoise |
 | `js/admin-core.js` | `js/camps-geo.js` | esc, log |
 | `js/camps-manager.js` | `js/camps-geo.js` | CAMPS_W, simple |
 | `js/camps-match.js` | `js/camps-geo.js` | sim, stripNoise |
-| `js/camps-import.js` | `js/camps-geo.js` | applyReview |
+| `js/camps-import.js` | `js/camps-geo.js` | IMPORT, applyReview, hideReport |
 | `js/admin-core.js` | `js/admin-tabs.js` | ON_CONNECT, connect |
 
 ## Who uses what (public site)

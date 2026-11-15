@@ -61,25 +61,77 @@ t.ok(/Directory import failed: the sheet .Approved Camps. is listed in the workb
 t.ok(/is damaged \(not valid XML\)/.test(bad.damaged), 'damaged sheet: explicit message: ' + bad.damaged);
 t.ok(/not an Excel workbook/.test(bad.notWb) && bad.review === 'none', 'not a workbook: explicit message, no review opened: ' + bad.notWb);
 
-// 3. lignes sans date de début valide : signalées dans la revue et le journal, les autres camps sont importés
+// 3. rapport de lecture : lus = à revoir + ignorés + rejetés, avec la raison de chaque rejet ; rien n'est écarté en silence
 const sk = await pg.evaluate(async () => {
-  const keepC = CAMPS_W, keepA = ARCH; CAMPS_W = []; ARCH = [];
+  const keepC = CAMPS_W, keepA = ARCH;
+  CAMPS_W = [{ continent: 'South America', country: 'Chile', camp_name: 'Fictional Same Camp', camp_starts: '01-07-2027', camp_ends: '10-07-2027', age_requirements: '', fee: null, family_stay_starts: null, family_stay_ends: null, detail: {} }];
+  ARCH = [{ continent: 'South America', country: 'Peru', camp_name: 'Fictional Archived Camp', camp_starts: '02-07-2027', detail: {} }];
   const logTxt = await pick(await mkXlsx([{ name: 'Approved Camps', file: 'sheet1.xml', xml: mkSheet([HDR,
     ['Chile', 'Fictional Andes Camp', '07/10/2027', '07/20/2027', 'Santiago', '17-21', '300', 'USD'],
     ['Chile', 'Fictional Day-First Camp', '25/07/2027', '30/07/2027', 'Valparaiso'],
     ['Peru', 'Fictional No Date Camp', null, null, 'Cusco'],
     ['Peru', 'Fictional Text Date Camp', 'mid July', null, 'Lima'],
     ['Peru', null, '07/12/2027', null, 'Arequipa'],
-    [null, null, null, null, null]])}]));
-  const body = document.getElementById('rev-body').innerText, note = document.getElementById('rev-note').textContent, n = REVIEW.length, names = REVIEW.map(r => r.t.name);
+    [null, null, null, null, null],
+    ['Chile', 'Fictional Same Camp', '07/01/2027', '07/10/2027'],
+    ['Peru', 'Fictional Archived Camp', '07/02/2027'],
+    ['Chile', 'Fictional Backwards Camp', '07/20/2027', '07/10/2027'],
+    ['Chile', 'Fictional Andes Camp', '07/10/2027', '07/21/2027'],
+    [null, 'Fictional Stateless Camp', '07/15/2027'],
+    ['Chile', 'Fictional Odd End Camp', '07/16/2027', 'end of July']])}]));
+  const body = document.getElementById('rev-body').innerText, note = document.getElementById('rev-note').textContent, names = REVIEW.map(r => r.t.name), rep = JSON.parse(JSON.stringify(IMPORT));
+  const rows = document.querySelectorAll('#rev-body .rev-row').length;
   cancelReview(); CAMPS_W = keepC; ARCH = keepA; render();
-  return { logTxt, body, note, n, names };
+  return { logTxt, body, note, names, rep, rows };
 });
-t.ok(sk.n === 1 && sk.names[0] === 'Fictional Andes Camp', 'the camp with a valid date is offered: ' + sk.names);
-t.ok(/4 line\(s\) of the directory were left out/.test(sk.body) && /4 line\(s\) left out/.test(sk.note), 'left-out lines are counted in the review: ' + sk.note);
+t.ok(sk.rep.read === 11 && sk.names.join() === 'Fictional Andes Camp,Fictional Odd End Camp' && sk.rows === 2, 'read report: 11 lines read (the empty one is not counted), 2 offered: ' + sk.names);
+t.ok(sk.rep.unchanged === 1 && sk.rep.archived === 1 && sk.rep.rejected.length === 7 && sk.rep.read === sk.names.length + 2 + 7, 'read = to review + ignored + rejected (' + sk.rep.read + ' = ' + sk.names.length + ' + 2 + ' + sk.rep.rejected.length + ')');
+t.ok(/11 line\(s\) read — 2 to review below \(0 update\(s\), 2 new\), 2 ignored \(1 unchanged, 1 already archived\), 7 rejected/.test(sk.body) && /7 rejected/.test(sk.note), 'the review opens with the counts: ' + sk.body.slice(0, 140));
 t.ok(/row 3 · Chile — Fictional Day-First Camp: camp start .25\/07\/2027. is not a date/.test(sk.body) && /row 4 · Peru — Fictional No Date Camp: no camp start date/.test(sk.body)
-  && /Fictional Text Date Camp/.test(sk.body) && /row 6 · Peru — \(no camp name\)/.test(sk.body), 'each left-out line gives its row, its camp and the reason: ' + sk.body.slice(0, 400));
-t.ok(/4 line\(s\) of the directory left out/.test(sk.logTxt), 'left-out lines also written in the journal');
+  && /Fictional Text Date Camp/.test(sk.body) && /row 6 · Peru — \(no camp name\): the camp name is empty/.test(sk.body), 'rejected lines: row, camp and reason (date missing or unreadable, no name)');
+t.ok(/row 10 · Chile — Fictional Backwards Camp: camp end 10-07-2027 is before camp start 20-07-2027/.test(sk.body) && /row 11 · Chile — Fictional Andes Camp: same camp as row 2/.test(sk.body)
+  && /row 12 · \? — Fictional Stateless Camp: the country is empty/.test(sk.body), 'rejected lines: end before start, duplicate line, no country');
+t.ok(sk.rep.remarks.length === 1 && /Accepted with a remark:[\s\S]*row 13 · Chile — Fictional Odd End Camp: camp end .end of July. is not a date: not imported/.test(sk.body), 'an unreadable optional date is a remark, the camp stays accepted');
+t.ok(/7 line\(s\) of the directory rejected/.test(sk.logTxt) && /Directory read: 11 line\(s\) — 2 to review, 2 ignored, 7 rejected/.test(sk.logTxt), 'counts and rejections also written in the journal');
+
+// 3 bis. application transactionnelle : une anomalie en cours de route annule tout ; sinon tout est appliqué et le rapport final est affiché
+const tx = await pg.evaluate(async () => {
+  const keepC = CAMPS_W, keepA = ARCH, keepD = DIRTY;
+  const base = () => [{ continent: 'South America', country: 'Chile', camp_name: 'Fictional Old Chile Camp', camp_starts: '01-07-2026', camp_ends: '10-07-2026', age_requirements: '16-20', fee: '100 USD', family_stay_starts: null, family_stay_ends: null, detail: { location: 'Santiago' } },
+    { continent: 'South America', country: 'Peru', camp_name: 'Fictional Lima Camp', camp_starts: '05-07-2027', camp_ends: '15-07-2027', age_requirements: '17-21', fee: '200 USD', family_stay_starts: null, family_stay_ends: null, detail: {} }];
+  CAMPS_W = base(); ARCH = [];
+  const file = () => mkXlsx([{ name: 'Approved Camps', file: 'sheet1.xml', xml: mkSheet([HDR,
+    ['Peru', 'Fictional Lima Camp', '07/05/2027', '07/16/2027', 'Lima', '18-22', '250', 'USD'],
+    ['Chile', 'Patagonia Glacier Trek', '07/10/2027', '07/20/2027', 'Punta Arenas'],
+    ['Peru', 'Fictional Cusco Camp', '07/11/2027', '07/21/2027', 'Cusco'],
+    ['Peru', 'Fictional Arequipa Camp', '07/12/2027', '07/22/2027', 'Arequipa'],
+    ['Peru', 'Fictional Broken Camp', null]])}]);
+  await pick(await file());
+  const snapTxt = () => JSON.stringify([CAMPS_W, ARCH], (k, v) => k === '_i' ? undefined : v); const before = snapTxt(), objs = CAMPS_W.slice();
+  // anomalie simulée sur la 3e ligne cochée (le 2e nouveau camp) : deux lignes sont déjà appliquées à ce moment-là
+  REVIEW[2].t.cs = '31-02-2027';
+  document.querySelectorAll('#rev-body [id^="rva-"]').forEach(x => { x.checked = true; });
+  document.getElementById('log').innerHTML = ''; applyReview();
+  const cancelled = { log: document.getElementById('log').textContent, same: snapTxt() === before, identity: CAMPS_W.length === 2 && CAMPS_W.every((c, i) => c === objs[i]),
+    reviewOpen: !!REVIEW && document.getElementById('review').style.display !== 'none', report: document.getElementById('imp-report').style.display };
+  // même fichier, sans anomalie : une ligne décochée, l'ancien camp chilien archivé
+  cancelReview(); CAMPS_W = base(); ARCH = [];
+  await pick(await file());
+  const iUn = REVIEW.findIndex(r => r.t.name === 'Fictional Arequipa Camp'); document.getElementById('rv-' + iUn).checked = false;
+  document.querySelectorAll('#rev-body [id^="rva-"]').forEach(x => { x.checked = true; });
+  document.getElementById('log').innerHTML = ''; applyReview();
+  const rpt = document.getElementById('imp-report'), done = { shown: rpt.style.display !== 'none', text: rpt.innerText, names: CAMPS_W.map(c => c.camp_name).sort(), arch: ARCH.map(c => c.camp_name),
+    lima: CAMPS_W.find(c => c.camp_name === 'Fictional Lima Camp').camp_ends, reviewClosed: !REVIEW };
+  hideReport(); const closed = rpt.style.display === 'none';
+  CAMPS_W = keepC; ARCH = keepA; DIRTY = keepD; document.getElementById('dirty').style.display = keepD ? '' : 'none'; render();
+  return { cancelled, done, closed };
+});
+t.ok(/Import cancelled — nothing was applied/.test(tx.cancelled.log) && /Fictional Cusco Camp.*camp start .31-02-2027. is not a valid date/.test(tx.cancelled.log), 'transaction: an anomaly cancels the import with its reason: ' + tx.cancelled.log);
+t.ok(tx.cancelled.same && tx.cancelled.identity, 'transaction: the list and the archive are exactly as before (the update and the camp already created are undone)');
+t.ok(tx.cancelled.reviewOpen && tx.cancelled.report === 'none', 'transaction: the review stays open, no report of a cancelled import');
+t.ok(tx.done.names.join() === 'Fictional Cusco Camp,Fictional Lima Camp,Patagonia Glacier Trek' && tx.done.arch.join() === 'Fictional Old Chile Camp' && tx.done.lima === '16-07-2027' && tx.done.reviewClosed, 'without anomaly everything ticked is applied: ' + tx.done.names + ' / archived ' + tx.done.arch);
+t.ok(tx.done.shown && /5\s*Read/i.test(tx.done.text) && /3\s*Applied\s*1 updated, 2 created/i.test(tx.done.text) && /1\s*Ignored\s*0 unchanged, 0 already archived, 1 not ticked/i.test(tx.done.text) && /1\s*Rejected/i.test(tx.done.text), 'final report: read, applied, ignored, rejected: ' + tx.done.text.replace(/\s+/g, ' ').slice(0, 260));
+t.ok(/Rejected \(1\)[\s\S]*row 6 · Peru — Fictional Broken Camp: no camp start date/.test(tx.done.text) && /1 earlier camp\(s\) replaced/.test(tx.done.text) && tx.closed, 'final report: reason of each rejection, archived camp mentioned, Close hides it');
 
 // 4. continent : pays connu de la table → son continent ; pays inconnu → à choisir, rien n'est appliqué sans choix (plus d'Europe par défaut)
 const ct = await pg.evaluate(async () => {

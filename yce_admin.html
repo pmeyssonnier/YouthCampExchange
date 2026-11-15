@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lions YCE — Administration — MD 112 Belgium</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
-<link rel="stylesheet" href="css/tools.css?v=1.37.3.d6de2eaa">
+<link rel="stylesheet" href="css/tools.css?v=1.38.0.d6de2eaa">
 <style id="noframe">html{display:none!important}</style>
-<script src="js/noframe.js?v=1.37.3.85617a56"></script>
+<script src="js/noframe.js?v=1.38.0.85617a56"></script>
 <meta name="robots" content="noindex">
 <script>try{if(localStorage.getItem('yce-theme')==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}</script>
 <style>
@@ -119,9 +119,19 @@ tr:hover td{background:var(--hover);}
 .rev-rep input{width:auto;margin:0 6px 0 0;vertical-align:-2px;}
 .rev-cont select{width:auto;display:inline-block;margin-left:6px;}
 .rev-skip{border-color:var(--gold);}
+.rev-sum{padding:8px 10px;border:1px solid var(--border);border-radius:8px;margin-bottom:6px;background:var(--card);font-size:12.5px;}
+.rev-sum.rev-skip{border-color:var(--gold);}
+.rev-sum .chg,.rev-row .chg{overflow-wrap:anywhere;}
+.rev-sum .chg{white-space:normal;margin-top:6px;line-height:1.6;}
+.imp-nums{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:10px;}
+.imp-num{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;}
+.imp-num b{font-size:24px;color:var(--gold);font-family:monospace;line-height:1.1;}
+.imp-num span{font-size:11px;text-transform:uppercase;letter-spacing:0.6px;color:var(--text);font-weight:600;}
+.imp-num small{font-size:11px;color:var(--muted);}
+.imp-num.bad{border-color:var(--red);}.imp-num.bad b{color:var(--red);}
 .rev-skip .chg{white-space:normal;margin-top:4px;line-height:1.6;}
 .rev-tag{font-size:10px;font-weight:700;border-radius:4px;padding:1px 7px;white-space:nowrap;}
-@media(max-width:700px){.rev-row{flex-wrap:wrap;}.rev-what{flex:1 1 100%;font-size:14px;}.rev-what .chg{font-size:12px;overflow-wrap:anywhere;}.rev-rep{font-size:14px;}} /* téléphone : le texte passe sous la case et l'étiquette */
+@media(max-width:700px){.rev-sum{font-size:14px;}.rev-row{flex-wrap:wrap;}.rev-what{flex:1 1 100%;font-size:14px;}.rev-what .chg{font-size:12px;overflow-wrap:anywhere;}.rev-rep{font-size:14px;}} /* téléphone : le texte passe sous la case et l'étiquette */
 .t-new{background:rgba(6,214,160,0.15);color:var(--accent);}
 .t-upd{background:rgba(79,195,247,0.15);color:var(--blue);}
 .t-fuz{background:rgba(255,183,77,0.15);color:var(--orange);}
@@ -276,6 +286,12 @@ tr:hover td{background:var(--hover);}
     <div class="sec-body plain" id="rev-body"></div>
   </div>
 
+  <div id="imp-report" class="section" style="display:none">
+    <div class="sec-head"><span class="sec-title">Directory import — report</span><span class="sec-note" id="imp-report-note"></span>
+      <span class="head-actions"><button class="btn2" onclick="hideReport()">✕ Close</button></span></div>
+    <div class="sec-body plain" id="imp-report-body"></div>
+  </div>
+
   <div id="dups" class="section" style="display:none">
     <div class="sec-head"><span class="sec-title">Possible duplicates</span><span class="sec-note" id="dups-note"></span>
       <span class="head-actions"><button class="btn2" onclick="document.getElementById('dups').style.display='none'">Close</button></span></div>
@@ -324,23 +340,23 @@ tr:hover td{background:var(--hover);}
     <div class="sec-body"><div class="fld w6" id="log"></div></div>
   </div>
 </main>
-<script src="js/version.js?v=1.37.3.67dcedeb"></script>
-<script src="js/toolnav.js?v=1.37.3.540a0f90"></script>
-<script src="js/theme.js?v=1.37.3.8bd1d199"></script>
-<script src="camps_data.js?v=1.37.3.71bc294b"></script>
-<script src="districts_data.js?v=1.37.3.0652d0f8"></script>
-<script src="js/zip.js?v=1.37.3.912def0f"></script>
-<script src="js/xlsx.js?v=1.37.3.cc885944"></script>
-<script src="js/admin-core.js?v=1.37.3.0beb6475"></script>
-<script src="js/clean-html.js?v=1.37.3.814230e0"></script>
-<script src="js/upload-limits.js?v=1.37.3.e69ad089"></script>
-<script src="js/admin-people.js?v=1.37.3.dbabb863"></script>
-<script src="js/admin-gallery.js?v=1.37.3.0596aa4b"></script>
-<script src="js/admin.js?v=1.37.3.8abd4296"></script>
-<script src="js/camps-manager.js?v=1.37.3.43260864"></script>
-<script src="js/camps-match.js?v=1.37.3.197376c4"></script>
-<script src="js/camps-import.js?v=1.37.3.dc50f6a2"></script>
-<script src="js/camps-geo.js?v=1.37.3.2dd491be"></script>
-<script src="js/admin-tabs.js?v=1.37.3.eb93884e"></script>
+<script src="js/version.js?v=1.38.0.70007854"></script>
+<script src="js/toolnav.js?v=1.38.0.540a0f90"></script>
+<script src="js/theme.js?v=1.38.0.8bd1d199"></script>
+<script src="camps_data.js?v=1.38.0.71bc294b"></script>
+<script src="districts_data.js?v=1.38.0.0652d0f8"></script>
+<script src="js/zip.js?v=1.38.0.912def0f"></script>
+<script src="js/xlsx.js?v=1.38.0.cc885944"></script>
+<script src="js/admin-core.js?v=1.38.0.0beb6475"></script>
+<script src="js/clean-html.js?v=1.38.0.814230e0"></script>
+<script src="js/upload-limits.js?v=1.38.0.e69ad089"></script>
+<script src="js/admin-people.js?v=1.38.0.dbabb863"></script>
+<script src="js/admin-gallery.js?v=1.38.0.0596aa4b"></script>
+<script src="js/admin.js?v=1.38.0.8abd4296"></script>
+<script src="js/camps-manager.js?v=1.38.0.43260864"></script>
+<script src="js/camps-match.js?v=1.38.0.197376c4"></script>
+<script src="js/camps-import.js?v=1.38.0.aba09ce7"></script>
+<script src="js/camps-geo.js?v=1.38.0.160cb2a3"></script>
+<script src="js/admin-tabs.js?v=1.38.0.eb93884e"></script>
 </body>
 </html>
