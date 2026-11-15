@@ -5,6 +5,39 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.39.0 — 2026-11-15
+
+Security review: vault access rules, administration token, escaping of received data.
+**One action for an installed vault:** run `supabase/vault_hardening_2026_11.sql` once in Supabase (SQL Editor), then `supabase/security_check.sql` — see `docs/VAULT_SETUP.md`.
+
+- **Tracker: a candidate's file could run code in the coordinator's browser.** A family name written to break out of the « Remove » button (for example `')){};…//`) was executed when the coordinator clicked ✕ on that row. Row buttons now carry only the row key; the name is never written into the code of a button. Found by the review, proven by a test, fixed.
+- **Vault, roles.** An administrator could give the « national » role to their own address, read every file (identity documents included), then remove the role without leaving a trace. An administrator can no longer give a role to their own address, and every addition or removal of a role is recorded with its author in a journal that cannot be edited, shown in the Team section.
+- **Vault, retention.** A file could be opened for a far-away season (« 2098-2099 »), which pushed its retention deadline out of reach of the purge. The season must now be a real one, around the current year.
+- **Vault, other hardening.** Signing is refused when the session carries no sign-in time (it was only refused when that time was older than 24 hours); the download journal keeps the file name only, cut at 200 characters; comments are limited to 5000 characters; signed-in accounts lose the unused right to empty a table.
+- **Checked and confirmed sound:** a candidate cannot see or change another candidate's file by any route (tables, stored files, functions); a club president only ever gets the club copy, never the full file or the identity document; coordinators only see their district and only with two-step verification. `supabase/security_check.sql` gains 9 checks (31 in total), among them the president and the identity document in storage.
+- **Administration token.** The unlocked token kept in the browser tab now expires after 30 minutes without activity (1 hour before) and 8 hours after unlocking at the latest. Connecting with a « classic » GitHub token (access to every repository of the account) shows a warning asking for a fine-grained token limited to this repository.
+- **Escaping.** `esc()` of the tool pages now also escapes the apostrophe, and text placed in a button's code goes through `jsArg()` (administration, tracker, vault). New test `tool_xss`: hostile values in every field of the tracker, the camp manager, the directory and coordinates imports, the coordinators, the national team, the gallery and the vault; everything is displayed and every control is clicked; nothing may execute.
+
+## 1.38.0 — 2026-11-15
+
+Directory import (administration, Camps tab): all-or-nothing application and a report.
+
+- **Report when the file is read.** The review opens with the counts: lines read, lines to review (updates, new camps), lines ignored (unchanged, already archived) and lines rejected — read = to review + ignored + rejected. Each rejected line gives its Excel row number, its country, its camp and the reason.
+- **More reasons for rejection, none silent.** Besides a missing or unreadable camp start date: empty camp name, empty country, camp end before camp start, family stay end before its start, and a line repeating an earlier one (same country, name and start date). An unreadable *optional* date (camp end, family stay, deadline) does not reject the camp: the value is not imported and the line is listed as « accepted with a remark ».
+- **All-or-nothing application.** « Apply selected » applies every ticked line together. If an anomaly appears on the way (a date that is not a real date, a new camp without continent…), nothing is applied: the camp list and the archive are put back exactly as they were, the review stays open and the journal gives the reason.
+- **Final report.** After the application, a « Directory import — report » panel stays on screen: read, applied (updated, renamed, created), ignored (unchanged, already archived, not ticked) and rejected, with the reason of each rejection and the earlier camps moved to the archive.
+- Row numbers in the report are the real Excel rows, even when the sheet has empty lines.
+
+## 1.37.3 — 2026-11-14
+
+Directory import (administration, Camps tab): four weaknesses corrected.
+
+- **A sheet listed in the workbook but missing from the file** stopped the import with an obscure script error. The message now names the sheet and says what to do (open the file in Excel and save it again). A damaged sheet and a file that is not a workbook also get an explicit message.
+- **New camp of a country the site does not know: no more « Europe » by default.** The continent comes from a camp of the same country already on the site (active or archived), otherwise from a table of about 150 countries. If the country is still unknown, the review line asks for the continent, and « Apply selected » applies nothing until it is chosen.
+- **Lines without a valid camp start date are no longer dropped silently.** The review opens with the list of the lines left out — row number, country, camp and reason (no date, text instead of a date, day/month inverted) — and the journal repeats it, so no camp goes missing unnoticed.
+- **The workbook is read with the browser's XML parser** instead of regular expressions: attributes in any order, namespace prefixes, entities, CDATA sections and phonetic guides are handled correctly.
+- Tests: new `directory_import` test file, with fictional workbooks built for each case.
+
 ## 1.37.2 — 2026-11-14
 
 Interactive code map (`docs/code_map.html`) only.

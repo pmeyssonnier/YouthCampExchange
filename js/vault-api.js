@@ -80,6 +80,8 @@ function makeVaultApi(sb){
     staffList(){ return x(sb.from("staff").select("*").order("role").order("district")); },
     staffAdd(row){ return x(sb.from("staff").insert(row)); },
     staffDelete(id){ return x(sb.from("staff").delete().eq("id", id)); },
+    // journal des changements d'intervenants (table absente tant que le script de durcissement n'a pas été lancé : liste vide)
+    staffLog(){ return sb.from("staff_log").select("*").order("at", { ascending: false }).limit(50).then(function(r){ return r.error ? [] : r.data; }); },
 
     purgeCandidates(){ return x(sb.rpc("purge_candidates")); },
     async purge(c){ // fichiers du stockage d'abord, puis la ligne (et tout son historique)

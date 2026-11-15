@@ -49,6 +49,18 @@ create table public.staff (
 );
 create unique index staff_unique on public.staff (email, role, coalesce(district, ''));
 
+-- journal des changements d'intervenants : qui a donné ou retiré quel rôle, et quand. Un administrateur peut donner
+-- un rôle (donc un accès aux dossiers) : chaque ajout et chaque retrait laisse ici une trace qu'il ne peut pas effacer.
+create table public.staff_log (
+  id          bigint generated always as identity primary key,
+  at          timestamptz not null default now(),
+  actor_email text not null,
+  action      text not null check (action in ('add', 'remove')),
+  email       text not null,
+  role        public.staff_role not null,
+  district    text
+);
+
 -- ---------- helpers ----------
 -- adresse du compte connecté, seulement si elle a été CONFIRMÉE (lien de l'e-mail ouvert) :
 -- toute l'identité du coffre (candidat, parent, président, intervenants) repose sur cette adresse.
@@ -74,6 +86,17 @@ language sql stable security definer set search_path = public as $$
   select mfa_ok() and exists (select 1 from staff
                  where email = my_email() and role = r and (d is null or district = d))
 $$;
+
+create function public.staff_after_change() returns trigger
+language plpgsql security definer set search_path = public as $$
+declare r staff := case when tg_op = 'DELETE' then old else new end;
+begin
+  insert into staff_log (actor_email, action, email, role, district)
+  values (coalesce(nullif(my_email(), ''), 'database owner (SQL editor)'), case when tg_op = 'DELETE' then 'remove' else 'add' end, r.email, r.role, r.district);
+  return r;
+end $$;
+create trigger staff_after_change after insert or delete on public.staff
+  for each row execute function public.staff_after_change();
 
 -- fin de saison "2025-2026" → 31 août 2026
 create function public.season_end(s text) returns date
@@ -114,6 +137,13 @@ create function public.dossiers_before_write() returns trigger
 language plpgsql as $$
 begin
   if tg_op = 'INSERT' then
+    -- saison réelle uniquement (« 2026-2027 » : deux années qui se suivent, autour de l'année en cours) : l'échéance de
+    -- conservation en découle, une saison lointaine (« 2098-2099 ») garderait le dossier hors de portée de la purge
+    if split_part(new.season, '-', 2)::int <> split_part(new.season, '-', 1)::int + 1
+       or split_part(new.season, '-', 1)::int not between extract(year from current_date)::int - 1
+                                                      and extract(year from current_date)::int + 1 then
+      raise exception 'Season % is not open for applications', new.season;
+    end if;
     new.purge_after := public.season_end(new.season) + interval '2 years';
   end if;
   new.updated_at := now();
@@ -235,7 +265,7 @@ create table public.comments (
   id           uuid primary key default gen_random_uuid(),
   dossier_id   uuid not null references public.dossiers on delete cascade,
   author_email text not null default public.my_email(),
-  body         text not null check (length(trim(body)) > 0),
+  body         text not null check (length(trim(body)) > 0 and length(body) <= 5000),
   created_at   timestamptz not null default now()
 );
 
@@ -414,7 +444,8 @@ begin
     -- intervenants) : une session ouverte il y a plus de 24 h sur un appareil oublié ne suffit pas
     select max((m ->> 'timestamp')::bigint) into last_auth
       from jsonb_array_elements(case when jsonb_typeof(claims -> 'amr') = 'array' then claims -> 'amr' else '[]' end) m;
-    if last_auth is not null and last_auth < extract(epoch from now()) - 24 * 3600 then
+    -- (un jeton sans heure de connexion ne prouve rien : il est refusé comme un jeton trop ancien)
+    if last_auth is null or last_auth < extract(epoch from now()) - 24 * 3600 then
       raise exception 'To sign, sign in again with a new e-mail link: your last sign-in is more than 24 hours old';
     end if;
     insert into signatures (dossier_id, step, signer_email, signer_role, doc_sha256, aal, auth_methods, session_id, statement)
@@ -445,7 +476,9 @@ returns void language plpgsql security definer set search_path = public as $$
 begin
   if not can_see_dossier(did) then raise exception 'Dossier not found'; end if;
   if what not in ('download', 'export') then raise exception 'Unknown action'; end if;
-  insert into events (dossier_id, actor_email, action, detail) values (did, my_email(), what, info);
+  -- seul le nom du fichier est gardé, borné : le journal ne sert pas à stocker ce qu'envoie l'appelant
+  insert into events (dossier_id, actor_email, action, detail)
+  values (did, my_email(), what, jsonb_build_object('file', left(coalesce(info ->> 'file', ''), 200)));
 end $$;
 
 -- purge d'un dossier échu (après suppression de ses fichiers dans le stockage)
@@ -483,6 +516,7 @@ revoke execute on function public.latest_file(uuid, text), public.missing_docume
 
 -- ---------- droits & Row Level Security ----------
 alter table public.staff         enable row level security;
+alter table public.staff_log     enable row level security;
 alter table public.dossiers      enable row level security;
 alter table public.dossier_files enable row level security;
 alter table public.signatures    enable row level security;
@@ -492,6 +526,9 @@ alter table public.purge_log     enable row level security;
 
 -- rien pour les visiteurs non connectés
 revoke all on all tables in schema public from anon;
+-- Supabase donne par défaut TOUS les droits sur les nouvelles tables, dont TRUNCATE (vider une table), que les
+-- politiques de ligne ne contrôlent pas. L'API n'offre pas cette commande, mais le droit n'a aucune raison d'exister.
+revoke truncate, references, trigger on all tables in schema public from authenticated;
 
 -- colonnes modifiables par l'interface ; statut, échéance et signatures : jamais en direct
 revoke insert, update on public.dossiers from authenticated;
@@ -499,13 +536,16 @@ grant insert (season, candidate_name, candidate_birth_date, parent_email, presid
               camp_choice, consent_at, consent_version) on public.dossiers to authenticated;
 grant update (candidate_name, candidate_birth_date, parent_email, president_email, district, club, camp_choice)
   on public.dossiers to authenticated;
-revoke insert, update, delete on public.signatures, public.events, public.purge_log from authenticated;
+revoke insert, update, delete on public.signatures, public.events, public.purge_log, public.staff_log from authenticated;
+revoke update on public.staff from authenticated;
 revoke update on public.dossier_files, public.comments from authenticated;
 
 create policy staff_read on public.staff for select to authenticated
   using (email = public.my_email() or public.is_staff('admin'));
+-- un administrateur ne se donne pas de rôle à lui-même : « admin » gère les accès sans voir les dossiers ; s'ajouter
+-- « national » lui ouvrirait tous les dossiers. Un autre administrateur (ou l'éditeur SQL) doit le faire, et c'est journalisé.
 create policy staff_admin_insert on public.staff for insert to authenticated
-  with check (public.is_staff('admin'));
+  with check (public.is_staff('admin') and email <> public.my_email());
 create policy staff_admin_delete on public.staff for delete to authenticated
   using (public.is_staff('admin'));
 
@@ -543,6 +583,8 @@ create policy comments_add on public.comments for insert to authenticated
 create policy events_read on public.events for select to authenticated
   using (public.can_see_dossier(dossier_id));
 create policy purge_log_read on public.purge_log for select to authenticated
+  using (public.is_staff('national') or public.is_staff('admin'));
+create policy staff_log_read on public.staff_log for select to authenticated
   using (public.is_staff('national') or public.is_staff('admin'));
 
 -- ---------- stockage des fichiers (bucket privé) ----------

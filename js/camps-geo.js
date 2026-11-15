@@ -62,7 +62,7 @@ function buildGeoReview(fname,gj){
     const had=d.lat!=null&&d.lon!=null;
     rev.push({kind:"geo",camp:c,q:b.q,pct:Math.round(b.sc*100),had:had,on:b.sc>=0.9&&!had&&used[b.qi]===1});
   });
-  REVIEW=rev;
+  REVIEW=rev;IMPORT=null;hideReport(); // revue de coordonnées : pas de rapport de répertoire
   document.getElementById("rev-note").textContent=fname+" — "+pts.length+" point(s) read, "+rev.length+" camp(s) can get coordinates, "
     +same+" already up to date, "+(CAMPS_W.length-rev.length-same)+" without a match";
   document.getElementById("rev-body").innerHTML=rev.length?rev.map(function(r,i){

@@ -6,12 +6,19 @@ let distFilter="ALL", sortKey="name", sortDir=1;
 document.querySelectorAll(".yr").forEach(function(s){s.textContent=YEAR;});
 document.title=document.title.replace(/20\d\d/,YEAR);
 // msg contient des noms de fichiers et de candidats issus des dossiers reçus : toujours en texte
+// Actions d'une ligne : le bouton ne porte que la clé de la ligne (jsArg) ; le nom du candidat, qui vient du fichier reçu,
+// n'est jamais écrit dans le code d'un gestionnaire.
+function rowSet(k,field,value){if(!Object.prototype.hasOwnProperty.call(ROWS,k)||(field!=="status"&&field!=="notes"))return;ROWS[k][field]=value;save();if(field==="status")render();}
+function rowDel(k){if(!Object.prototype.hasOwnProperty.call(ROWS,k))return;if(confirm("Remove "+ROWS[k].fam+" "+ROWS[k].fir+"?")){delete ROWS[k];save();render();}}
 function log(msg,cls){const l=document.getElementById("log");l.innerHTML='<div class="'+esc(cls||"")+'">'+esc(msg)+"</div>"+l.innerHTML;}
 // ---------------- rendering ----------------
 function isComplete(r){return r.pct===100&&r.sigA&&r.sigP&&r.sigC&&r.commit&&r.commitClub&&r.photo&&r.pay&&r.iddoc===true&&r.letter;}
 function setDist(d,btn){distFilter=d;document.querySelectorAll(".pill").forEach(function(p){p.classList.remove("on");});btn.classList.add("on");render();}
 function setSort(k){if(sortKey===k)sortDir=-sortDir;else{sortKey=k;sortDir=1;}render();}
-function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");}
+// argument texte d'un gestionnaire onclick="f(…)" : littéral JSON (guillemets et barres obliques échappés), puis échappement HTML de l'attribut.
+// Ne jamais coller une donnée entre apostrophes dans un onclick : l'attribut est décodé avant d'être exécuté, esc() seul ne protège pas.
+function jsArg(s){return esc(JSON.stringify(String(s)));}
 function render(){
   const q=norm(document.getElementById("q").value||"");
   const fs=document.getElementById("f-status").value;
@@ -32,19 +39,19 @@ function render(){
     const miss=r.missing&&r.missing.length?' <span class="hint-miss" title="Missing: '+esc(r.missing.join(", "))+'">('+r.missing.length+' missing)</span>':"";
     const prefTitle=esc(["1. "+r.pref1,"2. "+r.pref2,"3. "+r.pref3].join("\n"));
     return "<tr>"
-      +'<td><span class="b-dist b-'+r.dist+'">'+MD+' '+r.dist+"</span></td>"
+      +'<td><span class="b-dist b-'+esc(String(r.dist).replace(/[^A-Za-z0-9?]/g,""))+'">'+esc(MD)+' '+esc(r.dist)+"</span></td>"
       +'<td><div class="cand">'+esc(r.fam)+" "+esc(r.fir)+(isComplete(r)?' <span class="ok" title="File complete">●</span>':"")+'</div><div class="sub">'+esc(r.sex)+" · "+esc(r.dob)+"</div></td>"
-      +"<td>"+(r.age||"—")+"</td>"
+      +"<td>"+esc(r.age||"—")+"</td>"
       +"<td>"+esc(r.club||"—")+"</td>"
       +'<td class="sub">'+esc(r.email||"")+"<br>"+esc(r.mobile||"")+"</td>"
       +'<td title="'+prefTitle+'">'+esc(r.pref1||"—")+"</td>"
       +"<td>"+sig(r.sigA)+sig(r.sigP)+sig(r.sigC)+"</td>"
       +"<td>"+att(r.commit,r.commitClub?"✎":"✔")+att(r.photo,"✔")+att(r.pay,"✔")+(r.iddoc==="later"?'<span class="sig" style="color:var(--orange)" title="Passport being renewed: scan to follow">⏳</span>':att(r.iddoc,"✔"))+att(r.letter,"✔")+"</td>"
-      +'<td><span class="pct '+pctCls+'">'+r.pct+"%</span>"+miss+"</td>"
-      +'<td><select class="status-sel" onchange="ROWS[\''+r._k+'\'].status=this.value;save();render();">'
-        +STATUSES.map(function(st){return '<option'+(st===r.status?" selected":"")+">"+st+"</option>";}).join("")+"</select></td>"
-      +'<td><input class="notes-in" value="'+esc(r.notes)+'" onchange="ROWS[\''+r._k+'\'].notes=this.value;save();"></td>'
-      +'<td><button class="del-btn" title="Remove this row" onclick="if(confirm(\'Remove '+esc(r.fam)+" "+esc(r.fir)+'?\')){delete ROWS[\''+r._k+'\'];save();render();}">✕</button></td>'
+      +'<td><span class="pct '+pctCls+'">'+esc(r.pct)+"%</span>"+miss+"</td>"
+      +'<td><select class="status-sel" onchange="rowSet('+jsArg(r._k)+',&quot;status&quot;,this.value)">'
+        +STATUSES.map(function(st){return '<option'+(st===r.status?" selected":"")+">"+esc(st)+"</option>";}).join("")+"</select></td>"
+      +'<td><input class="notes-in" value="'+esc(r.notes)+'" onchange="rowSet('+jsArg(r._k)+',&quot;notes&quot;,this.value)"></td>'
+      +'<td><button class="del-btn" title="Remove this row" onclick="rowDel('+jsArg(r._k)+')">✕</button></td>'
       +"</tr>";
   }).join("");
   document.getElementById("empty").style.display=rows.length?"none":"";

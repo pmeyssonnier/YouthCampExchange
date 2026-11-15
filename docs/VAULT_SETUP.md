@@ -71,6 +71,23 @@ dossier du district C par toutes les voies : tables, fichiers stockés, fonction
 - Rien n'est enregistré : le contrôle travaille dans une transaction annulée à la fin.
 - Relancez-le après toute modification du projet : politiques, stockage, mise à jour du schéma.
 
+### Mise à niveau d'un coffre déjà installé (novembre 2026)
+
+Si le coffre a été installé avec une version du site antérieure à la 1.39.0, lancez **une fois**
+`supabase/vault_hardening_2026_11.sql` (SQL Editor → coller tout le fichier → Run), puis relancez
+`supabase/security_check.sql`. Une nouvelle installation n'en a pas besoin. Le script peut être relancé sans risque. Il ajoute :
+
+- le **journal des changements d'intervenants** (qui a donné ou retiré quel rôle, visible dans la section
+  Team du coffre, non modifiable) et l'interdiction pour un administrateur de se donner un rôle à lui-même ;
+- le contrôle de la **saison** d'un dossier (une saison lointaine reporterait la purge de conservation) ;
+- le refus de signer avec un jeton sans heure de connexion ;
+- des bornes sur le journal des téléchargements et les commentaires, et le retrait de droits inutiles.
+
+**Double authentification des intervenants** : un coordinateur n'a ses droits qu'après avoir enregistré son
+code à usage unique. Tant qu'il ne l'a pas fait, quiconque lit sa boîte e-mail pourrait l'enregistrer à sa
+place. Ajoutez donc un intervenant quand il est prêt à se connecter, et vérifiez avec lui qu'il a enregistré
+son code le jour même.
+
 ## 3. Connexion par lien magique
 
 Menu **Authentication** → **URL Configuration** :

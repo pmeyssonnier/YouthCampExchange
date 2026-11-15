@@ -40,7 +40,8 @@ begin
   insert into auth.users (id, email, email_confirmed_at)
     values (uid, case when confirmed then email else 'unconfirmed.' || email end, case when confirmed then now() end)
     on conflict (id) do nothing;
-  perform set_config('request.jwt.claims', json_build_object('sub', uid, 'email', email, 'aal', aal, 'role', 'authenticated')::text, true);
+  perform set_config('request.jwt.claims', json_build_object('sub', uid, 'email', email, 'aal', aal, 'role', 'authenticated',
+    'amr', json_build_array(json_build_object('method', 'otp', 'timestamp', extract(epoch from now())::bigint)))::text, true);
   perform set_config('request.jwt.claim.sub', uid::text, true);
   perform set_config('role', 'authenticated', true);
 end $$;
@@ -89,13 +90,17 @@ insert into staff (email, role, district) values
   ('check-nat@yce.invalid', 'national', null), ('check-admin@yce.invalid', 'admin', null),
   ('check-coord-a@yce.invalid', 'district', 'A'), ('check-coord-c@yce.invalid', 'district', 'C');
 
+-- saison en cours de candidature (les adresses de test n'existent pas : aucun vrai dossier ne peut entrer en conflit)
+create function pg_temp.yce_season() returns text language sql as $$
+  select extract(year from current_date)::int || '-' || (extract(year from current_date)::int + 1) $$;
+
 create function pg_temp.yce_dossier(k text, cand text, district text, pres text) returns void
 language plpgsql as $$
 declare did uuid; f text; c text; sha text := repeat(substr(md5(k), 1, 1), 64);
 begin
   perform pg_temp.yce_as(cand);
   insert into dossiers (season, candidate_name, candidate_birth_date, president_email, district, consent_at, consent_version)
-    values ('2098-2099', 'Check Person', '2000-05-01', pres, district, now(), 'check') returning id into did;
+    values (pg_temp.yce_season(), 'Check Person', '2000-05-01', pres, district, now(), 'check') returning id into did;
   f := did || '/full/check.zip'; c := did || '/club/check.zip';
   insert into storage.objects (bucket_id, name) values ('dossiers', f), ('dossiers', c);
   insert into dossier_files (dossier_id, kind, path, file_name, sha256, size_bytes, contents) values
@@ -113,13 +118,27 @@ select pg_temp.yce_dossier('C', 'check-cand-c@yce.invalid', 'C', 'check-pres-c@y
 select pg_temp.yce_as('check-pres-c@yce.invalid');
 select dossier_transition((select id from yce_ids where k = 'C'), 'club_signed', null, repeat('c', 64));
 
+-- le candidat C envoie après coup le scan de son passeport (dossier <id>/id/)
+select pg_temp.yce_as('check-cand-c@yce.invalid');
+insert into storage.objects (bucket_id, name) select 'dossiers', id || '/id/passport.pdf' from yce_ids where k = 'C';
+insert into dossier_files (dossier_id, kind, path, file_name, sha256, size_bytes)
+  select id, 'id', id || '/id/passport.pdf', 'passport.pdf', repeat('d', 64), 1 from yce_ids where k = 'C';
+
 -- ---------- contrôles positifs : sans eux, « ne voit rien » ne prouverait rien ----------
 select pg_temp.yce_as('check-cand-c@yce.invalid');
 select pg_temp.yce_ok('control: candidate C sees their file', pg_temp.yce_count('select id from dossiers where id = (select id from yce_ids where k = ''C'')') = 1);
 select pg_temp.yce_as('check-coord-c@yce.invalid', 'aal2');
-select pg_temp.yce_ok('control: coordinator C with MFA sees the full file', pg_temp.yce_count('select id from dossier_files where dossier_id = (select id from yce_ids where k = ''C'')') = 2);
+select pg_temp.yce_ok('control: coordinator C with MFA sees the full file', pg_temp.yce_count('select id from dossier_files where dossier_id = (select id from yce_ids where k = ''C'')') = 3);
+select pg_temp.yce_ok('control: coordinator C with MFA can open the passport scan', pg_temp.yce_count('select id from storage.objects where name like (select id from yce_ids where k = ''C'') || ''/id/%''') = 1);
 select pg_temp.yce_as('check-pres-c@yce.invalid');
 select pg_temp.yce_ok('control: president C sees the club copy only', pg_temp.yce_count('select id from dossier_files where dossier_id = (select id from yce_ids where k = ''C'')') = 1);
+-- pièce d'identité et dossier complet : jamais pour le président, ni par la table ni par le stockage
+select pg_temp.yce_ok('president C cannot open the passport scan or the full file (storage)',
+  pg_temp.yce_count('select id from storage.objects where name like (select id from yce_ids where k = ''C'') || ''/%'' and name not like ''%/club/%''') = 0
+  and pg_temp.yce_count('select id from storage.objects where name like (select id from yce_ids where k = ''C'') || ''/club/%''') = 1);
+select pg_temp.yce_ok('president C cannot add or replace a file',
+  pg_temp.yce_blocked(format('insert into storage.objects (bucket_id, name) values (''dossiers'', %L)', (select id from yce_ids where k = 'C') || '/id/x.pdf'))
+  and pg_temp.yce_blocked(format('insert into storage.objects (bucket_id, name) values (''dossiers'', %L)', (select id from yce_ids where k = 'C') || '/club/x.zip')));
 
 -- ---------- tous les autres : lecture et écriture du dossier C ----------
 reset role;
@@ -160,7 +179,7 @@ begin
   select count(*) into no from storage.objects where name like dc || '/%';
   select count(*) into ns from signatures where dossier_id = dc;
   select count(*) into nc from comments where dossier_id = dc;
-  if st.district is distinct from 'C' or st.status is distinct from 'club_signed' or nf <> 2 or no <> 2 or ns <> 1 or nc <> 1 then
+  if st.district is distinct from 'C' or st.status is distinct from 'club_signed' or nf <> 3 or no <> 3 or ns <> 1 or nc <> 1 then
     breaches := breaches || ' data-changed';
   end if;
   perform pg_temp.yce_ok(label || ': changes nothing in the district C file' || case when breaches <> '' then ' — BREACH:' || breaches else '' end, breaches = '');
@@ -175,15 +194,33 @@ select pg_temp.yce_outsider('unconfirmed account with candidate C''s address', '
 select pg_temp.yce_outsider('unconfirmed account with coordinator C''s address, MFA', 'check-coord-c@yce.invalid', 'aal2', false);
 select pg_temp.yce_outsider('anonymous visitor', null, null, true);
 
+-- ---------- intervenants : pas d'auto-attribution, chaque changement tracé ----------
+select pg_temp.yce_as('check-admin@yce.invalid', 'aal2');
+select pg_temp.yce_ok('an administrator cannot give a role to their own address',
+  pg_temp.yce_blocked('insert into staff (email, role) values (''check-admin@yce.invalid'', ''national'')'));
+insert into staff (email, role) values ('check-new@yce.invalid', 'national');
+delete from staff where email = 'check-new@yce.invalid';
+select pg_temp.yce_ok('an administrator cannot erase the journal of staff changes',
+  pg_temp.yce_blocked('delete from staff_log') and pg_temp.yce_blocked('update staff_log set email = ''x''') and pg_temp.yce_blocked('insert into staff_log (actor_email, action, email, role) values (''x'', ''add'', ''x'', ''national'')'));
+select pg_temp.yce_as('check-cand-a@yce.invalid');
+select pg_temp.yce_ok('a candidate cannot read the journal of staff changes', pg_temp.yce_count('select id from staff_log') = 0);
+select pg_temp.yce_ok('a file cannot be opened for a far-away season (it would escape the retention purge)',
+  pg_temp.yce_blocked('insert into dossiers (season, candidate_name, candidate_birth_date, district, consent_at, consent_version) values (''2098-2099'', ''Check Far'', ''2000-05-01'', ''A'', now(), ''check'')'));
+
 -- ---------- réglages du projet ----------
 select set_config('role', 'postgres', true);
+select pg_temp.yce_ok('adding and removing a staff member are both recorded with their author',
+  (select count(*) from staff_log where email = 'check-new@yce.invalid' and actor_email = 'check-admin@yce.invalid' and action in ('add', 'remove')) = 2);
+select pg_temp.yce_ok('signed-in accounts cannot empty a vault table (TRUNCATE)',
+  not exists (select 1 from information_schema.role_table_grants where grantee in ('anon', 'authenticated') and table_schema = 'public'
+    and privilege_type = 'TRUNCATE' and table_name in ('staff', 'staff_log', 'dossiers', 'dossier_files', 'signatures', 'comments', 'events', 'purge_log')));
 select pg_temp.yce_ok('storage bucket "dossiers" is private', (select not public from storage.buckets where id = 'dossiers'));
 select pg_temp.yce_ok('row level security enabled on every vault table',
   (select bool_and(c.relrowsecurity) from pg_class c join pg_namespace s on s.oid = c.relnamespace
-    where s.nspname = 'public' and c.relname in ('staff', 'dossiers', 'dossier_files', 'signatures', 'comments', 'events', 'purge_log')));
+    where s.nspname = 'public' and c.relname in ('staff', 'staff_log', 'dossiers', 'dossier_files', 'signatures', 'comments', 'events', 'purge_log')));
 select pg_temp.yce_ok('anonymous visitors have no right on the vault tables',
   not exists (select 1 from information_schema.role_table_grants where grantee = 'anon' and table_schema = 'public'
-    and table_name in ('staff', 'dossiers', 'dossier_files', 'signatures', 'comments', 'events', 'purge_log')));
+    and table_name in ('staff', 'staff_log', 'dossiers', 'dossier_files', 'signatures', 'comments', 'events', 'purge_log')));
 
 select n, ok, check_name from yce_results order by ok, n;
 rollback;

@@ -20,14 +20,22 @@ let UPGRADE=false;                           // déverrouillé avec un ancien PI
 const ON_CONNECT=[], ON_LOGOUT=[];           // fonctions appelées après connexion / oubli du jeton
 // Session déverrouillée : le jeton déchiffré est gardé dans la session de l'onglet (sessionStorage),
 // pour survivre à un rafraîchissement ou au rechargement d'un onglet mis en veille par le mobile.
-// Elle disparaît à la fermeture de l'onglet et expire après SESSION_IDLE sans appel à GitHub.
+// Elle disparaît à la fermeture de l'onglet, expire après SESSION_IDLE sans appel à GitHub et, quoi qu'il arrive,
+// SESSION_MAX après le déverrouillage (un onglet oublié ouvert ne reste pas déverrouillé indéfiniment).
+// Limite assumée : un script qui s'exécuterait dans cette page lirait le jeton, ici comme en mémoire. La protection
+// est donc en amont — aucune donnée reçue n'est insérée sans échappement (tests tool_xss) — et en aval : jeton
+// « fine-grained » limité à ce dépôt, avec une date d'expiration (voir tokenAdvice).
 const SESSION_KEY="yce_admin_session";
-const SESSION_IDLE=60*60*1000;              // 1 heure d'inactivité
-function sessionSave(){try{sessionStorage.setItem(SESSION_KEY,JSON.stringify({t:ADMIN_TOKEN,exp:Date.now()+SESSION_IDLE}));}catch(e){}}
-function sessionClear(){try{sessionStorage.removeItem(SESSION_KEY);}catch(e){}}
+const SESSION_IDLE=30*60*1000;              // 30 minutes d'inactivité
+const SESSION_MAX=8*60*60*1000;             // 8 heures au plus après le déverrouillage
+let SESSION_START=0;
+function sessionSave(){
+  if(!SESSION_START)SESSION_START=Date.now();
+  try{sessionStorage.setItem(SESSION_KEY,JSON.stringify({t:ADMIN_TOKEN,start:SESSION_START,exp:Math.min(Date.now()+SESSION_IDLE,SESSION_START+SESSION_MAX)}));}catch(e){}}
+function sessionClear(){SESSION_START=0;try{sessionStorage.removeItem(SESSION_KEY);}catch(e){}}
 function sessionToken(){
   try{const s=JSON.parse(sessionStorage.getItem(SESSION_KEY)||"null");
-    if(s&&s.t&&s.exp>Date.now())return s.t;}catch(e){}
+    if(s&&s.t&&s.exp>Date.now()&&s.start&&s.start+SESSION_MAX>Date.now()){SESSION_START=s.start;return s.t;}}catch(e){}
   sessionClear();return "";
 }
 
@@ -58,7 +66,7 @@ function accessMode(mode){ // "token" = première connexion ; "pin" = déverroui
   document.getElementById("pin-lbl").textContent=mode==="pin"?"Passphrase":(mode==="upgrade"?"New passphrase":"Passphrase")+" ("+PASS_MIN+"+ characters)";
   if(mode==="upgrade"){document.getElementById("access-hint").innerHTML="Your old PIN is too short to protect the token. <b>Choose a new passphrase of at least "+PASS_MIN+" characters</b> and press Connect: the token is re-encrypted on this device, no need to paste it again.";return;}
   document.getElementById("access-hint").innerHTML=mode==="pin"
-    ?"Enter the passphrase chosen on this device to unlock the encrypted token. It then stays unlocked in this browser tab (refresh included) until the tab is closed or after 1 hour without activity. <a href=\"#\" onclick=\"logout();return false\" style=\"color:var(--blue)\">Use another token instead\u2026</a>"
+    ?"Enter the passphrase chosen on this device to unlock the encrypted token. It then stays unlocked in this browser tab (refresh included) until the tab is closed, after 30 minutes without activity or 8 hours at most. <a href=\"#\" onclick=\"logout();return false\" style=\"color:var(--blue)\">Use another token instead\u2026</a>"
     :"First time: paste the token and choose a passphrase of at least "+PASS_MIN+" characters \u2014 the token is then stored <b>encrypted with your passphrase</b> on this device, and next visits only ask for the passphrase. Without a passphrase the token is not remembered."
      +(document.getElementById("help-dlg")?" <a href=\"#\" onclick=\"document.getElementById('help-dlg').showModal();return false\" style=\"color:var(--blue)\">Which token?</a>":"");
 }
@@ -66,7 +74,10 @@ function log(msg,cls){
   const l=document.getElementById("log");
   l.innerHTML='<div class="'+(cls||"info")+'">'+new Date().toLocaleTimeString()+" — "+msg+"</div>"+l.innerHTML;
 }
-function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");}
+// argument texte d'un gestionnaire onclick="f(…)" : littéral JSON (guillemets et barres obliques échappés), puis échappement HTML de l'attribut.
+// Ne jamais coller une donnée entre apostrophes dans un onclick : l'attribut est décodé avant d'être exécuté, esc() seul ne protège pas.
+function jsArg(s){return esc(JSON.stringify(String(s)));}
 
 // -------------------- API GitHub --------------------
 function token(){return ADMIN_TOKEN||document.getElementById("token").value.trim();}
@@ -134,6 +145,13 @@ function utf8ToB64(s){const a=new TextEncoder().encode(s);let bin="";
 function bufToB64(buf){const a=new Uint8Array(buf);let bin="";
   for(let i=0;i<a.length;i+=8192)bin+=String.fromCharCode.apply(null,a.subarray(i,i+8192));return btoa(bin);}
 
+// Conseil sur le jeton collé : un jeton « classic » (ghp_…) ouvre TOUS les dépôts du compte ; un jeton « fine-grained »
+// (github_pat_…) peut être limité à ce seul dépôt, au seul droit Contents, avec une date d'expiration.
+function tokenAdvice(tok){
+  if(/^gh[pousr]_/.test(tok))return "This is a \u201cclassic\u201d token: it gives access to every repository of your account. Replace it with a fine-grained token limited to "+REPO+" (permission Contents: read and write) with an expiry date, then delete the classic one on GitHub.";
+  return "";
+}
+
 // -------------------- connexion --------------------
 async function connect(){
   const btn=document.getElementById("connect");btn.disabled=true;
@@ -183,6 +201,7 @@ async function finishConnect(pin,unlocked){
   document.getElementById("panel").style.display="";
   if(!UPGRADE)sessionSave();
   log("Connected as <b>"+esc(u.login)+"</b>","ok");
+  const adv=tokenAdvice(ADMIN_TOKEN);if(adv)log("\u26a0 "+esc(adv),"warn");
   ON_CONNECT.forEach(function(f){f();});
 }
 // reprise après un rafraîchissement : pas de phrase secrète tant que la session de l'onglet est valide
