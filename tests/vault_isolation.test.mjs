@@ -2,7 +2,7 @@
 // district C n'est visible ni modifiable par personne d'autre que son candidat, son parent, son
 // président (copie club seulement), le coordinateur du district C et le national (avec double
 // authentification). Chaque accès est tenté par toutes les voies : tables, stockage, fonctions.
-import { makeVaultDb, setSession } from './vault_db.mjs';
+import { makeVaultDb, setSession, uidFor } from './vault_db.mjs';
 import fs from 'fs';
 import { ROOT, checker } from './helpers.mjs';
 
@@ -115,6 +115,28 @@ ok(DA !== DC, 'two districts set up');
   const rows = (res.find(r => r.fields && r.fields.some(f => f.name === 'check_name')) || { rows: [] }).rows;
   const bad = rows.filter(r => !r.ok).map(r => r.check_name);
   ok(rows.length >= 15 && !bad.length, 'security_check.sql: ' + rows.length + ' checks, all true' + (bad.length ? ' — FAILED: ' + bad.join(' | ') : ''));
-  ok((await q(`select count(*)::int n from dossiers where season = '2098-2099'`))[0].n === 0, 'security_check.sql leaves nothing behind (rollback)');
+  ok((await q(`select (select count(*) from dossiers where candidate_email like 'check-%@yce.invalid')::int + (select count(*) from staff_log where email like 'check-%')::int n`))[0].n === 0, 'security_check.sql leaves nothing behind (rollback)');
+}
+
+// ---- durcissements : journal borné, signature sans heure de connexion, script de mise à niveau d'un projet déjà installé ----
+{
+  await setSession(db, 'candc@x.be');
+  await db.query(`select dossier_log($1, 'download', $2)`, [DC, JSON.stringify({ file: 'x'.repeat(5000), other: 'y'.repeat(100000) })]);
+  await db.exec('reset role');
+  const ev = (await q(`select detail from events where dossier_id = $1 and action = 'download' order by id desc limit 1`, [DC]))[0].detail;
+  ok(Object.keys(ev).join() === 'file' && ev.file.length === 200, 'download journal: only the file name is kept, cut at 200 characters');
+  const st = (await q(`select status, president_email from dossiers where id = $1`, [DA]))[0];
+  if (st.status === 'submitted') {
+    const club = (await q(`select sha256 from dossier_files where dossier_id = $1 and kind = 'club' order by uploaded_at desc limit 1`, [DA]))[0];
+    await db.exec(`set role authenticated; select set_config('request.jwt.claims', '${JSON.stringify({ sub: uidFor(st.president_email), email: st.president_email, aal: 'aal1', role: 'authenticated' })}', false)`);
+    ok(/sign in again/.test(await err(`select dossier_transition($1, 'club_signed', null, $2)`, [DA, club.sha256]) || ''), 'a token without sign-in time cannot sign');
+    await db.exec('reset role');
+  } else ok(true, 'a token without sign-in time cannot sign (district A file not at the president step in this run)');
+  const mig = fs.readFileSync(ROOT + '/supabase/vault_hardening_2026_11.sql', 'utf8');
+  let migErr = null; try { await db.exec(mig); await db.exec(mig); } catch (e) { migErr = e.message; }
+  ok(migErr === null, 'the upgrade script for an installed project runs, twice, without error' + (migErr ? ': ' + migErr : ''));
+  const res = await db.exec(fs.readFileSync(ROOT + '/supabase/security_check.sql', 'utf8'));
+  const rows = (res.find(r => r.fields && r.fields.some(f => f.name === 'check_name')) || { rows: [] }).rows;
+  ok(rows.length >= 24 && rows.every(r => r.ok), 'after the upgrade script, security_check.sql is still all true (' + rows.length + ' checks)');
 }
 process.exit(t.done() ? 1 : 0);

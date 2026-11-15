@@ -65,6 +65,7 @@ function makeVaultApi(){
     mfaEnroll: async()=>{window.__ENROLLED=(window.__ENROLLED||0)+1;return {factorId:'f-'+me(),qr:'data:image/svg+xml;utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"/>',secret:'JBSWY3DPEHPK3PXP'};},
     mfaVerify: async(f,code)=>{if(code!=='123456')throw new Error('Invalid TOTP code entered');localStorage.setItem('fake-mfa-'+me(),'1');localStorage.setItem('fake-aal-'+me(),'aal2');},
     staffList: ()=>run('select * from staff order by role, district'),
+    staffLog: ()=>run('select * from staff_log order by at desc limit 50').catch(()=>[]),
     staffAdd: r=>run('insert into staff (email,role,district,full_name) values ($1,$2,$3,$4)',[r.email,r.role,r.district,r.full_name]),
     staffDelete: id=>run('delete from staff where id=$1',[id]),
     purgeCandidates: ()=>run('select * from purge_candidates()'),

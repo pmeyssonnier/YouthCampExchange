@@ -1,7 +1,10 @@
 // render.js — rendu des sections et widgets (groupes X, boutons Yes/No, champs conditionnels), compteur
 // Chargé par yce_form_filler.html ; scripts classiques partageant la portée globale.
 "use strict";
-function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");}
+// argument texte d'un gestionnaire onclick="f(…)" : littéral JSON (guillemets et barres obliques échappés), puis échappement HTML de l'attribut.
+// Ne jamais coller une donnée entre apostrophes dans un onclick : l'attribut est décodé avant d'être exécuté, esc() seul ne protège pas.
+function jsArg(s){return esc(JSON.stringify(String(s)));}
 
 function render(){
   const root=document.getElementById("form-root");

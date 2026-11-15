@@ -57,9 +57,9 @@ function renderDossier(sigs, events, comments){
   }).join("") + (last && (last.contents || []).some(function(n){ return /_club-signed\.docx$/i.test(n); })
     ? '<li class="yes">✔ Commitment countersigned by the club</li>' : "");
   $("d-files").innerHTML = CUR_FILES.length ? CUR_FILES.map(function(f, i){
-    return "<li" + (f !== latestFile(f.kind) ? ' class="old"' : "") + "><button class=\"lnk\" onclick=\"downloadFile('" + f.id + "')\">⬇ " + esc(f.file_name) + "</button>" +
+    return "<li" + (f !== latestFile(f.kind) ? ' class="old"' : "") + "><button class=\"lnk\" onclick=\"downloadFile(" + jsArg(f.id) + ")\">⬇ " + esc(f.file_name) + "</button>" +
       ' <span class="sub">' + (f.size_bytes / 1048576).toFixed(1) + " MB · " + esc(f.uploaded_by) + " · " + fmtDT(f.uploaded_at) +
-      " · <code>" + f.sha256.slice(0, 10) + "</code> · " + ({ club: "club copy", id: "passport / ID scan sent later" }[f.kind] || "full file") +
+      " · <code>" + esc(String(f.sha256).slice(0, 10)) + "</code> · " + ({ club: "club copy", id: "passport / ID scan sent later" }[f.kind] || "full file") +
       (f === latestFile(f.kind) ? " · <b>current</b>" : " · previous") + "</span></li>";
   }).join("") : '<li class="sub">No file yet.</li>';
   show("d-upload", canUpload(d));
@@ -73,7 +73,7 @@ function renderDossier(sigs, events, comments){
     // preuves relevées par la base au moment de signer : connexion par lien e-mail, double authentification
     const how = (s.auth_methods || []).some(function(m){ return m.method === "totp"; }) || s.aal === "aal2" ? "e-mail link + two-step code" : "e-mail link";
     return '<li title="' + esc(s.statement || "") + '">✍ <b>' + esc(role) + "</b> — " + esc(s.signer_email) + " · " + fmtDT(s.signed_at) +
-      " · version <code>" + s.doc_sha256.slice(0, 10) + "</code>" + ' <span class="sub">· identity: ' + how + "</span></li>";
+      " · version <code>" + esc(String(s.doc_sha256).slice(0, 10)) + "</code>" + ' <span class="sub">· identity: ' + how + "</span></li>";
   }).join("") : '<li class="sub">No signature yet.</li>';
 
   // actions possibles à cette étape
@@ -81,8 +81,8 @@ function renderDossier(sigs, events, comments){
 
   // historique
   const items = events.map(function(e){
-    let t = e.action;
-    if(e.action === "status") t = "Status: " + (STATUS[e.detail.from] || {}).label + " → <b>" + (STATUS[e.detail.to] || {}).label + "</b>";
+    let t = esc(e.action); // action inconnue : affichée telle quelle, échappée
+    if(e.action === "status") t = "Status: " + esc((STATUS[e.detail.from] || {}).label || e.detail.from) + " → <b>" + esc((STATUS[e.detail.to] || {}).label || e.detail.to) + "</b>";
     else if(e.action === "upload") t = "Uploaded " + esc(e.detail.file);
     else if(e.action === "download") t = "Downloaded " + esc(e.detail.file);
     else if(e.action === "email") t = "📧 Automatic e-mail sent to " + esc({ parent: "the parent / guardian", president: "the club president", district: "the district coordinator", national: "the national YCE team", candidate: "the candidate" }[e.detail.to] || e.detail.to);
@@ -110,8 +110,8 @@ function renderActions(d){
   if(signStep){
     const doc = signedDoc(d);
     A.push('<label class="chk"><input type="checkbox" id="a-reviewed"> I have downloaded and reviewed the current ' +
-      (doc && doc.kind === "club" ? "club copy" : "version") + (doc ? " (<code>" + doc.sha256.slice(0, 10) + "</code>)" : "") + "</label>");
-    A.push('<button class="btn" onclick="act(\'' + signStep[0] + '\',true)">✍ ' + signStep[1] + "</button>");
+      (doc && doc.kind === "club" ? "club copy" : "version") + (doc ? " (<code>" + esc(String(doc.sha256).slice(0, 10)) + "</code>)" : "") + "</label>");
+    A.push('<button class="btn" onclick="act(' + jsArg(signStep[0]) + ',true)">✍ ' + esc(signStep[1]) + "</button>");
   }
   if(d.status === "national_validated" && isStaff("national")) A.push(idPending()
     ? '<span class="sub">⏳ The passport scan is still to follow: the file can go to the host country once the candidate has uploaded it.</span>'

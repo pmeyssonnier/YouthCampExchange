@@ -16,7 +16,7 @@ function distShow(){
       +DIST_FIELDS.map(function(f){return '<div class="fld '+f[2]+'"><label class="flbl">'+f[1]+'</label><input id="de-'+f[0]+'" value="'+esc(c[f[0]]||"")+'"></div>';}).join("")
       +'</div><div class="dist-actions"><button class="btn" onclick="distApply()">✔ Apply</button>'
       +'<button class="btn2" onclick="distCancel()">Cancel</button>'
-      +(isNew?"":'<button class="btn2 danger" style="margin-left:auto" onclick="distRemove(\''+DIST_EDIT+'\')">🗑 Remove district</button>')
+      +(isNew?"":'<button class="btn2 danger" style="margin-left:auto" onclick="distRemove('+jsArg(DIST_EDIT)+')">🗑 Remove district</button>')
       +'</div><span class="hint">Applied changes are published with “Save the data” below.</span></div>';
   }
   // le panneau d'édition s'ouvre sous la ligne du district ; un nouveau district en tête de liste
@@ -25,7 +25,7 @@ function distShow(){
     return '<div class="dist-item'+(DIST_EDIT===k?" editing":"")+'"><span class="badge">'+esc(MD_W+" "+k)+'</span>'
       +'<div class="dist-who"><b>'+esc(c.name||"—")+'</b><span>'+esc(c.club||"")+'</span>'
       +'<span>'+esc(c.email||"")+'</span>'+(c.mobile?'<span>'+esc(c.mobile)+'</span>':"")+'</div>'
-      +'<button class="btn2" onclick="distEdit(\''+k+'\')">✏️ Edit</button></div>'
+      +'<button class="btn2" onclick="distEdit('+jsArg(k)+')">✏️ Edit</button></div>'
       +(DIST_EDIT===k?form:"");
   }).join("");
   document.getElementById("dist-body").innerHTML='<div class="fld w6"><div class="dist-list">'
@@ -82,14 +82,14 @@ function teamShow(){
     const rows=list.map(function(m,i){
       return '<div class="dist-item'+(E&&E.g===g&&E.i===i?" editing":"")+'"><div class="dist-who"><b>'+esc(m.name||"—")+'</b>'
         +(m.role?'<span>'+esc(m.role)+'</span>':"")+(m.club?'<span>'+esc(m.club)+'</span>':"")+(m.email?'<span>'+esc(m.email)+'</span>':"")+(m.mobile?'<span>'+esc(m.mobile)+'</span>':"")+'</div>'
-        +'<span class="team-move"><button class="btn2" title="Move up" aria-label="Move up" onclick="teamMove(\''+g+'\','+i+',-1)"'+(i===0?" disabled":"")+'>▲</button>'
-        +'<button class="btn2" title="Move down" aria-label="Move down" onclick="teamMove(\''+g+'\','+i+',1)"'+(i===list.length-1?" disabled":"")+'>▼</button></span>'
-        +'<button class="btn2" onclick="teamEdit(\''+g+'\','+i+')">✏️ Edit</button></div>'
+        +'<span class="team-move"><button class="btn2" title="Move up" aria-label="Move up" onclick="teamMove('+jsArg(g)+','+(+i)+',-1)"'+(i===0?" disabled":"")+'>▲</button>'
+        +'<button class="btn2" title="Move down" aria-label="Move down" onclick="teamMove('+jsArg(g)+','+(+i)+',1)"'+(i===list.length-1?" disabled":"")+'>▼</button></span>'
+        +'<button class="btn2" onclick="teamEdit('+jsArg(g)+','+(+i)+')">✏️ Edit</button></div>'
         +(E&&E.g===g&&E.i===i?teamForm(g,i):"");
     }).join("");
     return '<div class="fld w6"><label class="flbl">'+gr[1]+" MD "+esc(MD_W)+'</label><div class="dist-list">'+rows
       +(E&&E.g===g&&E.i<0?teamForm(g,-1):"")+'</div>'
-      +(E===null?'<button class="btn2" style="margin-top:8px;align-self:flex-start" onclick="teamEdit(\''+g+'\',-1)">➕ Add a member</button>':"")+'</div>';
+      +(E===null?'<button class="btn2" style="margin-top:8px;align-self:flex-start" onclick="teamEdit('+jsArg(g)+',-1)">➕ Add a member</button>':"")+'</div>';
   }).join("");
   const first=document.querySelector("#team-body .dist-form input");if(first)first.focus();
 }

@@ -252,6 +252,8 @@ data_files = [{"file": f, "bytes": os.path.getsize(f), "role": r} for f, r in [
     ("css/tools.css", "styles shared by the tool pages"),
     ("yce_vault.html", "application vault HTML shell (Supabase)"),
     ("supabase/vault_schema.sql", "vault database: tables, row-level security, workflow, retention"),
+    ("supabase/security_check.sql", "vault security self-check to run on the real project (every line must be true)"),
+    ("supabase/vault_hardening_2026_11.sql", "one-off upgrade of a vault installed before version 1.39.0"),
     ("docs/VAULT_SETUP.md", "vault setup guide (Supabase project, SMTP, GDPR)"),
     ("tools/build_assets.py", "regenerates js/assets.js"),
     ("tools/build_codemap.py", "regenerates this visualisation's data and docs/CODE_MAP.md"),

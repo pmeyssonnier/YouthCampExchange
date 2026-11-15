@@ -59,7 +59,7 @@ function renderList(){
   $("count").textContent = rows.length + " / " + DOSSIERS.length;
   $("list").innerHTML = rows.length ? rows.map(function(d){
     const st = STATUS[d.status] || { label: d.status, cls: "" };
-    return '<tr onclick="openDossier(\'' + d.id + '\')" class="' + (myTurn(d) ? "todo" : "") + '">' +
+    return '<tr onclick="openDossier(' + jsArg(d.id) + ')" class="' + (myTurn(d) ? "todo" : "") + '">' +
       "<td><b>" + esc(d.candidate_name) + "</b><div class=\"sub\">" + esc(d.candidate_email) + "</div></td>" +
       "<td>" + esc((typeof MD !== "undefined" ? MD : "") + d.district) + "<div class=\"sub\">" + esc(d.club || "") + "</div></td>" +
       "<td>" + esc(d.season) + "</td>" +

@@ -189,7 +189,7 @@ function replacesFor(t){
 // -------------------- rapport d'import --------------------
 // IMPORT : rapport du répertoire en cours de revue {file, read, rejected[], remarks[], updates, news, unchanged, archived} ; null pour les coordonnées.
 let IMPORT=null;
-function reportLines(list){return list.map(function(x){return (x.row?"row "+x.row+" \u00b7 ":"")+esc(x.country||"?")+" \u2014 "+esc(x.name)+": "+esc(x.why);}).join("<br>");}
+function reportLines(list){return list.map(function(x){return (x.row?"row "+esc(x.row)+" \u00b7 ":"")+esc(x.country||"?")+" \u2014 "+esc(x.name)+": "+esc(x.why);}).join("<br>");}
 function hideReport(){const b=document.getElementById("imp-report");if(b)b.style.display="none";}
 // rep : rapport de lecture de dirPick ; absent quand la revue est construite directement (tests) : toutes les lignes sont alors « lues »
 function buildReview(fname,items,rep){

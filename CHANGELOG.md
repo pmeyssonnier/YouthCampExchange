@@ -5,6 +5,19 @@ Numbering is `MAJOR.MINOR.PATCH`: PATCH for a fix, MINOR for a new feature,
 MAJOR for a change that requires users or coordinators to redo something.
 The version is shown on every page (site footer, tool headers).
 
+## 1.39.0 — 2026-11-15
+
+Security review: vault access rules, administration token, escaping of received data.
+**One action for an installed vault:** run `supabase/vault_hardening_2026_11.sql` once in Supabase (SQL Editor), then `supabase/security_check.sql` — see `docs/VAULT_SETUP.md`.
+
+- **Tracker: a candidate's file could run code in the coordinator's browser.** A family name written to break out of the « Remove » button (for example `')){};…//`) was executed when the coordinator clicked ✕ on that row. Row buttons now carry only the row key; the name is never written into the code of a button. Found by the review, proven by a test, fixed.
+- **Vault, roles.** An administrator could give the « national » role to their own address, read every file (identity documents included), then remove the role without leaving a trace. An administrator can no longer give a role to their own address, and every addition or removal of a role is recorded with its author in a journal that cannot be edited, shown in the Team section.
+- **Vault, retention.** A file could be opened for a far-away season (« 2098-2099 »), which pushed its retention deadline out of reach of the purge. The season must now be a real one, around the current year.
+- **Vault, other hardening.** Signing is refused when the session carries no sign-in time (it was only refused when that time was older than 24 hours); the download journal keeps the file name only, cut at 200 characters; comments are limited to 5000 characters; signed-in accounts lose the unused right to empty a table.
+- **Checked and confirmed sound:** a candidate cannot see or change another candidate's file by any route (tables, stored files, functions); a club president only ever gets the club copy, never the full file or the identity document; coordinators only see their district and only with two-step verification. `supabase/security_check.sql` gains 9 checks (31 in total), among them the president and the identity document in storage.
+- **Administration token.** The unlocked token kept in the browser tab now expires after 30 minutes without activity (1 hour before) and 8 hours after unlocking at the latest. Connecting with a « classic » GitHub token (access to every repository of the account) shows a warning asking for a fine-grained token limited to this repository.
+- **Escaping.** `esc()` of the tool pages now also escapes the apostrophe, and text placed in a button's code goes through `jsArg()` (administration, tracker, vault). New test `tool_xss`: hostile values in every field of the tracker, the camp manager, the directory and coordinates imports, the coordinators, the national team, the gallery and the vault; everything is displayed and every control is clicked; nothing may execute.
+
 ## 1.38.0 — 2026-11-15
 
 Directory import (administration, Camps tab): all-or-nothing application and a report.

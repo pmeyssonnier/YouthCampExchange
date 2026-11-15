@@ -32,6 +32,8 @@ let API = null, ME = "", ROLES = [], DOSSIERS = [], CUR = null, CUR_FILES = [], 
 function $(id){ return document.getElementById(id); }
 function esc(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){
   return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+// argument texte d'un gestionnaire onclick="f(…)" : littéral JSON, puis échappement HTML de l'attribut (jamais de donnée entre apostrophes)
+function jsArg(s){ return esc(JSON.stringify(String(s))); }
 function show(id, on){ $(id).hidden = !on; }
 function msg(text, kind){ const el = $("msg"); el.textContent = text; el.className = "msg " + (kind || "info"); el.hidden = !text; }
 function fmtDT(s){ return s ? new Date(s).toLocaleString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : ""; }

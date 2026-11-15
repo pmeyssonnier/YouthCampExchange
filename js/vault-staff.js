@@ -7,8 +7,14 @@ async function loadStaff(){
     const rows = await API.staffList() || [];
     $("staff-list").innerHTML = rows.map(function(r){
       return "<tr><td>" + esc(r.email) + "</td><td>" + esc(r.full_name || "") + "</td><td>" + esc(r.role) + (r.district ? " " + esc(r.district) : "") +
-        '</td><td><button class="btn2 danger" onclick="staffDelete(' + r.id + ')">Remove</button></td></tr>';
+        '</td><td><button class="btn2 danger" onclick="staffDelete(' + (+r.id) + ')">Remove</button></td></tr>';
     }).join("") || '<tr><td colspan="4" class="empty">Nobody yet.</td></tr>';
+    // qui a donné ou retiré quel rôle : visible des administrateurs et de l'équipe nationale, non modifiable
+    const lg = API.staffLog ? await API.staffLog() || [] : [];
+    if($("staff-log")) $("staff-log").innerHTML = lg.map(function(l){
+      return "<li><span class=\"sub\">" + fmtDT(l.at) + " · " + esc(l.actor_email) + "</span> " + (l.action === "remove" ? "removed" : "added") +
+        " <b>" + esc(l.email) + "</b> as " + esc(l.role) + (l.district ? " " + esc(l.district) : "") + "</li>";
+    }).join("") || '<li class="sub">No change recorded yet.</li>';
   }catch(e){ msg("Could not load the team: " + e.message, "err"); }
 }
 async function staffAdd(){
@@ -16,6 +22,7 @@ async function staffAdd(){
   const email = $("s-email").value.trim().toLowerCase();
   if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ msg("Enter a valid e-mail address.", "err"); return; }
   if(role === "district" && !district){ msg("Choose the district of this coordinator.", "err"); return; }
+  if(email === ME){ msg("You cannot give a role to your own address: ask another administrator. Every change of role is recorded.", "err"); return; }
   try{
     await API.staffAdd({ email: email, role: role, district: role === "district" ? district : null, full_name: $("s-name").value.trim() || null });
     $("s-email").value = ""; $("s-name").value = ""; loadStaff();
